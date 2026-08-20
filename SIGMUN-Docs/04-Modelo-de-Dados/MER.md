@@ -22,14 +22,6 @@
 
 
 
-- 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md
-
-
-
----
-
-
-
 Este documento encontra-se em elaboração e deverá ser atualizado conforme a evolução do SIGMUN.
 
 

@@ -1,117 +1,107 @@
 # SIGMUN — Sistema Integrado de Gestão Municipal
 
-Projeto SIGMUN: plataforma para integração de processos, dados e serviços na administração pública municipal.
+> Plataforma ERP Público para integração, gestão, governança e transformação digital da administração municipal da Prefeitura Municipal de Camacan-BA.
 
-Sumário rápido
+## Sobre o Projeto
 
-- **Documentação completa:** SIGMUN-Docs/
-- **Guia de contribuição:** SIGMUN-Docs/00-Governanca/000E-GUIA-DE-CONTRIBUICAO.md
-- **Status do projeto:** consulte `SIGMUN-Docs/Plano-de-Trabalho.md` e `SIGMUN-Docs/ROADMAP.md`
+O **SIGMUN** é um sistema integrado de gestão municipal desenvolvido com uma arquitetura **Modular Monolith + Clean Architecture + Domain Driven Design (DDD)**, utilizando Python e FastAPI no backend.
 
-Como começar
+A plataforma visa integrar processos, dados e serviços de todas as secretarias e órgãos municipais, substituindo sistemas isolados, planilhas e controles paralelos.
 
-1. Leia a documentação em `SIGMUN-Docs/`.
-2. Configure seu ambiente Python (recomenda-se usar um virtualenv `.venv`).
-3. Antes de abrir PRs, siga o guia de contribuição.
+## Arquitetura
 
-Arquivos sugeridos para o commit inicial
+A arquitetura do SIGMUN segue os princípios definidos em `SIGMUN-Docs/01-Arquitetura-Corporativa/004-Arquitetura-de-Software.md`:
 
-- `README.md` (este arquivo)
-- `LICENSE` (adicionar licença do projeto)
-- `.gitignore` (já presente)
+- **Modular Monolith** — separação clara de domínios com evolução futura para microsserviços
+- **Clean Architecture** — separação entre regras de negócio, aplicação, infraestrutura e apresentação
+- **DDD** — cada módulo é um Bounded Context com suas próprias entidades, serviços e eventos
 
-Se quiser, posso criar também um `LICENSE` padrão e fazer o commit inicial.
-# SIGMUN
+### Estrutura de Diretórios
 
-## Sistema Integrado de Gestão da Prefeitura Municipal de Camacan-BA
+```
+sigmun-v1/
+├── src/                          # Código fonte
+│   ├── core/                     # SIGMUN Core (serviços compartilhados)
+│   ├── shared/                   # Componentes compartilhados
+│   ├── modules/                  # Módulos de negócio (Bounded Contexts)
+│   │   ├── sigmun_rh/
+│   │   ├── sigmun_tributos/
+│   │   ├── sigmun_contabilidade/
+│   │   ├── sigmun_compras/
+│   │   ├── sigmun_saude/
+│   │   ├── sigmun_educacao/
+│   │   ├── sigmun_assistencia_social/
+│   │   ├── sigmun_almoxarifado/
+│   │   ├── sigmun_patrimonio/
+│   │   ├── sigmun_frotas/
+│   │   ├── sigmun_obras/
+│   │   ├── sigmun_licitacoes/
+│   │   ├── sigmun_administracao/
+│   │   ├── sigmun_agricultura/
+│   │   ├── sigmun_controladoria/
+│   │   ├── sigmun_gabinete/
+│   │   ├── sigmun_ouvidoria/
+│   │   ├── sigmun_planejamento/
+│   │   ├── sigmun_procuradoria/
+│   │   ├── sigmun_transparencia/
+│   │   └── sigmun_financas/
+│   └── main.py                   # Ponto de entrada da aplicação
+├── frontend/                     # Aplicações frontend
+│   ├── admin/                    # Aplicação administrativa
+│   ├── portal-cidadao/           # Portal do cidadão
+│   └── portal-fornecedor/        # Portal do fornecedor
+├── mobile/                       # Aplicativos móveis
+│   ├── cidadao/
+│   ├── fiscalizacao/
+│   ├── saude/
+│   └── equipes-externas/
+├── infra/                        # Infraestrutura como código
+│   ├── docker/                   # Dockerfiles e configurações
+│   ├── terraform/                # Infraestrutura AWS
+│   └── kubernetes/               # Manifestos Kubernetes
+├── tests/                        # Testes automatizados
+│   ├── unit/                     # Testes unitários
+│   ├── integration/              # Testes de integração
+│   └── e2e/                      # Testes end-to-end
+├── .github/                      # CI/CD (GitHub Actions)
+├── scripts/                      # Scripts de automação
+├── docs/                         # Documentação técnica
+├── SIGMUN-Docs/                  # Documentação corporativa do projeto
+├── alembic/                      # Migrações de banco de dados
+├── docker-compose.yml            # Orquestração local
+├── pyproject.toml                # Configuração do projeto Python
+├── requirements.txt              # Dependências de produção
+├── requirements-dev.txt          # Dependências de desenvolvimento
+├── Makefile                      # Comandos de automação
+└── .env.example                  # Template de variáveis de ambiente
+```
 
-> Plataforma ERP Público para integração, gestão, governança e transformação digital da administração municipal.
+## Tecnologias
 
----
+- **Backend:** Python 3.10+, FastAPI, SQLAlchemy, Pydantic, Alembic
+- **Banco de Dados:** PostgreSQL
+- **Cache/Filas:** Redis, Celery
+- **Frontend:** React/Vue (responsivo e acessível)
+- **Mobile:** React Native
+- **Infraestrutura:** Docker, Docker Compose, Kubernetes, AWS
+- **CI/CD:** GitHub Actions
 
-## 1. Sobre o Projeto
+## Como Começar
 
-O **SIGMUN — Sistema Integrado de Gestão da Prefeitura Municipal de Camacan-BA** é um projeto de ERP Público concebido para apoiar a gestão integrada das secretarias, órgãos, unidades administrativas e processos do município.
+1. Clone o repositório
+2. Copie `.env.example` para `.env` e ajuste as variáveis
+3. Instale as dependências: `pip install -r requirements-dev.txt`
+4. Inicie os containers: `docker-compose up -d`
+5. Execute as migrações: `alembic upgrade head`
+6. Inicie a aplicação: `make run-dev`
 
-O projeto busca substituir a fragmentação causada por sistemas isolados, planilhas, controles paralelos e duplicidade de informações por uma arquitetura integrada, orientada a processos, dados, serviços e governança.
+## Documentação
 
-O SIGMUN é concebido para oferecer uma base tecnológica comum para:
+- **Documentação corporativa:** `SIGMUN-Docs/`
+- **Guia de contribuição:** `SIGMUN-Docs/00-Governanca/000E-GUIA-DE-CONTRIBUICAO.md`
+- **Plano de trabalho:** `SIGMUN-Docs/Plano-de-Trabalho.md`
+- **Roadmap:** `SIGMUN-Docs/ROADMAP.md`
 
-- gestão administrativa;
-- gestão financeira;
-- contabilidade;
-- compras e contratações;
-- patrimônio;
-- almoxarifado;
-- recursos humanos;
-- educação;
-- saúde;
-- assistência social;
-- agricultura;
-- obras;
-- frota;
-- tributos;
-- planejamento;
-- controladoria;
-- procuradoria;
-- transparência;
-- ouvidoria;
-- portal do cidadão;
-- integrações governamentais;
-- inteligência de dados e indicadores.
+## Licença
 
----
-
-## 2. Objetivos
-
-O projeto tem como objetivos principais:
-
-1. integrar os processos da administração municipal;
-2. eliminar ou reduzir retrabalho;
-3. evitar duplicidade de informações;
-4. estabelecer uma fonte confiável de dados institucionais;
-5. promover interoperabilidade entre módulos e sistemas;
-6. fortalecer governança, segurança e auditoria;
-7. apoiar transparência e prestação de contas;
-8. proporcionar rastreabilidade dos processos administrativos;
-9. permitir evolução tecnológica contínua;
-10. estabelecer uma arquitetura reutilizável para outros municípios.
-
----
-
-## 3. Princípios
-
-O SIGMUN adota como princípios estruturantes:
-
-- **Transparência por padrão**
-- **Segurança por princípio**
-- **Classificação da Informação por política**
-- **Aberto sempre que possível, restrito sempre que necessário**
-- integração;
-- interoperabilidade;
-- rastreabilidade;
-- auditabilidade;
-- reutilização;
-- modularidade;
-- escalabilidade;
-- qualidade;
-- acessibilidade;
-- sustentabilidade;
-- evolução contínua.
-
----
-
-## 4. Situação Atual
-
-O projeto encontra-se em fase de **estruturação arquitetural, modelagem, especificação e preparação do ambiente de desenvolvimento**.
-
-A documentação corporativa está sendo organizada antes da implementação progressiva dos módulos.
-
-O primeiro domínio utilizado como referência para implementação é:
-
-### Gestão de Compras e Contratações
-
-Identificador do domínio:
-
-```text
-DOM-COMPRAS-001
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.

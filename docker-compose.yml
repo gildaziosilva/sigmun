@@ -1,0 +1,137 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: sigmun-postgres
+    environment:
+      POSTGRES_DB: sigmun
+      POSTGRES_USER: sigmun
+      POSTGRES_PASSWORD: sigmun
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/docker/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sigmun"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - sigmun-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: sigmun-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - sigmun-network
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: infra/docker/backend/Dockerfile
+    container_name: sigmun-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./alembic:/app/alembic
+    ports:
+      - "8000:8000"
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    networks:
+      - sigmun-network
+
+  # Frontend Admin
+  frontend-admin:
+    build:
+      context: ./frontend/admin
+      dockerfile: ../infra/docker/frontend/Dockerfile
+    container_name: sigmun-frontend-admin
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    networks:
+      - sigmun-network
+
+  # Frontend Portal Cidadao
+  frontend-portal-cidadao:
+    build:
+      context: ./frontend/portal-cidadao
+      dockerfile: ../infra/docker/frontend/Dockerfile
+    container_name: sigmun-frontend-portal-cidadao
+    ports:
+      - "3001:80"
+    restart: unless-stopped
+    networks:
+      - sigmun-network
+
+  # Frontend Portal Fornecedor
+  frontend-portal-fornecedor:
+    build:
+      context: ./frontend/portal-fornecedor
+      dockerfile: ../infra/docker/frontend/Dockerfile
+    container_name: sigmun-frontend-portal-fornecedor
+    ports:
+      - "3002:80"
+    restart: unless-stopped
+    networks:
+      - sigmun-network
+
+  # Celery Worker
+  worker:
+    build:
+      context: .
+      dockerfile: infra/docker/backend/Dockerfile
+    container_name: sigmun-worker
+    depends_on:
+      - redis
+      - postgres
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    command: celery -A src.shared.config.celery_app worker --loglevel=info
+    restart: unless-stopped
+    networks:
+      - sigmun-network
+
+  # Celery Beat
+  beat:
+    build:
+      context: .
+      dockerfile: infra/docker/backend/Dockerfile
+    container_name: sigmun-beat
+    depends_on:
+      - redis
+      - postgres
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    command: celery -A src.shared.config.celery_app beat --loglevel=info
+    restart: unless-stopped
+    networks:
+      - sigmun-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  sigmun-network:
+    driver: bridge

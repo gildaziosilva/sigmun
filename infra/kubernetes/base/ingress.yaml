@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sigmun-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - sigmun.local
+      secretName: sigmun-tls
+  rules:
+    - host: sigmun.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              http:
+                service:
+                  name: sigmun-backend
+                  port:
+                    number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              http:
+                service:
+                  name: sigmun-frontend-admin
+                  port:
+                    number: 80
