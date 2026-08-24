@@ -9,11 +9,16 @@ SIGMUN-Docs/01-Arquitetura-Corporativa/004-Arquitetura-de-Software.md
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.modules.sigmun_compras.presentation.api.fornecedores_router import (
+    router as fornecedores_router,
+)
 from src.shared.config.settings import settings
 
 app = FastAPI(
     title="SIGMUN API",
-    description="API do Sistema Integrado de Gestão Municipal da Prefeitura Municipal de Camacan-BA",
+    description=(
+        "API do Sistema Integrado de Gestão Municipal da Prefeitura Municipal de Camacan-BA"
+    ),
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -28,6 +33,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+app.include_router(fornecedores_router)
 
 
 @app.get("/health")
