@@ -32,6 +32,10 @@ class ProcessoDocumentalNaoEncontradoError(ComprasDomainError):
     """Processo documental referenciado não encontrado (RN-COMPRAS-025)."""
 
 
+class ProcessoDocumentalDuplicadoError(ComprasDomainError):
+    """Já existe processo documental com o mesmo par (numero, ano)."""
+
+
 class UnidadeNaoEncontradaError(ComprasDomainError):
     """Unidade administrativa referenciada não encontrada."""
 
@@ -43,5 +47,6 @@ __all__ = [
     "CompraNaoEncontradaError",
     "ItemNaoEncontradoError",
     "ProcessoDocumentalNaoEncontradoError",
+    "ProcessoDocumentalDuplicadoError",
     "UnidadeNaoEncontradaError",
 ]

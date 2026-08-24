@@ -7,6 +7,7 @@ from src.modules.sigmun_compras.domain.entities.compra import (
 )
 from src.modules.sigmun_compras.domain.entities.fornecedor import Fornecedor, SituacaoFornecedor
 from src.modules.sigmun_compras.domain.entities.item_compra import ItemCompra
+from src.modules.sigmun_compras.domain.entities.processo_documental import ProcessoDocumental
 
 __all__ = [
     "Compra",
@@ -15,6 +16,7 @@ __all__ = [
     "Fornecedor",
     "SituacaoFornecedor",
     "ItemCompra",
+    "ProcessoDocumental",
 ]
 
 

@@ -12,6 +12,9 @@ from src.modules.sigmun_compras.application.commands.atualizar_fornecedor_comman
 from src.modules.sigmun_compras.application.commands.atualizar_item_compra_command import (
     AtualizarItemCompraCommand,
 )
+from src.modules.sigmun_compras.application.commands.atualizar_processo_documental_command import (
+    AtualizarProcessoDocumentalCommand,
+)
 from src.modules.sigmun_compras.application.commands.criar_compra_command import (
     CriarCompraCommand,
 )
@@ -21,8 +24,14 @@ from src.modules.sigmun_compras.application.commands.criar_fornecedor_command im
 from src.modules.sigmun_compras.application.commands.criar_item_compra_command import (
     CriarItemCompraCommand,
 )
+from src.modules.sigmun_compras.application.commands.criar_processo_documental_command import (
+    CriarProcessoDocumentalCommand,
+)
 from src.modules.sigmun_compras.application.commands.excluir_compra_command import (
     ExcluirCompraCommand,
+)
+from src.modules.sigmun_compras.application.commands.excluir_processo_documental_command import (
+    ExcluirProcessoDocumentalCommand,
 )
 from src.modules.sigmun_compras.application.commands.inativar_fornecedor_command import (
     InativarFornecedorCommand,
@@ -42,5 +51,8 @@ __all__ = [
     "AtualizarCompraCommand",
     "AlterarSituacaoCompraCommand",
     "ExcluirCompraCommand",
+    "CriarProcessoDocumentalCommand",
+    "AtualizarProcessoDocumentalCommand",
+    "ExcluirProcessoDocumentalCommand",
 ]
 

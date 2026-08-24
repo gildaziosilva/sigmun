@@ -18,6 +18,9 @@ from src.modules.sigmun_compras.presentation.api.fornecedores_router import (
 from src.modules.sigmun_compras.presentation.api.itens_compras_router import (
     router as itens_compras_router,
 )
+from src.modules.sigmun_compras.presentation.api.processo_documental_router import (
+    router as processo_documental_router,
+)
 from src.shared.config.settings import settings
 
 app = FastAPI(
@@ -44,6 +47,7 @@ app.add_middleware(
 app.include_router(fornecedores_router)
 app.include_router(itens_compras_router)
 app.include_router(compras_router)
+app.include_router(processo_documental_router)
 
 
 @app.get("/health")

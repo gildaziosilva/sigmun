@@ -12,6 +12,9 @@ from src.modules.sigmun_compras.application.use_cases.atualizar_fornecedor impor
 from src.modules.sigmun_compras.application.use_cases.atualizar_item_compra import (
     AtualizarItemCompraUseCase,
 )
+from src.modules.sigmun_compras.application.use_cases.atualizar_processo_documental import (
+    AtualizarProcessoDocumentalUseCase,
+)
 from src.modules.sigmun_compras.application.use_cases.consultar_compra import (
     ConsultarCompraUseCase,
 )
@@ -21,8 +24,14 @@ from src.modules.sigmun_compras.application.use_cases.consultar_fornecedor impor
 from src.modules.sigmun_compras.application.use_cases.consultar_item_compra import (
     ConsultarItemCompraUseCase,
 )
+from src.modules.sigmun_compras.application.use_cases.consultar_processo_documental import (
+    ConsultarProcessoDocumentalUseCase,
+)
 from src.modules.sigmun_compras.application.use_cases.excluir_compra import (
     ExcluirCompraUseCase,
+)
+from src.modules.sigmun_compras.application.use_cases.excluir_processo_documental import (
+    ExcluirProcessoDocumentalUseCase,
 )
 from src.modules.sigmun_compras.application.use_cases.inativar_fornecedor import (
     InativarFornecedorUseCase,
@@ -36,6 +45,9 @@ from src.modules.sigmun_compras.application.use_cases.listar_fornecedores import
 from src.modules.sigmun_compras.application.use_cases.listar_itens_compra import (
     ListarItensCompraUseCase,
 )
+from src.modules.sigmun_compras.application.use_cases.listar_processos_documentais import (
+    ListarProcessosDocumentaisUseCase,
+)
 from src.modules.sigmun_compras.application.use_cases.registrar_compra import (
     RegistrarCompraUseCase,
 )
@@ -44,6 +56,9 @@ from src.modules.sigmun_compras.application.use_cases.registrar_fornecedor impor
 )
 from src.modules.sigmun_compras.application.use_cases.registrar_item_compra import (
     RegistrarItemCompraUseCase,
+)
+from src.modules.sigmun_compras.application.use_cases.registrar_processo_documental import (
+    RegistrarProcessoDocumentalUseCase,
 )
 from src.modules.sigmun_compras.application.use_cases.remover_item_compra import (
     RemoverItemCompraUseCase,
@@ -66,6 +81,11 @@ __all__ = [
     "AtualizarCompraUseCase",
     "AlterarSituacaoCompraUseCase",
     "ExcluirCompraUseCase",
+    "RegistrarProcessoDocumentalUseCase",
+    "ConsultarProcessoDocumentalUseCase",
+    "ListarProcessosDocumentaisUseCase",
+    "AtualizarProcessoDocumentalUseCase",
+    "ExcluirProcessoDocumentalUseCase",
 ]
 
 

@@ -44,10 +44,11 @@ class UnidadeAdministrativaModel(ComprasBase):
 
 
 class ProcessoDocumentalModel(ComprasBase):
-    """Modelo ORM mínimo da tabela ``core.processos_documentais``.
+    """Modelo ORM da tabela ``core.processos_documentais``.
 
-    Mapeamento para validação de vínculos (RN-COMPRAS-025); o domínio
-    Gestão Documental é responsável pelo seu CRUD.
+    Referências:
+      - Modelo Físico / migration 20260820_01
+      - RN-COMPRAS-025 – Processo Único
     """
 
     __tablename__ = "processos_documentais"
@@ -61,6 +62,18 @@ class ProcessoDocumentalModel(ComprasBase):
     ano: Mapped[int] = mapped_column(nullable=False)
     assunto: Mapped[str] = mapped_column(Text, nullable=False)
     descricao: Mapped[str | None] = mapped_column(Text)
+
+    # Colunas de auditoria (padrão corporativo)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    deleted_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"<ProcessoDocumentalModel id={self.id} numero={self.numero}>"

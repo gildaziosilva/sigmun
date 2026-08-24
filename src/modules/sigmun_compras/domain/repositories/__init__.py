@@ -9,7 +9,15 @@ from src.modules.sigmun_compras.domain.repositories.fornecedor_repository import
 from src.modules.sigmun_compras.domain.repositories.item_compra_repository import (
     ItemCompraRepository,
 )
+from src.modules.sigmun_compras.domain.repositories.processo_documental_repository import (
+    ProcessoDocumentalRepository,
+)
 
-__all__ = ["FornecedorRepository", "ItemCompraRepository", "CompraRepository"]
+__all__ = [
+    "FornecedorRepository",
+    "ItemCompraRepository",
+    "CompraRepository",
+    "ProcessoDocumentalRepository",
+]
 
 
