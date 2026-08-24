@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # PostgreSQL Database
   postgres:
-    image: postgres:16-alpine
+    image: postgres:15
     container_name: sigmun-postgres
     environment:
       POSTGRES_DB: sigmun
@@ -13,7 +13,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./infra/docker/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sigmun"]
       interval: 10s

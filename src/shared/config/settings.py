@@ -4,7 +4,6 @@ Gerenciadas via variáveis de ambiente com pydantic-settings.
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
 
 
 class Settings(BaseSettings):
@@ -45,7 +44,7 @@ class Settings(BaseSettings):
     JWT_REFRESH_EXPIRATION_DAYS: int = 7
 
     # CORS
-    ALLOWED_HOSTS: List[str] = ["*"]
+    ALLOWED_HOSTS: list[str] = ["*"]
 
     # External APIs
     GOVR_BR_CLIENT_ID: str = ""

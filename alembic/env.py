@@ -4,8 +4,11 @@ Based on Arquitetura de Dados - PostgreSQL.
 """
 
 from logging.config import fileConfig
+
 from sqlalchemy import engine_from_config, pool
+
 from alembic import context
+from src.shared.config.database import Base
 
 # this is the Alembic Config object
 config = context.config
@@ -14,13 +17,12 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Set target metadata
-from src.shared.config.database import Base
 target_metadata = Base.metadata
 
 
 def get_url():
     from src.shared.config.settings import settings
+
     return settings.DATABASE_URL
 
 
@@ -34,9 +36,8 @@ def run_migrations_offline() -> None:
         dialect_opts={"paramstyle": "named"},
     )
 
-    with context.connectable() as connectable:
-        with context.connectable() as connectable:
-            pass
+    with context.begin_transaction():
+        context.run_migrations()
 
 
 def run_migrations_online() -> None:
