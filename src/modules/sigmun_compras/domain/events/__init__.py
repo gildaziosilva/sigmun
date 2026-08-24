@@ -5,7 +5,19 @@ from src.modules.sigmun_compras.domain.events.fornecedor_events import (
     FornecedorCriadoEvent,
     FornecedorInativadoEvent,
 )
+from src.modules.sigmun_compras.domain.events.item_compra_events import (
+    ItemCompraAtualizadoEvent,
+    ItemCompraCriadoEvent,
+    ItemCompraRemovidoEvent,
+)
 
-__all__ = ["FornecedorCriadoEvent", "FornecedorInativadoEvent", "FornecedorAtualizadoEvent"]
+__all__ = [
+    "FornecedorCriadoEvent",
+    "FornecedorInativadoEvent",
+    "FornecedorAtualizadoEvent",
+    "ItemCompraCriadoEvent",
+    "ItemCompraAtualizadoEvent",
+    "ItemCompraRemovidoEvent",
+]
 
 

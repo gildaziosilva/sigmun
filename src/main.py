@@ -12,6 +12,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.modules.sigmun_compras.presentation.api.fornecedores_router import (
     router as fornecedores_router,
 )
+from src.modules.sigmun_compras.presentation.api.itens_compras_router import (
+    router as itens_compras_router,
+)
 from src.shared.config.settings import settings
 
 app = FastAPI(
@@ -36,6 +39,7 @@ app.add_middleware(
 
 
 app.include_router(fornecedores_router)
+app.include_router(itens_compras_router)
 
 
 @app.get("/health")

@@ -123,7 +123,7 @@ A aplicação inicial deverá executar com:
 
 **Código:** `DOM-COMPRAS-001`
 
-**Status:** 🟡 Em andamento (fornecedores implementados; próxima etapa: itens e produtos/serviços)
+**Status:** 🟡 Em andamento (itens e produtos/serviços implementados; próxima etapa: solicitações e processos de compras)
 
 **Objetivo:** implementar a primeira capacidade operacional ponta a ponta do SIGMUN.
 
@@ -135,8 +135,8 @@ O `DOM-COMPRAS-001` será o domínio-piloto utilizado para validar o padrão de 
 2. Consolidar modelo físico de Compras e entidades compartilhadas.
 3. ✅ Criar migrações para `core` e `compras` (migration `20260820_01` criada e aplicada).
 4. ✅ Implementar fornecedores (entidade, casos de uso, repositório SQLAlchemy, APIs REST e testes).
-5. ➡️ Implementar itens e produtos/serviços. (PRÓXIMA TAREFA)
-6. Implementar solicitações e processos de compras.
+5. ✅ Implementar itens e produtos/serviços (entidade ItemCompra sobre `compras.itens_compras`, casos de uso, repositório SQLAlchemy e APIs REST).
+6. ➡️ Implementar solicitações e processos de compras. (PRÓXIMA TAREFA)
 7. Implementar processos documentais.
 8. Implementar contratos.
 9. Implementar integrações necessárias.

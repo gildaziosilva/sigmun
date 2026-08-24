@@ -20,4 +20,18 @@ class FornecedorJaCadastradoError(ComprasDomainError):
     """Fornecedor já cadastrado para a mesma pessoa jurídica (RN-COMPRAS-031)."""
 
 
-__all__ = ["ComprasDomainError", "FornecedorNaoEncontradoError", "FornecedorJaCadastradoError"]
+class CompraNaoEncontradaError(ComprasDomainError):
+    """Compra referenciada não encontrada."""
+
+
+class ItemNaoEncontradoError(ComprasDomainError):
+    """Item de compra não encontrado."""
+
+
+__all__ = [
+    "ComprasDomainError",
+    "FornecedorNaoEncontradoError",
+    "FornecedorJaCadastradoError",
+    "CompraNaoEncontradaError",
+    "ItemNaoEncontradoError",
+]
