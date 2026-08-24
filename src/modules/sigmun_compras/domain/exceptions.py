@@ -28,10 +28,20 @@ class ItemNaoEncontradoError(ComprasDomainError):
     """Item de compra não encontrado."""
 
 
+class ProcessoDocumentalNaoEncontradoError(ComprasDomainError):
+    """Processo documental referenciado não encontrado (RN-COMPRAS-025)."""
+
+
+class UnidadeNaoEncontradaError(ComprasDomainError):
+    """Unidade administrativa referenciada não encontrada."""
+
+
 __all__ = [
     "ComprasDomainError",
     "FornecedorNaoEncontradoError",
     "FornecedorJaCadastradoError",
     "CompraNaoEncontradaError",
     "ItemNaoEncontradoError",
+    "ProcessoDocumentalNaoEncontradoError",
+    "UnidadeNaoEncontradaError",
 ]

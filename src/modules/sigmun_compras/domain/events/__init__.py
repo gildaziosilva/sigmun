@@ -1,5 +1,10 @@
 """Eventos de domínio Gestão de Compras e Contratações."""
 
+from src.modules.sigmun_compras.domain.events.compra_events import (
+    CompraAtualizadaEvent,
+    CompraCriadaEvent,
+    CompraSituacaoAlteradaEvent,
+)
 from src.modules.sigmun_compras.domain.events.fornecedor_events import (
     FornecedorAtualizadoEvent,
     FornecedorCriadoEvent,
@@ -18,6 +23,9 @@ __all__ = [
     "ItemCompraCriadoEvent",
     "ItemCompraAtualizadoEvent",
     "ItemCompraRemovidoEvent",
+    "CompraCriadaEvent",
+    "CompraAtualizadaEvent",
+    "CompraSituacaoAlteradaEvent",
 ]
 
 
