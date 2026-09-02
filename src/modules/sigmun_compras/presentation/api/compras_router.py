@@ -39,6 +39,9 @@ from src.modules.sigmun_compras.application.commands.criar_compra_command import
 from src.modules.sigmun_compras.application.commands.excluir_compra_command import (
     ExcluirCompraCommand,
 )
+from src.modules.sigmun_compras.application.commands.registrar_pendencia_compra_command import (
+    RegistrarPendenciaCompraCommand,
+)
 from src.modules.sigmun_compras.application.queries.consultar_compra_query import (
     ConsultarCompraQuery,
 )
@@ -57,6 +60,9 @@ from src.modules.sigmun_compras.application.use_cases.excluir_compra import (
 from src.modules.sigmun_compras.application.use_cases.listar_compras import (
     ListarComprasUseCase,
 )
+from src.modules.sigmun_compras.application.use_cases.registrar_pendencia_compra import (
+    RegistrarPendenciaCompraUseCase,
+)
 from src.modules.sigmun_compras.application.use_cases.registrar_compra import (
     RegistrarCompraUseCase,
 )
@@ -73,6 +79,7 @@ from src.modules.sigmun_compras.domain.repositories.compra_repository import (
 from src.modules.sigmun_compras.presentation.schemas.compra_schemas import (
     CompraCreateRequest,
     CompraListResponse,
+    CompraPendenciasRequest,
     CompraResponse,
     CompraSituacaoRequest,
     CompraUpdateRequest,
@@ -261,6 +268,42 @@ def alterar_situacao(
             AlterarSituacaoCompraCommand(
                 compra_id=compra_id,
                 nova_situacao=payload.situacao,
+                usuario_id=usuario_id,
+            )
+        )
+    except CompraNaoEncontradaError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
+@router.patch(
+    "/{compra_id}/pendencias",
+    response_model=CompraResponse,
+    summary="Registra ou resolve pendências impeditivas da compra",
+    description=(
+        "Enquanto existirem pendências impeditivas, o processo não poderá "
+        "avançar para etapas incompatíveis (RN-COMPRAS-027); o cancelamento "
+        "permanece permitido."
+    ),
+    responses={
+        404: {"description": "Compra não encontrada"},
+        400: {"description": "Requisição inválida"},
+    },
+)
+def registrar_pendencias(
+    compra_id: UUID,
+    payload: CompraPendenciasRequest,
+    repository: Annotated[CompraRepository, Depends(get_compra_repository)],
+    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+) -> Compra:
+    use_case = RegistrarPendenciaCompraUseCase(repository)
+    try:
+        return use_case.execute(
+            RegistrarPendenciaCompraCommand(
+                compra_id=compra_id,
+                registrar=payload.pendencias_impeditivas,
+                justificativa=payload.justificativa,
                 usuario_id=usuario_id,
             )
         )

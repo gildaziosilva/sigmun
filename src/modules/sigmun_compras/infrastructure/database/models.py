@@ -11,7 +11,7 @@ import uuid
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import Date, DateTime, Numeric, Text, func
+from sqlalchemy import JSON, Date, DateTime, Numeric, Text, func, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -172,6 +172,9 @@ class CompraModel(ComprasBase):
     data: Mapped[date] = mapped_column(Date, nullable=False)
     valor_total: Mapped[Decimal | None] = mapped_column(Numeric(15, 2))
     situacao: Mapped[str] = mapped_column(Text, nullable=False)
+    pendencias_impeditivas: Mapped[bool] = mapped_column(
+        nullable=False, server_default=text("false")
+    )
 
     # Colunas de auditoria (padrão corporativo)
     created_at: Mapped[datetime] = mapped_column(
@@ -189,6 +192,91 @@ class CompraModel(ComprasBase):
         return f"<CompraModel id={self.id} numero={self.numero} situacao={self.situacao}>"
 
 
+class ContratoModel(ComprasBase):
+    """Modelo ORM da tabela ``compras.contratos``.
+
+    Referências:
+      - Modelo Físico / migration 20260820_01
+      - ENT-COMPRAS-009 – Contrato
+    """
+
+    __tablename__ = "contratos"
+    __table_args__ = {"schema": "compras"}
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    processo_documental_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    fornecedor_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    unidade_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    licitacao_master_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    compra_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    numero: Mapped[str] = mapped_column(Text, nullable=False)
+    data_inicio: Mapped[date] = mapped_column(Date, nullable=False)
+    data_fim: Mapped[date | None] = mapped_column(Date)
+    valor: Mapped[Decimal | None] = mapped_column(Numeric(15, 2))
+    objeto: Mapped[str | None] = mapped_column(Text)
+    situacao: Mapped[str] = mapped_column(Text, nullable=False, default="EM_ELABORACAO")
+
+    # Colunas de auditoria (padrão corporativo)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    deleted_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"<ContratoModel id={self.id} numero={self.numero} situacao={self.situacao}>"
+
+
+class TrilhaAuditoriaModel(ComprasBase):
+    """Modelo ORM da trilha de auditoria (tabela ``auditoria.eventos``).
+
+    Referências:
+      - 017-Modelo-de-Auditoria (seções 26/37/39): registro append-only,
+        armazenamento logicamente separado dos dados transacionais.
+
+    A tabela não recebe UPDATE/DELETE pela aplicação: somente INSERT e SELECT.
+    """
+
+    __tablename__ = "eventos"
+    __table_args__ = {"schema": "auditoria"}
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    ocorrido_em: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    categoria: Mapped[str] = mapped_column(Text, nullable=False)
+    tipo_evento: Mapped[str] = mapped_column(Text, nullable=False)
+    ator_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    ator_perfil: Mapped[str | None] = mapped_column(Text)
+    origem: Mapped[str] = mapped_column(Text, nullable=False)
+    operacao: Mapped[str] = mapped_column(Text, nullable=False)
+    recurso_tipo: Mapped[str] = mapped_column(Text, nullable=False)
+    recurso_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    chave_negocio: Mapped[str | None] = mapped_column(Text)
+    resultado: Mapped[str] = mapped_column(Text, nullable=False)
+    correlation_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    justificativa: Mapped[str | None] = mapped_column(Text)
+    detalhes: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    def __repr__(self) -> str:  # pragma: no cover
+        return (
+            f"<TrilhaAuditoriaModel id={self.id} categoria={self.categoria} "
+            f"tipo_evento={self.tipo_evento}>"
+        )
+
+
 __all__ = [
     "ComprasBase",
     "UnidadeAdministrativaModel",
@@ -196,4 +284,6 @@ __all__ = [
     "FornecedorModel",
     "ItemCompraModel",
     "CompraModel",
+    "ContratoModel",
+    "TrilhaAuditoriaModel",
 ]

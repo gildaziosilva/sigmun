@@ -24,6 +24,13 @@ class CompraNaoEncontradaError(ComprasDomainError):
     """Compra referenciada não encontrada."""
 
 
+class CompraEmEstadoTerminalError(ComprasDomainError):
+    """Operação não permitida sobre compra em estado terminal (RN-COMPRAS-026).
+    
+    Estados terminais: CANCELADO, ARQUIVADO, ENCERRADO.
+    """
+
+
 class ItemNaoEncontradoError(ComprasDomainError):
     """Item de compra não encontrado."""
 
@@ -40,13 +47,37 @@ class UnidadeNaoEncontradaError(ComprasDomainError):
     """Unidade administrativa referenciada não encontrada."""
 
 
+class ContratoNaoEncontradoError(ComprasDomainError):
+    """Contrato referenciado não encontrado."""
+
+
+class ContratoDuplicadoError(ComprasDomainError):
+    """Já existe contrato com o mesmo numero (RN-COMPRAS-036)."""
+
+
+class ContratoEmEstadoTerminalError(ComprasDomainError):
+    """Operação não permitida sobre contrato em estado terminal (RN-COMPRAS-106).
+    
+    Estados terminais: ENCERRADO, RESCINDIDO, EXTINTO.
+    """
+
+
+class OperacaoNaoPermitidaError(ComprasDomainError):
+    """Operação de negócio não permitida para o estado atual da entidade."""
+
+
 __all__ = [
     "ComprasDomainError",
     "FornecedorNaoEncontradoError",
     "FornecedorJaCadastradoError",
     "CompraNaoEncontradaError",
+    "CompraEmEstadoTerminalError",
     "ItemNaoEncontradoError",
     "ProcessoDocumentalNaoEncontradoError",
     "ProcessoDocumentalDuplicadoError",
     "UnidadeNaoEncontradaError",
+    "ContratoNaoEncontradoError",
+    "ContratoDuplicadoError",
+    "ContratoEmEstadoTerminalError",
+    "OperacaoNaoPermitidaError",
 ]

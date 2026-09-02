@@ -43,6 +43,7 @@ DOMAINS = [
     ("DOM-INT", "Integração e Interoperabilidade", "Integracao-e-Interoperabilidade"),
     ("DOM-MOB", "Mobilidade e Serviços de Campo", "Mobilidade-e-Servicos-de-Campo"),
     ("DOM-INF", "Infraestrutura Tecnológica", "Infraestrutura-Tecnologica"),
+    ("DOM-DIA", "Gestão de Diárias, Viagens e Deslocamentos", "Gestao-de-Diarias-Viagens-e-Deslocamentos"),
 ]
 
 # (prefixo do arquivo, título humano, descrição curta do artefato)

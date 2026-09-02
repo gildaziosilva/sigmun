@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # PostgreSQL Database
   postgres:
@@ -46,6 +44,11 @@ services:
         condition: service_started
     env_file:
       - .env
+    environment:
+      # Dentro da rede Docker o banco é o serviço "postgres" (o .env usa
+      # localhost:5433, válido para execução no host).
+      DB_HOST: postgres
+      DB_PORT: 5432
     volumes:
       - ./src:/app/src
       - ./alembic:/app/alembic
@@ -103,6 +106,11 @@ services:
       - postgres
     env_file:
       - .env
+    environment:
+      # Dentro da rede Docker o banco é o serviço "postgres" (o .env usa
+      # localhost:5433, válido para execução no host).
+      DB_HOST: postgres
+      DB_PORT: 5432
     volumes:
       - ./src:/app/src
     command: celery -A src.shared.config.celery_app worker --loglevel=info
@@ -121,6 +129,11 @@ services:
       - postgres
     env_file:
       - .env
+    environment:
+      # Dentro da rede Docker o banco é o serviço "postgres" (o .env usa
+      # localhost:5433, válido para execução no host).
+      DB_HOST: postgres
+      DB_PORT: 5432
     volumes:
       - ./src:/app/src
     command: celery -A src.shared.config.celery_app beat --loglevel=info

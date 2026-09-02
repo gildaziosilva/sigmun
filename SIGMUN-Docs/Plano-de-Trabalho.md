@@ -110,7 +110,7 @@ Para evitar que a existência de documentos ou pastas seja confundida com softwa
 
 | Categoria | O que representa | Evidência atual | O que não representa |
 |-----------|------------------|-----------------|----------------------|
-| **Documentação** | Requisitos, modelos, decisões, planos, diagramas e demais artefatos Markdown que descrevem o produto e suas regras. | 1.051 arquivos Markdown; 864 artefatos nos 32 domínios; 110 RF, 67 casos de uso e 67 histórias no domínio-piloto de Compras. | Não representa código executável, API operacional ou módulo pronto para uso. |
+| **Documentação** | Requisitos, modelos, decisões, planos, diagramas e demais artefatos Markdown que descrevem o produto e suas regras. | 1.078 arquivos Markdown; 891 artefatos documentados nos 33 domínios; 110 RF, 67 casos de uso e 67 histórias no domínio-piloto de Compras. | Não representa código executável, API operacional ou módulo pronto para uso. |
 | **Scaffolding** | Estruturas iniciais de código e infraestrutura, incluindo pastas, configurações, endpoints técnicos, pipelines e manifestos. | 21 módulos backend estruturados; endpoints raiz e de saúde; Docker, Kubernetes, Terraform e CI/CD iniciados; 6 arquivos de testes. | Não representa regra de negócio implementada, banco versionado, homologação ou produção. |
 | **Implementação real** | Funcionalidade executável com regras de negócio, persistência, API, segurança, auditoria, testes e operação verificadas. | Nenhum módulo de negócio implementado; 0 APIs de negócio; 0 migrações Alembic; 0 homologações. | Não deve ser inferida apenas pela existência de documentação ou scaffolding. |
 
@@ -142,7 +142,7 @@ Para evitar que a existência de documentos ou pastas seja confundida com softwa
 
 | Domínio-Piloto de Compras (DOM-COMPRAS-001) | 🟡 Documentação concluída (27/27 artefatos); implementação real pendente |
 
-| Modelo de Dados (Corporativo) | 🟡 Em andamento (modelo conceitual concluído; modelo lógico em consolidação; modelo físico e migrações pendentes) |
+| Modelo de Dados (Corporativo) | 🟢 DDL físico definido e migration `20260820_01_core_compras` aplicada (9 tabelas criadas no PostgreSQL) |
 
 | Desenvolvimento | 🟡 Iniciado (scaffolding da aplicação e dos 21 módulos; sem regras de negócio) |
 
@@ -180,9 +180,9 @@ Para evitar que a existência de documentos ou pastas seja confundida com softwa
 
 | Domínio-Piloto de Compras (DOM-COMPRAS-001) | 🟡 | 100% documental; 0% implementação real |
 
-| Domínios do SIGMUN (31 corporativos + 1 domínio-piloto = 32 domínios × 27 artefatos = 864 documentos) | ✅ | 100% documental; implementação pendente |
+| Domínios do SIGMUN (32 domínios corporativos + 1 domínio-piloto = 33 domínios × 27 artefatos = 891 documentos) | ✅ | 100% documental (33 domínios, incl. DOM-DIA); implementação pendente |
 
-| Modelo de Dados (Corporativo) | 🟡 | 25% documental; 0% persistência executável |
+| Modelo de Dados (Corporativo) | 🟢 | 25% documental; 100% persistência executável (migration aplicada, 9 tabelas + triggers + índices) |
 
 | Desenvolvimento (scaffolding backend) | 🟡 | 15% scaffolding; 0% implementação real |
 
@@ -190,7 +190,7 @@ Para evitar que a existência de documentos ou pastas seja confundida com softwa
 
 | LGPD e Segurança | ⚪ | 0% |
 
-| Migração | ⚪ | 0% |
+| Migração | 🟡 | 1ª revision aplicada (20260820_01_core_compras; 9 tabelas criadas); migração de dados legados pendente |
 
 | UX | ⚪ | 0% |
 
@@ -232,11 +232,11 @@ Para evitar que a existência de documentos ou pastas seja confundida com softwa
 
 |------------|--------|
 
-| Documentos Markdown inventariados | 1.051 |
+| Documentos Markdown inventariados | 1.078 |
 
-| Documentos vigentes ou concluídos | 226 |
+| Documentos vigentes ou concluídos | 227 |
 
-| Documentos em elaboração ou não iniciados | 807 |
+| Documentos em elaboração ou não iniciados | 833 |
 
 | Documentos em revisão ou validação | 18 |
 
@@ -384,7 +384,7 @@ DOM-COMPRAS-001/ (domínio-piloto)
 
 | Requisitos (Framework Corporativo + Domínio-Piloto Compras) | ✅ |
 
-| Banco de Dados | 🟡 (modelo conceitual concluído; modelo lógico em consolidação; sem migrações) |
+| Banco de Dados | 🟢 (modelo físico definido; migration `20260820_01_core_compras` criada e aplicada ao PostgreSQL; 9 tabelas em schemas `core` e `compras`) |
 
 | Desenvolvimento | 🟡 |
 
@@ -591,7 +591,7 @@ Domínio-piloto `DOM-COMPRAS-001/` concluído com 27 artefatos, incluindo 110 Re
 
 
 
-Status: 🟡 Documentação em andamento (modelo conceitual concluído; modelo lógico em consolidação; modelo físico documental pendente; 0 migrações executáveis)
+Status: 🟡 DDL PostgreSQL definido e primeira revision Alembic criada (`20260820_01_core_compras`); migration aplicada ao PostgreSQL com 9 tabelas criadas (schemas `core` e `compras`), mas migração de dados legados ainda pendente
 
 
 
@@ -647,7 +647,7 @@ Status: ⚪ Não iniciada
 
 
 
-Status: ⚪ Não iniciada
+Status: 🟡 Primeira revision de schema criada e aplicada no PostgreSQL (9 tabelas); migração de dados legados pendente
 
 
 
@@ -1192,6 +1192,33 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 024 | 024-Plano-de-Suporte-e-Operacao-Desenvolvimento-Economico | DOM-DEC | ⚪ | 1.0 | `000-Dominio-Desenvolvimento-Economico.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 025 | 025-Estrutura-Tecnica-Desenvolvimento-Economico | DOM-DEC | ⚪ | 1.0 | `000-Dominio-Desenvolvimento-Economico.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 026 | 026-Modelo-de-Dominio-Desenvolvimento-Economico | DOM-DEC | ⚪ | 1.0 | `000-Dominio-Desenvolvimento-Economico.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 000 | 000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ✅ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 001 | 001-Mapa-de-Atores-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 002 | 002-Mapa-de-Capacidades-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 003 | 003-Mapa-de-Processos-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 004 | 004-Mapa-de-Servicos-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 005 | 005-Casos-de-Uso-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 006 | 006-Historias-de-Usuario-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 007 | 007-Regras-de-Negocio-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 008 | 008-Requisitos-Funcionais-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 009 | 009-Requisitos-Nao-Funcionais-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 010 | 010-Especificacoes-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 011 | 011-Criterios-de-Aceitacao-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 012 | 012-Matriz-de-Rastreabilidade-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 013 | 013-Modelo-de-Dados-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 014 | 014-Modelo-de-Integracao-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 015 | 015-Arquitetura-de-Servicos-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 016 | 016-Modelo-de-Seguranca-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 017 | 017-Modelo-de-Auditoria-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 018 | 018-Plano-de-Testes-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 019 | 019-Casos-de-Teste-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 020 | 020-Plano-de-Implantacao-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 021 | 021-Checklist-de-Prontidao-para-Producao-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 022 | 022-Plano-de-Migracao-de-Dados-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 023 | 023-Plano-de-Treinamento-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 024 | 024-Plano-de-Suporte-e-Operacao-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 025 | 025-Estrutura-Tecnica-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 026 | 026-Modelo-de-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 000 | 000-Dominio-Educacao-Publica | DOM-EDU | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+11) |
 | 001 | 001-Mapa-de-Atores-Educacao-Publica | DOM-EDU | ⚪ | 1.0 | `000-Dominio-Educacao-Publica.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 002 | 002-Mapa-de-Capacidades-Educacao-Publica | DOM-EDU | ⚪ | 1.0 | `000-Dominio-Educacao-Publica.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
@@ -1837,7 +1864,7 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 
 | Requisitos | ✅ | Equipe SIGMUN | Framework corporativo e domínio-piloto de Compras concluídos |
 
-| Modelo de Dados | 🟡 | Equipe SIGMUN | Modelo conceitual concluído; modelo lógico em consolidação; modelo físico e migrações pendentes |
+| Modelo de Dados | 🟡 | Equipe SIGMUN | Modelo conceitual e lógico alinhados; DDL PostgreSQL definido; migrações pendentes |
 
 | Módulos | 🟡 | Equipe SIGMUN | Scaffolding de código-fonte iniciado (sem regras de negócio) |
 
@@ -1933,7 +1960,7 @@ As decisões detalhadas deverão ser mantidas também no arquivo `DECISOES-ARQUI
 
 - [x] Iniciar o Modelo de Dados Corporativo com base no modelo do domínio-piloto de Compras.
 
-- [ ] Revisar os documentos classificados como em elaboração ou não iniciados (807 documentos segundo o inventário do item 13), concentrados nas áreas ainda não implementadas.
+- [ ] Revisar os documentos classificados como em elaboração ou não iniciados (833 documentos segundo o inventário do item 13), concentrados nas áreas ainda não implementadas.
 
 
 
@@ -2039,11 +2066,11 @@ Sempre registrar oportunidades identificadas durante o projeto.
 
 |------------|-------|
 
-| Documentos previstos | 1.051 arquivos Markdown existentes |
+| Documentos previstos | 1.078 arquivos Markdown existentes |
 
-| Documentos vigentes ou concluídos | 226 |
+| Documentos vigentes ou concluídos | 227 |
 
-| Documentos em elaboração ou não iniciados | 807 |
+| Documentos em elaboração ou não iniciados | 833 |
 
 | Documentos em revisão ou validação | 18 |
 
@@ -2114,6 +2141,7 @@ Sempre registrar oportunidades identificadas durante o projeto.
 | 1.1 | 2026-08-19 | Atualização geral: reflexo da conclusão do Modelo de Negócio, do Framework Corporativo de Requisitos, do domínio-piloto DOM-COMPRAS-001, do documento 037 (Ética, Integridade e Compliance) e do início do scaffolding de desenvolvimento (`src/`, testes, infraestrutura e CI/CD) |
 
 | 1.2 | 2026-08-19 | Iniciada a Fase 5 — Modelo de Dados (Modelo Conceitual Corporativo) |
+| 1.4 | 2026-08-20 | Modelo Físico PostgreSQL definido: ordem de aplicação, DDL, constraints, índices, triggers, views e tratamento LGPD |
 | 1.3 | 2026-08-20 | Atualização da linha de base: consolidação arquitetural pendente, 21 módulos em scaffolding, modelo lógico em andamento e roadmap de implementação definido |
 
 
@@ -2258,7 +2286,7 @@ Uma fase somente poderá ser considerada concluída quando:
 
 - [ ] Modelo Lógico (corporativo)
 
-- [ ] Modelo Físico (corporativo)
+- [x] Modelo Físico (corporativo — `04-Modelo-de-Dados/Modelo-Fisico.md`)
 
 
 

@@ -25,14 +25,14 @@ PREFIXOS = [
     "025-Estrutura-Tecnica", "026-Modelo-de-Dominio",
 ]
 
-# Os 31 dominios (exclui DOM-COMPRAS-001 que e o piloto)
+# Os 32 dominios (exclui DOM-COMPRAS-001 que e o piloto)
 DOMS = [
     "DOM-GOV", "DOM-PLA", "DOM-GDO", "DOM-TRI", "DOM-ORC", "DOM-CON",
     "DOM-PES", "DOM-CPT", "DOM-PAT", "DOM-FRO", "DOM-TEL", "DOM-IMO",
     "DOM-GEO", "DOM-OBR", "DOM-SAU", "DOM-EDU", "DOM-ASS", "DOM-MAM",
     "DOM-DEC", "DOM-CUM", "DOM-ATE", "DOM-OUV", "DOM-DAD", "DOM-MET",
     "DOM-IND", "DOM-ANA", "DOM-IDN", "DOM-SEG", "DOM-INT", "DOM-MOB",
-    "DOM-INF",
+    "DOM-INF", "DOM-DIA",
 ]
 
 # Palavras em ingles a detectar no conteudo
@@ -60,7 +60,7 @@ def main():
         print("[ERRO] DOM-COMPRAS-001 deveria ter 27, tem " + str(len(pfiles)))
         erros += 1
 
-    # 2. Os 31 dominios + piloto
+    # 2. Os 32 dominios + piloto
     for d in DOMS + ["DOM-COMPRAS-001"]:
         dd = BASE / d
         if not dd.exists():
@@ -117,7 +117,7 @@ def main():
     print("RELATORIO DE VALIDACAO - Etapa 3")
     print("=" * 60)
     print("Diretorios verificados:          " + str(len(DOMS) + 1) +
-          " (31 + piloto)")
+          " (32 + piloto)")
     print("Total de arquivos .md em DOM-*:   " + str(total_files))
     print("Erros criticos:                  " + str(erros))
     print("Erros de nomenclatura:           " + str(naming_err))

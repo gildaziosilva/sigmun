@@ -4,7 +4,7 @@
 
 **Domínio:** Modelo de Dados
 
-**Versão:** 1.0
+**Versão:** 1.1
 
 **Status:** Vigente
 
@@ -38,14 +38,14 @@ A seguir, a tradução de domínio → esquema, conforme `Modelo-Conceitual.md` 
 | Domínio / Grupo | Esquema | Tabelas (entidades) | Observação |
 | --------------- | ------- | ------------------- | ---------- |
 | Compartilhado | `core` (grupo `pessoas`) | `pessoas`, `pessoas_fisicas`, `pessoas_juridicas`, `enderecos`, `documentos`, `contatos`, `fornecedores` | Dados mestres de identidade. |
-| Compartilhado | `core` (grupo `usuarios`) | `usuarios`, `grupos_usuarios`, `permissoes`, `usuarios_grupos` | Identidade e acesso. |
+| Compartilhado | `core` (grupo `usuarios`) | `usuarios`, `grupos_usuarios`, `permissoes`, `usuarios_grupos`, `grupos_permissoes` | Identidade e acesso. |
 | Compartilhado | `core` (grupo `documentos`) | `processos_documentais`, `arquivos`, `assinaturas` | documentos. |
 | Compartilhado | `core` (grupo `auditoria`) | `auditorias`, `logs_sistema` | auditoria. |
 | Compartilhado | `core` | `unidades_administrativas` | Parte responsável de toda transação. |
-| Responsável | `rh` | `servidores`, `vinculos`, `cargos`, `funcoes`, `dependencias` | Relações com `core.pessoas`. |
+| Responsável | `rh` | `servidores`, `fichas_funcionais`, `vinculos`, `cargos`, `funcoes`, `dependencias` | Relações com `core.pessoas`. |
 | Responsável | `tributos` | `lancamentos_tributarios`, `quotas`, `debitos`, `creditos` | Para `pessoas`. |
 | Responsável | `contabilidade` | `empenhos`, `despesas`, `receitas`, `contas_contabeis`, `rateios` | Para `fornecedores`/`unidades`. |
-| Responsável | `compras` | `compras`, `itens_compras`, `contratos`, `licitacaos` | Encapsuladas em PROCESSO_DOCUMENTAL. |
+| Responsável | `compras` | `compras`, `itens_compras`, `contratos` | Encapsuladas em PROCESSO_DOCUMENTAL; licitações pertencem ao esquema `licitacoes`. |
 | Responsável | `licitacoes` | `licitacoes_masters`, `objetos`, `lances`, `habilitacoes`, `aditamentos` | Originam CONTRATO. |
 | Responsável | `saude` | `agendamentos`, `fichas_atendimento`, `pacientes`, `prescricoes` | Para `pessoas_fisicas`. |
 | Responsável | `educacao` | `matriculas`, `turmas`, `alunos`, `disciplinas`, `boletins` | Para `pessoas_fisicas`. |
@@ -106,7 +106,7 @@ A seguir, a tradução de domínio → esquema, conforme `Modelo-Conceitual.md` 
 | -------- | ----------- | ----- | ---- | ---------- |
 | id | uuid | PK | Não | UUID v4 |
 | tipo | text | | Não | {FISICA, JURIDICA} |
-| categoria | text | | Não | {CIUDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO} |
+| categoria | text | | Não | {CIDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO} |
 | unidade_id | uuid | FK | Sim | → `core.unidades_administrativas` (vinculada a) |
 | [audit fields] | | | | |
 
@@ -193,7 +193,7 @@ A seguir, a tradução de domínio → esquema, conforme `Modelo-Conceitual.md` 
 | id | uuid | PK | Não | UUID v4 |
 | unidade_pai_id | uuid | FK | Sim | → `unidades_administrativas` (self, hierarquia) |
 | codigo_ibge | text | | Sim | `UNIQUE` |
-| codigo_siafen | text | | Sim | `UNIQUE` |
+| codigo_siafi | text | | Sim | `UNIQUE` |
 | nome | text | | Não | |
 | sigla | text | | Sim | `UNIQUE` |
 | [audit fields] | | | | |
@@ -377,7 +377,7 @@ A seguir, a tradução de domínio → esquema, conforme `Modelo-Conceitual.md` 
 | processo_documental_id | uuid | FK | Não | → `processos_documentais` (encapsula) |
 | fornecedor_id | uuid | FK | Não | → `fornecedores` (arrebatado) |
 | unidade_id | uuid | FK | Não | → `unidades_administrativas` (responde) |
-| licituacao_master_id | uuid | FK | Sim | → `licitacoes.licitacoes_masters` (origem) |
+| licitacao_master_id | uuid | FK | Sim | → `licitacoes.licitacoes_masters` (origem) |
 | numero | text | | Não | |
 | data_inicio | date | | Não | |
 | data_fim | date | | Sim | |
@@ -476,7 +476,7 @@ A seguir, a tradução de domínio → esquema, conforme `Modelo-Conceitual.md` 
 | Regra conceitual | Tabela lógica | Constraint / observação |
 | ---------------- | ------------- | ----------------------- |
 | 1. `UNIDADE_ADMINISTRATIVA` é parte responsável de toda transação | todas as transacionais (`compras`, `contratos`, `empenhos`, `protocolos`, `movimentos_estoque`, `agendamentos`, `lancamentos_tributarios`, …) | coluna `unidade_id` (uuid, NOT NULL) → `core.unidades_administrativas` |
-| 2. `PESSOA` é parte "on‑screen" das transações | `fornecedores`, `lancamentos_tributarios`, `agendamentos`, `protocolos`, `assinaturas` | FK `pessoa_id`/`fornecedor_id`/`pessoa_fisica_id` → `pessoas`/`fornecedores`/`pessoas_fisicas` |
+| 2. `PESSOA` é parte envolvida nas transações | `fornecedores`, `lancamentos_tributarios`, `agendamentos`, `protocolos`, `assinaturas` | FK `pessoa_id`/`fornecedor_id`/`pessoa_fisica_id` → `pessoas`/`fornecedores`/`pessoas_fisicas` |
 | 3. `PROCESSO_DOCUMENTAL` encapsula COMPRA, CONTRATO, EMPENHO | `compras`, `contratos`, `empenhos` | `processo_documental_id` → `processos_documentais` |
 | 4. `FORNECEDOR` ≈ `PESSOA_JURIDICA` (categoria=FORNECEDOR) | `fornecedores` | `pessoa_juridica_id` UNIQUE → `pessoas_juridicas` |
 | 5. `DOCUMENTO` valida identidade de `PESSOA` | `assinaturas` | `documento_id` → `documentos` |
@@ -542,12 +542,13 @@ Este documento é insumo direto para:
 # 10. Versionamento
 
 - 1.0 — 2026-08-19 — Início do modelo lógico corporativo, derivado de `Modelo-Conceitual.md` e `005-Arquitetura-de-Dados.md`.
+- 1.1 — 2026-08-20 — Correção de nomenclaturas, mapeamento de esquemas e dependências com o dicionário e o modelo físico.
 
 ---
 
 **Documento:**Modelo-Logico.md
 
-**Última atualização:** 2026-08-19
+**Última atualização:** 2026-08-20
 
 **Responsável:** Equipe SIGMUN
 

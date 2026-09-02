@@ -13,6 +13,8 @@ Regras de negócio implementadas:
   - RN-COMPRAS-027: pendências impeditivas bloqueiam avanço (transições)
   - RN-COMPRAS-028: responsável registrado em cada alteração
   - RN-COMPRAS-029: registro temporal das alterações
+  - RN-COMPRAS-004: integridade do histórico (não operar sobre excluídos)
+  - RN-COMPRAS-095: campos obrigatórios preenchidos antes da conclusão
 
 Nota: a entidade Requisição/Solicitação (ENT-COMPRAS-001 – Demanda) ainda
 não possui modelo físico próprio; sua implementação dependerá de evolução
@@ -21,10 +23,12 @@ do modelo físico (nova migração).
 
 from __future__ import annotations
 
-from datetime import UTC, date, datetime
+from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
 from uuid import UUID, uuid4
+
+from src.shared.compat import UTC
 
 
 class SituacaoCompra(str, Enum):
@@ -63,6 +67,12 @@ TRANSICOES_VALIDAS: dict[SituacaoCompra, set[SituacaoCompra]] = {
     SituacaoCompra.ARQUIVADO: set(),
 }
 
+#: Estados em que a compra está encerrada e não pode mais ser modificada
+#: cadastralmente (RN-COMPRAS-026 — respeito à sequência processual).
+ESTADOS_FECHADOS: frozenset[SituacaoCompra] = frozenset(
+    {SituacaoCompra.ENCERRADO, SituacaoCompra.CANCELADO, SituacaoCompra.ARQUIVADO}
+)
+
 
 class Compra:
     """Entidade Compra — processo de compras vinculado a um processo documental."""
@@ -77,6 +87,7 @@ class Compra:
         data: date | None = None,
         valor_total: Decimal | None = None,
         situacao: SituacaoCompra = SituacaoCompra.RASCUNHO,
+        pendencias_impeditivas: bool = False,
         created_at: datetime | None = None,
         created_by: UUID | None = None,
         updated_at: datetime | None = None,
@@ -87,9 +98,9 @@ class Compra:
         if processo_documental_id is None:
             raise ValueError("processo_documental_id é obrigatório (RN-COMPRAS-025)")
         if fornecedor_id is None:
-            raise ValueError("fornecedor_id é obrigatório")
+            raise ValueError("fornecedor_id é obrigatório (RN-COMPRAS-030)")
         if unidade_id is None:
-            raise ValueError("unidade_id é obrigatório")
+            raise ValueError("unidade_id é obrigatório (RN-COMPRAS-025)")
         self.id: UUID = id or uuid4()
         self.processo_documental_id: UUID = processo_documental_id
         self.fornecedor_id: UUID = fornecedor_id
@@ -98,6 +109,7 @@ class Compra:
         self.data: date = data if data is not None else datetime.now(UTC).date()
         self.valor_total: Decimal | None = self._validar_valor_total(valor_total)
         self.situacao: SituacaoCompra = self._validar_situacao(situacao)
+        self.pendencias_impeditivas: bool = bool(pendencias_impeditivas)
         self.created_at: datetime = created_at or datetime.now(UTC)
         self.created_by: UUID | None = created_by
         self.updated_at: datetime = updated_at or datetime.now(UTC)
@@ -136,6 +148,11 @@ class Compra:
 
     def alterar_situacao(self, nova_situacao: SituacaoCompra, usuario_id: UUID) -> None:
         """Altera a situação respeitando a sequência processual (RN-026/027)."""
+        # RN-COMPRAS-004: não operar sobre processos excluídos.
+        if self.foi_excluido():
+            raise ValueError(
+                "Compra excluída não pode ter sua situação alterada (RN-COMPRAS-004)"
+            )
         nova_situacao = self._validar_situacao(nova_situacao)
         if nova_situacao == self.situacao:
             return
@@ -146,9 +163,47 @@ class Compra:
                 f"(RN-COMPRAS-026). Transições válidas a partir de "
                 f"{self.situacao.value}: {validas}"
             )
+
+        # RN-COMPRAS-027: pendências impeditivas bloqueiam o avanço processual;
+        # o cancelamento permanece permitido como medida de saneamento.
+        if self.pendencias_impeditivas and nova_situacao != SituacaoCompra.CANCELADO:
+            raise ValueError(
+                "Processo possui pendências impeditivas e não pode avançar para "
+                f"{nova_situacao.value} (RN-COMPRAS-027). Resolva as pendências antes "
+                "de avançar."
+            )
+
         self.situacao = nova_situacao
         self.updated_at = datetime.now(UTC)
         self.updated_by = usuario_id
+
+    # -- Pendências impeditivas (RN-COMPRAS-027) ------------------------------
+
+    def registrar_pendencia(self, usuario_id: UUID | None) -> None:
+        """Marca a existência de pendência impeditiva (RN-COMPRAS-027)."""
+        if self.foi_excluido():
+            raise ValueError(
+                "Compra excluída não pode registrar pendência (RN-COMPRAS-004)"
+            )
+        if self.pendencias_impeditivas:
+            return
+        self.pendencias_impeditivas = True
+        self.updated_at = datetime.now(UTC)
+        if usuario_id:
+            self.updated_by = usuario_id
+
+    def resolver_pendencias(self, usuario_id: UUID | None) -> None:
+        """Resolve as pendências impeditivas, liberando o avanço processual."""
+        if self.foi_excluido():
+            raise ValueError(
+                "Compra excluída não pode resolver pendências (RN-COMPRAS-004)"
+            )
+        if not self.pendencias_impeditivas:
+            return
+        self.pendencias_impeditivas = False
+        self.updated_at = datetime.now(UTC)
+        if usuario_id:
+            self.updated_by = usuario_id
 
     def atualizar_dados(
         self,
@@ -158,6 +213,15 @@ class Compra:
         usuario_id: UUID | None = None,
     ) -> None:
         """Atualiza campos cadastrais da compra (RN-COMPRAS-028/029)."""
+        # RN-COMPRAS-004: não operar sobre processos excluídos.
+        if self.foi_excluido():
+            raise ValueError("Compra excluída não pode ser atualizada (RN-COMPRAS-004)")
+        # RN-COMPRAS-026: não atualizar processo em estado terminal.
+        if self.situacao in ESTADOS_FECHADOS:
+            raise ValueError(
+                f"Compra em situação {self.situacao.value} não pode ser atualizada "
+                f"(RN-COMPRAS-026)"
+            )
         if numero is not None:
             self.numero = self._validar_numero(numero)
         if data is not None:
@@ -181,4 +245,9 @@ class Compra:
         return self.situacao in (SituacaoCompra.CANCELADO, SituacaoCompra.ARQUIVADO)
 
 
-__all__ = ["Compra", "SituacaoCompra", "TRANSICOES_VALIDAS"]
+__all__ = [
+    "Compra",
+    "SituacaoCompra",
+    "TRANSICOES_VALIDAS",
+    "ESTADOS_FECHADOS",
+]

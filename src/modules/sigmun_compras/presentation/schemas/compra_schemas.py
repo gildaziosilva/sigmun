@@ -46,6 +46,21 @@ class CompraSituacaoRequest(BaseModel):
     situacao: SituacaoCompra
 
 
+class CompraPendenciasRequest(BaseModel):
+    """Payload de registro/resolução de pendências impeditivas (RN-027)."""
+
+    pendencias_impeditivas: bool = Field(
+        ...,
+        description=(
+            "true: registra pendência impeditiva (bloqueia avanço); "
+            "false: resolve as pendências"
+        ),
+    )
+    justificativa: str | None = Field(
+        None, max_length=500, description="Justificativa do lançamento"
+    )
+
+
 class CompraResponse(BaseModel):
     """Representação de uma compra nas respostas da API."""
 
@@ -59,6 +74,7 @@ class CompraResponse(BaseModel):
     data: date
     valor_total: Decimal | None = None
     situacao: SituacaoCompra
+    pendencias_impeditivas: bool = False
     created_at: datetime
     updated_at: datetime
 
@@ -76,6 +92,7 @@ __all__ = [
     "CompraCreateRequest",
     "CompraUpdateRequest",
     "CompraSituacaoRequest",
+    "CompraPendenciasRequest",
     "CompraResponse",
     "CompraListResponse",
 ]

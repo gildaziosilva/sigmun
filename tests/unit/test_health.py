@@ -12,6 +12,9 @@ def test_health_check(client: TestClient):
     data = response.json()
     assert data["status"] == "healthy"
     assert data["service"] == "SIGMUN"
+    # Campo informativo de conectividade com o banco (não afeta o status HTTP
+    # nem o 'status' da aplicação — degradação graciosa sem banco).
+    assert data["database"] in {"up", "down"}
 
 
 def test_root(client: TestClient):

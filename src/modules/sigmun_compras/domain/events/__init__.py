@@ -5,6 +5,11 @@ from src.modules.sigmun_compras.domain.events.compra_events import (
     CompraCriadaEvent,
     CompraSituacaoAlteradaEvent,
 )
+from src.modules.sigmun_compras.domain.events.contrato_events import (
+    ContratoAtualizadoEvent,
+    ContratoCriadoEvent,
+    ContratoSituacaoAlteradaEvent,
+)
 from src.modules.sigmun_compras.domain.events.fornecedor_events import (
     FornecedorAtualizadoEvent,
     FornecedorCriadoEvent,
@@ -30,6 +35,9 @@ __all__ = [
     "CompraCriadaEvent",
     "CompraAtualizadaEvent",
     "CompraSituacaoAlteradaEvent",
+    "ContratoCriadoEvent",
+    "ContratoAtualizadoEvent",
+    "ContratoSituacaoAlteradaEvent",
     "ProcessoDocumentalAbertoEvent",
     "ProcessoDocumentalAtualizadoEvent",
 ]

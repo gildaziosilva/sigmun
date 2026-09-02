@@ -1,0 +1,51 @@
+"""Schemas de apresentação (Pydantic) do módulo sigmun_cadastro (DOM-CUM)."""
+
+from src.modules.sigmun_cadastro.presentation.schemas.pessoa_schemas import (
+    CategoriaUpdateRequest,
+    ContatoPayload,
+    ContatoResponse,
+    DadosFisicosPayload,
+    DadosFisicosResponse,
+    DadosJuridicosPayload,
+    DadosJuridicosResponse,
+    DocumentoPayload,
+    DocumentoResponse,
+    EnderecoPayload,
+    EnderecoResponse,
+    ErrorResponse,
+    PessoaCreateRequest,
+    PessoaFisicaUpdateRequest,
+    PessoaJuridicaUpdateRequest,
+    PessoaListResponse,
+    PessoaResponse,
+)
+from src.modules.sigmun_cadastro.presentation.schemas.unidade_schemas import (
+    UnidadeCreateRequest,
+    UnidadeListResponse,
+    UnidadeResponse,
+    UnidadeUpdateRequest,
+)
+
+__all__ = [
+    "PessoaCreateRequest",
+    "PessoaFisicaUpdateRequest",
+    "PessoaJuridicaUpdateRequest",
+    "CategoriaUpdateRequest",
+    "DadosFisicosPayload",
+    "DadosJuridicosPayload",
+    "EnderecoPayload",
+    "DocumentoPayload",
+    "ContatoPayload",
+    "PessoaResponse",
+    "PessoaListResponse",
+    "EnderecoResponse",
+    "DocumentoResponse",
+    "ContatoResponse",
+    "DadosFisicosResponse",
+    "DadosJuridicosResponse",
+    "ErrorResponse",
+    "UnidadeCreateRequest",
+    "UnidadeUpdateRequest",
+    "UnidadeResponse",
+    "UnidadeListResponse",
+]

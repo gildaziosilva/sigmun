@@ -926,40 +926,42 @@ Incluem:
 
 # 50. Mapa Consolidado de Domínios
 
-| Código    | Domínio                         | Categoria            |
-| --------- | ------------------------------- | -------------------- |
-| `DOM-GOV` | Governança Municipal            | Corporativo          |
-| `DOM-PLA` | Planejamento Governamental      | Estratégico          |
-| `DOM-GDO` | Gestão Documental               | Administrativo       |
-| `DOM-COM` | Compras e Contratações          | Administrativo       |
-| `DOM-TRI` | Administração Tributária        | Econômico-Financeiro |
-| `DOM-ORC` | Orçamento Público               | Econômico-Financeiro |
-| `DOM-CON` | Contabilidade Pública           | Econômico-Financeiro |
-| `DOM-PES` | Gestão de Pessoas               | Pessoas              |
-| `DOM-CPT` | Gestão de Competências          | Pessoas              |
-| `DOM-PAT` | Gestão Patrimonial              | Patrimonial          |
-| `DOM-FRO` | Gestão de Frota                 | Patrimonial          |
-| `DOM-TEL` | Gestão Territorial              | Territorial          |
-| `DOM-IMO` | Cadastro Imobiliário            | Territorial          |
-| `DOM-GEO` | Geoinformação Municipal         | Territorial          |
-| `DOM-OBR` | Obras e Infraestrutura          | Territorial          |
-| `DOM-SAU` | Saúde Pública                   | Finalístico          |
-| `DOM-EDU` | Educação Pública                | Finalístico          |
-| `DOM-ASS` | Assistência Social              | Finalístico          |
-| `DOM-MAM` | Meio Ambiente                   | Finalístico          |
-| `DOM-DEC` | Desenvolvimento Econômico       | Finalístico          |
-| `DOM-CUM` | Cadastro Único Municipal        | Atendimento          |
-| `DOM-ATE` | Atendimento ao Cidadão          | Atendimento          |
-| `DOM-OUV` | Ouvidoria                       | Atendimento          |
-| `DOM-DAD` | Dados Corporativos              | Dados                |
-| `DOM-MET` | Metadados Corporativos          | Dados                |
-| `DOM-IND` | Indicadores e Desempenho        | Dados                |
-| `DOM-ANA` | Analytics e Inteligência        | Dados                |
-| `DOM-IDN` | Identidade e Acesso             | Tecnológico          |
-| `DOM-SEG` | Segurança da Informação         | Tecnológico          |
-| `DOM-INT` | Integração e Interoperabilidade | Tecnológico          |
-| `DOM-MOB` | Mobilidade e Serviços de Campo  | Tecnológico          |
-| `DOM-INF` | Infraestrutura Tecnológica      | Tecnológico          |
+| Código    | Domínio                                     | Categoria            |
+| --------- | ------------------------------------------- | -------------------- |
+| `DOM-GOV` | Governança Municipal                        | Corporativo          |
+| `DOM-PLA` | Planejamento Governamental                  | Estratégico          |
+| `DOM-GDO` | Gestão Documental                           | Administrativo       |
+| `DOM-COM` | Compras e Contratações                      | Administrativo       |
+| `DOM-TRI` | Administração Tributária                    | Econômico-Financeiro |
+| `DOM-ORC` | Orçamento Público                           | Econômico-Financeiro |
+| `DOM-CON` | Contabilidade Pública                       | Econômico-Financeiro |
+| `DOM-PES` | Gestão de Pessoas                           | Pessoas              |
+| `DOM-CPT` | Gestão de Competências                      | Pessoas              |
+| `DOM-PAT` | Gestão Patrimonial                          | Patrimonial          |
+| `DOM-FRO` | Gestão de Frota                             | Patrimonial          |
+| `DOM-TEL` | Gestão Territorial                          | Territorial          |
+| `DOM-IMO` | Cadastro Imobiliário                        | Territorial          |
+| `DOM-GEO` | Geoinformação Municipal                     | Territorial          |
+| `DOM-OBR` | Obras e Infraestrutura                      | Territorial          |
+| `DOM-SAU` | Saúde Pública                               | Finalístico          |
+| `DOM-EDU` | Educação Pública                            | Finalístico          |
+| `DOM-ASS` | Assistência Social                          | Finalístico          |
+| `DOM-MAM` | Meio Ambiente                               | Finalístico          |
+| `DOM-DEC` | Desenvolvimento Econômico                   | Finalístico          |
+| `DOM-CUM` | Cadastro Único Municipal                    | Atendimento          |
+| `DOM-ATE` | Atendimento ao Cidadão                      | Atendimento          |
+| `DOM-OUV` | Ouvidoria                                   | Atendimento          |
+| `DOM-DAD` | Dados Corporativos                          | Dados                |
+| `DOM-MET` | Metadados Corporativos                      | Dados                |
+| `DOM-IND` | Indicadores e Desempenho                    | Dados                |
+| `DOM-ANA` | Analytics e Inteligência                    | Dados                |
+| `DOM-IDN` | Identidade e Acesso                         | Tecnológico          |
+| `DOM-SEG` | Segurança da Informação                     | Tecnológico          |
+| `DOM-INT` | Integração e Interoperabilidade             | Tecnológico          |
+| `DOM-MOB` | Mobilidade e Serviços de Campo              | Tecnológico          |
+| `DOM-INF` | Infraestrutura Tecnológica                  | Tecnológico          |
+| `DOM-DIA` | Gestão de Diárias, Viagens e Deslocamentos  | Administrativo       |
+| --------- | ------------------------------------------- | -------------------- |
 
 ---
 

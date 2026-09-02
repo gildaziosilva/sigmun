@@ -1,0 +1,411 @@
+/* ==========================================================================
+   SIGMUN Admin — estilos globais
+   Identidade: azul institucional, tipografia de sistema, acessível e
+   responsivo (mobile-first).
+   ========================================================================== */
+
+:root {
+  --cor-primaria: #0f2a5c;
+  --cor-primaria-clara: #1d3f7d;
+  --cor-destaque: #f2b705;
+  --cor-fundo: #f3f5f9;
+  --cor-superficie: #ffffff;
+  --cor-texto: #1c2333;
+  --cor-texto-suave: #5b6472;
+  --cor-borda: #dde3ec;
+  --cor-erro: #b3261e;
+  --cor-sucesso: #18794e;
+  --sombra: 0 1px 3px rgb(15 42 92 / 0.12), 0 1px 2px rgb(15 42 92 / 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ----- Marca ----- */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: var(--cor-destaque);
+  color: var(--cor-primaria);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.brand small {
+  display: block;
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+}
+
+/* ----- Botões ----- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-weight: 600;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.button--primary {
+  background-color: var(--cor-primaria);
+  color: #fff;
+}
+
+.button--primary:hover {
+  background-color: var(--cor-primaria-clara);
+}
+
+.button--ghost {
+  background: transparent;
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-suave);
+}
+
+.button--ghost:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+/* ----- Formulário ----- */
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form h2 {
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.form label {
+  display: grid;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}
+
+.form input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: inherit;
+  background: var(--cor-superficie);
+}
+
+.form input:focus {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 1px;
+  border-color: var(--cor-primaria);
+}
+
+/* ----- Alertas / status ----- */
+
+.alert {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.alert--error {
+  color: var(--cor-erro);
+}
+
+.status-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 999px;
+  background: var(--cor-destaque);
+  flex-shrink: 0;
+}
+
+/* ----- Página de login ----- */
+
+.login-page {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: linear-gradient(160deg, var(--cor-primaria) 0%, var(--cor-primaria-clara) 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 24rem;
+  display: grid;
+  gap: 1.5rem;
+  padding: 2rem 1.75rem 1.5rem;
+  background: var(--cor-superficie);
+  border-radius: 1rem;
+/* ----- Shell (dashboard) ----- */
+
+.app-shell {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: 16rem 1fr;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  background: var(--cor-primaria);
+  color: #fff;
+}
+
+.sidebar .brand-mark {
+  background: var(--cor-destaque);
+}
+
+.sidebar .brand small {
+  color: #b9c7e2;
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sidebar-nav button {
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #d7e0f3;
+  font-weight: 600;
+}
+
+.sidebar-nav button:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
+}
+
+.sidebar-nav button.active {
+  background: var(--cor-destaque);
+  color: var(--cor-primaria);
+}
+
+.button--sair {
+  margin-top: auto;
+  color: #d7e0f3;
+  border-color: rgb(255 255 255 / 0.3);
+}
+
+.button--sair:hover {
+  color: #fff;
+  border-color: #fff;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.topbar-title {
+  font-size: 1.25rem;
+}
+
+.topbar-subtitle {
+  font-size: 0.8125rem;
+  color: var(--cor-texto-suave);
+}
+
+.topbar-user {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--cor-primaria);
+  color: #fff;
+  font-weight: 700;
+}
+
+.main {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  color: var(--cor-texto-suave);
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: var(--sombra);
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.status-card--ok .status-dot {
+  background: var(--cor-sucesso);
+}
+
+.status-card--error .status-dot {
+  background: var(--cor-erro);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+
+.card--modulo h3 {
+  font-size: 1rem;
+  margin-bottom: 0.375rem;
+}
+
+.card--modulo p {
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+/* ----- Responsivo (mobile-first) ----- */
+
+@media (max-width: 48rem) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    order: 3;
+    width: 100%;
+  }
+
+  .sidebar-nav button {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .button--sair {
+    margin-top: 0;
+    margin-left: auto;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .main {
+    padding: 1rem;
+  }
+}
+  box-shadow: var(--sombra);
+}
+
+.login-header {
+  display: flex;
+  justify-content: center;
+}
+
+.brand--center {
+  justify-content: center;
+}
+
+.brand--center h1 {
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+.brand--center p {
+  font-size: 0.75rem;
+  color: var(--cor-texto-suave);
+}
+
+.login-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-top: 1px solid var(--cor-borda);
+  padding-top: 1rem;
+  font-size: 0.8125rem;
+  color: var(--cor-texto-suave);
+}
+
+.login-status .status-dot {
+  background: var(--cor-sucesso);
+}

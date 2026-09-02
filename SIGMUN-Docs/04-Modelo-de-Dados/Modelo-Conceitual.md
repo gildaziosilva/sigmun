@@ -32,12 +32,12 @@ Definir, a nível corporativo, as entidades‑mestres, as transações e os docu
 
 # 2. Escopo e Organização por Domínios
 
-O banco `sigmun` (PostgreSQL) será particionado por **domínios responsáveis**. Quatro esquemas centrais (`core.*`) são compartilhados por todos os domínios; cada módulo `sigmun_*` possui seu próprio esquema:
+O banco `sigmun` (PostgreSQL) será organizado por **domínios responsáveis**. O esquema físico `core` é compartilhado por todos os domínios; os grupos `pessoas`, `usuarios`, `documentos` e `auditoria` são namespaces conceituais dentro de `core`, não esquemas PostgreSQL independentes. Cada módulo `sigmun_*` possui seu próprio esquema:
 
 ```
 sigmun
 │
-├── core                       -> esquemas centrais (compartilhados)
+├── core                       -> esquema central compartilhado
 │   ├── pessoas                -> PESSOA, PESSOA_FISICA, PESSOA_JURIDICA,
 │   │                            ENDERECO, DOCUMENTO, CONTATO
 │   ├── usuarios               -> USUARIO, GRUPO_USUARIO, PERMISSAO
@@ -47,7 +47,7 @@ sigmun
 ├── rh                        -> SERVIDOR, VINCULO, CARGO, FUNCAO, DEPENDENCIA
 ├── tributos                  -> LANCAMENTO_TRIBUTARIO, QUOTA, DEBITO, CREDITO
 ├── contabilidade             -> EMPENHO, DESPESA, RECEITA, CONTA_CONTABIL, RATEIO
-├── compras                   -> COMPRA, ITEM_COMPRA, CONTRATO, LICITACAO
+├── compras                   -> COMPRA, ITEM_COMPRA, CONTRATO
 ├── licitacoes                -> LICITACAO_MASTER, OBJETO, LANCE, HABILITACAO, ADITAMENTO
 ├── saude                     -> FICHA_ATENDIMENTO, AGENDAMENTO, PACIENTE, PRESCRICAO
 ├── educacao                  -> MATRICULA, TURMA, ALUNO, DISCIPLINA, BOLETIM
@@ -67,7 +67,7 @@ sigmun
 └── financas                  -> (entidades específicas)
 ```
 
-> **Notação:** nomes em `CAIXA_ALTA` denotam **entidade‑mestra** (compartilhada por mais de um domínio); os demais são transacionais e pertencem a um único esquema.
+> **Notação:** nomes em `CAIXA_ALTA` representam entidades ou conceitos do modelo; a classificação como entidade-mestra depende da seção 3 e do compartilhamento corporativo, não apenas da capitalização.
 
 ---
 
@@ -79,19 +79,19 @@ sigmun
 
 | Entidade | Esquema | Observação |
 | -------- | ------- | ---------- |
-| `PESSOA` | `core.pessoas` | PK `id` (UUID); `tipo` ∈ {FISICA, JURIDICA}; `categoria` ∈ {CIUDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO}. |
-| `PESSOA_FISICA` | `core.pessoas` | 1:1 com `PESSOA`; `data_nascimento`, `sexo`, `estado_civil`, `mae`, `pai`. |
-| `PESSOA_JURIDICA` | `core.pessoas` | 1:1 com `PESSOA`; `razao_social`, `nome_fantasia`, `cnae_principal`, `capital`. |
-| `ENDERECO` | `core.pessoas` | 1:N com `PESSOA`; histórico (`vigencia_inicio`, `vigencia_fim`). |
-| `DOCUMENTO` | `core.pessoas` | 1:N com `PESSOA`; `tipo` (CPF, RG, CNPJ, CNH, PASSAPORTE…), `numero`, `orgao_emissor`, `data_emissao`, `data_validade`. |
-| `CONTATO` | `core.pessoas` | 1:N com `PESSOA`; `tipo` (TEL, EMAIL, REDES, WHATSAPP), `valor`. |
-| `FORNECEDOR` | `core.pessoas` | Perfil de `PESSOA_JURIDICA`; `situacao_cadastro`, `macro_categoria`. |
+| `PESSOA` | `core` (grupo `pessoas`) | PK `id` (UUID); `tipo` ∈ {FISICA, JURIDICA}; `categoria` ∈ {CIDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO}. |
+| `PESSOA_FISICA` | `core` (grupo `pessoas`) | 0..1:1 com `PESSOA`; `data_nascimento`, `sexo`, `estado_civil`, `mae`, `pai`. |
+| `PESSOA_JURIDICA` | `core` (grupo `pessoas`) | 0..1:1 com `PESSOA`; `razao_social`, `nome_fantasia`, `cnae_principal`, `capital`. |
+| `ENDERECO` | `core` (grupo `pessoas`) | 0..N com `PESSOA`; histórico (`vigencia_inicio`, `vigencia_fim`). |
+| `DOCUMENTO` | `core` (grupo `pessoas`) | 0..N com `PESSOA`; `tipo` (CPF, RG, CNPJ, CNH, PASSAPORTE…), `numero`, `orgao_emissor`, `data_emissao`, `data_validade`. |
+| `CONTATO` | `core` (grupo `pessoas`) | 0..N com `PESSOA`; `tipo` (TEL, EMAIL, REDES, WHATSAPP), `valor`. |
+| `FORNECEDOR` | `core` (grupo `pessoas`) | Perfil de `PESSOA_JURIDICA`, 0..1 por pessoa jurídica; `situacao_cadastro`, `macro_categoria`. |
 
 ## 3.2. Unidade, Patrimônio e Mobiliário
 
 | Entidade | Esquema | Observação |
 | -------- | ------- | ---------- |
-| `UNIDADE_ADMINISTRATIVA` | `core` | Órgão/unidade; hierarquia `unidade_pai`; `codigo_ibge`, `codigo_siafen`. |
+| `UNIDADE_ADMINISTRATIVA` | `core` | Órgão/unidade; hierarquia `unidade_pai`; `codigo_ibge`, `codigo_siafi`. |
 | `SERVIDOR` | `rh` | 1:1 com `PESSOA_FISICA`; + `UNIDADE`; `matricula`, `data_admissao`, `data_desligamento`. |
 | `VEICULO` | `frotas` | vinculado a `UNIDADE`; `placa`, `chassi`, `marca_modelo`. |
 | `IMOVEL` | `administracao` | `matricula`, `setor`, `tipo`; histórico de localização. |
@@ -101,9 +101,9 @@ sigmun
 
 | Entidade | Esquema | Observação |
 | -------- | ------- | ---------- |
-| `USUARIO` | `core.usuarios` | 1:1 com `PESSOA`; `login` único, `senha_hash`, `mfa_secret`, `ultimo_login`. |
-| `GRUPO_USUARIO` | `core.usuarios` | coleção de permissões. |
-| `PERMISSAO` | `core.usuarios` | `chave_acesso` (ex.: `compras.compra.criar`). |
+| `USUARIO` | `core` (grupo `usuarios`) | 0..1 com `PESSOA`; `login` único, `senha_hash`, `mfa_secret`, `ultimo_login`. |
+| `GRUPO_USUARIO` | `core` (grupo `usuarios`) | coleção de usuários e permissões. |
+| `PERMISSAO` | `core` (grupo `usuarios`) | `chave_acesso` (ex.: `compras.compra.criar`). |
 
 ---
 
@@ -115,21 +115,21 @@ sigmun
 | `compras` | `CONTRATO` | *para* `FORNECEDOR`; *por* `UNIDADE`; *origem* `LICITACAO_MASTER`; *em* `PROCESSO_DOCUMENTAL`. |
 | `contabilidade` | `EMPENHO` | *de* `PROCESSO_DOCUMENTAL`; *para* `FORNECEDOR`; *por* `UNIDADE`; origem `COMPRA`. |
 | `tributos` | `LANCAMENTO_TRIBUTARIO` | *para* `PESSOA`; `debito`/`credito` em `CONTA_CONTABIL`; `historico`. |
-| `rh` | `FICHA_FUNCIONAL` | *para* `SERVIDOR`; *em* `UNIDADE`; `vinculos` históricos. |
+| `rh` | `VINCULO` | *para* `SERVIDOR`; *em* `UNIDADE`; histórico funcional. |
 | `documentos` | `ARQUIVO` | anexo genérico; referenciado por `PROCESSO_DOCUMENTAL`, `COMPRA`, `EMPENHO`, `ATAS`. |
 | `ouvidoria` | `PROTOCOLO` | *do* `PESSOA`; *por* `UNIDADE`; `categoria`, `status`, `prioridade`. |
 | `almoxarifado` | `MOVIMENTO_ESTOQUE` | *de* `ITEM_ESTOQUE`; *entre* 2 `UNIDADE` (origem/destino); `tipo` ∈ {ENTRADA, SAIDA, AJUSTE}. |
-| `saude`/`educacao`/`assistencia_social` | `AGENDAMENTO` | *para* `PESSOA_FISICA` (paciente/aluno/beneficiário); *por* `UNIDADE`. |
+| `saude`/`educacao`/`assistencia_social` | `AGENDAMENTO` | conceito de atendimento especializado por domínio, para `PESSOA_FISICA` (paciente/aluno/beneficiário); por `UNIDADE`. |
 | `licitacoes` | `LICITACAO_MASTER` | *para* `OBJETO`; *por* `UNIDADE`; gera N `CONTRATO`. |
 
 ---
 
 # 5. Regras de Relacionamento Corporativo
 
-1. `UNIDADE_ADMINISTRATIVA` é a **parte responsável** de praticamente toda transação (COMPRA, EMPENHO, CONTRATO, PROCESSO_DOCUMENTAL, PROTOCOLO, MOVIMENTO_ESTOQUE…). Toda transação carrega `unidade_id` (não nula).
-2. `PESSOA` é a **parte on‑screen** das transações: fornecedor (COMPRA, CONTRATO, EMPENHO), devedor (LANCAMENTO_TRIBUTARIO), cidadão/servidor/aluno/paciente/beneficiário (AGENDAMENTO, PROTOCOLO, FICHA_FUNCIONAL…).
+1. `UNIDADE_ADMINISTRATIVA` é a **parte responsável** de praticamente toda transação (COMPRA, EMPENHO, CONTRATO, PROCESSO_DOCUMENTAL, PROTOCOLO, MOVIMENTO_ESTOQUE…). Essas transações carregam `unidade_id` não nula; o cadastro de `PESSOA` não exige unidade.
+2. `PESSOA` é a parte envolvida nas transações: fornecedor (COMPRA, CONTRATO, EMPENHO), devedor (LANCAMENTO_TRIBUTARIO), cidadão/servidor/aluno/paciente/beneficiário (AGENDAMENTO, PROTOCOLO, VINCULO…).
 3. `PROCESSO_DOCUMENTAL` (arquivo único) **encapsula** COMPRA, CONTRATO, EMPENHO e ATAS, garantindo número único de processo e tramitação.
-4. `FORNECEDOR` ≈ `PESSOA` com `categoria=FORNECEDOR`; usado por COMPRA, CONTRATO e EMPENHO.
+4. `FORNECEDOR` ≈ `PESSOA_JURIDICA` com `PESSOA.categoria=FORNECEDOR`; usado por COMPRA, CONTRATO e EMPENHO.
 5. `DOCUMENTO` (CPF/CNPJ/RG/…) valida a identidade de `PESSOA` em assinaturas e contratos.
 6. `USUARIO` atua por meio de `GRUPO_USUARIO`/`PERMISSAO`; toda ação transacional registra `created_by`/`updated_by` → `USUARIO`.
 7. Todas as tabelas **críticas** carregam os **campos de auditoria padrão** (§ 9 da 005): `created_at`, `created_by`, `updated_at`, `updated_by`, `deleted_at`, `deleted_by`; e, quando versionável: `versao`, `vigencia_inicio`, `vigencia_fim`, `motivo_alteracao`.
@@ -142,17 +142,16 @@ Diagrama com foco nas **entidades‑mestres** e nas relações transversalmente 
 
 ```mermaid
 erDiagram
-    PESSOA ||--o{ PESSOA_FISICA : "e"
-    PESSOA ||--o{ PESSOA_JURIDICA : "e"
+    PESSOA ||--o| PESSOA_FISICA : "pode ser"
+    PESSOA ||--o| PESSOA_JURIDICA : "pode ser"
     PESSOA ||--o{ ENDERECO : "tem"
     PESSOA ||--o{ DOCUMENTO : "possui"
     PESSOA ||--o{ CONTATO : "tem"
-    PESSOA }o--|| UNIDADE_ADMINISTRATIVA : "vinculada a"
-    PESSOA_FISICA ||--|| SERVIDOR : "e"
-    PESSOA_FISICA ||--|| USUARIO : "e"
+    PESSOA_FISICA ||--o| SERVIDOR : "pode ser"
+    PESSOA ||--o| USUARIO : "pode possuir"
     USUARIO }o--o{ GRUPO_USUARIO : "pertence a"
     GRUPO_USUARIO }o--o{ PERMISSAO : "contem"
-    PESSOA ||--o{ FORNECEDOR : "pode ser"
+    PESSOA_JURIDICA ||--o| FORNECEDOR : "pode ser"
     PESSOA_FISICA ||--o{ AGENDAMENTO : "e paciente/aluno/beneficiario"
     UNIDADE_ADMINISTRATIVA ||--o{ EMPENHO : "responde"
     UNIDADE_ADMINISTRATIVA ||--o{ COMPRA : "responde"
@@ -206,10 +205,11 @@ Este documento é insumo direto para:
 # 9. Versionamento
 
 - 1.0 — 2026-08-19 — Início da modelagem conceitual corporativa (Fase 5), derivado da Arquitetura de Dados e dos módulos `src/modules/sigmun_*`.
+- 1.1 — 2026-08-20 — Validação de namespaces, entidades, cardinalidades e dependências com o Modelo Lógico e a estrutura dos módulos.
 
 ---
 
 **Documento:**Modelo-Conceitual.md
-**Última atualização:** 2026-08-19
+**Última atualização:** 2026-08-20
 **Responsável:** Equipe SIGMUN
 **Status da revisão:** Vigente

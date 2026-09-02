@@ -1,4 +1,4 @@
-﻿"""Entidade Fornecedor do domínio Gestão de Compras e Contratações.
+"""Entidade Fornecedor do domínio Gestão de Compras e Contratações.
 
 Baseado em:
   - 026-Modelo-de-Dominio-Gestao-de-Compras-e-Contratacoes.md (ENT-COMPRAS-007)
@@ -14,9 +14,11 @@ Regras de negócio implementadas:
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime
 from enum import Enum
 from uuid import UUID, uuid4
+
+from src.shared.compat import UTC
 
 
 class SituacaoFornecedor(str, Enum):
@@ -48,8 +50,12 @@ class Fornecedor:
         deleted_at: datetime | None = None,
         deleted_by: UUID | None = None,
     ) -> None:
+        if pessoa_juridica_id is None:
+            raise ValueError(
+                "pessoa_juridica_id é obrigatório (RN-COMPRAS-030)"
+            )
         self.id: UUID = id or uuid4()
-        self.pessoa_juridica_id: UUID | None = pessoa_juridica_id
+        self.pessoa_juridica_id: UUID = pessoa_juridica_id
         self.situacao_cadastro: SituacaoFornecedor = situacao_cadastro
         self.macro_categoria: str | None = macro_categoria
         self.created_at: datetime = created_at or datetime.now(UTC)
@@ -63,21 +69,41 @@ class Fornecedor:
 
     def inativar(self, usuario_id: UUID) -> None:
         """Inativa o fornecedor (RN-COMPRAS-033)."""
+        # RN-COMPRAS-004: não operar sobre fornecedores excluídos.
+        if self.foi_excluido():
+            raise ValueError(
+                "Fornecedor excluído não pode ser inativado (RN-COMPRAS-004)"
+            )
         self.situacao_cadastro = SituacaoFornecedor.INATIVO
         self._registrar_alteracao(usuario_id)
 
     def ativar(self, usuario_id: UUID) -> None:
         """Reativa o fornecedor."""
+        # RN-COMPRAS-004: não operar sobre fornecedores excluídos.
+        if self.foi_excluido():
+            raise ValueError(
+                "Fornecedor excluído não pode ser ativado (RN-COMPRAS-004)"
+            )
         self.situacao_cadastro = SituacaoFornecedor.ATIVO
         self._registrar_alteracao(usuario_id)
 
     def suspender(self, usuario_id: UUID) -> None:
         """Suspende o fornecedor."""
+        # RN-COMPRAS-004: não operar sobre fornecedores excluídos.
+        if self.foi_excluido():
+            raise ValueError(
+                "Fornecedor excluído não pode ser suspenso (RN-COMPRAS-004)"
+            )
         self.situacao_cadastro = SituacaoFornecedor.SUSPENSO
         self._registrar_alteracao(usuario_id)
 
     def atualizar_situacao(self, situacao: SituacaoFornecedor, usuario_id: UUID) -> None:
         """Atualiza a situação cadastral do fornecedor."""
+        # RN-COMPRAS-004: não operar sobre fornecedores excluídos.
+        if self.foi_excluido():
+            raise ValueError(
+                "Fornecedor excluído não pode ter a situação atualizada (RN-COMPRAS-004)"
+            )
         if not isinstance(situacao, SituacaoFornecedor):
             raise ValueError(f"Situação inválida: {situacao}")
         self.situacao_cadastro = situacao
@@ -85,6 +111,11 @@ class Fornecedor:
 
     def atualizar_categoria(self, macro_categoria: str | None) -> None:
         """Atualiza a macro categoria do fornecedor."""
+        # RN-COMPRAS-004: não operar sobre fornecedores excluídos.
+        if self.foi_excluido():
+            raise ValueError(
+                "Fornecedor excluído não pode ter a categoria atualizada (RN-COMPRAS-004)"
+            )
         self.macro_categoria = macro_categoria
         self._registrar_alteracao(None)
 

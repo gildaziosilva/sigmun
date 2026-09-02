@@ -6,9 +6,9 @@ Based on Arquitetura de Dados - PostgreSQL.
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
+from sqlalchemy.orm import declarative_base
 
 from alembic import context
-from src.shared.config.database import Base
 
 # this is the Alembic Config object
 config = context.config
@@ -16,6 +16,11 @@ config = context.config
 # Interpret the config file for Python logging
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+# Metadados vazio: as migrações são escritas manualmente (sem autogenerate);
+# os models ORM do domínio usam a base própria ``ComprasBase``
+# (src/modules/sigmun_compras/infrastructure/database/models.py).
+Base = declarative_base()
 
 target_metadata = Base.metadata
 

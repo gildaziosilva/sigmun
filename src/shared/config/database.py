@@ -1,30 +1,17 @@
 """
-Configuração do banco de dados SQLAlchemy.
-Baseado na Arquitetura de Dados - PostgreSQL.
+Configuração do banco de dados SQLAlchemy (compatibilidade).
+
+DEPRECATED: o engine e a fábrica de sessão canônicos ficam em
+``src/core/infrastructure/database/session.py``. Este módulo é mantido
+apenas para compatibilidade com importações legadas (ex.: ``Base``) e
+não deve receber novos usos — prefira importar ``engine``,
+``SessionLocal`` e ``get_db`` do módulo do core.
 """
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import declarative_base
 
-from src.shared.config.settings import settings
-
-engine = create_engine(
-    settings.DATABASE_URL,
-    echo=settings.APP_DEBUG,
-    pool_pre_ping=True,
-    pool_size=20,
-    max_overflow=40,
-)
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+from src.core.infrastructure.database.session import SessionLocal, engine, get_db
 
 Base = declarative_base()
 
-
-def get_db():
-    """Dependency para obter sessão do banco de dados."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+__all__ = ["engine", "SessionLocal", "get_db", "Base"]

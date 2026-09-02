@@ -4,7 +4,7 @@
 
 **Domínio:** Modelo de Dados
 
-**Versão:** 1.0
+**Versão:** 1.1
 
 **Status:** Vigente
 
@@ -156,13 +156,11 @@ Atributos versionáveis recebem:
 ### `pessoas`
 
 ```sql
-COMMENT ON TABLE core.pessoas IS 'Entidade-mestra: pessoa física ou jurídica do município.';
-
 CREATE TABLE IF NOT EXISTS core.pessoas (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tipo            TEXT NOT NULL,
     categoria       TEXT NOT NULL,
-    unidade_id      UUID REFERENCES core.unidades_administrativas(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    unidade_id      UUID,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_by      UUID,
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -170,11 +168,12 @@ CREATE TABLE IF NOT EXISTS core.pessoas (
     deleted_at      TIMESTAMPTZ,
     deleted_by      UUID,
     CONSTRAINT ck_pessoas_tipo      CHECK (tipo IN ('FISICA', 'JURIDICA')),
-    CONSTRAINT ck_pessoas_categoria CHECK (categoria IN ('CIUDADAO', 'SERVIDOR', 'FORNECEDOR', 'AGENTE_EXTERNO')),
+    CONSTRAINT ck_pessoas_categoria CHECK (categoria IN ('CIDADAO', 'SERVIDOR', 'FORNECEDOR', 'AGENTE_EXTERNO')),
     CONSTRAINT ck_pessoas_deleted   CHECK (deleted_at IS NULL OR deleted_at <= NOW())
 );
+COMMENT ON TABLE core.pessoas IS 'Entidade-mestra: pessoa física ou jurídica do município.';
 COMMENT ON COLUMN core.pessoas.tipo      IS '{FISICA, JURIDICA}';
-COMMENT ON COLUMN core.pessoas.categoria IS '{CIUDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO}';
+COMMENT ON COLUMN core.pessoas.categoria IS '{CIDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO}';
 ```
 
 ### `pessoas_fisicas`
@@ -617,7 +616,7 @@ CREATE TABLE IF NOT EXISTS rh.dependencias (
 CREATE TABLE IF NOT EXISTS tributos.lancamentos_tributarios (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     pessoa_id       UUID NOT NULL REFERENCES core.pessoas(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    conta_contabil_id UUID NOT NULL REFERENCES contabilidade.contas_contabeis(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    conta_contabil_id UUID NOT NULL,
     debito          TEXT NOT NULL,
     credito         TEXT NOT NULL,
     historico       TEXT NOT NULL,
@@ -706,7 +705,7 @@ CREATE TABLE IF NOT EXISTS contabilidade.empenhos (
     processo_documental_id UUID REFERENCES core.processos_documentais(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     fornecedor_id   UUID NOT NULL REFERENCES core.fornecedores(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     unidade_id      UUID NOT NULL REFERENCES core.unidades_administrativas(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    compra_id       UUID REFERENCES compras.compras(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    compra_id       UUID,
     numero          TEXT NOT NULL,
     data            DATE NOT NULL,
     valor           NUMERIC(15,2) NOT NULL,
@@ -815,7 +814,7 @@ CREATE TABLE IF NOT EXISTS compras.contratos (
     processo_documental_id  UUID NOT NULL REFERENCES core.processos_documentais(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     fornecedor_id           UUID NOT NULL REFERENCES core.fornecedores(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     unidade_id              UUID NOT NULL REFERENCES core.unidades_administrativas(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    licitacao_master_id     UUID REFERENCES licitacoes.licitacoes_masters(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    licitacao_master_id     UUID,
     numero                  TEXT NOT NULL,
     data_inicio             DATE NOT NULL,
     data_fim                DATE,
@@ -840,7 +839,7 @@ CREATE TABLE IF NOT EXISTS licitacoes.licitacoes_masters (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     processo_documental_id  UUID NOT NULL REFERENCES core.processos_documentais(id) ON UPDATE CASCADE ON DELETE RESTRICT,
     unidade_id              UUID NOT NULL REFERENCES core.unidades_administrativas(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    objeto_id               UUID REFERENCES licitacoes.objetos(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    objeto_id               UUID,
     numero                  TEXT NOT NULL,
     data                    DATE NOT NULL,
     status                  TEXT,
@@ -1729,9 +1728,42 @@ CREATE TABLE IF NOT EXISTS financas.taxas (
 
 ---
 
-# 5. Índices e Constraints
+# 5. Ordem de Aplicação e Constraints Adiadas
 
-## 5.1. Índices de Desempenho
+O DDL deve ser aplicado nesta ordem: extensões, esquemas, função de auditoria, tabelas `core.unidades_administrativas`, demais tabelas `core`, tabelas de domínio e, por último, as constraints abaixo. As constraints são adicionadas após a criação das tabelas referenciadas para permitir execução em uma migração única.
+
+```sql
+ALTER TABLE core.pessoas
+    ADD CONSTRAINT pessoas_unidade_id_fkey
+    FOREIGN KEY (unidade_id) REFERENCES core.unidades_administrativas(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT;
+
+ALTER TABLE tributos.lancamentos_tributarios
+    ADD CONSTRAINT lancamentos_tributarios_conta_contabil_id_fkey
+    FOREIGN KEY (conta_contabil_id) REFERENCES contabilidade.contas_contabeis(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT;
+
+ALTER TABLE contabilidade.empenhos
+    ADD CONSTRAINT empenhos_compra_id_fkey
+    FOREIGN KEY (compra_id) REFERENCES compras.compras(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT;
+
+ALTER TABLE compras.contratos
+    ADD CONSTRAINT contratos_licitacao_master_id_fkey
+    FOREIGN KEY (licitacao_master_id) REFERENCES licitacoes.licitacoes_masters(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT;
+
+ALTER TABLE licitacoes.licitacoes_masters
+    ADD CONSTRAINT licitacoes_masters_objeto_id_fkey
+    FOREIGN KEY (objeto_id) REFERENCES licitacoes.objetos(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT;
+```
+
+> **Nota de migração:** em ambientes já parcialmente criados, as constraints devem ser aplicadas com nomes estáveis e dentro de uma transação. A migração deve falhar se houver dados órfãos, em vez de usar `NOT VALID` silenciosamente.
+
+## 5.1. Índices e Constraints
+
+### 5.1.1. Índices de Desempenho
 
 > O PostgreSQL cria índices automaticamente para `PRIMARY KEY` e `UNIQUE`. Índices adicionais:
 
@@ -1824,7 +1856,7 @@ CREATE INDEX IF NOT EXISTS idx_leis_numero_ano          ON transparencia.leis(an
 CREATE INDEX IF NOT EXISTS idx_colunas_fiscais_exercicio_mes ON transparencia.colunas_fiscais(exercicio, mes);
 ```
 
-## 5.2. Constraints de Integridade Referencial
+### 5.1.2. Constraints de Integridade Referencial
 
 > Todas as FKs usam `ON UPDATE CASCADE ON DELETE RESTRICT`, exceto tabelas de junção N:M que usam `ON DELETE CASCADE`. Resumo dos nomes:
 
@@ -1861,12 +1893,12 @@ CREATE INDEX IF NOT EXISTS idx_colunas_fiscais_exercicio_mes ON transparencia.co
 | procuradoria | `processos_judiciais_processo_documental_id_fkey` | `processos_documentais` |
 | administracao | `imoveis_unidade_id_fkey` | `unidades_administrativas` |
 
-## 5.3. Constraints CHECK
+### 5.1.3. Constraints CHECK
 
 | Constraint | Tabela | Coluna | Domínio |
 | ---------- | ------ | ------ | ------- |
 | `ck_pessoas_tipo` | core.pessoas | tipo | {FISICA, JURIDICA} |
-| `ck_pessoas_categoria` | core.pessoas | categoria | {CIUDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO} |
+| `ck_pessoas_categoria` | core.pessoas | categoria | {CIDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO} |
 | `ck_contatos_tipo` | core.contatos | tipo | {TEL, EMAIL, REDES, WHATSAPP} |
 | `ck_fornecedores_situacao` | core.fornecedores | situacao_cadastro | {ATIVO, INATIVO, SUSPENSO} |
 | `ck_auditorias_operacao` | core.auditorias | operacao | {INSERT, UPDATE, DELETE} |
@@ -2146,11 +2178,12 @@ CREATE UNIQUE INDEX uk_documentos_numero_hash ON core.documentos(numero_hash);
 
 # 10. Versionamento
 
-- 1.0 — 2026-08-19 — Início do modelo físico corporativo, derivado de `Modelo-Logico.md` e `005-Arquitetura-de-Dados.md`. Inclui DDL PostgreSQL 16 completo (≈58 tabelas), esquemas por domínio, índices, triggers de auditoria, views de soft-delete e tratamento de dados sensíveis (LGPD).
+- 1.0 — 2026-08-19 — Início do modelo físico corporativo, derivado de `Modelo-Logico.md` e `005-Arquitetura-de-Dados.md`. Inclui DDL PostgreSQL 16 completo (102 tabelas físicas), esquemas por domínio, índices, triggers de auditoria, views de soft-delete e tratamento de dados sensíveis (LGPD).
+- 1.1 — 2026-08-20 — Definição da ordem de aplicação e adiamento de cinco FKs para permitir execução consistente do DDL em migração única.
 
 ---
 
 **Documento:** Modelo-Fisico.md
-**Última atualização:** 2026-08-19
+**Última atualização:** 2026-08-20
 **Responsável:** Equipe SIGMUN
 **Status da revisão:** Vigente

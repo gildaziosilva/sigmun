@@ -4,7 +4,7 @@
 
 **Domínio:** Modelo de Dados
 
-**Versão:** 2.0
+**Versão:** 2.1
 
 **Status:** Vigente
 
@@ -85,7 +85,7 @@ Relacionados da arquitetura por domínios, todos sob a base `sigmun`:
 | ----- | ---- | ---- | ----- | --- |
 | id | UUID | No | PK | UUID v4 |
 | tipo | TEXT | No | | {FISICA, JURIDICA} |
-| categoria | TEXT | No | | {CIUDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO} |
+| categoria | TEXT | No | | {CIDADAO, SERVIDOR, FORNECEDOR, AGENTE_EXTERNO} |
 | unidade_id | UUID | Si | FK → `core.unidades_administrativas` | |
 | [audit] | | | | created/updated/deleted |
 
@@ -342,7 +342,7 @@ CHECKS: `ck_contatos_tipo`, `ck_contatos_deleted`.
 | `educacao.agendamentos` | replicada (LIKE saude.agendamentos) |
 | `educacao.turmas` | id PK; codigo UNIQUE; nome; nivel; serie; [audit] |
 | `educacao.alunos` | id PK; pessoa_fisica_id FK UNIQUE; matricula UNIQUE; [audit] |
-| `educacao.matriculas` | id PK; aluno FK; turma FK; data; situacion; [audit] |
+| `educacao.matriculas` | id PK; aluno FK; turma FK; data; situacao; [audit] |
 | `educacao.disciplinas` | id PK; codigo UNIQUE; nome; carga_horaria; [audit] |
 | `educacao.boletins` | id PK; matricula FK; disciplina FK; nota NUMERIC(5,2); data_lancamento; [audit] |
 
@@ -458,7 +458,7 @@ CHECKS: `ck_contatos_tipo`, `ck_contatos_deleted`.
 |--------|---------|
 | `agricultura.propriedades_rurais` | id; pessoa FK; numero_car UNIQUE; municipio; area_ha; [audit] |
 | `agricultura.culturas` | id; codigo UNIQUE; nome; ciclo_meses; [audit] |
-| `agricultura.plantios` | id; propriedad FK; cultura FK; data_plantio; area_ha; produtividade; [audit] |
+| `agricultura.plantios` | id; propriedade FK; cultura FK; data_plantio; area_ha; produtividade; [audit] |
 
 ## 4.25. Domínio `financas`
 
@@ -516,11 +516,12 @@ CHECKS: `ck_contatos_tipo`, `ck_contatos_deleted`.
 # 7. Versionamento
 
 - 2.0 — 2026-08-19 — Dicionário atualizado a partir do `Modelo-Fisico.md` v1.0. Catalogação de toda a estrutura corporativa: esquemas, ~58 tabelas, índices, constraints e dados sensíveis (LGPD).
+- 2.1 — 2026-08-20 — Correção de nomenclaturas e alinhamento com o Modelo Lógico v1.1.
 - 1.0 — 2026-08-03 — Esqueleto inicial (em elaboração).
 
 ---
 
 **Documento:** Dicionario-de-dados.md
-**Última atualização:** 2026-08-19
+**Última atualização:** 2026-08-20
 **Responsável:** Equipe SIGMUN
 **Status da revisão:** Vigente

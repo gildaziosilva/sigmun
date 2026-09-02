@@ -19,9 +19,11 @@ sempre vinculado a uma compra do domínio.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
 from uuid import UUID, uuid4
+
+from src.shared.compat import UTC
 
 _DOIS_DECIMAIS = Decimal("0.01")
 
@@ -103,6 +105,9 @@ class ItemCompra:
         usuario_id: UUID | None = None,
     ) -> None:
         """Atualiza campos informados e recalcula o valor total."""
+        # RN-COMPRAS-004: não operar sobre itens excluídos.
+        if self.foi_excluido():
+            raise ValueError("Item excluído não pode ser atualizado (RN-COMPRAS-004)")
         if descricao is not None:
             self.descricao = self._validar_descricao(descricao)
         if quantidade is not None:

@@ -1,6 +1,6 @@
 """Testes unitários da entidade Compra (processo de compras)."""
 
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from uuid import uuid4
 
@@ -11,6 +11,7 @@ from src.modules.sigmun_compras.domain.entities.compra import (
     Compra,
     SituacaoCompra,
 )
+from src.shared.compat import UTC
 
 
 def _criar_compra(**overrides) -> Compra:
@@ -30,7 +31,8 @@ def test_criar_compra_com_valores_padrao():
 
     assert compra.id is not None
     assert compra.situacao == SituacaoCompra.RASCUNHO
-    assert compra.data == date.today()
+    # A entidade define a data padrão em UTC (ver src.shared.compat.UTC).
+    assert compra.data == datetime.now(UTC).date()
     assert not compra.foi_excluido()
     assert not compra.esta_cancelada()
 

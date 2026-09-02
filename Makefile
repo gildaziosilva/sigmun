@@ -38,6 +38,9 @@ test:
 test-cov:
 	pytest tests/ -v --cov=src --cov-report=html --cov-report=term
 
+test-integration:
+	pytest tests/integration -v
+
 lint:
 	ruff check src/ tests/
 

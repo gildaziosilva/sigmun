@@ -42,6 +42,7 @@ def _to_entity(model: CompraModel) -> Compra:
         data=model.data,
         valor_total=model.valor_total,
         situacao=SituacaoCompra(model.situacao),
+        pendencias_impeditivas=model.pendencias_impeditivas,
         created_at=model.created_at,
         created_by=model.created_by,
         updated_at=model.updated_at,
@@ -71,6 +72,7 @@ class SqlAlchemyCompraRepository(CompraRepository):
                 data=compra.data,
                 valor_total=compra.valor_total,
                 situacao=compra.situacao.value,
+                pendencias_impeditivas=compra.pendencias_impeditivas,
                 created_at=compra.created_at,
                 created_by=compra.created_by,
                 updated_at=compra.updated_at,
@@ -86,6 +88,7 @@ class SqlAlchemyCompraRepository(CompraRepository):
             model.data = compra.data
             model.valor_total = compra.valor_total
             model.situacao = compra.situacao.value
+            model.pendencias_impeditivas = compra.pendencias_impeditivas
             model.updated_at = compra.updated_at
             model.updated_by = compra.updated_by
             model.deleted_at = compra.deleted_at

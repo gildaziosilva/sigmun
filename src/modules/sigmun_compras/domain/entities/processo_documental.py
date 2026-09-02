@@ -16,8 +16,10 @@ Regras de negócio implementadas:
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime
 from uuid import UUID, uuid4
+
+from src.shared.compat import UTC
 
 _ANO_MINIMO = 1900
 _ANO_MAXIMO = 2100
@@ -90,6 +92,11 @@ class ProcessoDocumental:
         usuario_id: UUID | None = None,
     ) -> None:
         """Atualiza campos informados (RN-COMPRAS-028/029)."""
+        # RN-COMPRAS-004: não operar sobre processos excluídos.
+        if self.foi_excluido():
+            raise ValueError(
+                "Processo excluído não pode ser atualizado (RN-COMPRAS-004)"
+            )
         if numero is not None:
             self.numero = self._validar_numero(numero)
         if ano is not None:
