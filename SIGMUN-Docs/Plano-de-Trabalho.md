@@ -793,6 +793,7 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 024 | 024-Politica-de-Gestao-de-Riscos | 00-Governanca/00.5-Politicas-Corporativas | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 025 | 025-Politica-de-Protecao-de-Dados-Pessoais | 00-Governanca/00.5-Politicas-Corporativas | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 026 | 026-Manual-de-Governanca-do-SIGMUN | 00-Governanca/00.5-Politicas-Corporativas | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
+| — | Guia-do-Colaborador | 00-Governanca/00.6-Colaboracao/Engenharia-de-Software | 🟡 | A informar | Não declaradas |
 | — | 000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | CHANGELOG | 00-Governanca/000B-Base-de-Conhecimento | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | CONVENCOES | 00-Governanca/000B-Base-de-Conhecimento | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
@@ -804,7 +805,7 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | — | 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | 000C-HIERARQUIA-DOCUMENTAL-v1.0 | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+18) |
 | — | 000D-MODELO-DE-DOCUMENTO | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
-| — | 000E-GUIA-DE-CONTRIBUICAO | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
+| — | 000E-GUIA-DE-CONTRIBUICAO | 00-Governanca | ✅ | A informar | Não declaradas |
 | — | 000F-Registro-de-Decisoes-Arquiteturais(ADR-Arqhiteture-Decision-Records) | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | 000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | 000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+23) |
@@ -847,7 +848,7 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 027 | 027-Arquitetura-de-Excelencia-Operacional-e-Melhoria-Continua | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 028 | 028-Arquitetura-de-Gestao-da-Sustentabilidade-e-Responsabilidade-Socioambiental | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 029 | 029-Arquitetura-do-Observatorio-Municipal-Inteligente | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
-| 030 | 030-Roadmap-de-Implementacao-dos-Dominios | 01-Arquitetura-Corporativa | ✅ | 1.0 | Não declaradas |
+| 030 | 030-Roadmap-de-Implementacao-dos-Dominios | 01-Arquitetura-Corporativa | ✅ | 1.2 | Não declaradas |
 | 000 | 000-CATALOGO-CORPORATIVO-DO-CONHECIMENTO | 01-Arquitetura-Corporativa/04-Conhecimento-Corporativo | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | Cadeia-de-Valor-v1.0 | 02-Modelo-de-Negocio | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | Cadeia-de-Valor-v1.1 | 02-Modelo-de-Negocio | ✅ | 1.1 – Revisada | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+31) |
@@ -869,11 +870,11 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | — | Requisitos-Funcionais-v1.0 | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+20) |
 | — | Requisitos-Nao-Funcionais-v1.0 | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+16) |
 | — | Cadastro-Unico | 04-Modelo-de-Dados | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
-| — | Dicionario-de-dados | 04-Modelo-de-Dados | ✅ | 2.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 005-Arquitetura-de-Dados.md (01-Arquitetura-Corporativa); Modelo-Conceitual.md (+2) |
+| — | Dicionario-de-dados | 04-Modelo-de-Dados | ✅ | 2.1 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 005-Arquitetura-de-Dados.md (01-Arquitetura-Corporativa); Modelo-Conceitual.md (+2) |
 | — | MER | 04-Modelo-de-Dados | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | Modelo-Conceitual | 04-Modelo-de-Dados | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 005-Arquitetura-de-Dados.md; 006-Cadastro-Unico-Municipal.md |
-| — | Modelo-Fisico | 04-Modelo-de-Dados | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 005-Arquitetura-de-Dados.md (01-Arquitetura-Corporativa); 006-Cadastro-Unico-Municipal.md (+3) |
-| — | Modelo-Logico | 04-Modelo-de-Dados | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 005-Arquitetura-de-Dados.md; 006-Cadastro-Unico-Municipal.md (+1) |
+| — | Modelo-Fisico | 04-Modelo-de-Dados | ✅ | 1.1 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 005-Arquitetura-de-Dados.md (01-Arquitetura-Corporativa); 006-Cadastro-Unico-Municipal.md (+3) |
+| — | Modelo-Logico | 04-Modelo-de-Dados | ✅ | 1.1 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 005-Arquitetura-de-Dados.md; 006-Cadastro-Unico-Municipal.md (+1) |
 | — | Modelos-SQL | 04-Modelo-de-Dados | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | Procedures | 04-Modelo-de-Dados | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | Seeds | 04-Modelo-de-Dados | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
@@ -945,7 +946,14 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 011 | 011-Metodologia-do-ISDM | 97-Estudos-e-Pesquisas | 🟡 | 1.0 | Não declaradas |
 | 012 | 012-Modelo-de-Diagnostico-e-Plano-de-Evolucao | 97-Estudos-e-Pesquisas | 🟡 | 1.0 | Não declaradas |
 | 013 | 013-Modelo-de-Certificacao-da-Maturidade-Digital-Municipal | 97-Estudos-e-Pesquisas | 🟡 | 1.0 | Não declaradas |
+| — | Codigo-de-Conduta | 98-Comunidade-SIGMUN | 🟡 | A informar | Não declaradas |
 | — | Criar-documentos-da-comunidade | 98-Comunidade-SIGMUN | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
+| — | FAQ-SIGMUN | 98-Comunidade-SIGMUN | 🟡 | A informar | Não declaradas |
+| — | Kit-de-Comunicacao-SIGMUN | 98-Comunidade-SIGMUN | 🟡 | A informar | Não declaradas |
+| — | Modelo-de-Governanca-da-Comunidade | 98-Comunidade-SIGMUN | 🟡 | A informar | Não declaradas |
+| — | Programa-de-Embaixadores | 98-Comunidade-SIGMUN | 🟡 | A informar | Não declaradas |
+| — | Programa-de-Municipios-Piloto | 98-Comunidade-SIGMUN | 🟡 | A informar | Não declaradas |
+| — | TEMPLATES-DE-EVENTOS-E-WEBINARS | 98-Comunidade-SIGMUN | 🟡 | A informar | Não declaradas |
 | — | Estrutura-da-Constituicao-SIGMUN | 99-Anexos/Estudos | 🟡 | A informar | Não declaradas |
 | — | CHANGELOG | Raiz | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | DECISOES-ARQUITETURAIS | Raiz | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
@@ -1057,6 +1065,11 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 024 | 024-Plano-de-Suporte-e-Operacao-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md (+25) |
 | 025 | 025-Estrutura-Tecnica-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+27) |
 | 026 | 026-Modelo-de-Dominio-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md; 000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md (+18) |
+| 2026 | 2026-08-29-checklist-prontidao-compras | DOM-COMPRAS-001/evidencias | 🟡 | 0.1.0 (`pyproject.toml`, `src/main.py`) | Não declaradas |
+| 2026 | 2026-08-29-reexecucao-checklist-prontidao | DOM-COMPRAS-001/evidencias | ✅ | 0.1.0 | Não declaradas |
+| 2026 | 2026-08-29-resolucao-pendencias-P001-P010 | DOM-COMPRAS-001/evidencias | ✅ | 0.1.0 | Não declaradas |
+| 20260829 | 20260829_191312-deploy-ambiente-controlado | DOM-COMPRAS-001/evidencias | 🟡 | A informar | Não declaradas |
+| 20260829 | 20260829_191412-deploy-ambiente-controlado | DOM-COMPRAS-001/evidencias | ✅ | A informar | Não declaradas |
 | 000 | 000-Dominio-Contabilidade-Publica | DOM-CON | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+11) |
 | 001 | 001-Mapa-de-Atores-Contabilidade-Publica | DOM-CON | ⚪ | 1.0 | `000-Dominio-Contabilidade-Publica.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 002 | 002-Mapa-de-Capacidades-Contabilidade-Publica | DOM-CON | ⚪ | 1.0 | `000-Dominio-Contabilidade-Publica.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
@@ -1192,7 +1205,7 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 024 | 024-Plano-de-Suporte-e-Operacao-Desenvolvimento-Economico | DOM-DEC | ⚪ | 1.0 | `000-Dominio-Desenvolvimento-Economico.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 025 | 025-Estrutura-Tecnica-Desenvolvimento-Economico | DOM-DEC | ⚪ | 1.0 | `000-Dominio-Desenvolvimento-Economico.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 026 | 026-Modelo-de-Dominio-Desenvolvimento-Economico | DOM-DEC | ⚪ | 1.0 | `000-Dominio-Desenvolvimento-Economico.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 000 | 000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ✅ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 000 | 000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+11) |
 | 001 | 001-Mapa-de-Atores-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 002 | 002-Mapa-de-Capacidades-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 003 | 003-Mapa-de-Processos-Gestao-de-Diarias-Viagens-e-Deslocamentos | DOM-DIA | ⚪ | 1.0 | `000-Dominio-Gestao-de-Diarias-Viagens-e-Deslocamentos.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
@@ -1274,32 +1287,33 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 025 | 025-Estrutura-Tecnica-Gestao-de-Frota | DOM-FRO | ⚪ | 1.0 | `000-Dominio-Gestao-de-Frota.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 026 | 026-Modelo-de-Dominio-Gestao-de-Frota | DOM-FRO | ⚪ | 1.0 | `000-Dominio-Gestao-de-Frota.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 000 | 000-Dominio-Gestao-Documental | DOM-GDO | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+11) |
-| 001 | 001-Mapa-de-Atores-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 001 | 001-Mapa-de-Atores-Gestao-Documental | DOM-GDO | ✅ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+9) |
 | 002 | 002-Mapa-de-Capacidades-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 003 | 003-Mapa-de-Processos-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 004 | 004-Mapa-de-Servicos-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 005 | 005-Casos-de-Uso-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 006 | 006-Historias-de-Usuario-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 007 | 007-Regras-de-Negocio-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 008 | 008-Requisitos-Funcionais-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 009 | 009-Requisitos-Nao-Funcionais-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 010 | 010-Especificacoes-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 011 | 011-Criterios-de-Aceitacao-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 012 | 012-Matriz-de-Rastreabilidade-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 013 | 013-Modelo-de-Dados-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 014 | 014-Modelo-de-Integracao-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 015 | 015-Arquitetura-de-Servicos-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 016 | 016-Modelo-de-Seguranca-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 017 | 017-Modelo-de-Auditoria-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 018 | 018-Plano-de-Testes-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 019 | 019-Casos-de-Teste-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
-| 020 | 020-Plano-de-Implantacao-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 005 | 005-Casos-de-Uso-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | **Status:** Em elaboracao | Não declaradas |
+| 006 | 006-Historias-de-Usuario-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+9) |
+| 007 | 007-Regras-de-Negocio-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+10) |
+| 008 | 008-Requisitos-Funcionais-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+11) |
+| 009 | 009-Requisitos-Nao-Funcionais-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+12) |
+| 010 | 010-Especificacoes-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+13) |
+| 011 | 011-Criterios-de-Aceitacao-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+14) |
+| 012 | 012-Matriz-de-Rastreabilidade-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+15) |
+| 013 | 013-Modelo-de-Dados-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+16) |
+| 014 | 014-Modelo-de-Integracao-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+17) |
+| 015 | 015-Arquitetura-de-Servicos-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+18) |
+| 016 | 016-Modelo-de-Seguranca-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+19) |
+| 017 | 017-Modelo-de-Auditoria-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+20) |
+| 018 | 018-Plano-de-Testes-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+21) |
+| 019 | 019-Casos-de-Teste-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+22) |
+| 020 | 020-Plano-de-Implantacao-Gestao-Documental | DOM-GDO | ✅ | 2.0 | `000-Dominio-Gestao-Documental.md`; `001-Mapa-de-Atores-Gestao-Documental.md`; `002-Mapa-de-Capacidades-Gestao-Documental.md` (+23) |
 | 021 | 021-Checklist-de-Prontidao-para-Producao-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 022 | 022-Plano-de-Migracao-de-Dados-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 023 | 023-Plano-de-Treinamento-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 024 | 024-Plano-de-Suporte-e-Operacao-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 025 | 025-Estrutura-Tecnica-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 026 | 026-Modelo-de-Dominio-Gestao-Documental | DOM-GDO | ⚪ | 1.0 | `000-Dominio-Gestao-Documental.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
+| 2026 | 2026-09-05-homologacao-gdo | DOM-GDO/evidencias | 🟡 | A informar | Não declaradas |
 | 000 | 000-Dominio-Geoinformacao-Municipal | DOM-GEO | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+11) |
 | 001 | 001-Mapa-de-Atores-Geoinformacao-Municipal | DOM-GEO | ⚪ | 1.0 | `000-Dominio-Geoinformacao-Municipal.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | 002 | 002-Mapa-de-Capacidades-Geoinformacao-Municipal | DOM-GEO | ⚪ | 1.0 | `000-Dominio-Geoinformacao-Municipal.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
@@ -1842,7 +1856,9 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 026 | 026-Modelo-de-Dominio-Administracao-Tributaria | DOM-TRI | ⚪ | 1.0 | `000-Dominio-Administracao-Tributaria.md`; `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md` (+4) |
 | — | Plano-de-Trabalho | Raiz | ✅ | 1.1 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | REFERENCIAS | Raiz | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
-| — | ROADMAP | Raiz | ✅ | 1.1 | Não declaradas |
+| — | ROADMAP | Raiz | ✅ | 1.3 | Não declaradas |
+| — | SIGMUN-DEV-AGENT | Raiz | 🟡 | 1.0 | Não declaradas |
+| — | ToDo | Raiz | ✅ | A informar | Não declaradas |
 
 > **Observação:** documentos sem metadado explícito são marcados como `A validar` ou `Não declaradas`; a tabela deve ser regenerada após a criação ou revisão de documentos.
 

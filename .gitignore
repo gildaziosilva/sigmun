@@ -22,8 +22,9 @@ htmlcov/
 .pyright/
 .ruff_cache/
 
-# Django
+# Logs
 *.log
+logs/
 db.sqlite3
 db.sqlite3-journal
 media/

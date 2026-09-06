@@ -47,6 +47,9 @@ from src.modules.sigmun_idn.presentation.api import (
 from src.modules.sigmun_met.presentation.api import (
     router as met_router,
 )
+from src.modules.sigmun_gdo.presentation.api import (
+    router as gdo_router,
+)
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
 from src.shared.middleware.correlation_id_middleware import CorrelationIDMiddleware
@@ -136,6 +139,13 @@ app = FastAPI(
                 "Metadados, classificações e taxonomias corporativas (DOM-MET)."
             ),
         },
+        {
+            "name": "Gestão Documental",
+            "description": (
+                "Documentos digitais, tramitação, processos documentais, "
+                "classificação e temporalidade (DOM-GDO)."
+            ),
+        },
     ],
 )
 
@@ -199,6 +209,7 @@ app.include_router(unidades_router)
 app.include_router(idn_router)
 app.include_router(dad_router)
 app.include_router(met_router)
+app.include_router(gdo_router)
 
 
 @app.get("/health")

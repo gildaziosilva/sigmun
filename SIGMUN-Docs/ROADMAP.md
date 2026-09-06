@@ -35,7 +35,7 @@ O Mapa Consolidado de Domínios possui atualmente **33 domínios**, incluindo o 
 |---|---|---|
 | Documentação | Artefatos que especificam, modelam ou governam o produto. | Documentação corporativa, arquitetural e de domínios em evolução contínua. |
 | Scaffolding | Estruturas iniciais que preparam o desenvolvimento ou a operação. | Estruturas iniciais de aplicação, infraestrutura, API, banco e CI/CD. |
-| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COMPRAS-001 implementado e em operação controlada; DOM-CUM-001, DOM-IDN-001, DOM-DAD-001 e DOM-MET-001 implementados com repositórios SQLAlchemy, APIs REST e migrações. |
+| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COMPRAS-001 implementado e em operação controlada; DOM-CUM-001, DOM-IDN-001, DOM-DAD-001, DOM-MET-001 e DOM-GDO-001 implementados com repositórios SQLAlchemy, APIs REST e migrações. |
 
 Documentação concluída não equivale a implementação real.
 
@@ -243,6 +243,26 @@ O domínio será considerado implementado somente quando possuir:
 - **Migração** `20260901_01`: 5 tabelas no schema `met` (metadados, valores_metadados, classificacoes, taxonomias, termos_taxonomias) com constraints e triggers
 - **36 testes unitários** com repositórios em memória; rotas validadas na aplicação
 
+### `DOM-GDO-001` — Gestão Documental 🟢
+
+**Entrega:** módulo `sigmun_gdo` com domínio, aplicação, infraestrutura e apresentação completos.
+
+**Escopo implementado:**
+- **Documentos** com código documental único por ano, tipos documentais, conteúdo referenciado em storage e hash SHA-256 de integridade
+- **Versionamento** com controle de versões e verificação de integridade
+- **Classificação documental** hierárquica (plano/código documental) com validação anti-ciclo
+- **Tramitação** de documentos entre unidades (envio, recebimento e devolução)
+- **Processos documentais** com numeração sequencial por ano e vínculo com documentos
+- **Tabelas de temporalidade** com prazos, evento final e destinação (eliminação ou guarda permanente)
+- **Arquivamento** com ciclo de vida (corrente → intermediário → permanente), avaliação de destinação e eliminação autorizada
+- **Assinaturas** com hash e controle de validade/revogação
+- **Eventos de domínio** publicados via Transactional Outbox (`gdo.eventos_outbox`) para integração com o barramento
+- **12 use cases** (criação, classificação, tramitação, arquivamento, assinatura, versões, destinação e tipos documentais)
+- **9 repositórios SQLAlchemy** com soft-delete, filtros e paginação
+- **APIs REST** (`/api/v1/gdo`) com 20 endpoints
+- **Migrações** `20260901_02` e `20260901_03`: 11 tabelas no schema `gdo` (documentos, versoes_documentos, tramitacoes_documentos, processos_documentos, classificacoes_documentais, tabelas_temporalidades, arquivamentos_documentos, assinaturas_documentos, metadados_documentos, tipos_documentais, eventos_outbox) com constraints, foreign keys, triggers e indexes
+- **93 testes** (42 unitários com repositórios em memória + 51 de integração contra PostgreSQL); seed de dados iniciais (plano de classificação, temporalidades e tipos documentais) idempotente
+
 ## 5.2 Domínios
 
 ### `DOM-CUM` — Cadastro Único Municipal 🟢
@@ -289,7 +309,7 @@ Responsável por:
 
 **Implementação:** módulo `sigmun_met` completo com domínio, aplicação, infraestrutura e apresentação (22 use cases, 5 repositórios SQLAlchemy e 30 endpoints em `/api/v1/met`).
 
-### `DOM-GDO` — Gestão Documental
+### `DOM-GDO` — Gestão Documental 🟢
 
 Responsável por:
 
@@ -299,6 +319,8 @@ Responsável por:
 - retenção;
 - arquivamento;
 - temporalidade.
+
+**Implementação:** módulo `sigmun_gdo` completo com domínio, aplicação, infraestrutura e apresentação (12 use cases, 9 repositórios SQLAlchemy e 20 endpoints em `/api/v1/gdo`).
 
 ### `DOM-SEG` — Segurança da Informação
 
