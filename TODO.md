@@ -28,11 +28,11 @@ Este documento consolida todas as tarefas técnicas, funcionais, documentais e o
 
 Prioridade: **Crítica (Imediata)**
 
-- [ ] **I.1 Normalizar o estado do Git (Rebase Interativo Pausado)**
-  - O repositório está em `(no branch, rebasing main)`.
-  - Avaliar o commit atual e o histórico dos próximos 6 commits a aplicar.
-  - Adicionar as alterações de `DOM-GDO` e scripts com commit atômico (`feat(gdo): implementa módulo sigmun_gdo completo com testes e migrações`).
-  - Concluir o rebase (`git rebase --continue`) garantindo integridade da branch `main`.
+- [x] **I.1 Normalizar o estado do Git (Rebase Interativo Pausado)** ✅ *(Concluído em 2026-09-06)*
+  - O repositório estava em `(no branch, rebasing main)` devido a um `pull --rebase` interrompido.
+  - Avaliação de histórico: os 6 commits pendentes (`7804a06..73f5af5`) já estavam aplicados em `HEAD` (`73f5af5`).
+  - Todas as alterações de `DOM-GDO`, documentação, scripts e testes foram consolidadas e submetidas no commit atômico [`f8d317b`](file:///home/gildazio/Projetos-Python/sigmun-v1/sigmun-v1) (`feat(gdo): implementa módulo sigmun_gdo completo com testes e migrações`).
+  - O rebase foi concluído com sucesso via `git rebase --continue`, restabelecendo a branch `main` limpa e com histórico perfeitamente linear.
 - [ ] **I.2 Corrigir bug de Homologação H-06 no `DOM-GDO`**
   - Local: `src/modules/sigmun_gdo/presentation/api/__init__.py` no endpoint `POST /documentos`.
   - Problema: Código duplicado gera `500 Internal Server Error` em vez de `409 Conflict` sob certas condições de sessão do SQLAlchemy.
