@@ -101,8 +101,7 @@ class FormalizarContratacaoUseCase:
         if compra.situacao == SituacaoCompra.HOMOLOGADO:
             if command.usuario_id is None:
                 raise ValueError(
-                    "usuario_id (usuário autenticado) é obrigatório "
-                    "para formalizar contratação"
+                    "usuario_id (usuário autenticado) é obrigatório para formalizar contratação"
                 )
             compra.alterar_situacao(SituacaoCompra.CONTRATADO, command.usuario_id)
             avancou_compra = True

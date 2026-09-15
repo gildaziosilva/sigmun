@@ -112,6 +112,4 @@ class SqlAlchemyCatalogoRepository(CatalogoRepositoryInterface):
         return True
 
 
-
-
 __all__ = ["SqlAlchemyCatalogoRepository"]

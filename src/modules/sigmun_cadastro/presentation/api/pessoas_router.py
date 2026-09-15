@@ -184,6 +184,7 @@ def listar_pessoas(
     page_size: int = Query(default=50, ge=1, le=200, description="Itens por página"),
 ) -> PessoaListResponse:
     """Lista paginada de pessoas (padrão do DOM-COMPRAS-001)."""
+
     def _to_response(pessoa: Pessoa) -> PessoaResponse:
         """Converte entidade Pessoa em schema de resposta."""
         dados_fisicos = (

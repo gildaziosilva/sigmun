@@ -44,6 +44,7 @@ class AlterarSituacaoContratoUseCase:
         # Valida a transição (ValueError se inválida).
         if not contrato.pode_transicionar_para(command.nova_situacao):
             from src.modules.sigmun_compras.domain.entities.contrato import TRANSICOES_VALIDAS
+
             validas = sorted(t.value for t in TRANSICOES_VALIDAS[contrato.situacao])
             raise ValueError(
                 f"Transição {contrato.situacao.value} -> "

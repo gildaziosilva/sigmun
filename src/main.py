@@ -50,11 +50,11 @@ from src.modules.sigmun_idn.presentation.api import (
 from src.modules.sigmun_int.presentation.api import (
     router as int_router,
 )
-from src.modules.sigmun_seg.presentation.api import (
-    router as seg_router,
-)
 from src.modules.sigmun_met.presentation.api import (
     router as met_router,
+)
+from src.modules.sigmun_seg.presentation.api import (
+    router as seg_router,
 )
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
