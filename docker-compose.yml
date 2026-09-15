@@ -49,6 +49,10 @@ services:
       # localhost:5433, válido para execução no host).
       DB_HOST: postgres
       DB_PORT: 5432
+      # Dentro da rede Docker o Redis é o serviço "redis" (o .env usa
+      # localhost:6379, válido para execução no host).
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     volumes:
       - ./src:/app/src
       - ./alembic:/app/alembic
@@ -63,7 +67,9 @@ services:
   frontend-admin:
     build:
       context: ./frontend/admin
-      dockerfile: ../infra/docker/frontend/Dockerfile
+      # Caminho relativo AO BUILD CONTEXT (e não ao docker-compose.yml):
+      # ./frontend/admin/../../infra/docker/frontend/Dockerfile
+      dockerfile: ../../infra/docker/frontend/Dockerfile
     container_name: sigmun-frontend-admin
     ports:
       - "3000:80"
@@ -75,7 +81,9 @@ services:
   frontend-portal-cidadao:
     build:
       context: ./frontend/portal-cidadao
-      dockerfile: ../infra/docker/frontend/Dockerfile
+      # Caminho relativo AO BUILD CONTEXT (e não ao docker-compose.yml):
+      # ./frontend/portal-cidadao/../../infra/docker/frontend/Dockerfile
+      dockerfile: ../../infra/docker/frontend/Dockerfile
     container_name: sigmun-frontend-portal-cidadao
     ports:
       - "3001:80"
@@ -87,7 +95,9 @@ services:
   frontend-portal-fornecedor:
     build:
       context: ./frontend/portal-fornecedor
-      dockerfile: ../infra/docker/frontend/Dockerfile
+      # Caminho relativo AO BUILD CONTEXT (e não ao docker-compose.yml):
+      # ./frontend/portal-fornecedor/../../infra/docker/frontend/Dockerfile
+      dockerfile: ../../infra/docker/frontend/Dockerfile
     container_name: sigmun-frontend-portal-fornecedor
     ports:
       - "3002:80"
@@ -111,6 +121,10 @@ services:
       # localhost:5433, válido para execução no host).
       DB_HOST: postgres
       DB_PORT: 5432
+      # Dentro da rede Docker o Redis é o serviço "redis" (o .env usa
+      # localhost:6379, válido para execução no host).
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     volumes:
       - ./src:/app/src
     command: celery -A src.shared.config.celery_app worker --loglevel=info
@@ -134,6 +148,10 @@ services:
       # localhost:5433, válido para execução no host).
       DB_HOST: postgres
       DB_PORT: 5432
+      # Dentro da rede Docker o Redis é o serviço "redis" (o .env usa
+      # localhost:6379, válido para execução no host).
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     volumes:
       - ./src:/app/src
     command: celery -A src.shared.config.celery_app beat --loglevel=info
