@@ -1,13 +1,13 @@
 """Roteiro de Homologação — Gestão Documental (DOM-GDO).
 
-Executa o roteiro de aceitação do Ciclo 8 (ToDo.md §8) contra a aplicação
+Executa o roteiro de aceitação do Ciclo 8 contra a aplicação
 real (FastAPI + uvicorn) via HTTP, sobre a pilha completa:
 
   PostgreSQL 15 (docker-compose, porta 5433) -> migrações Alembic aplicadas
   -> seed de dados iniciais (tipos documentais, plano de classificação e
   tabelas de temporalidade) -> repositórios SQLAlchemy reais (sem overrides).
 
-Cobre o fluxo exigido no ToDo.md §8.2:
+Cobre o fluxo de homologaçaõ definido para o Ciclo 8:
   criar documento -> upload versão -> classificar (plano pré-carregado) ->
   tramitar -> assinar -> consultar temporalidade -> arquivar -> destinar
 bem como regras de negócio RN-GDO-001/002/004/005/008/010/011 e os casos de

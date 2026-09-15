@@ -103,7 +103,5 @@ def test_exigir_papeis_sem_papel_retorna_403() -> None:
     )
     assert response.status_code == 403
 
-    sem_papel = TestClient(app).get(
-        "/gestor", headers={"X-Usuario-Id": str(uid)}
-    )
+    sem_papel = TestClient(app).get("/gestor", headers={"X-Usuario-Id": str(uid)})
     assert sem_papel.status_code == 403

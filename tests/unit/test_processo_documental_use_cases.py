@@ -94,8 +94,7 @@ class InMemoryProcessoRepository(ProcessoDocumentalRepository):
 
     def exists_numero_ano(self, numero: str, ano: int, excluir_id=None) -> bool:
         return any(
-            p.numero == numero and p.ano == ano and p.id != excluir_id
-            for p in self._data.values()
+            p.numero == numero and p.ano == ano and p.id != excluir_id for p in self._data.values()
         )
 
 
@@ -181,9 +180,7 @@ def test_listar_com_paginacao_e_filtros(repository):
                 assunto="Assunto padrão",
             )
         )
-    registrar.execute(
-        _command(repository, unidade_id=unidade_b, ano=2025, assunto="Outra unidade")
-    )
+    registrar.execute(_command(repository, unidade_id=unidade_b, ano=2025, assunto="Outra unidade"))
 
     pagina = ListarProcessosDocumentaisUseCase(repository).execute(
         ListarProcessosDocumentaisQuery(page=0, page_size=2)
@@ -225,9 +222,7 @@ def test_atualizar_para_par_duplicado_lanca_erro(repository):
 
     with pytest.raises(ProcessoDocumentalDuplicadoError):
         AtualizarProcessoDocumentalUseCase(repository).execute(
-            AtualizarProcessoDocumentalCommand(
-                processo_id=primeiro.id, numero="002"
-            )
+            AtualizarProcessoDocumentalCommand(processo_id=primeiro.id, numero="002")
         )
 
 
