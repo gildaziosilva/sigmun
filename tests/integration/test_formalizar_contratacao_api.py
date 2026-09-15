@@ -105,9 +105,7 @@ def test_formalizar_com_autenticacao_cria_contrato(client, repositorios):
 
 
 def test_formalizar_requer_autenticacao(client, repositorios):
-    response = client.post(
-        _form_url(repositorios["compra"].id), json=_payload()
-    )
+    response = client.post(_form_url(repositorios["compra"].id), json=_payload())
 
     assert response.status_code == 401
 

@@ -27,10 +27,10 @@ class ExcluirCompraUseCase:
 
         compra = self._repository.get_by_id(command.compra_id)
         if compra is None or compra.foi_excluido():
-            raise CompraNaoEncontradaError(
-                f"Compra {command.compra_id} não encontrada"
-            )
+            raise CompraNaoEncontradaError(f"Compra {command.compra_id} não encontrada")
 
+        if command.usuario_id is None:
+            raise ValueError("usuario_id é obrigatório para excluir compra")
         compra.excluir(command.usuario_id)
         self._repository.delete(compra.id, command.usuario_id)
 

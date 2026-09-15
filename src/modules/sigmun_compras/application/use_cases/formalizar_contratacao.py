@@ -68,9 +68,7 @@ class FormalizarContratacaoUseCase:
 
         compra = self._compras.get_by_id(command.compra_id)
         if compra is None or compra.foi_excluido():
-            raise CompraNaoEncontradaError(
-                f"Compra {command.compra_id} não encontrada"
-            )
+            raise CompraNaoEncontradaError(f"Compra {command.compra_id} não encontrada")
 
         # RN-COMPRAS-026: só formaliza compra homologada (ou já contratada).
         if compra.situacao not in self.SITUACOES_ELEGIVEIS:
@@ -81,9 +79,7 @@ class FormalizarContratacaoUseCase:
             )
 
         # Revalida vínculos com os domínios core (integração entre domínios).
-        if not self._contratos.exists_processo_documental(
-            compra.processo_documental_id
-        ):
+        if not self._contratos.exists_processo_documental(compra.processo_documental_id):
             raise ProcessoDocumentalNaoEncontradoError(
                 f"Processo documental {compra.processo_documental_id} não encontrado"
             )
@@ -98,13 +94,16 @@ class FormalizarContratacaoUseCase:
 
         # RN-COMPRAS-036: identificação única do número de contrato.
         if self._contratos.exists_numero(command.numero):
-            raise ContratoDuplicadoError(
-                f"Já existe contrato com numero={command.numero}"
-            )
+            raise ContratoDuplicadoError(f"Já existe contrato com numero={command.numero}")
 
         # Avança a compra para CONTRATADO quando ainda estava HOMOLOGADA.
         avancou_compra = False
         if compra.situacao == SituacaoCompra.HOMOLOGADO:
+            if command.usuario_id is None:
+                raise ValueError(
+                    "usuario_id (usuário autenticado) é obrigatório "
+                    "para formalizar contratação"
+                )
             compra.alterar_situacao(SituacaoCompra.CONTRATADO, command.usuario_id)
             avancou_compra = True
 

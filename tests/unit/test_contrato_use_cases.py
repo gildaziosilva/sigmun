@@ -6,7 +6,6 @@ validando as regras RN-COMPRAS-036 a 039 sem depender de banco.
 
 from datetime import date
 from decimal import Decimal
-from typing import List, Optional
 from uuid import UUID, uuid4
 
 import pytest
@@ -89,18 +88,18 @@ class InMemoryContratoRepository(ContratoRepository):
         self._data[contrato.id] = contrato
         return contrato
 
-    def get_by_id(self, contrato_id: UUID) -> Optional[Contrato]:
+    def get_by_id(self, contrato_id: UUID) -> Contrato | None:
         return self._data.get(contrato_id)
 
     def list(
         self,
-        situacao: Optional[SituacaoContrato] = None,
-        fornecedor_id: Optional[UUID] = None,
-        unidade_id: Optional[UUID] = None,
+        situacao: SituacaoContrato | None = None,
+        fornecedor_id: UUID | None = None,
+        unidade_id: UUID | None = None,
         include_deleted: bool = False,
-        limit: Optional[int] = None,
+        limit: int | None = None,
         offset: int = 0,
-    ) -> List[Contrato]:
+    ) -> list[Contrato]:
         itens = [
             c
             for c in self._data.values()
@@ -131,11 +130,9 @@ class InMemoryContratoRepository(ContratoRepository):
     def exists_unidade(self, unidade_id: UUID) -> bool:
         return unidade_id in self.unidades
 
-    def exists_numero(self, numero: str, excluir_id: Optional[UUID] = None) -> bool:
+    def exists_numero(self, numero: str, excluir_id: UUID | None = None) -> bool:
         return any(
-            c.numero == numero
-            and not c.foi_excluido()
-            and c.id != excluir_id
+            c.numero == numero and not c.foi_excluido() and c.id != excluir_id
             for c in self._data.values()
         )
 
@@ -261,9 +258,7 @@ def test_consultar_excluido_retorna_404(repository):
     repository.delete(criado.id, uuid4())
 
     with pytest.raises(ContratoNaoEncontradoError):
-        ConsultarContratoUseCase(repository).execute(
-            ConsultarContratoQuery(contrato_id=criado.id)
-        )
+        ConsultarContratoUseCase(repository).execute(ConsultarContratoQuery(contrato_id=criado.id))
 
 
 def test_listar_com_paginacao_e_filtros(repository):
@@ -276,9 +271,7 @@ def test_listar_com_paginacao_e_filtros(repository):
     uc.execute(_command(repository, numero="003/2026", unidade_id=unidade_b))
 
     todos = ListarContratosUseCase(repository).execute(ListarContratosQuery())
-    paginado = ListarContratosUseCase(repository).execute(
-        ListarContratosQuery(page=0, page_size=2)
-    )
+    paginado = ListarContratosUseCase(repository).execute(ListarContratosQuery(page=0, page_size=2))
     da_unidade_b = ListarContratosUseCase(repository).execute(
         ListarContratosQuery(unidade_id=unidade_b)
     )
@@ -412,12 +405,14 @@ def test_alterar_situacao_valida(repository):
 
 def test_alterar_situacao_invalida_lanca_erro(repository):
     criado = RegistrarContratoUseCase(repository).execute(_command(repository))
+    usuario_id = uuid4()
 
     with pytest.raises(ValueError, match="não permitida"):
         AlterarSituacaoContratoUseCase(repository).execute(
             AlterarSituacaoContratoCommand(
                 contrato_id=criado.id,
                 nova_situacao=SituacaoContrato.VIGENTE,
+                usuario_id=usuario_id,
             )
         )
 

@@ -5,8 +5,6 @@ situação definidas em 013-Modelo-de-Dados (seção 30).
 """
 
 from datetime import date, datetime
-
-from src.shared.compat import UTC
 from decimal import Decimal
 from uuid import uuid4
 
@@ -16,6 +14,7 @@ from src.modules.sigmun_compras.domain.entities.contrato import (
     Contrato,
     SituacaoContrato,
 )
+from src.shared.compat import UTC
 
 
 def _criar_contrato(**overrides) -> Contrato:

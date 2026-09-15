@@ -123,5 +123,3 @@ __all__ = [
     "FormalizarContratacaoUseCase",
     "ConsultarTrilhaAuditoriaUseCase",
 ]
-
-

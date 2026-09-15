@@ -26,7 +26,7 @@ class CompraNaoEncontradaError(ComprasDomainError):
 
 class CompraEmEstadoTerminalError(ComprasDomainError):
     """Operação não permitida sobre compra em estado terminal (RN-COMPRAS-026).
-    
+
     Estados terminais: CANCELADO, ARQUIVADO, ENCERRADO.
     """
 
@@ -57,7 +57,7 @@ class ContratoDuplicadoError(ComprasDomainError):
 
 class ContratoEmEstadoTerminalError(ComprasDomainError):
     """Operação não permitida sobre contrato em estado terminal (RN-COMPRAS-106).
-    
+
     Estados terminais: ENCERRADO, RESCINDIDO, EXTINTO.
     """
 

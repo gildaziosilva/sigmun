@@ -30,9 +30,7 @@ class UnidadeAdministrativaModel(ComprasBase):
     __tablename__ = "unidades_administrativas"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     unidade_pai_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
     codigo_ibge: Mapped[str | None] = mapped_column(Text)
     codigo_siafi: Mapped[str | None] = mapped_column(Text)
@@ -54,9 +52,7 @@ class ProcessoDocumentalModel(ComprasBase):
     __tablename__ = "processos_documentais"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     unidade_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     numero: Mapped[str] = mapped_column(Text, nullable=False)
     ano: Mapped[int] = mapped_column(nullable=False)
@@ -90,9 +86,7 @@ class FornecedorModel(ComprasBase):
     __tablename__ = "fornecedores"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     pessoa_juridica_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), nullable=False, unique=True
     )
@@ -126,9 +120,7 @@ class ItemCompraModel(ComprasBase):
     __tablename__ = "itens_compras"
     __table_args__ = {"schema": "compras"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     compra_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     descricao: Mapped[str] = mapped_column(Text, nullable=False)
     quantidade: Mapped[Decimal] = mapped_column(Numeric(15, 2), nullable=False)
@@ -162,9 +154,7 @@ class CompraModel(ComprasBase):
     __tablename__ = "compras"
     __table_args__ = {"schema": "compras"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     processo_documental_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     fornecedor_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     unidade_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
@@ -203,9 +193,7 @@ class ContratoModel(ComprasBase):
     __tablename__ = "contratos"
     __table_args__ = {"schema": "compras"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     processo_documental_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     fornecedor_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     unidade_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
@@ -247,9 +235,7 @@ class TrilhaAuditoriaModel(ComprasBase):
     __tablename__ = "eventos"
     __table_args__ = {"schema": "auditoria"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     ocorrido_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )

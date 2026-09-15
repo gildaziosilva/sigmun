@@ -67,9 +67,7 @@ def test_post_processo_inexistente_retorna_404(client: TestClient, repository):
 
 
 def test_post_fornecedor_inexistente_retorna_404(client: TestClient, repository):
-    response = client.post(
-        "/api/v1/compras", json=_payload(repository, fornecedor_id=str(uuid4()))
-    )
+    response = client.post("/api/v1/compras", json=_payload(repository, fornecedor_id=str(uuid4())))
 
     assert response.status_code == 404
 
@@ -218,8 +216,6 @@ def test_delete_sem_usuario_retorna_400(client: TestClient, repository):
 
 
 def test_delete_inexistente_retorna_404(client: TestClient):
-    response = client.delete(
-        f"/api/v1/compras/{uuid4()}", headers={"X-Usuario-Id": str(uuid4())}
-    )
+    response = client.delete(f"/api/v1/compras/{uuid4()}", headers={"X-Usuario-Id": str(uuid4())})
 
     assert response.status_code == 404

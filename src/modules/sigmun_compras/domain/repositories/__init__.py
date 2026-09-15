@@ -19,5 +19,3 @@ __all__ = [
     "CompraRepository",
     "ProcessoDocumentalRepository",
 ]
-
-

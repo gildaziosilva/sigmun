@@ -59,7 +59,6 @@ def _payload(repository: InMemoryContratoRepository, **overrides) -> dict:
     return dados
 
 
-
 # -- POST /api/v1/contratos ------------------------------------------------------
 
 
@@ -208,24 +207,16 @@ def test_patch_sem_campos_retorna_400(client: TestClient, repository):
 
 
 def test_patch_inexistente_retorna_404(client: TestClient):
-    response = client.patch(
-        f"/api/v1/contratos/{uuid4()}", json={"numero": "001"}
-    )
+    response = client.patch(f"/api/v1/contratos/{uuid4()}", json={"numero": "001"})
 
     assert response.status_code == 404
 
 
 def test_patch_para_numero_duplicado_retorna_409(client: TestClient, repository):
-    primeiro = client.post(
-        "/api/v1/contratos", json=_payload(repository, numero="001/2026")
-    ).json()
-    segundo = client.post(
-        "/api/v1/contratos", json=_payload(repository, numero="002/2026")
-    ).json()
+    client.post("/api/v1/contratos", json=_payload(repository, numero="001/2026"))
+    segundo = client.post("/api/v1/contratos", json=_payload(repository, numero="002/2026")).json()
 
-    response = client.patch(
-        f"/api/v1/contratos/{segundo['id']}", json={"numero": "001/2026"}
-    )
+    response = client.patch(f"/api/v1/contratos/{segundo['id']}", json={"numero": "001/2026"})
 
     assert response.status_code == 409
 
@@ -257,9 +248,7 @@ def test_patch_situacao_transicao_invalida_retorna_400(client: TestClient, repos
 
 
 def test_patch_situacao_inexistente_retorna_404(client: TestClient):
-    response = client.patch(
-        f"/api/v1/contratos/{uuid4()}/situacao", json={"situacao": "ASSINADO"}
-    )
+    response = client.patch(f"/api/v1/contratos/{uuid4()}/situacao", json={"situacao": "ASSINADO"})
 
     assert response.status_code == 404
 

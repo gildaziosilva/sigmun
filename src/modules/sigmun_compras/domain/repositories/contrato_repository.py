@@ -7,8 +7,8 @@ Baseado em:
 
 from __future__ import annotations
 
+import builtins
 from abc import ABC, abstractmethod
-from typing import List, Optional
 from uuid import UUID
 
 from src.modules.sigmun_compras.domain.entities.contrato import (
@@ -25,19 +25,19 @@ class ContratoRepository(ABC):
         """Persiste (cria ou atualiza) um contrato."""
 
     @abstractmethod
-    def get_by_id(self, contrato_id: UUID) -> Optional[Contrato]:
+    def get_by_id(self, contrato_id: UUID) -> Contrato | None:
         """Retorna um contrato pelo ID ou None se não existir."""
 
     @abstractmethod
     def list(
         self,
-        situacao: Optional[SituacaoContrato] = None,
-        fornecedor_id: Optional[UUID] = None,
-        unidade_id: Optional[UUID] = None,
+        situacao: SituacaoContrato | None = None,
+        fornecedor_id: UUID | None = None,
+        unidade_id: UUID | None = None,
         include_deleted: bool = False,
-        limit: Optional[int] = None,
+        limit: int | None = None,
         offset: int = 0,
-    ) -> List[Contrato]:
+    ) -> builtins.list[Contrato]:
         """Lista contratos com filtros opcionais e paginação."""
 
     @abstractmethod
@@ -61,7 +61,7 @@ class ContratoRepository(ABC):
         """Verifica se a unidade administrativa existe."""
 
     @abstractmethod
-    def exists_numero(self, numero: str, excluir_id: Optional[UUID] = None) -> bool:
+    def exists_numero(self, numero: str, excluir_id: UUID | None = None) -> bool:
         """Verifica unicidade do numero do contrato (RN-COMPRAS-036)."""
 
     @abstractmethod

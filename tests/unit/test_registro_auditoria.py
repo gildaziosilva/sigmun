@@ -9,8 +9,6 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import uuid4
 
-from src.shared.compat import UTC
-
 import pytest
 
 from src.modules.sigmun_compras.application.queries.consultar_trilha_auditoria_query import (
@@ -30,6 +28,7 @@ from src.modules.sigmun_compras.domain.entities.registro_auditoria import (
 from src.modules.sigmun_compras.domain.repositories.trilha_auditoria_repository import (
     TrilhaAuditoriaRepository,
 )
+from src.shared.compat import UTC
 
 
 class InMemoryTrilhaAuditoriaRepository(TrilhaAuditoriaRepository):

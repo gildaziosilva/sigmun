@@ -40,9 +40,7 @@ class RegistrarContratoUseCase:
         logger.info("Registrando contrato – numero=%s", command.numero)
 
         # RN-COMPRAS-038: vínculo obrigatório ao processo contratado.
-        if not self._repository.exists_processo_documental(
-            command.processo_documental_id
-        ):
+        if not self._repository.exists_processo_documental(command.processo_documental_id):
             raise ProcessoDocumentalNaoEncontradoError(
                 f"Processo documental {command.processo_documental_id} não encontrado"
             )
@@ -59,9 +57,7 @@ class RegistrarContratoUseCase:
 
         # RN-COMPRAS-036: identificação única.
         if self._repository.exists_numero(command.numero):
-            raise ContratoDuplicadoError(
-                f"Já existe contrato com numero={command.numero}"
-            )
+            raise ContratoDuplicadoError(f"Já existe contrato com numero={command.numero}")
 
         contrato = Contrato(
             processo_documental_id=command.processo_documental_id,

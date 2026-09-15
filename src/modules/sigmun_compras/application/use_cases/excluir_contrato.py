@@ -29,10 +29,10 @@ class ExcluirContratoUseCase:
 
         contrato = self._repository.get_by_id(command.contrato_id)
         if contrato is None or contrato.foi_excluido():
-            raise ContratoNaoEncontradoError(
-                f"Contrato {command.contrato_id} não encontrado"
-            )
+            raise ContratoNaoEncontradoError(f"Contrato {command.contrato_id} não encontrado")
 
+        if command.usuario_id is None:
+            raise ValueError("usuario_id é obrigatório para excluir contrato")
         contrato.excluir(command.usuario_id)
         self._repository.delete(contrato.id, command.usuario_id)
 

@@ -144,9 +144,7 @@ class SqlAlchemyProcessoDocumentalRepository(ProcessoDocumentalRepository):
         )
         return self._session.scalars(stmt).first() is not None
 
-    def exists_numero_ano(
-        self, numero: str, ano: int, excluir_id: UUID | None = None
-    ) -> bool:
+    def exists_numero_ano(self, numero: str, ano: int, excluir_id: UUID | None = None) -> bool:
         stmt = select(ProcessoDocumentalModel.id).where(
             ProcessoDocumentalModel.numero == numero,
             ProcessoDocumentalModel.ano == ano,

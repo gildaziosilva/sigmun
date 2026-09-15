@@ -30,14 +30,11 @@ class AtualizarProcessoDocumentalUseCase:
     def __init__(self, repository: ProcessoDocumentalRepository) -> None:
         self._repository = repository
 
-    def execute(
-        self, command: AtualizarProcessoDocumentalCommand
-    ) -> ProcessoDocumental:
+    def execute(self, command: AtualizarProcessoDocumentalCommand) -> ProcessoDocumental:
         logger.info("Atualizando processo documental – id=%s", command.processo_id)
 
         if all(
-            v is None
-            for v in (command.numero, command.ano, command.assunto, command.descricao)
+            v is None for v in (command.numero, command.ano, command.assunto, command.descricao)
         ):
             raise ValueError("Informe ao menos um campo para atualização")
 
@@ -55,8 +52,7 @@ class AtualizarProcessoDocumentalUseCase:
             novo_numero, novo_ano, excluir_id=processo.id
         ):
             raise ProcessoDocumentalDuplicadoError(
-                f"Já existe processo documental numero={novo_numero} "
-                f"ano={novo_ano}"
+                f"Já existe processo documental numero={novo_numero} ano={novo_ano}"
             )
 
         processo.atualizar_dados(

@@ -45,5 +45,19 @@ class TrilhaAuditoriaRepository(ABC):
     ) -> builtins.list[RegistroAuditoria]:
         """Consulta a trilha com filtros (017, seção 42) e paginação."""
 
+    @abstractmethod
+    def count(
+        self,
+        *,
+        data_inicio: datetime | None = None,
+        data_fim: datetime | None = None,
+        usuario_id: UUID | None = None,
+        categoria: CategoriaEventoAuditoria | None = None,
+        recurso_tipo: str | None = None,
+        recurso_id: UUID | None = None,
+        correlation_id: UUID | None = None,
+    ) -> int:
+        """Retorna o total de registros que correspondem aos filtros."""
+
 
 __all__ = ["TrilhaAuditoriaRepository"]

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
 from uuid import UUID
 
 
@@ -13,5 +12,5 @@ class RegistrarPendenciaCompraCommand:
 
     compra_id: UUID
     registrar: bool
-    justificativa: Optional[str] = None
+    justificativa: str | None = None
     usuario_id: UUID | None = field(default=None, kw_only=True)

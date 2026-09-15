@@ -12,8 +12,8 @@ Observações de projeto:
 
 from __future__ import annotations
 
+import builtins
 import logging
-from typing import List, Optional
 from uuid import UUID
 
 from sqlalchemy import func, select
@@ -110,19 +110,19 @@ class SqlAlchemyContratoRepository(ContratoRepository):
         self._session.refresh(model)
         return _to_entity(model)
 
-    def get_by_id(self, contrato_id: UUID) -> Optional[Contrato]:
+    def get_by_id(self, contrato_id: UUID) -> Contrato | None:
         model = self._session.get(ContratoModel, contrato_id)
         return _to_entity(model) if model else None
 
     def list(
         self,
-        situacao: Optional[SituacaoContrato] = None,
-        fornecedor_id: Optional[UUID] = None,
-        unidade_id: Optional[UUID] = None,
+        situacao: SituacaoContrato | None = None,
+        fornecedor_id: UUID | None = None,
+        unidade_id: UUID | None = None,
         include_deleted: bool = False,
-        limit: Optional[int] = None,
+        limit: int | None = None,
         offset: int = 0,
-    ) -> List[Contrato]:
+    ) -> builtins.list[Contrato]:
         stmt = select(ContratoModel).order_by(ContratoModel.created_at.desc())
         if not include_deleted:
             stmt = stmt.where(ContratoModel.deleted_at.is_(None))
@@ -191,7 +191,7 @@ class SqlAlchemyContratoRepository(ContratoRepository):
         )
         return self._session.scalars(stmt).first() is not None
 
-    def exists_numero(self, numero: str, excluir_id: Optional[UUID] = None) -> bool:
+    def exists_numero(self, numero: str, excluir_id: UUID | None = None) -> bool:
         """RN-COMPRAS-036: identificação única entre não excluídos."""
         stmt = select(ContratoModel.id).where(
             ContratoModel.numero == numero,

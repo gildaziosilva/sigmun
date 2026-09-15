@@ -62,9 +62,7 @@ from src.modules.sigmun_compras.presentation.schemas.processo_documental_schemas
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(
-    prefix="/api/v1/processos-documentais", tags=["Compras - Processos Documentais"]
-)
+router = APIRouter(prefix="/api/v1/processos-documentais", tags=["Compras - Processos Documentais"])
 
 
 def get_processo_documental_repository(
@@ -140,9 +138,7 @@ def listar_processos(
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
     unidade_id: Annotated[UUID | None, Query(description="Filtrar por unidade")] = None,
-    ano: Annotated[
-        int | None, Query(ge=1900, le=2100, description="Filtrar por ano")
-    ] = None,
+    ano: Annotated[int | None, Query(ge=1900, le=2100, description="Filtrar por ano")] = None,
     include_inativos: Annotated[bool, Query(description="Incluir excluídos")] = False,
     page: Annotated[int, Query(ge=0)] = 0,
     page_size: Annotated[int, Query(ge=1, le=200)] = 50,
@@ -163,9 +159,7 @@ def listar_processos(
     )
     processos = ListarProcessosDocumentaisUseCase(repository).execute(query)
 
-    todos = repository.list(
-        unidade_id=unidade_id, ano=ano, include_deleted=False
-    )
+    todos = repository.list(unidade_id=unidade_id, ano=ano, include_deleted=False)
     items = [ProcessoDocumentalResponse.model_validate(p) for p in processos]
     return ProcessoDocumentalListResponse(
         total=len(todos), page=page, page_size=page_size, items=items

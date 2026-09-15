@@ -76,9 +76,7 @@ def test_post_duplicado_retorna_409(client: TestClient, repository):
 
 
 def test_post_ano_invalido_retorna_422(client: TestClient, repository):
-    response = client.post(
-        "/api/v1/processos-documentais", json=_payload(repository, ano=1800)
-    )
+    response = client.post("/api/v1/processos-documentais", json=_payload(repository, ano=1800))
 
     assert response.status_code == 422
 
@@ -91,9 +89,7 @@ def test_get_lista_vazia_e_com_itens_e_filtro_ano(client: TestClient, repository
     assert vazia.status_code == 200 and vazia.json()["total"] == 0
 
     client.post("/api/v1/processos-documentais", json=_payload(repository))
-    client.post(
-        "/api/v1/processos-documentais", json=_payload(repository, numero="002", ano=2027)
-    )
+    client.post("/api/v1/processos-documentais", json=_payload(repository, numero="002", ano=2027))
 
     todos = client.get("/api/v1/processos-documentais")
     de_2027 = client.get("/api/v1/processos-documentais", params={"ano": 2027})
@@ -106,9 +102,7 @@ def test_get_lista_vazia_e_com_itens_e_filtro_ano(client: TestClient, repository
 
 
 def test_get_por_id_sucesso_e_404(client: TestClient, repository):
-    criado = client.post(
-        "/api/v1/processos-documentais", json=_payload(repository)
-    ).json()
+    criado = client.post("/api/v1/processos-documentais", json=_payload(repository)).json()
 
     ok = client.get(f"/api/v1/processos-documentais/{criado['id']}")
     not_found = client.get(f"/api/v1/processos-documentais/{uuid4()}")
@@ -120,9 +114,7 @@ def test_get_por_id_sucesso_e_404(client: TestClient, repository):
 
 def test_patch_atualiza_assunto(client: TestClient, repository):
     usuario = uuid4()
-    criado = client.post(
-        "/api/v1/processos-documentais", json=_payload(repository)
-    ).json()
+    criado = client.post("/api/v1/processos-documentais", json=_payload(repository)).json()
 
     response = client.patch(
         f"/api/v1/processos-documentais/{criado['id']}",
@@ -150,9 +142,7 @@ def test_patch_para_par_duplicado_retorna_409(client: TestClient, repository):
 
 
 def test_patch_sem_campos_retorna_400(client: TestClient, repository):
-    criado = client.post(
-        "/api/v1/processos-documentais", json=_payload(repository)
-    ).json()
+    criado = client.post("/api/v1/processos-documentais", json=_payload(repository)).json()
 
     response = client.patch(f"/api/v1/processos-documentais/{criado['id']}", json={})
 
@@ -169,9 +159,7 @@ def test_patch_inexistente_retorna_404(client: TestClient):
 
 def test_delete_exclui_logicamente(client: TestClient, repository):
     usuario = uuid4()
-    criado = client.post(
-        "/api/v1/processos-documentais", json=_payload(repository)
-    ).json()
+    criado = client.post("/api/v1/processos-documentais", json=_payload(repository)).json()
 
     delete = client.delete(
         f"/api/v1/processos-documentais/{criado['id']}",
@@ -184,9 +172,7 @@ def test_delete_exclui_logicamente(client: TestClient, repository):
 
 
 def test_delete_sem_usuario_retorna_400(client: TestClient, repository):
-    criado = client.post(
-        "/api/v1/processos-documentais", json=_payload(repository)
-    ).json()
+    criado = client.post("/api/v1/processos-documentais", json=_payload(repository)).json()
 
     response = client.delete(f"/api/v1/processos-documentais/{criado['id']}")
 

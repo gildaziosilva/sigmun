@@ -70,9 +70,7 @@ class ProcessoDocumental:
     def _validar_ano(ano: int) -> int:
         ano = int(ano)
         if not _ANO_MINIMO <= ano <= _ANO_MAXIMO:
-            raise ValueError(
-                f"ano deve estar entre {_ANO_MINIMO} e {_ANO_MAXIMO}: {ano}"
-            )
+            raise ValueError(f"ano deve estar entre {_ANO_MINIMO} e {_ANO_MAXIMO}: {ano}")
         return ano
 
     @staticmethod
@@ -94,9 +92,7 @@ class ProcessoDocumental:
         """Atualiza campos informados (RN-COMPRAS-028/029)."""
         # RN-COMPRAS-004: não operar sobre processos excluídos.
         if self.foi_excluido():
-            raise ValueError(
-                "Processo excluído não pode ser atualizado (RN-COMPRAS-004)"
-            )
+            raise ValueError("Processo excluído não pode ser atualizado (RN-COMPRAS-004)")
         if numero is not None:
             self.numero = self._validar_numero(numero)
         if ano is not None:

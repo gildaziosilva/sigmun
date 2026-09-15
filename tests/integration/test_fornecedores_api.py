@@ -53,14 +53,10 @@ def test_post_cria_fornecedor(client: TestClient):
 
 def test_post_fornecedor_duplicado_retorna_409(client: TestClient, repository):
     pessoa_juridica_id = str(uuid4())
-    primeira = client.post(
-        "/api/v1/fornecedores", json={"pessoa_juridica_id": pessoa_juridica_id}
-    )
+    primeira = client.post("/api/v1/fornecedores", json={"pessoa_juridica_id": pessoa_juridica_id})
     assert primeira.status_code == 201
 
-    duplicada = client.post(
-        "/api/v1/fornecedores", json={"pessoa_juridica_id": pessoa_juridica_id}
-    )
+    duplicada = client.post("/api/v1/fornecedores", json={"pessoa_juridica_id": pessoa_juridica_id})
 
     assert duplicada.status_code == 409
     assert "RN-COMPRAS-031" in duplicada.json()["detail"]

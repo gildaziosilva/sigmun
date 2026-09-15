@@ -93,8 +93,7 @@ def _criar_pessoa_juridica(session: Session) -> UUID:
     pessoa_id = uuid4()
     session.execute(
         text(
-            "INSERT INTO core.pessoas (id, tipo, categoria) "
-            "VALUES (:id, 'JURIDICA', 'FORNECEDOR')"
+            "INSERT INTO core.pessoas (id, tipo, categoria) VALUES (:id, 'JURIDICA', 'FORNECEDOR')"
         ),
         {"id": pessoa_id},
     )
@@ -119,9 +118,7 @@ def _criar_cadeia_base(session: Session) -> dict:
     unidade_id = _criar_unidade(session)
     pj_id = _criar_pessoa_juridica(session)
 
-    fornecedor = SqlAlchemyFornecedorRepository(session).save(
-        Fornecedor(pessoa_juridica_id=pj_id)
-    )
+    fornecedor = SqlAlchemyFornecedorRepository(session).save(Fornecedor(pessoa_juridica_id=pj_id))
 
     processo = SqlAlchemyProcessoDocumentalRepository(session).save(
         ProcessoDocumental(
@@ -215,9 +212,7 @@ class TestSqlAlchemyFornecedorRepository:
 
     def test_update_reflete_dados_alterados(self, session: Session) -> None:
         repo = SqlAlchemyFornecedorRepository(session)
-        salvo = repo.save(
-            Fornecedor(pessoa_juridica_id=_criar_pessoa_juridica(session))
-        )
+        salvo = repo.save(Fornecedor(pessoa_juridica_id=_criar_pessoa_juridica(session)))
 
         salvo.macro_categoria = "MATERIAL_ESCRITORIO"
         atualizado = repo.update(salvo)
@@ -228,9 +223,7 @@ class TestSqlAlchemyFornecedorRepository:
     def test_delete_marca_soft_delete(self, session: Session) -> None:
         repo = SqlAlchemyFornecedorRepository(session)
         usuario = uuid4()
-        salvo = repo.save(
-            Fornecedor(pessoa_juridica_id=_criar_pessoa_juridica(session))
-        )
+        salvo = repo.save(Fornecedor(pessoa_juridica_id=_criar_pessoa_juridica(session)))
         assert salvo.foi_excluido() is False
 
         repo.delete(salvo.id, usuario)
@@ -292,19 +285,13 @@ class TestSqlAlchemyProcessoDocumentalRepository:
         unidade_b = _criar_unidade(session)
 
         ano_2026 = repo.save(
-            ProcessoDocumental(
-                unidade_id=unidade_a, numero="2026-001", ano=2026, assunto="A"
-            )
+            ProcessoDocumental(unidade_id=unidade_a, numero="2026-001", ano=2026, assunto="A")
         )
         repo.save(
-            ProcessoDocumental(
-                unidade_id=unidade_a, numero="2027-001", ano=2027, assunto="B"
-            )
+            ProcessoDocumental(unidade_id=unidade_a, numero="2027-001", ano=2027, assunto="B")
         )
         outra_unidade = repo.save(
-            ProcessoDocumental(
-                unidade_id=unidade_b, numero="2026-002", ano=2026, assunto="C"
-            )
+            ProcessoDocumental(unidade_id=unidade_b, numero="2026-002", ano=2026, assunto="C")
         )
 
         por_unidade_e_ano = repo.list(unidade_id=unidade_a, ano=2026)
@@ -467,9 +454,7 @@ class TestSqlAlchemyItemCompraRepository:
 
         assert repo.get_by_id(salvo.id).foi_excluido() is True
         assert salvo.id not in {i.id for i in repo.list_by_compra(compra.id)}
-        assert salvo.id in {
-            i.id for i in repo.list_by_compra(compra.id, include_deleted=True)
-        }
+        assert salvo.id in {i.id for i in repo.list_by_compra(compra.id, include_deleted=True)}
 
     def test_exists_compra(self, session: Session) -> None:
         repo = SqlAlchemyItemCompraRepository(session)
@@ -727,9 +712,7 @@ class TestSqlAlchemyTrilhaAuditoriaRepository:
                 repo,
                 f"Evento{i}",
                 categoria=(
-                    CategoriaEventoAuditoria.CRIACAO
-                    if i < 2
-                    else CategoriaEventoAuditoria.EXCLUSAO
+                    CategoriaEventoAuditoria.CRIACAO if i < 2 else CategoriaEventoAuditoria.EXCLUSAO
                 ),
                 recurso_id=recurso,
                 ator_id=ator if i < 2 else None,

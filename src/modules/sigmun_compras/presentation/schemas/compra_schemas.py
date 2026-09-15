@@ -52,8 +52,7 @@ class CompraPendenciasRequest(BaseModel):
     pendencias_impeditivas: bool = Field(
         ...,
         description=(
-            "true: registra pendência impeditiva (bloqueia avanço); "
-            "false: resolve as pendências"
+            "true: registra pendência impeditiva (bloqueia avanço); false: resolve as pendências"
         ),
     )
     justificativa: str | None = Field(

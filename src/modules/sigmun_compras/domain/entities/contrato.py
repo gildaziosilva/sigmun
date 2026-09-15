@@ -22,7 +22,6 @@ from __future__ import annotations
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 from uuid import UUID, uuid4
 
 from src.shared.compat import UTC
@@ -76,24 +75,24 @@ class Contrato:
 
     def __init__(
         self,
-        id: Optional[UUID] = None,
-        processo_documental_id: Optional[UUID] = None,
-        fornecedor_id: Optional[UUID] = None,
-        unidade_id: Optional[UUID] = None,
-        licitacao_master_id: Optional[UUID] = None,
-        compra_id: Optional[UUID] = None,
+        id: UUID | None = None,
+        processo_documental_id: UUID | None = None,
+        fornecedor_id: UUID | None = None,
+        unidade_id: UUID | None = None,
+        licitacao_master_id: UUID | None = None,
+        compra_id: UUID | None = None,
         numero: str = "",
-        data_inicio: Optional[date] = None,
-        data_fim: Optional[date] = None,
-        valor: Optional[Decimal] = None,
-        objeto: Optional[str] = None,
+        data_inicio: date | None = None,
+        data_fim: date | None = None,
+        valor: Decimal | None = None,
+        objeto: str | None = None,
         situacao: SituacaoContrato = SituacaoContrato.EM_ELABORACAO,
-        created_at: Optional[datetime] = None,
-        created_by: Optional[UUID] = None,
-        updated_at: Optional[datetime] = None,
-        updated_by: Optional[UUID] = None,
-        deleted_at: Optional[datetime] = None,
-        deleted_by: Optional[UUID] = None,
+        created_at: datetime | None = None,
+        created_by: UUID | None = None,
+        updated_at: datetime | None = None,
+        updated_by: UUID | None = None,
+        deleted_at: datetime | None = None,
+        deleted_by: UUID | None = None,
     ) -> None:
         if processo_documental_id is None:
             raise ValueError("processo_documental_id é obrigatório (RN-COMPRAS-038)")
@@ -105,23 +104,23 @@ class Contrato:
         self.processo_documental_id: UUID = processo_documental_id
         self.fornecedor_id: UUID = fornecedor_id
         self.unidade_id: UUID = unidade_id
-        self.licitacao_master_id: Optional[UUID] = licitacao_master_id
-        self.compra_id: Optional[UUID] = compra_id
+        self.licitacao_master_id: UUID | None = licitacao_master_id
+        self.compra_id: UUID | None = compra_id
         self.numero: str = self._validar_numero(numero)
         self.data_inicio: date = (
             data_inicio if data_inicio is not None else datetime.now(UTC).date()
         )
-        self.data_fim: Optional[date] = data_fim
+        self.data_fim: date | None = data_fim
         self._validar_vigencia(self.data_inicio, self.data_fim)
-        self.valor: Optional[Decimal] = self._validar_valor(valor)
-        self.objeto: Optional[str] = objeto.strip() if objeto else None
+        self.valor: Decimal | None = self._validar_valor(valor)
+        self.objeto: str | None = objeto.strip() if objeto else None
         self.situacao: SituacaoContrato = self._validar_situacao(situacao)
         self.created_at: datetime = created_at or datetime.now(UTC)
-        self.created_by: Optional[UUID] = created_by
+        self.created_by: UUID | None = created_by
         self.updated_at: datetime = updated_at or datetime.now(UTC)
-        self.updated_by: Optional[UUID] = updated_by
-        self.deleted_at: Optional[datetime] = deleted_at
-        self.deleted_by: Optional[UUID] = deleted_by
+        self.updated_by: UUID | None = updated_by
+        self.deleted_at: datetime | None = deleted_at
+        self.deleted_by: UUID | None = deleted_by
 
     # -- Validações -----------------------------------------------------------
 
@@ -132,7 +131,7 @@ class Contrato:
         return numero.strip()
 
     @staticmethod
-    def _validar_valor(valor: Optional[Decimal]) -> Optional[Decimal]:
+    def _validar_valor(valor: Decimal | None) -> Decimal | None:
         if valor is None:
             return None
         valor = Decimal(valor)
@@ -147,28 +146,25 @@ class Contrato:
         return situacao
 
     @staticmethod
-    def _validar_vigencia(
-        data_inicio: date, data_fim: Optional[date]
-    ) -> None:
+    def _validar_vigencia(data_inicio: date, data_fim: date | None) -> None:
         if data_fim is not None and data_fim < data_inicio:
             raise ValueError(
                 f"data_fim ({data_fim}) não pode ser anterior à data_inicio "
                 f"({data_inicio}) (RN-COMPRAS-037)"
             )
 
-    # -- Comportamentos de domínio -------------------------------------------
+        # -- Comportamentos de domínio -------------------------------------------
 
     def pode_transicionar_para(self, nova_situacao: SituacaoContrato) -> bool:
         """Verifica se a transição é permitida."""
         return nova_situacao in TRANSICOES_VALIDAS.get(self.situacao, set())
 
-    def alterar_situacao(self, nova_situacao: SituacaoContrato, usuario_id: UUID) -> None:
+    def alterar_situacao(self, nova_situacao: SituacaoContrato, usuario_id: UUID | None) -> None:
         """Altera a situação respeitando as transições válidas."""
         # RN-COMPRAS-004: não operar sobre contratos excluídos.
         if self.foi_excluido():
             raise ValueError(
-                "Contrato excluído não pode ter sua situação alterada "
-                "(RN-COMPRAS-004)"
+                "Contrato excluído não pode ter sua situação alterada (RN-COMPRAS-004)"
             )
         nova_situacao = self._validar_situacao(nova_situacao)
         if nova_situacao == self.situacao:
@@ -197,19 +193,17 @@ class Contrato:
 
     def atualizar_dados(
         self,
-        numero: Optional[str] = None,
-        data_inicio: Optional[date] = None,
-        data_fim: Optional[date] = None,
-        valor: Optional[Decimal] = None,
-        objeto: Optional[str] = None,
-        usuario_id: Optional[UUID] = None,
+        numero: str | None = None,
+        data_inicio: date | None = None,
+        data_fim: date | None = None,
+        valor: Decimal | None = None,
+        objeto: str | None = None,
+        usuario_id: UUID | None = None,
     ) -> None:
         """Atualiza campos informados (RN-COMPRAS-036 a 039)."""
         # RN-COMPRAS-004: não operar sobre contratos excluídos.
         if self.foi_excluido():
-            raise ValueError(
-                "Contrato excluído não pode ser atualizado (RN-COMPRAS-004)"
-            )
+            raise ValueError("Contrato excluído não pode ser atualizado (RN-COMPRAS-004)")
         # RN-COMPRAS-106: contratos em estado terminal não podem ser alterados.
         if self.situacao in ESTADOS_TERMINAIS:
             raise ValueError(
@@ -235,7 +229,7 @@ class Contrato:
 
     # -- Acompanhamento da vigência (RN-COMPRAS-046) --------------------------
 
-    def esta_vencido(self, hoje: Optional[date] = None) -> bool:
+    def esta_vencido(self, hoje: date | None = None) -> bool:
         """True se o contrato VIGENTE ultrapassou a data_fim."""
         hoje = hoje or date.today()
         return (
@@ -244,7 +238,7 @@ class Contrato:
             and self.data_fim < hoje
         )
 
-    def dias_para_vencimento(self, hoje: Optional[date] = None) -> Optional[int]:
+    def dias_para_vencimento(self, hoje: date | None = None) -> int | None:
         """Dias restantes de vigência; None quando não aplicável."""
         if self.situacao != SituacaoContrato.VIGENTE or self.data_fim is None:
             return None

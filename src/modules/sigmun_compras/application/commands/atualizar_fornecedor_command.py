@@ -17,5 +17,5 @@ class AtualizarFornecedorCommand:
     """Commando para atualizar os dados de um fornecedor."""
 
     fornecedor_id: UUID
-    situacao_cadastro: SituacaoFornecedor
+    situacao_cadastro: SituacaoFornecedor | None
     usuario_id: UUID | None = field(default=None, kw_only=True)

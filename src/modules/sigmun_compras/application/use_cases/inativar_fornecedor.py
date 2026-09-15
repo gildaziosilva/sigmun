@@ -39,9 +39,7 @@ class InativarFornecedorUseCase:
 
         fornecedor = self._repository.get_by_id(command.fornecedor_id)
         if fornecedor is None or fornecedor.foi_excluido():
-            raise FornecedorNaoEncontradoError(
-                f"Fornecedor {command.fornecedor_id} não encontrado"
-            )
+            raise FornecedorNaoEncontradoError(f"Fornecedor {command.fornecedor_id} não encontrado")
 
         fornecedor.inativar(command.usuario_id)
 

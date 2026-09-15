@@ -29,8 +29,6 @@ class ConsultarContratoUseCase:
 
         contrato = self._repository.get_by_id(query.contrato_id)
         if contrato is None or contrato.foi_excluido():
-            raise ContratoNaoEncontradoError(
-                f"Contrato {query.contrato_id} não encontrado"
-            )
+            raise ContratoNaoEncontradoError(f"Contrato {query.contrato_id} não encontrado")
 
         return contrato

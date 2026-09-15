@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import List
 
 from src.modules.sigmun_compras.application.queries.listar_contratos_query import (
     ListarContratosQuery,
@@ -22,7 +21,7 @@ class ListarContratosUseCase:
     def __init__(self, repository: ContratoRepository) -> None:
         self._repository = repository
 
-    def execute(self, query: ListarContratosQuery) -> List[Contrato]:
+    def execute(self, query: ListarContratosQuery) -> list[Contrato]:
         logger.info(
             "Listando contratos – situacao=%s fornecedor=%s",
             query.situacao,

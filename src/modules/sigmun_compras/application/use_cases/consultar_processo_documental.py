@@ -26,9 +26,7 @@ class ConsultarProcessoDocumentalUseCase:
     def __init__(self, repository: ProcessoDocumentalRepository) -> None:
         self._repository = repository
 
-    def execute(
-        self, query: ConsultarProcessoDocumentalQuery
-    ) -> ProcessoDocumental:
+    def execute(self, query: ConsultarProcessoDocumentalQuery) -> ProcessoDocumental:
         logger.info("Consultando processo documental – id=%s", query.processo_id)
 
         processo = self._repository.get_by_id(query.processo_id)

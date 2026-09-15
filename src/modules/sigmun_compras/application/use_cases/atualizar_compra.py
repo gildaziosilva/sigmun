@@ -33,18 +33,12 @@ class AtualizarCompraUseCase:
     def execute(self, command: AtualizarCompraCommand) -> Compra:
         logger.info("Atualizando compra – id=%s", command.compra_id)
 
-        if (
-            command.numero is None
-            and command.data is None
-            and command.valor_total is None
-        ):
+        if command.numero is None and command.data is None and command.valor_total is None:
             raise ValueError("Informe ao menos um campo para atualização")
 
         compra = self._repository.get_by_id(command.compra_id)
         if compra is None or compra.foi_excluido():
-            raise CompraNaoEncontradaError(
-                f"Compra {command.compra_id} não encontrada"
-            )
+            raise CompraNaoEncontradaError(f"Compra {command.compra_id} não encontrada")
 
         compra.atualizar_dados(
             numero=command.numero,

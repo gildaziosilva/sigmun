@@ -11,7 +11,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
-from typing import Optional
 from uuid import UUID
 
 from src.modules.sigmun_compras.domain.entities.contrato import SituacaoContrato
@@ -25,10 +24,10 @@ class CriarContratoCommand:
     fornecedor_id: UUID
     unidade_id: UUID
     numero: str
-    data_inicio: Optional[date] = None
-    data_fim: Optional[date] = None
-    valor: Optional[Decimal] = None
-    objeto: Optional[str] = None
-    licitacao_master_id: Optional[UUID] = None
+    data_inicio: date | None = None
+    data_fim: date | None = None
+    valor: Decimal | None = None
+    objeto: str | None = None
+    licitacao_master_id: UUID | None = None
     situacao: SituacaoContrato = SituacaoContrato.EM_ELABORACAO
     usuario_id: UUID | None = field(default=None, kw_only=True)

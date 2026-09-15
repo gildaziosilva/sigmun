@@ -55,4 +55,3 @@ __all__ = [
     "AtualizarProcessoDocumentalCommand",
     "ExcluirProcessoDocumentalCommand",
 ]
-

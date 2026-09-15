@@ -6,6 +6,7 @@ O item é removido logicamente, preservando o histórico (auditoria).
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 
 from src.modules.sigmun_compras.application.commands.remover_item_compra_command import (
     RemoverItemCompraCommand,
@@ -35,13 +36,15 @@ class RemoverItemCompraUseCase:
         if item is None or item.foi_excluido():
             raise ItemNaoEncontradoError(f"Item {command.item_id} não encontrado")
 
+        if command.usuario_id is None:
+            raise ValueError("usuario_id é obrigatório para remover item da compra")
         item.excluir(command.usuario_id)
         self._repository.delete(item.id, command.usuario_id)
 
         evento = ItemCompraRemovidoEvent(
             item_id=item.id,
             compra_id=item.compra_id,
-            deleted_at=item.deleted_at,
+            deleted_at=item.deleted_at or datetime.utcnow(),
         )
         logger.info("Item removido: %s", evento)
 

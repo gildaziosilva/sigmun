@@ -51,9 +51,7 @@ class ProcessoDocumentalRepository(ABC):
         """Verifica se a unidade administrativa existe."""
 
     @abstractmethod
-    def exists_numero_ano(
-        self, numero: str, ano: int, excluir_id: UUID | None = None
-    ) -> bool:
+    def exists_numero_ano(self, numero: str, ano: int, excluir_id: UUID | None = None) -> bool:
         """Verifica unicidade do par (numero, ano).
 
         ``excluir_id`` permite ignorar o próprio registro em atualizações.

@@ -27,8 +27,6 @@ class ConsultarCompraUseCase:
 
         compra = self._repository.get_by_id(query.compra_id)
         if compra is None or compra.foi_excluido():
-            raise CompraNaoEncontradaError(
-                f"Compra {query.compra_id} não encontrada"
-            )
+            raise CompraNaoEncontradaError(f"Compra {query.compra_id} não encontrada")
 
         return compra

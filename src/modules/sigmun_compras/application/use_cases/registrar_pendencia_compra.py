@@ -35,9 +35,7 @@ class RegistrarPendenciaCompraUseCase:
 
         compra = self._repository.get_by_id(command.compra_id)
         if compra is None or compra.foi_excluido():
-            raise CompraNaoEncontradaError(
-                f"Compra {command.compra_id} não encontrada"
-            )
+            raise CompraNaoEncontradaError(f"Compra {command.compra_id} não encontrada")
 
         if command.registrar:
             compra.registrar_pendencia(command.usuario_id)

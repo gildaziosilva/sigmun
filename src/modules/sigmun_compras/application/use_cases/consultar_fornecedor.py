@@ -37,9 +37,7 @@ class ConsultarFornecedorUseCase:
 
         fornecedor = self._repository.get_by_id(query.fornecedor_id)
         if fornecedor is None or fornecedor.foi_excluido():
-            raise FornecedorNaoEncontradoError(
-                f"Fornecedor {query.fornecedor_id} não encontrado"
-            )
+            raise FornecedorNaoEncontradoError(f"Fornecedor {query.fornecedor_id} não encontrado")
 
         return fornecedor
 
@@ -52,9 +50,7 @@ class ConsultarFornecedorUseCase:
             query.pessoa_juridica_id,
         )
 
-        fornecedor = self._repository.get_by_pessoa_juridica_id(
-            query.pessoa_juridica_id
-        )
+        fornecedor = self._repository.get_by_pessoa_juridica_id(query.pessoa_juridica_id)
         if fornecedor is None or fornecedor.foi_excluido():
             return None
 

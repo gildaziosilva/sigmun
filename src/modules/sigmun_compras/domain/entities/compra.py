@@ -140,19 +140,17 @@ class Compra:
             raise ValueError(f"Situação inválida: {situacao}")
         return situacao
 
-    # -- Comportamentos de domínio -------------------------------------------
+        # -- Comportamentos de domínio -------------------------------------------
 
     def pode_transicionar_para(self, nova_situacao: SituacaoCompra) -> bool:
         """Verifica se a transição é permitida pela sequência processual."""
         return nova_situacao in TRANSICOES_VALIDAS.get(self.situacao, set())
 
-    def alterar_situacao(self, nova_situacao: SituacaoCompra, usuario_id: UUID) -> None:
+    def alterar_situacao(self, nova_situacao: SituacaoCompra, usuario_id: UUID | None) -> None:
         """Altera a situação respeitando a sequência processual (RN-026/027)."""
         # RN-COMPRAS-004: não operar sobre processos excluídos.
         if self.foi_excluido():
-            raise ValueError(
-                "Compra excluída não pode ter sua situação alterada (RN-COMPRAS-004)"
-            )
+            raise ValueError("Compra excluída não pode ter sua situação alterada (RN-COMPRAS-004)")
         nova_situacao = self._validar_situacao(nova_situacao)
         if nova_situacao == self.situacao:
             return
@@ -182,9 +180,7 @@ class Compra:
     def registrar_pendencia(self, usuario_id: UUID | None) -> None:
         """Marca a existência de pendência impeditiva (RN-COMPRAS-027)."""
         if self.foi_excluido():
-            raise ValueError(
-                "Compra excluída não pode registrar pendência (RN-COMPRAS-004)"
-            )
+            raise ValueError("Compra excluída não pode registrar pendência (RN-COMPRAS-004)")
         if self.pendencias_impeditivas:
             return
         self.pendencias_impeditivas = True
@@ -195,9 +191,7 @@ class Compra:
     def resolver_pendencias(self, usuario_id: UUID | None) -> None:
         """Resolve as pendências impeditivas, liberando o avanço processual."""
         if self.foi_excluido():
-            raise ValueError(
-                "Compra excluída não pode resolver pendências (RN-COMPRAS-004)"
-            )
+            raise ValueError("Compra excluída não pode resolver pendências (RN-COMPRAS-004)")
         if not self.pendencias_impeditivas:
             return
         self.pendencias_impeditivas = False
@@ -219,8 +213,7 @@ class Compra:
         # RN-COMPRAS-026: não atualizar processo em estado terminal.
         if self.situacao in ESTADOS_FECHADOS:
             raise ValueError(
-                f"Compra em situação {self.situacao.value} não pode ser atualizada "
-                f"(RN-COMPRAS-026)"
+                f"Compra em situação {self.situacao.value} não pode ser atualizada (RN-COMPRAS-026)"
             )
         if numero is not None:
             self.numero = self._validar_numero(numero)

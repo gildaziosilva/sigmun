@@ -85,21 +85,15 @@ class RegistroAuditoria:
         self.categoria: CategoriaEventoAuditoria = self._validar_categoria(categoria)
         self.tipo_evento: str = self._validar_texto(tipo_evento, "tipo_evento")
         self.ator_id: UUID | None = ator_id
-        self.ator_perfil: str | None = (
-            ator_perfil.strip() if ator_perfil else None
-        )
+        self.ator_perfil: str | None = ator_perfil.strip() if ator_perfil else None
         self.origem: str = self._validar_texto(origem, "origem")
         self.operacao: str = self._validar_texto(operacao, "operacao")
         self.recurso_tipo: str = self._validar_texto(recurso_tipo, "recurso_tipo")
         self.recurso_id: UUID | None = recurso_id
-        self.chave_negocio: str | None = (
-            chave_negocio.strip() if chave_negocio else None
-        )
+        self.chave_negocio: str | None = chave_negocio.strip() if chave_negocio else None
         self.resultado: ResultadoEventoAuditoria = self._validar_resultado(resultado)
         self.correlation_id: UUID | None = correlation_id
-        self.justificativa: str | None = (
-            justificativa.strip() if justificativa else None
-        )
+        self.justificativa: str | None = justificativa.strip() if justificativa else None
         self.detalhes: dict[str, Any] | None = detalhes
         self.created_at: datetime = created_at or datetime.now(UTC)
 

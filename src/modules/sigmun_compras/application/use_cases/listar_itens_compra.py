@@ -31,9 +31,7 @@ class ListarItensCompraUseCase:
         logger.info("Listando itens da compra=%s", query.compra_id)
 
         if not self._repository.exists_compra(query.compra_id):
-            raise CompraNaoEncontradaError(
-                f"Compra {query.compra_id} não encontrada"
-            )
+            raise CompraNaoEncontradaError(f"Compra {query.compra_id} não encontrada")
 
         offset = query.page * query.page_size
 

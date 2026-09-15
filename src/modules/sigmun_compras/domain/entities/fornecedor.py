@@ -51,9 +51,7 @@ class Fornecedor:
         deleted_by: UUID | None = None,
     ) -> None:
         if pessoa_juridica_id is None:
-            raise ValueError(
-                "pessoa_juridica_id é obrigatório (RN-COMPRAS-030)"
-            )
+            raise ValueError("pessoa_juridica_id é obrigatório (RN-COMPRAS-030)")
         self.id: UUID = id or uuid4()
         self.pessoa_juridica_id: UUID = pessoa_juridica_id
         self.situacao_cadastro: SituacaoFornecedor = situacao_cadastro
@@ -71,9 +69,7 @@ class Fornecedor:
         """Inativa o fornecedor (RN-COMPRAS-033)."""
         # RN-COMPRAS-004: não operar sobre fornecedores excluídos.
         if self.foi_excluido():
-            raise ValueError(
-                "Fornecedor excluído não pode ser inativado (RN-COMPRAS-004)"
-            )
+            raise ValueError("Fornecedor excluído não pode ser inativado (RN-COMPRAS-004)")
         self.situacao_cadastro = SituacaoFornecedor.INATIVO
         self._registrar_alteracao(usuario_id)
 
@@ -81,9 +77,7 @@ class Fornecedor:
         """Reativa o fornecedor."""
         # RN-COMPRAS-004: não operar sobre fornecedores excluídos.
         if self.foi_excluido():
-            raise ValueError(
-                "Fornecedor excluído não pode ser ativado (RN-COMPRAS-004)"
-            )
+            raise ValueError("Fornecedor excluído não pode ser ativado (RN-COMPRAS-004)")
         self.situacao_cadastro = SituacaoFornecedor.ATIVO
         self._registrar_alteracao(usuario_id)
 
@@ -91,9 +85,7 @@ class Fornecedor:
         """Suspende o fornecedor."""
         # RN-COMPRAS-004: não operar sobre fornecedores excluídos.
         if self.foi_excluido():
-            raise ValueError(
-                "Fornecedor excluído não pode ser suspenso (RN-COMPRAS-004)"
-            )
+            raise ValueError("Fornecedor excluído não pode ser suspenso (RN-COMPRAS-004)")
         self.situacao_cadastro = SituacaoFornecedor.SUSPENSO
         self._registrar_alteracao(usuario_id)
 

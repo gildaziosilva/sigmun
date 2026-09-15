@@ -52,8 +52,7 @@ class RegistrarProcessoDocumentalUseCase:
         # uq_processos_documentais_numero_ano.
         if self._repository.exists_numero_ano(command.numero, command.ano):
             raise ProcessoDocumentalDuplicadoError(
-                f"Já existe processo documental numero={command.numero} "
-                f"ano={command.ano}"
+                f"Já existe processo documental numero={command.numero} ano={command.ano}"
             )
 
         processo = ProcessoDocumental(

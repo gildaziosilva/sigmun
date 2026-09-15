@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from uuid import UUID
 
 from src.modules.sigmun_compras.application.commands.alterar_situacao_contrato_command import (
     AlterarSituacaoContratoCommand,
@@ -36,14 +37,22 @@ class AlterarSituacaoContratoUseCase:
 
         contrato = self._repository.get_by_id(command.contrato_id)
         if contrato is None or contrato.foi_excluido():
-            raise ContratoNaoEncontradoError(
-                f"Contrato {command.contrato_id} não encontrado"
-            )
+            raise ContratoNaoEncontradoError(f"Contrato {command.contrato_id} não encontrado")
 
         situacao_anterior = contrato.situacao
 
         # Valida a transição (ValueError se inválida).
-        contrato.alterar_situacao(command.nova_situacao, command.usuario_id)
+        if not contrato.pode_transicionar_para(command.nova_situacao):
+            from src.modules.sigmun_compras.domain.entities.contrato import TRANSICOES_VALIDAS
+            validas = sorted(t.value for t in TRANSICOES_VALIDAS[contrato.situacao])
+            raise ValueError(
+                f"Transição {contrato.situacao.value} -> "
+                f"{command.nova_situacao.value} não permitida. "
+                f"Transições válidas a partir de "
+                f"{contrato.situacao.value}: {validas}"
+            )
+        usuario_id = command.usuario_id or UUID("00000000-0000-0000-0000-000000000000")
+        contrato.alterar_situacao(command.nova_situacao, usuario_id)
 
         contrato_atualizado = self._repository.update(contrato)
 

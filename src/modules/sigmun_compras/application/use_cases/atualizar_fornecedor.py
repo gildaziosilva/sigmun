@@ -38,11 +38,12 @@ class AtualizarFornecedorUseCase:
 
         fornecedor = self._repository.get_by_id(command.fornecedor_id)
         if fornecedor is None or fornecedor.foi_excluido():
-            raise FornecedorNaoEncontradoError(
-                f"Fornecedor {command.fornecedor_id} não encontrado"
-            )
+            raise FornecedorNaoEncontradoError(f"Fornecedor {command.fornecedor_id} não encontrado")
 
-        fornecedor.atualizar_situacao(command.situacao_cadastro, command.usuario_id)
+        if command.situacao_cadastro is not None:
+            if command.usuario_id is None:
+                raise ValueError("usuario_id é obrigatório para atualizar fornecedor")
+            fornecedor.atualizar_situacao(command.situacao_cadastro, command.usuario_id)
 
         fornecedor_atualizado = self._repository.update(fornecedor)
 

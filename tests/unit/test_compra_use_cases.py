@@ -152,9 +152,7 @@ def test_registrar_compra_processo_inexistente_lanca_erro(repository):
 
 def test_registrar_compra_fornecedor_inexistente_lanca_erro(repository):
     with pytest.raises(FornecedorNaoEncontradoError):
-        RegistrarCompraUseCase(repository).execute(
-            _command(repository, fornecedor_id=uuid4())
-        )
+        RegistrarCompraUseCase(repository).execute(_command(repository, fornecedor_id=uuid4()))
 
 
 def test_registrar_compra_unidade_inexistente_lanca_erro(repository):
@@ -184,9 +182,7 @@ def test_listar_compras_com_paginacao_e_filtro(repository):
         registrar.execute(_command(repository, numero=f"00{n}/2026"))
     registrar.execute(_command(repository, numero="010/2026", valor_total=Decimal("1.00")))
 
-    pagina = ListarComprasUseCase(repository).execute(
-        ListarComprasQuery(page=0, page_size=2)
-    )
+    pagina = ListarComprasUseCase(repository).execute(ListarComprasQuery(page=0, page_size=2))
     rascunhos = ListarComprasUseCase(repository).execute(
         ListarComprasQuery(situacao=SituacaoCompra.RASCUNHO)
     )
@@ -220,9 +216,7 @@ def test_atualizar_compra_sem_campos_lanca_erro(repository):
     criada = RegistrarCompraUseCase(repository).execute(_command(repository))
 
     with pytest.raises(ValueError):
-        AtualizarCompraUseCase(repository).execute(
-            AtualizarCompraCommand(compra_id=criada.id)
-        )
+        AtualizarCompraUseCase(repository).execute(AtualizarCompraCommand(compra_id=criada.id))
 
 
 def test_atualizar_compra_inexistente_lanca_erro(repository):
@@ -253,11 +247,12 @@ def test_alterar_situacao_valida(repository):
 
 def test_alterar_situacao_invalida_propaga_erro(repository):
     criada = RegistrarCompraUseCase(repository).execute(_command(repository))
+    usuario_id = uuid4()
 
     with pytest.raises(ValueError, match="RN-COMPRAS-026"):
         AlterarSituacaoCompraUseCase(repository).execute(
             AlterarSituacaoCompraCommand(
-                compra_id=criada.id, nova_situacao=SituacaoCompra.CONTRATADO
+                compra_id=criada.id, nova_situacao=SituacaoCompra.CONTRATADO, usuario_id=usuario_id
             )
         )
 
@@ -286,9 +281,7 @@ def test_excluir_compra_marca_soft_delete(repository):
     assert repository._data[criada.id].foi_excluido() is True  # noqa: SLF001
 
     with pytest.raises(CompraNaoEncontradaError):
-        ConsultarCompraUseCase(repository).execute(
-            ConsultarCompraQuery(compra_id=criada.id)
-        )
+        ConsultarCompraUseCase(repository).execute(ConsultarCompraQuery(compra_id=criada.id))
 
 
 def test_excluir_compra_inexistente_lanca_erro(repository):

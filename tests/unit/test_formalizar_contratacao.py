@@ -44,9 +44,7 @@ def _montar_repositorios(criar_homologada: bool = True):
     contratos.add_fornecedor_ativo(fornecedor)
     contratos.add_unidade(unidade)
 
-    situacao = (
-        SituacaoCompra.HOMOLOGADO if criar_homologada else SituacaoCompra.RASCUNHO
-    )
+    situacao = SituacaoCompra.HOMOLOGADO if criar_homologada else SituacaoCompra.RASCUNHO
     compra = Compra(
         processo_documental_id=processo,
         fornecedor_id=fornecedor,

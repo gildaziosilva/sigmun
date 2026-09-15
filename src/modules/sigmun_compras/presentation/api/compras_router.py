@@ -60,11 +60,11 @@ from src.modules.sigmun_compras.application.use_cases.excluir_compra import (
 from src.modules.sigmun_compras.application.use_cases.listar_compras import (
     ListarComprasUseCase,
 )
-from src.modules.sigmun_compras.application.use_cases.registrar_pendencia_compra import (
-    RegistrarPendenciaCompraUseCase,
-)
 from src.modules.sigmun_compras.application.use_cases.registrar_compra import (
     RegistrarCompraUseCase,
+)
+from src.modules.sigmun_compras.application.use_cases.registrar_pendencia_compra import (
+    RegistrarPendenciaCompraUseCase,
 )
 from src.modules.sigmun_compras.domain.entities.compra import Compra, SituacaoCompra
 from src.modules.sigmun_compras.domain.exceptions import (
@@ -121,9 +121,7 @@ def _usuario_id_header(
     response_model=CompraResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Registra uma nova compra (processo de compras)",
-    responses={
-        404: {"description": "Processo documental, fornecedor ou unidade não encontrados"}
-    },
+    responses={404: {"description": "Processo documental, fornecedor ou unidade não encontrados"}},
 )
 def criar_compra(
     payload: CompraCreateRequest,

@@ -36,12 +36,9 @@ class AlterarSituacaoCompraUseCase:
             command.compra_id,
             command.nova_situacao,
         )
-
         compra = self._repository.get_by_id(command.compra_id)
         if compra is None or compra.foi_excluido():
-            raise CompraNaoEncontradaError(
-                f"Compra {command.compra_id} não encontrada"
-            )
+            raise CompraNaoEncontradaError(f"Compra {command.compra_id} não encontrada")
 
         situacao_anterior = compra.situacao
 

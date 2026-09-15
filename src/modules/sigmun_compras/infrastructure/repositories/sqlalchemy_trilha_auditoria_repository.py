@@ -102,9 +102,7 @@ class SqlAlchemyTrilhaAuditoriaRepository(TrilhaAuditoriaRepository):
         limit: int | None = None,
         offset: int = 0,
     ) -> builtins.list[RegistroAuditoria]:
-        stmt = select(TrilhaAuditoriaModel).order_by(
-            TrilhaAuditoriaModel.ocorrido_em.desc()
-        )
+        stmt = select(TrilhaAuditoriaModel).order_by(TrilhaAuditoriaModel.ocorrido_em.desc())
         if data_inicio is not None:
             stmt = stmt.where(TrilhaAuditoriaModel.ocorrido_em >= data_inicio)
         if data_fim is not None:

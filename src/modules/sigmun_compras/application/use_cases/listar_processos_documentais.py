@@ -23,9 +23,7 @@ class ListarProcessosDocumentaisUseCase:
     def __init__(self, repository: ProcessoDocumentalRepository) -> None:
         self._repository = repository
 
-    def execute(
-        self, query: ListarProcessosDocumentaisQuery
-    ) -> list[ProcessoDocumental]:
+    def execute(self, query: ListarProcessosDocumentaisQuery) -> list[ProcessoDocumental]:
         logger.info(
             "Listando processos documentais – unidade=%s ano=%s",
             query.unidade_id,

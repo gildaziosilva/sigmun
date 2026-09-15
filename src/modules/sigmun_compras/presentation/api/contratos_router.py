@@ -17,10 +17,10 @@ Rotas:
 from __future__ import annotations
 
 import logging
-from typing import Annotated, Optional
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
@@ -98,7 +98,6 @@ from src.modules.sigmun_compras.presentation.schemas.contrato_schemas import (
     ContratoUpdateRequest,
     FormalizarContratacaoRequest,
 )
-
 from src.shared.security import (
     UsuarioContexto,
     exigir_autenticacao,
@@ -137,9 +136,7 @@ def get_compra_repository(
 
 
 def get_servico_de_auditoria(
-    repository: Annotated[
-        TrilhaAuditoriaRepository, Depends(get_trilha_auditoria_repository)
-    ],
+    repository: Annotated[TrilhaAuditoriaRepository, Depends(get_trilha_auditoria_repository)],
 ) -> ServicoDeAuditoria:
     """Fornece o ServicoDeAuditoria (025-Estrutura-Tecnica, seção 18)."""
     return ServicoDeAuditoria(repository)
@@ -295,9 +292,7 @@ def formalizar_contratacao(
 )
 def listar_contratos(
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
-    situacao: Annotated[
-        str | None, Query(description="Filtrar por situação")
-    ] = None,
+    situacao: Annotated[str | None, Query(description="Filtrar por situação")] = None,
     fornecedor_id: Annotated[UUID | None, Query(description="Filtrar por fornecedor")] = None,
     unidade_id: Annotated[UUID | None, Query(description="Filtrar por unidade")] = None,
     include_inativos: Annotated[bool, Query(description="Incluir excluídos")] = False,
@@ -488,7 +483,9 @@ def excluir_contrato(
 
     use_case = ExcluirContratoUseCase(repository)
     try:
-        contrato = use_case.execute(ExcluirContratoCommand(contrato_id=contrato_id, usuario_id=usuario_id))
+        contrato = use_case.execute(
+            ExcluirContratoCommand(contrato_id=contrato_id, usuario_id=usuario_id)
+        )
     except ContratoNaoEncontradoError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 

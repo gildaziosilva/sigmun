@@ -37,9 +37,7 @@ class RegistrarItemCompraUseCase:
 
         # Integridade do vínculo: a compra precisa existir.
         if not self._repository.exists_compra(command.compra_id):
-            raise CompraNaoEncontradaError(
-                f"Compra {command.compra_id} não encontrada"
-            )
+            raise CompraNaoEncontradaError(f"Compra {command.compra_id} não encontrada")
 
         item = ItemCompra(
             compra_id=command.compra_id,

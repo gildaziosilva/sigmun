@@ -5,8 +5,6 @@ consulta (seção 42) e a auditoria do próprio acesso (seção 41).
 """
 
 from datetime import datetime
-
-from src.shared.compat import UTC
 from uuid import uuid4
 
 import pytest
@@ -20,6 +18,7 @@ from src.modules.sigmun_compras.domain.entities.registro_auditoria import (
 from src.modules.sigmun_compras.presentation.api.auditoria_router import (
     get_trilha_auditoria_repository,
 )
+from src.shared.compat import UTC
 from tests.unit.test_registro_auditoria import InMemoryTrilhaAuditoriaRepository
 
 
@@ -126,7 +125,6 @@ def test_acesso_a_trilha_eh_auditado(client: TestClient, trilha):
     acessos = [
         e
         for e in trilha.eventos
-        if e.categoria == CategoriaEventoAuditoria.ACESSO
-        and e.tipo_evento == "TrilhaConsultada"
+        if e.categoria == CategoriaEventoAuditoria.ACESSO and e.tipo_evento == "TrilhaConsultada"
     ]
     assert len(acessos) == total_antes - 2 + 1  # 2 semeados; novo acesso registrado

@@ -69,8 +69,7 @@ class ItemCompra:
     def _validar_descricao(descricao: str) -> str:
         if descricao is None or not descricao.strip():
             raise ValueError(
-                "descricao é obrigatória e deve ser adequada ao objeto "
-                "(RN-COMPRAS-011)"
+                "descricao é obrigatória e deve ser adequada ao objeto (RN-COMPRAS-011)"
             )
         return descricao.strip()
 
@@ -92,8 +91,8 @@ class ItemCompra:
 
     def recalcular_valor_total(self) -> Decimal:
         """Recalcula o total do item (quantidade × valor_unitario)."""
-        self.valor_total = (
-            (self.quantidade * self.valor_unitario).quantize(_DOIS_DECIMAIS, rounding=ROUND_HALF_UP)
+        self.valor_total = (self.quantidade * self.valor_unitario).quantize(
+            _DOIS_DECIMAIS, rounding=ROUND_HALF_UP
         )
         return self.valor_total
 

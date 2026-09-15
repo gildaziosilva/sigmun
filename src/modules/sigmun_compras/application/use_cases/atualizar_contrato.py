@@ -49,9 +49,7 @@ class AtualizarContratoUseCase:
 
         contrato = self._repository.get_by_id(command.contrato_id)
         if contrato is None or contrato.foi_excluido():
-            raise ContratoNaoEncontradoError(
-                f"Contrato {command.contrato_id} não encontrado"
-            )
+            raise ContratoNaoEncontradoError(f"Contrato {command.contrato_id} não encontrado")
 
         # RN-COMPRAS-036: unicidade quando o numero mudar.
         if (
@@ -59,9 +57,7 @@ class AtualizarContratoUseCase:
             and command.numero.strip() != contrato.numero
             and self._repository.exists_numero(command.numero, excluir_id=contrato.id)
         ):
-            raise ContratoDuplicadoError(
-                f"Já existe contrato com numero={command.numero}"
-            )
+            raise ContratoDuplicadoError(f"Já existe contrato com numero={command.numero}")
 
         contrato.atualizar_dados(
             numero=command.numero,

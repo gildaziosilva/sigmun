@@ -31,9 +31,7 @@ class FornecedorRepository(ABC):
         """Retorna um fornecedor pelo ID ou None se não existir."""
 
     @abstractmethod
-    def get_by_pessoa_juridica_id(
-        self, pessoa_juridica_id: UUID
-    ) -> Fornecedor | None:
+    def get_by_pessoa_juridica_id(self, pessoa_juridica_id: UUID) -> Fornecedor | None:
         """Retorna um fornecedor pela pessoa jurídica referenciada."""
 
     @abstractmethod

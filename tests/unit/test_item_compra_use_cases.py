@@ -70,8 +70,7 @@ class InMemoryItemCompraRepository(ItemCompraRepository):
         itens = [
             i
             for i in self._data.values()
-            if i.compra_id == compra_id
-            and (include_deleted or not i.foi_excluido())
+            if i.compra_id == compra_id and (include_deleted or not i.foi_excluido())
         ]
         itens.sort(key=lambda i: i.created_at)
         if limit is None:
@@ -224,9 +223,7 @@ def test_atualizar_item_recalcula_total(repository):
     )
 
     atualizado = AtualizarItemCompraUseCase(repository).execute(
-        AtualizarItemCompraCommand(
-            item_id=criado.id, quantidade=Decimal("7"), usuario_id=usuario
-        )
+        AtualizarItemCompraCommand(item_id=criado.id, quantidade=Decimal("7"), usuario_id=usuario)
     )
 
     assert atualizado.valor_unitario == Decimal("300.00")
@@ -280,9 +277,7 @@ def test_remover_item_marca_soft_delete(repository):
     assert removido.foi_excluido() is True
 
     with pytest.raises(ItemNaoEncontradoError):
-        ConsultarItemCompraUseCase(repository).execute(
-            ConsultarItemCompraQuery(item_id=criado.id)
-        )
+        ConsultarItemCompraUseCase(repository).execute(ConsultarItemCompraQuery(item_id=criado.id))
 
 
 def test_remover_item_inexistente_lanca_erro(repository):

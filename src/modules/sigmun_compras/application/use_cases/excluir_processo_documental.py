@@ -26,9 +26,7 @@ class ExcluirProcessoDocumentalUseCase:
     def __init__(self, repository: ProcessoDocumentalRepository) -> None:
         self._repository = repository
 
-    def execute(
-        self, command: ExcluirProcessoDocumentalCommand
-    ) -> ProcessoDocumental:
+    def execute(self, command: ExcluirProcessoDocumentalCommand) -> ProcessoDocumental:
         logger.info("Excluindo processo documental – id=%s", command.processo_id)
 
         processo = self._repository.get_by_id(command.processo_id)
@@ -37,6 +35,8 @@ class ExcluirProcessoDocumentalUseCase:
                 f"Processo documental {command.processo_id} não encontrado"
             )
 
+        if command.usuario_id is None:
+            raise ValueError("usuario_id é obrigatório para excluir processo documental")
         processo.excluir(command.usuario_id)
         self._repository.delete(processo.id, command.usuario_id)
 
