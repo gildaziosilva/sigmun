@@ -1,18 +1,15 @@
 """Use Case: Classificar Documento."""
 
 from dataclasses import dataclass
-from typing import Optional
 
-from ..interfaces import (
-    RepositorioDocumento,
-    RepositorioClassificacaoDocumental,
-)
-from ...domain.entities import Documento
 from ...domain.exceptions import (
-    DocumentoNaoEncontradoError,
     ClassificacaoDocumentalNaoEncontradaError,
+    DocumentoNaoEncontradoError,
 )
-from ...domain.events import EventoDocumentoClassificado
+from ..interfaces import (
+    RepositorioClassificacaoDocumental,
+    RepositorioDocumento,
+)
 
 
 @dataclass
@@ -48,10 +45,4 @@ class ClassificarDocumentoUseCase:
         documento.tipo_documental_id = dto.classificacao_id
         self._repo_doc.save(documento)
 
-        # Evento de domínio
-        evento = EventoDocumentoClassificado(
-            documento_id=documento.id,
-            usuario_id=dto.autor_id,
-            payload={"classificacao_id": dto.classificacao_id},
-        )
         return True

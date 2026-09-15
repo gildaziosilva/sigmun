@@ -6,12 +6,12 @@ RN-GDO-008 — Arquivamento somente após conclusão (documento ativo).
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..interfaces import RepositorioDocumento, RepositorioArquivamento
 from ...domain.entities import ArquivamentoDocumento, StatusDocumento
 from ...domain.exceptions import (
-    DocumentoNaoEncontradoError,
     ArquivamentoInvalidoError,
+    DocumentoNaoEncontradoError,
 )
+from ..interfaces import RepositorioArquivamento, RepositorioDocumento
 
 
 @dataclass
@@ -36,17 +36,13 @@ class ArquivarDocumentoUseCase:
     def execute(self, dto: ArquivarDocumentoInputDTO) -> ArquivamentoDocumento:
         documento = self._repo_doc.get_by_id(dto.documento_id)
         if not documento:
-            raise DocumentoNaoEncontradoError(
-                f"Documento {dto.documento_id} não encontrado"
-            )
+            raise DocumentoNaoEncontradoError(f"Documento {dto.documento_id} não encontrado")
 
         # RN-GDO-008: apenas documentos ativos podem ser arquivados
         if documento.status == StatusDocumento.ARQUIVADO:
             raise ArquivamentoInvalidoError("Documento já se encontra arquivado")
         if documento.status in (StatusDocumento.ENCERRADO, StatusDocumento.REJEITADO):
-            raise ArquivamentoInvalidoError(
-                "Documento encerrado/rejeitado não pode ser arquivado"
-            )
+            raise ArquivamentoInvalidoError("Documento encerrado/rejeitado não pode ser arquivado")
 
         agora = datetime.utcnow()
         arquivamento = ArquivamentoDocumento(

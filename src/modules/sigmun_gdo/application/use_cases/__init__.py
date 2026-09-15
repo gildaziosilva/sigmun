@@ -1,38 +1,38 @@
 """Casos de uso da aplicação de Gestão Documental."""
 
-from .criar_documento_use_case import (
-    CriarDocumentoUseCase,
-    CriarDocumentoInputDTO,
-    CriarDocumentoOutputDTO,
-)
-from .classificar_documento_use_case import ClassificarDocumentoUseCase
-from .tramitar_documento_use_case import TramitarDocumentoUseCase
 from .arquivar_documento_use_case import (
-    ArquivarDocumentoUseCase,
     ArquivarDocumentoInputDTO,
+    ArquivarDocumentoUseCase,
 )
 from .assinar_documento_use_case import (
-    AssinarDocumentoUseCase,
     AssinarDocumentoInputDTO,
+    AssinarDocumentoUseCase,
+)
+from .avaliar_destinacao_use_case import (
+    AvaliarDestinacaoInputDTO,
+    AvaliarDestinacaoUseCase,
+    TipoDestinacaoAplicada,
+)
+from .classificar_documento_use_case import ClassificarDocumentoUseCase
+from .criar_documento_use_case import (
+    CriarDocumentoInputDTO,
+    CriarDocumentoOutputDTO,
+    CriarDocumentoUseCase,
 )
 from .criar_versao_documento_use_case import (
     CriarVersaoDocumentoUseCase,
     CriarVersaoInputDTO,
 )
-from .avaliar_destinacao_use_case import (
-    AvaliarDestinacaoUseCase,
-    AvaliarDestinacaoInputDTO,
-    TipoDestinacaoAplicada,
-)
 from .tipo_documento_use_cases import (
-    CriarTipoDocumentoUseCase,
-    CriarTipoDocumentoInputDTO,
     AtivarTipoDocumentoUseCase,
-    InativarTipoDocumentoUseCase,
     BuscarTipoDocumentoUseCase,
+    CriarTipoDocumentoInputDTO,
+    CriarTipoDocumentoUseCase,
+    InativarTipoDocumentoUseCase,
     ListarTiposDocumentoUseCase,
     TipoDocumentoOutputDTO,
 )
+from .tramitar_documento_use_case import TramitarDocumentoUseCase
 
 __all__ = [
     "CriarDocumentoUseCase",

@@ -1,18 +1,18 @@
 """Interfaces de repositório da aplicação de Gestão Documental."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Optional
 
 from ...domain.entities import (
-    Documento,
-    VersaoDocumento,
-    TramitacaoDocumento,
-    ProcessoDocumento,
-    ClassificacaoDocumental,
-    TabelaTemporalidade,
     ArquivamentoDocumento,
     AssinaturaDocumento,
+    ClassificacaoDocumental,
+    Documento,
+    ProcessoDocumento,
+    TabelaTemporalidade,
     TipoDocumental,
+    TramitacaoDocumento,
+    VersaoDocumento,
 )
 
 
@@ -24,19 +24,19 @@ class RepositorioDocumento(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[Documento]:
+    def get_by_id(self, id: str) -> Documento | None:
         pass
 
     @abstractmethod
-    def get_by_codigo(self, codigo: str, ano: int) -> Optional[Documento]:
+    def get_by_codigo(self, codigo: str, ano: int) -> Documento | None:
         pass
 
     @abstractmethod
-    def find_by_processo(self, processo_id: str) -> List[Documento]:
+    def find_by_processo(self, processo_id: str) -> list[Documento]:
         pass
 
     @abstractmethod
-    def find_ativos(self) -> List[Documento]:
+    def find_ativos(self) -> list[Documento]:
         pass
 
     @abstractmethod
@@ -52,15 +52,15 @@ class RepositorioVersaoDocumento(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[VersaoDocumento]:
+    def get_by_id(self, id: str) -> VersaoDocumento | None:
         pass
 
     @abstractmethod
-    def find_by_documento(self, documento_id: str) -> List[VersaoDocumento]:
+    def find_by_documento(self, documento_id: str) -> list[VersaoDocumento]:
         pass
 
     @abstractmethod
-    def get_ultima_versao(self, documento_id: str) -> Optional[VersaoDocumento]:
+    def get_ultima_versao(self, documento_id: str) -> VersaoDocumento | None:
         pass
 
 
@@ -72,11 +72,11 @@ class RepositorioTramitacao(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[TramitacaoDocumento]:
+    def get_by_id(self, id: str) -> TramitacaoDocumento | None:
         pass
 
     @abstractmethod
-    def find_by_documento(self, documento_id: str) -> List[TramitacaoDocumento]:
+    def find_by_documento(self, documento_id: str) -> list[TramitacaoDocumento]:
         pass
 
 
@@ -88,11 +88,11 @@ class RepositorioProcessoDocumento(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[ProcessoDocumento]:
+    def get_by_id(self, id: str) -> ProcessoDocumento | None:
         pass
 
     @abstractmethod
-    def find_all_abertos(self) -> List[ProcessoDocumento]:
+    def find_all_abertos(self) -> list[ProcessoDocumento]:
         pass
 
 
@@ -104,15 +104,15 @@ class RepositorioClassificacaoDocumental(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[ClassificacaoDocumental]:
+    def get_by_id(self, id: str) -> ClassificacaoDocumental | None:
         pass
 
     @abstractmethod
-    def get_by_codigo(self, codigo: str) -> Optional[ClassificacaoDocumental]:
+    def get_by_codigo(self, codigo: str) -> ClassificacaoDocumental | None:
         pass
 
     @abstractmethod
-    def find_all(self) -> List[ClassificacaoDocumental]:
+    def find_all(self) -> list[ClassificacaoDocumental]:
         pass
 
 
@@ -124,11 +124,11 @@ class RepositorioTabelaTemporalidade(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[TabelaTemporalidade]:
+    def get_by_id(self, id: str) -> TabelaTemporalidade | None:
         pass
 
     @abstractmethod
-    def get_by_codigo(self, codigo: str) -> Optional[TabelaTemporalidade]:
+    def get_by_codigo(self, codigo: str) -> TabelaTemporalidade | None:
         pass
 
 
@@ -144,7 +144,7 @@ class RepositorioArquivamento(ABC):
         pass
 
     @abstractmethod
-    def find_by_documento(self, documento_id: str) -> List["ArquivamentoDocumento"]:
+    def find_by_documento(self, documento_id: str) -> list["ArquivamentoDocumento"]:
         pass
 
 
@@ -160,7 +160,7 @@ class RepositorioAssinatura(ABC):
         pass
 
     @abstractmethod
-    def find_by_documento(self, documento_id: str) -> List["AssinaturaDocumento"]:
+    def find_by_documento(self, documento_id: str) -> list["AssinaturaDocumento"]:
         pass
 
 
@@ -176,11 +176,11 @@ class RepositorioTipoDocumental(ABC):
         pass
 
     @abstractmethod
-    def find_ativos(self) -> List["TipoDocumental"]:
+    def find_ativos(self) -> list["TipoDocumental"]:
         pass
 
     @abstractmethod
-    def find_all(self) -> List["TipoDocumental"]:
+    def find_all(self) -> list["TipoDocumental"]:
         pass
 
 

@@ -8,6 +8,7 @@ from uuid import uuid4
 @dataclass
 class EventoDocumento:
     """Evento de domínio genérico para documentos."""
+
     evento_id: str = field(default_factory=lambda: str(uuid4()))
     timestamp: datetime = field(default_factory=datetime.utcnow)
     documento_id: str = ""
@@ -21,46 +22,55 @@ class EventoDocumento:
 
 class EventoDocumentoCriado(EventoDocumento):
     """Evento disparado quando um documento é criado."""
+
     pass
 
 
 class EventoDocumentoCapturado(EventoDocumento):
     """Evento disparado quando um documento é capturado/armazenado."""
+
     pass
 
 
 class EventoDocumentoClassificado(EventoDocumento):
     """Evento disparado quando um documento é classificado."""
+
     pass
 
 
 class EventoDocumentoTramitado(EventoDocumento):
     """Evento disparado quando um documento é tramitado."""
+
     pass
 
 
 class EventoDocumentoArquivado(EventoDocumento):
     """Evento disparado quando um documento é arquivado."""
+
     pass
 
 
 class EventoDocumentoRejeitado(EventoDocumento):
     """Evento disparado quando um documento é rejeitado."""
+
     pass
 
 
 class EventoDocumentoAssinado(EventoDocumento):
     """Evento disparado quando um documento é assinado."""
+
     pass
 
 
 class EventoDocumentoEliminado(EventoDocumento):
     """Evento disparado quando um documento é eliminado."""
+
     pass
 
 
 class EventoDocumentoDestinado(EventoDocumento):
     """Evento disparado quando um documento é destinado."""
+
     pass
 
 

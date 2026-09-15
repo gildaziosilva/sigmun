@@ -6,12 +6,12 @@ Numera incrementalmente as versões (RN-GDO-005 — versões imutáveis).
 from dataclasses import dataclass
 from datetime import datetime
 
+from ...domain.entities import VersaoDocumento
+from ...domain.exceptions import DocumentoNaoEncontradoError
 from ..interfaces import (
     RepositorioDocumento,
     RepositorioVersaoDocumento,
 )
-from ...domain.entities import VersaoDocumento
-from ...domain.exceptions import DocumentoNaoEncontradoError
 
 
 @dataclass
@@ -36,9 +36,7 @@ class CriarVersaoDocumentoUseCase:
     def execute(self, dto: CriarVersaoInputDTO) -> VersaoDocumento:
         documento = self._repo_doc.get_by_id(dto.documento_id)
         if not documento:
-            raise DocumentoNaoEncontradoError(
-                f"Documento {dto.documento_id} não encontrado"
-            )
+            raise DocumentoNaoEncontradoError(f"Documento {dto.documento_id} não encontrado")
 
         ultima = self._repo_versao.get_ultima_versao(dto.documento_id)
         numero = (ultima.numero_versao + 1) if ultima else 1

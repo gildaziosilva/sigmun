@@ -8,6 +8,7 @@ from uuid import uuid4
 
 class StatusDocumento(Enum):
     """Status de um documento."""
+
     RASCUNHO = "rascunho"
     ATIVO = "ativo"
     ARQUIVADO = "arquivado"
@@ -17,6 +18,7 @@ class StatusDocumento(Enum):
 
 class TipoDestinacao(Enum):
     """Tipo de destinação de documento."""
+
     ELIMINACAO = "eliminacao"
     GUARDA_PERMANENTE = "guarda_permanente"
     PRORROGACAO = "prorrogacao"
@@ -24,6 +26,7 @@ class TipoDestinacao(Enum):
 
 class TipoTramitacao(Enum):
     """Tipo de movimentação de tramitação."""
+
     ENVIO = "envio"
     RECEPCAO = "recepcao"
     DEVOLVIDO = "devolvido"
@@ -34,6 +37,7 @@ class TipoTramitacao(Enum):
 @dataclass
 class ClassificacaoDocumental:
     """Entidade de Classificação Documental."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     codigo: str = ""
     nome: str = ""
@@ -47,17 +51,30 @@ class ClassificacaoDocumental:
     is_deleted: bool = False
 
     @property
-    def is_active(self) -> bool:
+    def esta_ativo(self) -> bool:
         return not self.is_deleted
 
     @property
-    def is_root(self) -> bool:
+    def foi_excluido(self) -> bool:
+        return self.is_deleted
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
+
+    @property
+    def eh_raiz(self) -> bool:
         return not self.classificacao_pai_id
+
+    @property
+    def is_root(self) -> bool:
+        return self.eh_raiz
 
 
 @dataclass
 class Documento:
     """Entidade de Documento (núcleo do DOM-GDO)."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     codigo: str = ""
     numero: str = ""
@@ -84,8 +101,16 @@ class Documento:
     is_deleted: bool = False
 
     @property
-    def is_active(self) -> bool:
+    def esta_ativo(self) -> bool:
         return not self.is_deleted
+
+    @property
+    def foi_excluido(self) -> bool:
+        return self.is_deleted
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
 
     @property
     def is_assinado(self) -> bool:
@@ -95,6 +120,7 @@ class Documento:
 @dataclass
 class VersaoDocumento:
     """Entidade de Versão de Documento (imutável após criação)."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     documento_id: str = ""
     numero_versao: int = 1
@@ -105,13 +131,22 @@ class VersaoDocumento:
     is_deleted: bool = False
 
     @property
-    def is_active(self) -> bool:
+    def esta_ativo(self) -> bool:
         return not self.is_deleted
+
+    @property
+    def foi_excluido(self) -> bool:
+        return self.is_deleted
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
 
 
 @dataclass
 class TramitacaoDocumento:
     """Entidade de Tramitação de Documento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     documento_id: str = ""
     unidade_origem_id: str = ""
@@ -134,6 +169,7 @@ class TramitacaoDocumento:
 @dataclass
 class ProcessoDocumento:
     """Entidade de Processo Documental."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     numero: str = ""
     ano: int = 0
@@ -151,13 +187,22 @@ class ProcessoDocumento:
     is_deleted: bool = False
 
     @property
-    def is_active(self) -> bool:
+    def esta_ativo(self) -> bool:
         return not self.is_deleted
+
+    @property
+    def foi_excluido(self) -> bool:
+        return self.is_deleted
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
 
 
 @dataclass
 class TabelaTemporalidade:
     """Entidade de Tabela de Temporalidade."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     codigo: str = ""
     nome: str = ""
@@ -171,13 +216,22 @@ class TabelaTemporalidade:
     is_deleted: bool = False
 
     @property
-    def is_active(self) -> bool:
+    def esta_ativo(self) -> bool:
         return not self.is_deleted
+
+    @property
+    def foi_excluido(self) -> bool:
+        return self.is_deleted
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
 
 
 @dataclass
 class TipoDocumental:
     """Entidade de Tipo Documental (referência para documentos)."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     codigo: str = ""
     nome: str = ""
@@ -194,6 +248,7 @@ class TipoDocumental:
 @dataclass
 class ArquivamentoDocumento:
     """Entidade de Arquivamento de Documento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     documento_id: str = ""
     data_arquivamento: datetime = field(default_factory=datetime.utcnow)
@@ -210,6 +265,7 @@ class ArquivamentoDocumento:
 @dataclass
 class AssinaturaDocumento:
     """Entidade de Assinatura Digital de Documento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     documento_id: str = ""
     signatario_id: str = ""

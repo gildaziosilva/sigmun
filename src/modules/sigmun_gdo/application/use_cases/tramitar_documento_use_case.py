@@ -2,11 +2,10 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
-from ..interfaces import RepositorioDocumento, RepositorioTramitacao
-from ...domain.entities import TramitacaoDocumento, TipoTramitacao
+from ...domain.entities import TipoTramitacao, TramitacaoDocumento
 from ...domain.exceptions import DocumentoNaoEncontradoError
+from ..interfaces import RepositorioDocumento, RepositorioTramitacao
 
 
 @dataclass

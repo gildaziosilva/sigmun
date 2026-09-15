@@ -1,7 +1,5 @@
 """Repositório SQLAlchemy para TabelaTemporalidade."""
 
-from typing import List, Optional
-
 from sqlalchemy.orm import Session
 
 from ...application.interfaces import RepositorioTabelaTemporalidade
@@ -30,22 +28,30 @@ class SQLAlchemyTabelaTemporalidadeRepository(RepositorioTabelaTemporalidade):
         self._session.flush()
         return tabela
 
-    def get_by_id(self, id: str) -> Optional[TabelaTemporalidade]:
-        model = self._session.query(TabelaTemporalidadeModel).filter(
-            TabelaTemporalidadeModel.id == id,
-            TabelaTemporalidadeModel.deleted_at.is_(None),
-            TabelaTemporalidadeModel.is_ativo == True,
-        ).first()
+    def get_by_id(self, id: str) -> TabelaTemporalidade | None:
+        model = (
+            self._session.query(TabelaTemporalidadeModel)
+            .filter(
+                TabelaTemporalidadeModel.id == id,
+                TabelaTemporalidadeModel.deleted_at.is_(None),
+                TabelaTemporalidadeModel.is_ativo.is_(True),
+            )
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def get_by_codigo(self, codigo: str) -> Optional[TabelaTemporalidade]:
-        model = self._session.query(TabelaTemporalidadeModel).filter(
-            TabelaTemporalidadeModel.codigo == codigo,
-            TabelaTemporalidadeModel.deleted_at.is_(None),
-            TabelaTemporalidadeModel.is_ativo == True,
-        ).first()
+    def get_by_codigo(self, codigo: str) -> TabelaTemporalidade | None:
+        model = (
+            self._session.query(TabelaTemporalidadeModel)
+            .filter(
+                TabelaTemporalidadeModel.codigo == codigo,
+                TabelaTemporalidadeModel.deleted_at.is_(None),
+                TabelaTemporalidadeModel.is_ativo.is_(True),
+            )
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)

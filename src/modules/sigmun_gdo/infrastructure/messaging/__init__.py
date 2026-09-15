@@ -6,8 +6,8 @@ na MESMA transação do negócio e, em seguida, despachados para o
 barramento (Redis Streams) pelo dispatcher.
 """
 
-from .outbox import TopicosGDO, PublicadorOutboxGDO
 from .dispatcher import DespachadorRedisStreams, despachar_eventos_pendentes
+from .outbox import PublicadorOutboxGDO, TopicosGDO
 
 __all__ = [
     "TopicosGDO",

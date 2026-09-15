@@ -1,14 +1,13 @@
 """Use Cases para Tipo Documental."""
 
 from dataclasses import dataclass
-from typing import List
 
-from ..interfaces import RepositorioTipoDocumental
 from ...domain.entities import TipoDocumental
 from ...domain.exceptions import (
     CodigoDocumentalDuplicadoError,
     TipoDocumentalInvalidoError,
 )
+from ..interfaces import RepositorioTipoDocumental
 
 
 @dataclass
@@ -61,9 +60,7 @@ class AtivarTipoDocumentoUseCase:
         tipos = self._repo.find_all()
         tipo = next((t for t in tipos if t.codigo == codigo), None)
         if not tipo:
-            raise TipoDocumentalInvalidoError(
-                f"Tipo documental '{codigo}' não encontrado"
-            )
+            raise TipoDocumentalInvalidoError(f"Tipo documental '{codigo}' não encontrado")
         tipo.is_ativo = True
         salvo = self._repo.save(tipo)
         return _to_output(salvo)
@@ -79,9 +76,7 @@ class InativarTipoDocumentoUseCase:
         tipos = self._repo.find_all()
         tipo = next((t for t in tipos if t.codigo == codigo), None)
         if not tipo:
-            raise TipoDocumentalInvalidoError(
-                f"Tipo documental '{codigo}' não encontrado"
-            )
+            raise TipoDocumentalInvalidoError(f"Tipo documental '{codigo}' não encontrado")
         tipo.is_ativo = False
         salvo = self._repo.save(tipo)
         return _to_output(salvo)
@@ -97,9 +92,7 @@ class BuscarTipoDocumentoUseCase:
         tipos = self._repo.find_all()
         tipo = next((t for t in tipos if t.codigo == codigo), None)
         if not tipo:
-            raise TipoDocumentalInvalidoError(
-                f"Tipo documental '{codigo}' não encontrado"
-            )
+            raise TipoDocumentalInvalidoError(f"Tipo documental '{codigo}' não encontrado")
         return _to_output(tipo)
 
 
@@ -109,7 +102,7 @@ class ListarTiposDocumentoUseCase:
     def __init__(self, repositorio: RepositorioTipoDocumental):
         self._repo = repositorio
 
-    def execute(self) -> List[TipoDocumentoOutputDTO]:
+    def execute(self) -> list[TipoDocumentoOutputDTO]:
         return [_to_output(t) for t in self._repo.find_ativos()]
 
 
@@ -121,3 +114,10 @@ def _to_output(tipo: TipoDocumental) -> TipoDocumentoOutputDTO:
         descricao=tipo.descricao,
         is_ativo=tipo.is_ativo,
     )
+
+
+# ---------------------------------------------------------------------------
+# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar).
+# ---------------------------------------------------------------------------
+RegistrarTipoDocumentoUseCase = CriarTipoDocumentoUseCase
+ConsultarTipoDocumentoUseCase = BuscarTipoDocumentoUseCase

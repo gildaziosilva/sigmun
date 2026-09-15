@@ -1,108 +1,130 @@
 """Exceções de domínio do módulo de Gestão Documental."""
 
 
-class DomainException(Exception):
-    """Exceção base do domínio."""
+class DocumentalDomainError(Exception):
+    """Base das exceções de negócio do domínio Documental (espelho DOM-COMPRAS-001)."""
+
     pass
 
 
-class DocumentoNaoEncontradoError(DomainException):
+class DocumentoNaoEncontradoError(DocumentalDomainError):
     """Documento não encontrado."""
+
     pass
 
 
-class DocumentoJaExisteError(DomainException):
+class DocumentoJaCadastradoError(DocumentalDomainError):
     """Documento já existe."""
+
     pass
 
 
-class VersaoDocumentoNaoEncontradaError(DomainException):
+class VersaoDocumentoNaoEncontradaError(DocumentalDomainError):
     """Versão de documento não encontrada."""
+
     pass
 
 
-class VersaoImutavelError(DomainException):
+class VersaoImutavelError(DocumentalDomainError):
     """Tentativa de modificar uma versão imutável."""
+
     pass
 
 
-class CodigoDocumentalDuplicadoError(DomainException):
+class CodigoDocumentalDuplicadoError(DocumentalDomainError):
     """Código documental já utilizado por outro tipo."""
+
     pass
 
 
-class IntegridadeInvalidaError(DomainException):
+class IntegridadeInvalidaError(DocumentalDomainError):
     """Hash de integridade inválido ou inconsistente."""
+
     pass
 
 
-class ClassificacaoDocumentalNaoEncontradaError(DomainException):
+class ClassificacaoDocumentalNaoEncontradaError(DocumentalDomainError):
     """Classificação documental não encontrada."""
+
     pass
 
 
-class ClassificacaoDocumentalJaExisteError(DomainException):
+class ClassificacaoDocumentalDuplicadaError(DocumentalDomainError):
     """Classificação documental já cadastrada."""
+
     pass
 
 
-class TramitacaoNaoEncontradaError(DomainException):
+class TramitacaoNaoEncontradaError(DocumentalDomainError):
     """Tramitação não encontrada."""
+
     pass
 
 
-class ProcessoDocumentalNaoEncontradoError(DomainException):
+class ProcessoDocumentalNaoEncontradoError(DocumentalDomainError):
     """Processo documental não encontrado."""
+
     pass
 
 
-class ProcessoDocumentalJaExisteError(DomainException):
+class ProcessoDocumentalDuplicadoError(DocumentalDomainError):
     """Processo documental já existe."""
+
     pass
 
 
-class PermissaoNegadaError(DomainException):
+class PermissaoNegadaError(DocumentalDomainError):
     """Permissão negada para a operação solicitada."""
+
     pass
 
 
-class DocumentoNaoAssinadoError(DomainException):
+class DocumentoNaoAssinadoError(DocumentalDomainError):
     """Documento não possui assinatura válida."""
+
     pass
 
 
-class TemporalidadeNaoEncontradaError(DomainException):
+class TemporalidadeNaoEncontradaError(DocumentalDomainError):
     """Temporalidade não encontrada."""
+
     pass
 
 
-class ArquivamentoInvalidoError(DomainException):
+class ArquivamentoInvalidoError(DocumentalDomainError):
     """Operação de arquivamento inválida (documento em fase de corrente)."""
+
     pass
 
 
-class EliminacaoNaoAutorizadaError(DomainException):
+class EliminacaoNaoAutorizadaError(DocumentalDomainError):
     """Eliminação não autorizada (falta de autoridade homologadora)."""
+
     pass
 
 
-class TipoDocumentalInvalidoError(DomainException):
+class TipoDocumentalInvalidoError(DocumentalDomainError):
     """Tipo documental não encontrado ou inativo."""
+
     pass
 
 
 __all__ = [
+    "DocumentalDomainError",
     "DomainException",
     "DocumentoNaoEncontradoError",
+    "DocumentoJaCadastradoError",
     "DocumentoJaExisteError",
     "VersaoDocumentoNaoEncontradaError",
     "VersaoImutavelError",
     "CodigoDocumentalDuplicadoError",
     "IntegridadeInvalidaError",
     "ClassificacaoDocumentalNaoEncontradaError",
+    "ClassificacaoDocumentalDuplicadaError",
     "ClassificacaoDocumentalJaExisteError",
     "TramitacaoNaoEncontradaError",
     "ProcessoDocumentalNaoEncontradoError",
+    "ProcessoDocumentalDuplicadoError",
     "ProcessoDocumentalJaExisteError",
     "PermissaoNegadaError",
     "DocumentoNaoAssinadoError",
@@ -111,3 +133,12 @@ __all__ = [
     "EliminacaoNaoAutorizadaError",
     "TipoDocumentalInvalidoError",
 ]
+
+
+# ---------------------------------------------------------------------------
+# Aliases de compatibilidade.
+# ---------------------------------------------------------------------------
+DomainException = DocumentalDomainError
+DocumentoJaExisteError = DocumentoJaCadastradoError
+ClassificacaoDocumentalJaExisteError = ClassificacaoDocumentalDuplicadaError
+ProcessoDocumentalJaExisteError = ProcessoDocumentalDuplicadoError

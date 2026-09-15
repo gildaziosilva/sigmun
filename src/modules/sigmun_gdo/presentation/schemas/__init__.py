@@ -3,16 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.modules.sigmun_gdo.domain.entities import (
-    StatusDocumento,
     TipoDestinacao,
     TipoTramitacao,
 )
-
 
 # =============================================================================
 # Schemas de Documento
@@ -21,6 +18,7 @@ from src.modules.sigmun_gdo.domain.entities import (
 
 class DocumentoCreateRequest(BaseModel):
     """Payload de criação de documento."""
+
     codigo: str = Field(..., min_length=3, max_length=100)
     numero: str = Field(..., min_length=1, max_length=50)
     ano: int = Field(..., ge=1900, le=2100)
@@ -37,6 +35,7 @@ class DocumentoCreateRequest(BaseModel):
 
 class DocumentoResponse(BaseModel):
     """Representação de um documento."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     codigo: str
@@ -65,6 +64,7 @@ class DocumentoResponse(BaseModel):
 
 class DocumentoListResponse(BaseModel):
     """Envelope de listagem de documentos."""
+
     total: int
     page: int
     page_size: int
@@ -73,6 +73,7 @@ class DocumentoListResponse(BaseModel):
 
 class DocumentoCapturaRequest(BaseModel):
     """Payload para captura de documento via upload."""
+
     codigo: str = Field(..., min_length=3, max_length=100)
     numero: str = Field(..., min_length=1, max_length=50)
     ano: int = Field(..., ge=1900, le=2100)
@@ -93,6 +94,7 @@ class DocumentoCapturaRequest(BaseModel):
 
 class TramitacaoCreateRequest(BaseModel):
     """Payload de criação de tramitação."""
+
     documento_id: str | None = None
     unidade_origem_id: str
     unidade_destino_id: str
@@ -103,6 +105,7 @@ class TramitacaoCreateRequest(BaseModel):
 
 class TramitacaoResponse(BaseModel):
     """Representação de uma tramitação."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     documento_id: str
@@ -124,6 +127,7 @@ class TramitacaoResponse(BaseModel):
 
 class ClassificacaoCreateRequest(BaseModel):
     """Payload de criação de classificação."""
+
     codigo: str = Field(..., min_length=1, max_length=100)
     nome: str = Field(..., min_length=3, max_length=200)
     descricao: str | None = None
@@ -135,6 +139,7 @@ class ClassificacaoCreateRequest(BaseModel):
 
 class ClassificacaoResponse(BaseModel):
     """Representação de uma classificação."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     codigo: str
@@ -150,6 +155,7 @@ class ClassificacaoResponse(BaseModel):
 
 class ClassificacaoListResponse(BaseModel):
     """Envelope de listagem de classificações."""
+
     total: int
     page: int
     page_size: int
@@ -163,6 +169,7 @@ class ClassificacaoListResponse(BaseModel):
 
 class ProcessoDocumentoCreateRequest(BaseModel):
     """Payload de criação de processo."""
+
     numero: str = Field(..., min_length=1, max_length=50)
     ano: int = Field(..., ge=1900, le=2100)
     tipo_processo_id: str = Field(..., min_length=1)
@@ -173,6 +180,7 @@ class ProcessoDocumentoCreateRequest(BaseModel):
 
 class ProcessoDocumentoResponse(BaseModel):
     """Representação de um processo documental."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     numero: str
@@ -195,6 +203,7 @@ class ProcessoDocumentoResponse(BaseModel):
 
 class TabelaTemporalidadeCreateRequest(BaseModel):
     """Payload de criação de tabela de temporalidade."""
+
     codigo: str = Field(..., min_length=1, max_length=100)
     nome: str = Field(..., min_length=3, max_length=200)
     prazo_tempo: int = Field(..., ge=0)
@@ -205,6 +214,7 @@ class TabelaTemporalidadeCreateRequest(BaseModel):
 
 class TabelaTemporalidadeResponse(BaseModel):
     """Representação de uma tabela de temporalidade."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     codigo: str
@@ -224,6 +234,7 @@ class TabelaTemporalidadeResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Schema de erro padrão."""
+
     detail: str
 
 
@@ -234,6 +245,7 @@ class ErrorResponse(BaseModel):
 
 class ArquivamentoCreateRequest(BaseModel):
     """Payload de arquivamento de documento."""
+
     unidade_arquivo_id: str = Field(..., min_length=1)
     autor_id: str = Field(..., min_length=1)
     observacao: str | None = None
@@ -241,6 +253,7 @@ class ArquivamentoCreateRequest(BaseModel):
 
 class ArquivamentoResponse(BaseModel):
     """Representação de um arquivamento."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     documento_id: str
@@ -258,14 +271,20 @@ class ArquivamentoResponse(BaseModel):
 
 class AssinaturaCreateRequest(BaseModel):
     """Payload de assinatura digital de documento."""
+
     signatario_id: str = Field(..., min_length=1)
-    conteudo: str = Field(..., min_length=1, description="Conteúdo a ser assinado (hash SHA-256 calculado pelo serviço)")
+    conteudo: str = Field(
+        ...,
+        min_length=1,
+        description="Conteúdo a ser assinado (hash SHA-256 calculado pelo serviço)",
+    )
     autor_id: str = Field(..., min_length=1)
     certificado_id: str | None = None
 
 
 class AssinaturaResponse(BaseModel):
     """Representação de uma assinatura digital."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     documento_id: str
@@ -284,6 +303,7 @@ class AssinaturaResponse(BaseModel):
 
 class VersaoCreateRequest(BaseModel):
     """Payload de criação de versão de documento."""
+
     conteudo_ref: str = Field(..., min_length=1)
     autor_id: str = Field(..., min_length=1)
     hash_integridade: str | None = None
@@ -291,6 +311,7 @@ class VersaoCreateRequest(BaseModel):
 
 class VersaoDocumentoResponse(BaseModel):
     """Representação de uma versão de documento."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     documento_id: str
@@ -308,6 +329,7 @@ class VersaoDocumentoResponse(BaseModel):
 
 class DestinacaoRequest(BaseModel):
     """Payload de aplicação de destinação final (RN-GDO-004/010/011)."""
+
     tipo_destinacao: str = Field(..., pattern="^(eliminacao|guarda_permanente)$")
     autor_id: str = Field(..., min_length=1)
     autoridade_homologadora_id: str | None = None
@@ -321,6 +343,7 @@ class DestinacaoRequest(BaseModel):
 
 class TipoDocumentoCreateRequest(BaseModel):
     """Payload de criação de tipo documental."""
+
     codigo: str = Field(..., min_length=1, max_length=50)
     nome: str = Field(..., min_length=1, max_length=100)
     descricao: str | None = None
@@ -328,6 +351,7 @@ class TipoDocumentoCreateRequest(BaseModel):
 
 class TipoDocumentoResponse(BaseModel):
     """Representação de um tipo documental."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     codigo: str

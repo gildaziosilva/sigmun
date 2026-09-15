@@ -1,13 +1,12 @@
 """Repositório SQLAlchemy para TramitacaoDocumento."""
 
-from typing import List, Optional
+import uuid
 
 from sqlalchemy.orm import Session
 
 from ...application.interfaces import RepositorioTramitacao
-from ...domain.entities import TramitacaoDocumento, TipoTramitacao
+from ...domain.entities import TipoTramitacao, TramitacaoDocumento
 from ..database.models import TramitacaoDocumentoModel
-import uuid
 
 
 class SQLAlchemyTramitacaoRepository(RepositorioTramitacao):
@@ -34,18 +33,23 @@ class SQLAlchemyTramitacaoRepository(RepositorioTramitacao):
         self._session.flush()
         return tramitacao
 
-    def get_by_id(self, id: str) -> Optional[TramitacaoDocumento]:
-        model = self._session.query(TramitacaoDocumentoModel).filter(
-            TramitacaoDocumentoModel.id == uuid.UUID(id)
-        ).first()
+    def get_by_id(self, id: str) -> TramitacaoDocumento | None:
+        model = (
+            self._session.query(TramitacaoDocumentoModel)
+            .filter(TramitacaoDocumentoModel.id == uuid.UUID(id))
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def find_by_documento(self, documento_id: str) -> List[TramitacaoDocumento]:
-        models = self._session.query(TramitacaoDocumentoModel).filter(
-            TramitacaoDocumentoModel.documento_id == uuid.UUID(documento_id)
-        ).order_by(TramitacaoDocumentoModel.created_at.desc()).all()
+    def find_by_documento(self, documento_id: str) -> list[TramitacaoDocumento]:
+        models = (
+            self._session.query(TramitacaoDocumentoModel)
+            .filter(TramitacaoDocumentoModel.documento_id == uuid.UUID(documento_id))
+            .order_by(TramitacaoDocumentoModel.created_at.desc())
+            .all()
+        )
         return [self._to_entity(m) for m in models]
 
     def _to_entity(self, model: TramitacaoDocumentoModel) -> TramitacaoDocumento:

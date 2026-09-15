@@ -1,7 +1,5 @@
 """Repositório SQLAlchemy para TipoDocumental."""
 
-from typing import List, Optional
-
 from sqlalchemy.orm import Session
 
 from ...application.interfaces import RepositorioTipoDocumental
@@ -15,29 +13,38 @@ class SQLAlchemyTipoDocumentalRepository(RepositorioTipoDocumental):
     def __init__(self, session: Session):
         self._session = session
 
-    def get_by_codigo(self, codigo: str) -> Optional[TipoDocumental]:
-        model = self._session.query(TipoDocumentalModel).filter(
-            TipoDocumentalModel.codigo == codigo,
-            TipoDocumentalModel.is_ativo == True,
-        ).first()
+    def get_by_codigo(self, codigo: str) -> TipoDocumental | None:
+        model = (
+            self._session.query(TipoDocumentalModel)
+            .filter(
+                TipoDocumentalModel.codigo == codigo,
+                TipoDocumentalModel.is_ativo.is_(True),
+            )
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def find_ativos(self) -> List[TipoDocumental]:
-        models = self._session.query(TipoDocumentalModel).filter(
-            TipoDocumentalModel.is_ativo == True
-        ).order_by(TipoDocumentalModel.codigo).all()
+    def find_ativos(self) -> list[TipoDocumental]:
+        models = (
+            self._session.query(TipoDocumentalModel)
+            .filter(TipoDocumentalModel.is_ativo.is_(True))
+            .order_by(TipoDocumentalModel.codigo)
+            .all()
+        )
         return [self._to_entity(m) for m in models]
 
-    def find_all(self) -> List[TipoDocumental]:
+    def find_all(self) -> list[TipoDocumental]:
         models = self._session.query(TipoDocumentalModel).order_by(TipoDocumentalModel.codigo).all()
         return [self._to_entity(m) for m in models]
 
     def save(self, tipo: TipoDocumental) -> TipoDocumental:
-        existente = self._session.query(TipoDocumentalModel).filter(
-            TipoDocumentalModel.id == tipo.id
-        ).first()
+        existente = (
+            self._session.query(TipoDocumentalModel)
+            .filter(TipoDocumentalModel.id == tipo.id)
+            .first()
+        )
         if existente:
             existente.codigo = tipo.codigo
             existente.nome = tipo.nome

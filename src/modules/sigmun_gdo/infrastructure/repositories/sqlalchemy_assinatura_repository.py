@@ -1,6 +1,5 @@
 """Repositório SQLAlchemy para AssinaturaDocumento."""
 
-from typing import List, Optional
 import uuid
 
 from sqlalchemy.orm import Session
@@ -31,18 +30,23 @@ class SQLAlchemyAssinaturaRepository(RepositorioAssinatura):
         self._session.flush()
         return assinatura
 
-    def get_by_id(self, id: str) -> Optional[AssinaturaDocumento]:
-        model = self._session.query(AssinaturaDocumentoModel).filter(
-            AssinaturaDocumentoModel.id == uuid.UUID(id)
-        ).first()
+    def get_by_id(self, id: str) -> AssinaturaDocumento | None:
+        model = (
+            self._session.query(AssinaturaDocumentoModel)
+            .filter(AssinaturaDocumentoModel.id == uuid.UUID(id))
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def find_by_documento(self, documento_id: str) -> List[AssinaturaDocumento]:
-        models = self._session.query(AssinaturaDocumentoModel).filter(
-            AssinaturaDocumentoModel.documento_id == uuid.UUID(documento_id)
-        ).order_by(AssinaturaDocumentoModel.data_assinatura.desc()).all()
+    def find_by_documento(self, documento_id: str) -> list[AssinaturaDocumento]:
+        models = (
+            self._session.query(AssinaturaDocumentoModel)
+            .filter(AssinaturaDocumentoModel.documento_id == uuid.UUID(documento_id))
+            .order_by(AssinaturaDocumentoModel.data_assinatura.desc())
+            .all()
+        )
         return [self._to_entity(m) for m in models]
 
     def _to_entity(self, model: AssinaturaDocumentoModel) -> AssinaturaDocumento:

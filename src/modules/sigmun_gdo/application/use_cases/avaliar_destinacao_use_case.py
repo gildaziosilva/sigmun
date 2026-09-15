@@ -8,13 +8,13 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from ..interfaces import RepositorioDocumento
 from ...domain.entities import StatusDocumento
 from ...domain.exceptions import (
+    ArquivamentoInvalidoError,
     DocumentoNaoEncontradoError,
     EliminacaoNaoAutorizadaError,
-    ArquivamentoInvalidoError,
 )
+from ..interfaces import RepositorioDocumento
 
 
 class TipoDestinacaoAplicada(str, Enum):
@@ -42,14 +42,10 @@ class AvaliarDestinacaoUseCase:
     def execute(self, dto: AvaliarDestinacaoInputDTO) -> None:
         documento = self._repo_doc.get_by_id(dto.documento_id)
         if not documento:
-            raise DocumentoNaoEncontradoError(
-                f"Documento {dto.documento_id} não encontrado"
-            )
+            raise DocumentoNaoEncontradoError(f"Documento {dto.documento_id} não encontrado")
 
         if documento.status == StatusDocumento.RASCUNHO:
-            raise ArquivamentoInvalidoError(
-                "Documento em rascunho não possui destinação definida"
-            )
+            raise ArquivamentoInvalidoError("Documento em rascunho não possui destinação definida")
 
         agora = datetime.utcnow()
         if dto.tipo_destinacao == TipoDestinacaoAplicada.ELIMINACAO:

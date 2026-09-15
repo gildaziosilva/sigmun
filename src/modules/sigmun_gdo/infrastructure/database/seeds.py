@@ -206,6 +206,7 @@ TIPOS_DOCUMENTAIS_INICIAIS: list[dict] = [
     },
 ]
 
+
 def _criar_classificacao(session: Session, dados: dict) -> ClassificacaoDocumentalModel:
     return ClassificacaoDocumentalModel(
         codigo=dados["codigo"],
@@ -257,8 +258,7 @@ def popular_seed_gdo(session: Session) -> dict:
 
     # --- Plano de classificação (pais antes de filhos) ---
     codigos_existentes = {
-        codigo
-        for (codigo,) in session.query(ClassificacaoDocumentalModel.codigo).all()
+        codigo for (codigo,) in session.query(ClassificacaoDocumentalModel.codigo).all()
     }
 
     criados_por_codigo: dict[str, str] = {}
@@ -272,10 +272,7 @@ def popular_seed_gdo(session: Session) -> dict:
             if pai_id is None:
                 pai = (
                     session.query(ClassificacaoDocumentalModel)
-                    .filter(
-                        ClassificacaoDocumentalModel.codigo
-                        == dados["classificacao_pai"]
-                    )
+                    .filter(ClassificacaoDocumentalModel.codigo == dados["classificacao_pai"])
                     .first()
                 )
                 pai_id = str(pai.id) if pai else None
@@ -287,8 +284,7 @@ def popular_seed_gdo(session: Session) -> dict:
 
     # --- Tabelas de temporalidade ---
     codigos_temp_existentes = {
-        codigo
-        for (codigo,) in session.query(TabelaTemporalidadeModel.codigo).all()
+        codigo for (codigo,) in session.query(TabelaTemporalidadeModel.codigo).all()
     }
     for dados in TABELAS_TEMPORALIDADE_INICIAIS:
         if dados["codigo"] in codigos_temp_existentes:
@@ -299,8 +295,7 @@ def popular_seed_gdo(session: Session) -> dict:
 
     # --- Tipos documentais (tabela de referência) ---
     codigos_tipo_existentes = {
-        codigo
-        for (codigo,) in session.query(TipoDocumentalModel.codigo).all()
+        codigo for (codigo,) in session.query(TipoDocumentalModel.codigo).all()
     }
     for dados in TIPOS_DOCUMENTAIS_INICIAIS:
         if dados["codigo"] in codigos_tipo_existentes:
@@ -327,4 +322,3 @@ __all__ = [
     "popular_seed_gdo",
     "executar_seed_gdo",
 ]
-

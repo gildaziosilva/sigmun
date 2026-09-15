@@ -5,21 +5,20 @@ Baseado em ESP-GDO-001 — Especificação de Criação de Documento.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
-from ..interfaces import RepositorioDocumento, RepositorioTipoDocumental
 from ...domain.entities import Documento, StatusDocumento
 from ...domain.exceptions import (
     CodigoDocumentalDuplicadoError,
     IntegridadeInvalidaError,
     TipoDocumentalInvalidoError,
 )
-from ...domain.services import ServicoHashIntegridade
+from ..interfaces import RepositorioDocumento, RepositorioTipoDocumental
 
 
 @dataclass
 class CriarDocumentoInputDTO:
     """DTO de entrada para criação de documento."""
+
     codigo: str
     numero: str
     ano: int
@@ -27,8 +26,8 @@ class CriarDocumentoInputDTO:
     titulo: str
     descricao: str
     unidade_autor_id: str
-    processo_id: Optional[str] = None
-    unidade_arquivo_id: Optional[str] = None
+    processo_id: str | None = None
+    unidade_arquivo_id: str | None = None
     is_sigiloso: bool = False
     conteudo_ref: str = ""
     hash_integridade: str = ""
@@ -38,6 +37,7 @@ class CriarDocumentoInputDTO:
 @dataclass
 class CriarDocumentoOutputDTO:
     """DTO de saída para criação de documento."""
+
     id: str
     codigo: str
     numero: str
@@ -82,11 +82,10 @@ class CriarDocumentoUseCase:
 
         # RF-GDO-005: Validar hash de integridade (RN-GDO-002)
         hash_final = dto.hash_integridade
-        if hash_final:
-            if len(hash_final) != 64:
-                raise IntegridadeInvalidaError(
-                    "Hash de integridade inválido. Deve ser SHA-256 (64 hex chars)"
-                )
+        if hash_final and len(hash_final) != 64:
+            raise IntegridadeInvalidaError(
+                "Hash de integridade inválido. Deve ser SHA-256 (64 hex chars)"
+            )
 
         # Criar entidade
         documento = Documento(

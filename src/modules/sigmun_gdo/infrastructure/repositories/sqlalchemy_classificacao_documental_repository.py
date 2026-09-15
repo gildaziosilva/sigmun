@@ -1,7 +1,5 @@
 """Repositório SQLAlchemy para ClassificacaoDocumental."""
 
-from typing import List, Optional
-
 from sqlalchemy.orm import Session
 
 from ...application.interfaces import RepositorioClassificacaoDocumental
@@ -30,28 +28,39 @@ class SQLAlchemyClassificacaoDocumentalRepository(RepositorioClassificacaoDocume
         self._session.flush()
         return classificacao
 
-    def get_by_id(self, id: str) -> Optional[ClassificacaoDocumental]:
-        model = self._session.query(ClassificacaoDocumentalModel).filter(
-            ClassificacaoDocumentalModel.id == id,
-            ClassificacaoDocumentalModel.deleted_at.is_(None),
-        ).first()
+    def get_by_id(self, id: str) -> ClassificacaoDocumental | None:
+        model = (
+            self._session.query(ClassificacaoDocumentalModel)
+            .filter(
+                ClassificacaoDocumentalModel.id == id,
+                ClassificacaoDocumentalModel.deleted_at.is_(None),
+            )
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def get_by_codigo(self, codigo: str) -> Optional[ClassificacaoDocumental]:
-        model = self._session.query(ClassificacaoDocumentalModel).filter(
-            ClassificacaoDocumentalModel.codigo == codigo,
-            ClassificacaoDocumentalModel.deleted_at.is_(None),
-        ).first()
+    def get_by_codigo(self, codigo: str) -> ClassificacaoDocumental | None:
+        model = (
+            self._session.query(ClassificacaoDocumentalModel)
+            .filter(
+                ClassificacaoDocumentalModel.codigo == codigo,
+                ClassificacaoDocumentalModel.deleted_at.is_(None),
+            )
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def find_all(self) -> List[ClassificacaoDocumental]:
-        models = self._session.query(ClassificacaoDocumentalModel).filter(
-            ClassificacaoDocumentalModel.deleted_at.is_(None)
-        ).order_by(ClassificacaoDocumentalModel.nivel, ClassificacaoDocumentalModel.codigo).all()
+    def find_all(self) -> list[ClassificacaoDocumental]:
+        models = (
+            self._session.query(ClassificacaoDocumentalModel)
+            .filter(ClassificacaoDocumentalModel.deleted_at.is_(None))
+            .order_by(ClassificacaoDocumentalModel.nivel, ClassificacaoDocumentalModel.codigo)
+            .all()
+        )
         return [self._to_entity(m) for m in models]
 
     def _to_entity(self, model: ClassificacaoDocumentalModel) -> ClassificacaoDocumental:

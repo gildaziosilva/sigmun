@@ -1,12 +1,11 @@
 """Repositório SQLAlchemy para VersaoDocumento."""
 
-from typing import List, Optional
 import uuid
 
 from sqlalchemy.orm import Session
 
 from ...application.interfaces import RepositorioVersaoDocumento
-from ...domain.entities import VersaoDocumento, StatusDocumento
+from ...domain.entities import VersaoDocumento
 from ..database.models import VersaoDocumentoModel
 
 
@@ -31,27 +30,41 @@ class SQLAlchemyVersaoDocumentoRepository(RepositorioVersaoDocumento):
         self._session.flush()
         return versao
 
-    def get_by_id(self, id: str) -> Optional[VersaoDocumento]:
-        model = self._session.query(VersaoDocumentoModel).filter(
-            VersaoDocumentoModel.id == uuid.UUID(id),
-            VersaoDocumentoModel.deleted_at.is_(None),
-        ).first()
+    def get_by_id(self, id: str) -> VersaoDocumento | None:
+        model = (
+            self._session.query(VersaoDocumentoModel)
+            .filter(
+                VersaoDocumentoModel.id == uuid.UUID(id),
+                VersaoDocumentoModel.deleted_at.is_(None),
+            )
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def find_by_documento(self, documento_id: str) -> List[VersaoDocumento]:
-        models = self._session.query(VersaoDocumentoModel).filter(
-            VersaoDocumentoModel.documento_id == uuid.UUID(documento_id),
-            VersaoDocumentoModel.deleted_at.is_(None),
-        ).order_by(VersaoDocumentoModel.numero_versao.desc()).all()
+    def find_by_documento(self, documento_id: str) -> list[VersaoDocumento]:
+        models = (
+            self._session.query(VersaoDocumentoModel)
+            .filter(
+                VersaoDocumentoModel.documento_id == uuid.UUID(documento_id),
+                VersaoDocumentoModel.deleted_at.is_(None),
+            )
+            .order_by(VersaoDocumentoModel.numero_versao.desc())
+            .all()
+        )
         return [self._to_entity(m) for m in models]
 
-    def get_ultima_versao(self, documento_id: str) -> Optional[VersaoDocumento]:
-        model = self._session.query(VersaoDocumentoModel).filter(
-            VersaoDocumentoModel.documento_id == uuid.UUID(documento_id),
-            VersaoDocumentoModel.deleted_at.is_(None),
-        ).order_by(VersaoDocumentoModel.numero_versao.desc()).first()
+    def get_ultima_versao(self, documento_id: str) -> VersaoDocumento | None:
+        model = (
+            self._session.query(VersaoDocumentoModel)
+            .filter(
+                VersaoDocumentoModel.documento_id == uuid.UUID(documento_id),
+                VersaoDocumentoModel.deleted_at.is_(None),
+            )
+            .order_by(VersaoDocumentoModel.numero_versao.desc())
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)

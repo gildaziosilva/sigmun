@@ -1,6 +1,5 @@
 """Repositório SQLAlchemy para Documento."""
 
-from typing import List, Optional
 import uuid
 
 from sqlalchemy.orm import Session
@@ -38,7 +37,7 @@ class SQLAlchemyDocumentoRepository(RepositorioDocumento):
             model_existente.is_sigiloso = documento.is_sigiloso
             model_existente.conteudo_ref = documento.conteudo_ref
             model_existente.hash_integridade = documento.hash_integridade
-            model_existente.updated_at = documento.updated_at
+            model_existente.updated_at = documento.updated_at  # type: ignore[assignment]
             model_existente.updated_by = documento.updated_by
         else:
             model = DocumentoModel(
@@ -70,54 +69,64 @@ class SQLAlchemyDocumentoRepository(RepositorioDocumento):
         self._session.flush()
         return documento
 
-    def get_by_id(self, id: str) -> Optional[Documento]:
+    def get_by_id(self, id: str) -> Documento | None:
         """Busca documento por ID."""
-        model = self._session.query(DocumentoModel).filter(
-            DocumentoModel.id == uuid.UUID(id),
-            DocumentoModel.deleted_at.is_(None)
-        ).first()
+        model = (
+            self._session.query(DocumentoModel)
+            .filter(DocumentoModel.id == uuid.UUID(id), DocumentoModel.deleted_at.is_(None))
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def get_by_codigo(self, codigo: str, ano: int) -> Optional[Documento]:
+    def get_by_codigo(self, codigo: str, ano: int) -> Documento | None:
         """Busca documento por código e ano."""
-        model = self._session.query(DocumentoModel).filter(
-            DocumentoModel.codigo == codigo,
-            DocumentoModel.ano == ano,
-            DocumentoModel.deleted_at.is_(None)
-        ).first()
+        model = (
+            self._session.query(DocumentoModel)
+            .filter(
+                DocumentoModel.codigo == codigo,
+                DocumentoModel.ano == ano,
+                DocumentoModel.deleted_at.is_(None),
+            )
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def find_by_processo(self, processo_id: str) -> List[Documento]:
+    def find_by_processo(self, processo_id: str) -> list[Documento]:
         """Busca documentos vinculados a um processo."""
-        models = self._session.query(DocumentoModel).filter(
-            DocumentoModel.processo_id == processo_id,
-            DocumentoModel.deleted_at.is_(None)
-        ).all()
+        models = (
+            self._session.query(DocumentoModel)
+            .filter(DocumentoModel.processo_id == processo_id, DocumentoModel.deleted_at.is_(None))
+            .all()
+        )
         return [self._to_entity(m) for m in models]
 
-    def find_ativos(self) -> List[Documento]:
+    def find_ativos(self) -> list[Documento]:
         """Lista documentos ativos."""
-        models = self._session.query(DocumentoModel).filter(
-            DocumentoModel.deleted_at.is_(None)
-        ).all()
+        models = (
+            self._session.query(DocumentoModel).filter(DocumentoModel.deleted_at.is_(None)).all()
+        )
         return [self._to_entity(m) for m in models]
 
     def delete(self, id: str) -> None:
         """Remove logicamente um documento."""
-        self._session.query(DocumentoModel).filter(
-            DocumentoModel.id == uuid.UUID(id)
-        ).update({
-            DocumentoModel.deleted_at: None,
-            DocumentoModel.deleted_by: None,
-        })
+        from datetime import datetime, timezone
+
+        self._session.query(DocumentoModel).filter(DocumentoModel.id == uuid.UUID(id)).update(
+            {
+                DocumentoModel.deleted_at: datetime.now(timezone.utc),
+                DocumentoModel.deleted_by: "system",
+            }
+        )
+        self._session.flush()
 
     def _to_entity(self, model: DocumentoModel) -> Documento:
         """Converte modelo para entidade de domínio."""
         from ...domain.entities import StatusDocumento
+
         return Documento(
             id=str(model.id),
             codigo=model.codigo,

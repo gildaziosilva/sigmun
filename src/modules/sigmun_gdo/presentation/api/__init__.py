@@ -11,89 +11,91 @@ from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
 from src.modules.sigmun_gdo.application.interfaces import (
-    RepositorioDocumento,
-    RepositorioVersaoDocumento,
-    RepositorioTramitacao,
-    RepositorioProcessoDocumento,
-    RepositorioClassificacaoDocumental,
-    RepositorioTabelaTemporalidade,
+    PublicadorEventos,
     RepositorioArquivamento,
     RepositorioAssinatura,
+    RepositorioClassificacaoDocumental,
+    RepositorioDocumento,
+    RepositorioProcessoDocumento,
+    RepositorioTabelaTemporalidade,
     RepositorioTipoDocumental,
-    PublicadorEventos,
+    RepositorioTramitacao,
+    RepositorioVersaoDocumento,
 )
 from src.modules.sigmun_gdo.application.use_cases import (
-    CriarDocumentoUseCase,
-    ClassificarDocumentoUseCase,
-    TramitarDocumentoUseCase,
-    ArquivarDocumentoUseCase,
     ArquivarDocumentoInputDTO,
-    AssinarDocumentoUseCase,
+    ArquivarDocumentoUseCase,
     AssinarDocumentoInputDTO,
+    AssinarDocumentoUseCase,
+    AtivarTipoDocumentoUseCase,
+    AvaliarDestinacaoInputDTO,
+    AvaliarDestinacaoUseCase,
+    BuscarTipoDocumentoUseCase,
+    CriarDocumentoUseCase,
+    CriarTipoDocumentoInputDTO,
+    CriarTipoDocumentoUseCase,
     CriarVersaoDocumentoUseCase,
     CriarVersaoInputDTO,
-    AvaliarDestinacaoUseCase,
-    AvaliarDestinacaoInputDTO,
-    TipoDestinacaoAplicada,
-    CriarTipoDocumentoUseCase,
-    CriarTipoDocumentoInputDTO,
-    AtivarTipoDocumentoUseCase,
     InativarTipoDocumentoUseCase,
-    BuscarTipoDocumentoUseCase,
     ListarTiposDocumentoUseCase,
+    TipoDestinacaoAplicada,
+    TipoDocumentoOutputDTO,
+    TramitarDocumentoUseCase,
+)
+from src.modules.sigmun_gdo.domain.entities import (
+    ArquivamentoDocumento,
+    AssinaturaDocumento,
+    ClassificacaoDocumental,
+    Documento,
+    ProcessoDocumento,
+    TramitacaoDocumento,
+    VersaoDocumento,
 )
 from src.modules.sigmun_gdo.domain.exceptions import (
-    DocumentoNaoEncontradoError,
-    DocumentoJaExisteError,
-    CodigoDocumentalDuplicadoError,
-    IntegridadeInvalidaError,
-    ClassificacaoDocumentalNaoEncontradaError,
-    PermissaoNegadaError,
     ArquivamentoInvalidoError,
+    CodigoDocumentalDuplicadoError,
+    DocumentoJaCadastradoError,
+    DocumentoNaoEncontradoError,
     EliminacaoNaoAutorizadaError,
+    IntegridadeInvalidaError,
     TipoDocumentalInvalidoError,
-)
-from src.modules.sigmun_gdo.infrastructure.repositories import (
-    SQLAlchemyDocumentoRepository,
-    SQLAlchemyVersaoDocumentoRepository,
-    SQLAlchemyTramitacaoRepository,
-    SQLAlchemyProcessoDocumentoRepository,
-    SQLAlchemyClassificacaoDocumentalRepository,
-    SQLAlchemyTabelaTemporalidadeRepository,
-    SQLAlchemyArquivamentoRepository,
-    SQLAlchemyAssinaturaRepository,
-    SQLAlchemyTipoDocumentalRepository,
 )
 from src.modules.sigmun_gdo.infrastructure.messaging import (
     PublicadorOutboxGDO,
     TopicosGDO,
 )
+from src.modules.sigmun_gdo.infrastructure.repositories import (
+    SQLAlchemyArquivamentoRepository,
+    SQLAlchemyAssinaturaRepository,
+    SQLAlchemyClassificacaoDocumentalRepository,
+    SQLAlchemyDocumentoRepository,
+    SQLAlchemyProcessoDocumentoRepository,
+    SQLAlchemyTabelaTemporalidadeRepository,
+    SQLAlchemyTipoDocumentalRepository,
+    SQLAlchemyTramitacaoRepository,
+    SQLAlchemyVersaoDocumentoRepository,
+)
 from src.modules.sigmun_gdo.presentation.schemas import (
-    DocumentoCreateRequest,
-    DocumentoResponse,
-    DocumentoListResponse,
-    DocumentoCapturaRequest,
-    TramitacaoCreateRequest,
-    TramitacaoResponse,
-    ClassificacaoCreateRequest,
-    ClassificacaoResponse,
-    ClassificacaoListResponse,
-    ProcessoDocumentoCreateRequest,
-    ProcessoDocumentoResponse,
-    TabelaTemporalidadeCreateRequest,
-    TabelaTemporalidadeResponse,
     ArquivamentoCreateRequest,
     ArquivamentoResponse,
     AssinaturaCreateRequest,
     AssinaturaResponse,
-    VersaoCreateRequest,
-    VersaoDocumentoResponse,
+    ClassificacaoListResponse,
+    ClassificacaoResponse,
     DestinacaoRequest,
+    DocumentoCreateRequest,
+    DocumentoListResponse,
+    DocumentoResponse,
+    ErrorResponse,
+    ProcessoDocumentoResponse,
+    TabelaTemporalidadeResponse,
     TipoDocumentoCreateRequest,
     TipoDocumentoResponse,
-    ErrorResponse,
+    TramitacaoCreateRequest,
+    TramitacaoResponse,
+    VersaoCreateRequest,
+    VersaoDocumentoResponse,
 )
-from src.modules.sigmun_gdo.domain.entities import TramitacaoDocumento
 
 logger = logging.getLogger(__name__)
 
@@ -179,7 +181,7 @@ def _publicar_evento(
     topico: str,
     evento_nome: str,
     agregado_id: str,
-    documento,
+    documento: Documento,
     extras: dict | None = None,
 ) -> None:
     """Registra um evento de integração na outbox (mesma transação do negócio).
@@ -194,9 +196,7 @@ def _publicar_evento(
         "ano": documento.ano,
         "titulo": documento.titulo,
         "status": (
-            documento.status.value
-            if hasattr(documento.status, "value")
-            else str(documento.status)
+            documento.status.value if hasattr(documento.status, "value") else str(documento.status)
         ),
         "unidade_autor_id": documento.unidade_autor_id,
         **(extras or {}),
@@ -210,7 +210,7 @@ def _publicar_evento(
     )
 
 
-def _publicar_documento_criado(publicador: PublicadorEventos, documento) -> None:
+def _publicar_documento_criado(publicador: PublicadorEventos, documento: Documento) -> None:
     """Publica `gdo.documento.criado`."""
     _publicar_evento(
         publicador,
@@ -222,7 +222,7 @@ def _publicar_documento_criado(publicador: PublicadorEventos, documento) -> None
 
 
 def _publicar_documento_vinculado_processo(
-    publicador: PublicadorEventos, documento
+    publicador: PublicadorEventos, documento: Documento
 ) -> None:
     """Publica `gdo.documento.vinculado_processo`."""
     _publicar_evento(
@@ -235,8 +235,6 @@ def _publicar_documento_vinculado_processo(
     )
 
 
-# =============================================================================
-# Endpoints de Documento
 # =============================================================================
 # Endpoints de Documento
 # =============================================================================
@@ -260,6 +258,7 @@ def criar_documento(
     try:
         use_case = CriarDocumentoUseCase(repo, repo_tipo)
         from src.modules.sigmun_gdo.application.use_cases import CriarDocumentoInputDTO
+
         dto = CriarDocumentoInputDTO(
             codigo=payload.codigo,
             numero=payload.numero,
@@ -342,8 +341,7 @@ def buscar_documento(
     documento = repo.get_by_id(documento_id)
     if not documento:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            detail=f"Documento {documento_id} não encontrado"
+            status.HTTP_404_NOT_FOUND, detail=f"Documento {documento_id} não encontrado"
         )
     return _documento_to_response(documento)
 
@@ -388,7 +386,10 @@ def tramitar_documento(
 
     try:
         use_case = TramitarDocumentoUseCase(repo_doc, repo_tram)
-        from src.modules.sigmun_gdo.application.use_cases.tramitar_documento_use_case import TramitarDocumentoInputDTO
+        from src.modules.sigmun_gdo.application.use_cases.tramitar_documento_use_case import (
+            TramitarDocumentoInputDTO,
+        )
+
         dto = TramitarDocumentoInputDTO(
             documento_id=documento_id,
             unidade_origem_id=payload.unidade_origem_id,
@@ -473,8 +474,7 @@ def buscar_classificacao(
     classificacao = repo.get_by_id(classificacao_id)
     if not classificacao:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            detail=f"Classificação {classificacao_id} não encontrada"
+            status.HTTP_404_NOT_FOUND, detail=f"Classificação {classificacao_id} não encontrada"
         )
     return _classificacao_to_response(classificacao)
 
@@ -498,8 +498,7 @@ def buscar_processo(
     processo = repo.get_by_id(processo_id)
     if not processo:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            detail=f"Processo {processo_id} não encontrado"
+            status.HTTP_404_NOT_FOUND, detail=f"Processo {processo_id} não encontrado"
         )
     return _processo_to_response(processo)
 
@@ -523,8 +522,7 @@ def buscar_temporalidade(
     tabela = repo.get_by_codigo(codigo)
     if not tabela:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            detail=f"Temporalidade {codigo} não encontrada"
+            status.HTTP_404_NOT_FOUND, detail=f"Temporalidade {codigo} não encontrada"
         )
     return TabelaTemporalidadeResponse(
         id=tabela.id,
@@ -575,6 +573,11 @@ def arquivar_documento(
         )
         # Re-fetch para refletir status atualizado (arquivado) no evento
         documento = repo_doc.get_by_id(documento_id)
+        if documento is None:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND,
+                detail="Documento não encontrado após arquivamento",
+            )
         _publicar_evento(
             publicador,
             topico=TopicosGDO.DOCUMENTO_ARQUIVADO,
@@ -637,7 +640,7 @@ def assinar_documento(
         return _assinatura_to_response(assinatura)
     except DocumentoNaoEncontradoError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-    except (ArquivamentoInvalidoError, DocumentoJaExisteError) as exc:
+    except (ArquivamentoInvalidoError, DocumentoJaCadastradoError) as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
 
@@ -853,13 +856,11 @@ def inativar_tipo_documento(
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 
 
-
-
 # Mappers
 # =============================================================================
 
 
-def _documento_to_response(documento) -> DocumentoResponse:
+def _documento_to_response(documento: Documento) -> DocumentoResponse:
     """Converte entidade de domínio para response."""
     return DocumentoResponse(
         id=documento.id,
@@ -888,7 +889,7 @@ def _documento_to_response(documento) -> DocumentoResponse:
     )
 
 
-def _arquivamento_to_response(arquivamento) -> ArquivamentoResponse:
+def _arquivamento_to_response(arquivamento: ArquivamentoDocumento) -> ArquivamentoResponse:
     """Converte entidade de arquivamento para response."""
     return ArquivamentoResponse(
         id=arquivamento.id,
@@ -901,7 +902,7 @@ def _arquivamento_to_response(arquivamento) -> ArquivamentoResponse:
     )
 
 
-def _assinatura_to_response(assinatura) -> AssinaturaResponse:
+def _assinatura_to_response(assinatura: AssinaturaDocumento) -> AssinaturaResponse:
     """Converte entidade de assinatura para response."""
     return AssinaturaResponse(
         id=assinatura.id,
@@ -915,7 +916,7 @@ def _assinatura_to_response(assinatura) -> AssinaturaResponse:
     )
 
 
-def _versao_to_response(versao) -> VersaoDocumentoResponse:
+def _versao_to_response(versao: VersaoDocumento) -> VersaoDocumentoResponse:
     """Converte entidade de versão para response."""
     return VersaoDocumentoResponse(
         id=versao.id,
@@ -928,7 +929,7 @@ def _versao_to_response(versao) -> VersaoDocumentoResponse:
     )
 
 
-def _tramitacao_to_response(tramitacao) -> TramitacaoResponse:
+def _tramitacao_to_response(tramitacao: TramitacaoDocumento) -> TramitacaoResponse:
     """Converte entidade de tramitação para response."""
     return TramitacaoResponse(
         id=tramitacao.id,
@@ -945,7 +946,7 @@ def _tramitacao_to_response(tramitacao) -> TramitacaoResponse:
     )
 
 
-def _classificacao_to_response(classificacao) -> ClassificacaoResponse:
+def _classificacao_to_response(classificacao: ClassificacaoDocumental) -> ClassificacaoResponse:
     """Converte entidade de classificação para response."""
     return ClassificacaoResponse(
         id=classificacao.id,
@@ -961,7 +962,7 @@ def _classificacao_to_response(classificacao) -> ClassificacaoResponse:
     )
 
 
-def _processo_to_response(processo) -> ProcessoDocumentoResponse:
+def _processo_to_response(processo: ProcessoDocumento) -> ProcessoDocumentoResponse:
     """Converte entidade de processo para response."""
     return ProcessoDocumentoResponse(
         id=processo.id,
@@ -979,7 +980,7 @@ def _processo_to_response(processo) -> ProcessoDocumentoResponse:
     )
 
 
-def _tipo_documento_to_response(tipo) -> TipoDocumentoResponse:
+def _tipo_documento_to_response(tipo: TipoDocumentoOutputDTO) -> TipoDocumentoResponse:
     """Converte DTO/output de tipo documental para response."""
     return TipoDocumentoResponse(
         id=tipo.id,

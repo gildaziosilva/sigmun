@@ -7,14 +7,14 @@ assinatura e fixa a integridade no documento (RN-GDO-002).
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..interfaces import RepositorioDocumento, RepositorioAssinatura
 from ...domain.entities import AssinaturaDocumento, StatusDocumento
 from ...domain.exceptions import (
-    DocumentoNaoEncontradoError,
-    DocumentoJaExisteError,
     ArquivamentoInvalidoError,
+    DocumentoJaCadastradoError,
+    DocumentoNaoEncontradoError,
 )
 from ...domain.services import ServicoHashIntegridade
+from ..interfaces import RepositorioAssinatura, RepositorioDocumento
 
 
 @dataclass
@@ -40,21 +40,15 @@ class AssinarDocumentoUseCase:
     def execute(self, dto: AssinarDocumentoInputDTO) -> AssinaturaDocumento:
         documento = self._repo_doc.get_by_id(dto.documento_id)
         if not documento:
-            raise DocumentoNaoEncontradoError(
-                f"Documento {dto.documento_id} não encontrado"
-            )
+            raise DocumentoNaoEncontradoError(f"Documento {dto.documento_id} não encontrado")
 
         if documento.status in (StatusDocumento.ARQUIVADO, StatusDocumento.ENCERRADO):
-            raise ArquivamentoInvalidoError(
-                "Documento arquivado/encerrado não pode ser assinado"
-            )
+            raise ArquivamentoInvalidoError("Documento arquivado/encerrado não pode ser assinado")
         # Integridade já fixada: novo conteúdo exige nova versão (RN-GDO-005)
         if documento.hash_integridade:
-            raise DocumentoJaExisteError("Documento já possui assinatura registrada")
+            raise DocumentoJaCadastradoError("Documento já possui assinatura registrada")
 
-        hash_conteudo = ServicoHashIntegridade.calcular_hash(
-            dto.conteudo.encode("utf-8")
-        )
+        hash_conteudo = ServicoHashIntegridade.calcular_hash(dto.conteudo.encode("utf-8"))
         assinatura = AssinaturaDocumento(
             documento_id=dto.documento_id,
             signatario_id=dto.signatario_id,

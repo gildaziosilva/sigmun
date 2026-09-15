@@ -72,9 +72,7 @@ class DespachadorRedisStreams:
                 "evento_nome": evento.evento_nome,
                 "agregado_tipo": evento.agregado_tipo,
                 "agregado_id": evento.agregado_id,
-                "payload": json.dumps(
-                    evento.payload, ensure_ascii=False, default=str
-                ),
+                "payload": json.dumps(evento.payload, ensure_ascii=False, default=str),
             },
         )
 

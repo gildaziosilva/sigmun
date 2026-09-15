@@ -8,9 +8,7 @@ class ServicoTemporalidade:
 
     @staticmethod
     def calcular_data_destinacao(
-        data_criacao: datetime,
-        prazo_meses: int,
-        evento_fim: str
+        data_criacao: datetime, prazo_meses: int, evento_fim: str
     ) -> datetime:
         """Calcula a data de destinação baseada na temporalidade."""
         if prazo_meses <= 0:
@@ -24,10 +22,7 @@ class ServicoTemporalidade:
             return data_criacao + timedelta(days=prazo_meses * 30)
 
     @staticmethod
-    def is_documento_vencido(
-        data_calculo: datetime,
-        data_base: datetime | None = None
-    ) -> bool:
+    def is_documento_vencido(data_calculo: datetime, data_base: datetime | None = None) -> bool:
         """Verifica se um documento atingiu a data de destinação."""
         base = data_base or datetime.utcnow()
         return base >= data_calculo
@@ -40,6 +35,7 @@ class ServicoHashIntegridade:
     def calcular_hash(conteudo: bytes) -> str:
         """Calcula SHA-256 do conteúdo."""
         import hashlib
+
         return hashlib.sha256(conteudo).hexdigest()
 
     @staticmethod

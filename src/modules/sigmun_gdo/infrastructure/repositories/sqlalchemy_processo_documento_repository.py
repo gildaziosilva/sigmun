@@ -1,6 +1,5 @@
 """Repositório SQLAlchemy para ProcessoDocumento."""
 
-from typing import List, Optional
 import uuid
 
 from sqlalchemy.orm import Session
@@ -34,20 +33,28 @@ class SQLAlchemyProcessoDocumentoRepository(RepositorioProcessoDocumento):
         self._session.flush()
         return processo
 
-    def get_by_id(self, id: str) -> Optional[ProcessoDocumento]:
-        model = self._session.query(ProcessoDocumentoModel).filter(
-            ProcessoDocumentoModel.id == uuid.UUID(id),
-            ProcessoDocumentoModel.deleted_at.is_(None),
-        ).first()
+    def get_by_id(self, id: str) -> ProcessoDocumento | None:
+        model = (
+            self._session.query(ProcessoDocumentoModel)
+            .filter(
+                ProcessoDocumentoModel.id == uuid.UUID(id),
+                ProcessoDocumentoModel.deleted_at.is_(None),
+            )
+            .first()
+        )
         if not model:
             return None
         return self._to_entity(model)
 
-    def find_all_abertos(self) -> List[ProcessoDocumento]:
-        models = self._session.query(ProcessoDocumentoModel).filter(
-            ProcessoDocumentoModel.deleted_at.is_(None),
-            ProcessoDocumentoModel.status != "encerrado",
-        ).all()
+    def find_all_abertos(self) -> list[ProcessoDocumento]:
+        models = (
+            self._session.query(ProcessoDocumentoModel)
+            .filter(
+                ProcessoDocumentoModel.deleted_at.is_(None),
+                ProcessoDocumentoModel.status != "encerrado",
+            )
+            .all()
+        )
         return [self._to_entity(m) for m in models]
 
     def _to_entity(self, model: ProcessoDocumentoModel) -> ProcessoDocumento:
