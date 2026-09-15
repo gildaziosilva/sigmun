@@ -1,0 +1,1 @@
+"""Módulo de Integração e Interoperabilidade (DOM-INT) — pacote raiz."""

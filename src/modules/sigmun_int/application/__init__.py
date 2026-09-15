@@ -1,0 +1,1 @@
+"""Camada de aplicação do módulo de Integração e Interoperabilidade (DOM-INT)."""

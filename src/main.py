@@ -44,6 +44,9 @@ from src.modules.sigmun_dad.presentation.api import (
 from src.modules.sigmun_idn.presentation.api import (
     router as idn_router,
 )
+from src.modules.sigmun_int.presentation.api import (
+    router as int_router,
+)
 from src.modules.sigmun_met.presentation.api import (
     router as met_router,
 )
@@ -146,6 +149,13 @@ app = FastAPI(
                 "classificação e temporalidade (DOM-GDO)."
             ),
         },
+        {
+            "name": "Integración e Interoperabilidad",
+            "description": (
+                "Catálogo de APIs, contratos, conectores oficiales, "
+                "webhooks y barramento de eventos (DOM-INT)."
+            ),
+        },
     ],
 )
 
@@ -210,6 +220,7 @@ app.include_router(idn_router)
 app.include_router(dad_router)
 app.include_router(met_router)
 app.include_router(gdo_router)
+app.include_router(int_router)
 
 
 @app.get("/health")
