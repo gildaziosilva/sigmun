@@ -3,76 +3,100 @@ Exceções de domínio do módulo de Identidade e Acesso.
 """
 
 
-class DomainException(Exception):
+class IdentidadeDomainError(Exception):
     """Exceção base do domínio."""
+
     pass
 
 
-class UsuarioNaoEncontradoError(DomainException):
+class UsuarioNaoEncontradoError(IdentidadeDomainError):
     """Usuário não encontrado."""
+
     pass
 
 
-class UsuarioJaExisteError(DomainException):
+class UsuarioJaCadastradoError(IdentidadeDomainError):
     """Usuário já cadastrado."""
+
     pass
 
 
-class UsuarioInativoError(DomainException):
+class UsuarioInativoError(IdentidadeDomainError):
     """Usuário inativo."""
+
     pass
 
 
-class UsuarioBloqueadoError(DomainException):
+class UsuarioBloqueadoError(IdentidadeDomainError):
     """Usuário bloqueado."""
+
     pass
 
 
-class CredenciaisInvalidasError(DomainException):
+class CredenciaisInvalidasError(IdentidadeDomainError):
     """Credenciais inválidas."""
+
     pass
 
 
-class RoleNaoEncontradaError(DomainException):
+class RoleNaoEncontradaError(IdentidadeDomainError):
     """Role não encontrada."""
+
     pass
 
 
-class RoleJaExisteError(DomainException):
+class RoleDuplicadaError(IdentidadeDomainError):
     """Role já cadastrada."""
+
     pass
 
 
-class PermissaoNaoEncontradaError(DomainException):
+class PermissaoNaoEncontradaError(IdentidadeDomainError):
     """Permissão não encontrada."""
+
     pass
 
 
-class PermissaoJaExisteError(DomainException):
+class PermissaoDuplicadaError(IdentidadeDomainError):
     """Permissão já cadastrada."""
+
     pass
 
 
-class SessaoInvalidaError(DomainException):
+class SessaoInvalidaError(IdentidadeDomainError):
     """Sessão inválida ou expirada."""
+
     pass
 
 
-class PermissaoNegadaError(DomainException):
+class PermissaoNegadaError(IdentidadeDomainError):
     """Permissão negada."""
+
     pass
 
 
-class TokenInvalidoError(DomainException):
+class TokenInvalidoError(IdentidadeDomainError):
     """Token inválido."""
+
     pass
 
 
-class SenhaInvalidaError(DomainException):
+class SenhaInvalidaError(IdentidadeDomainError):
     """Senha inválida."""
+
     pass
 
 
-class EmailInvalidoError(DomainException):
+class EmailInvalidoError(IdentidadeDomainError):
     """Email inválido."""
+
     pass
+
+
+# ---------------------------------------------------------------------------
+# Aliases de compatibilidade.
+# ---------------------------------------------------------------------------
+DomainException = IdentidadeDomainError
+UsuarioJaExisteError = UsuarioJaCadastradoError
+RoleJaExisteError = RoleDuplicadaError
+PermissaoJaExisteError = PermissaoDuplicadaError

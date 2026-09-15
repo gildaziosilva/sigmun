@@ -9,46 +9,15 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.modules.sigmun_idn.domain.entities import Role, Permissao, PermissaoEscopo
 from src.modules.sigmun_idn.application.interfaces import RoleRepositoryInterface
+from src.modules.sigmun_idn.domain.entities import Permissao, PermissaoEscopo, Role
 from src.modules.sigmun_idn.infrastructure.database.models import (
+    PermissaoModel,
     RoleModel,
     RolePermissaoModel,
-    PermissaoModel,
 )
 
 logger = logging.getLogger(__name__)
-
-
-def _to_role_entity(model: RoleModel) -> Role:
-    """Converte um registro ORM em entidade de domínio."""
-    entity = Role(
-        id=str(model.id),
-        codigo=model.codigo,
-        nome=model.nome,
-        descricao=model.descricao or "",
-        created_at=model.created_at,
-        updated_at=model.updated_at,
-        is_deleted=model.deleted_at is not None,
-    )
-    # Load permissoes associadas
-    stmt = select(PermissaoModel).where(
-        RolePermissaoModel.role_id == model.id,
-        PermissaoModel.id == RolePermissaoModel.permissao_id,
-        PermissaoModel.deleted_at.is_(None),
-    )
-    for perm_model in self._session.scalars(stmt).all():
-        entity.permissoes.append(Permissao(
-            id=str(perm_model.id),
-            codigo=perm_model.codigo,
-            nome=perm_model.nome,
-            descricao=perm_model.descricao or "",
-            escopo=PermissaoEscopo(perm_model.escopo),
-            modulo=perm_model.modulo,
-            created_at=perm_model.created_at,
-            is_deleted=perm_model.deleted_at is not None,
-        ))
-    return entity
 
 
 class SqlAlchemyRoleRepository(RoleRepositoryInterface):
@@ -98,7 +67,7 @@ class SqlAlchemyRoleRepository(RoleRepositoryInterface):
             model.codigo = role.codigo
             model.nome = role.nome
             model.descricao = role.descricao
-            model.updated_at = role.updated_at
+            model.updated_at = role.updated_at  # type: ignore[assignment]
             model.deleted_at = None
         # Sync permissoes
         self._sync_permissoes(role)
@@ -117,10 +86,12 @@ class SqlAlchemyRoleRepository(RoleRepositoryInterface):
         # Adicionar novas
         for perm in role.permissoes:
             if perm.id not in existentes_ids:
-                self._session.add(RolePermissaoModel(
-                    role_id=UUID(role.id),
-                    permissao_id=UUID(perm.id),
-                ))
+                self._session.add(
+                    RolePermissaoModel(
+                        role_id=UUID(role.id),
+                        permissao_id=UUID(perm.id),
+                    )
+                )
 
         # Remover antigas
         for rp in existentes:
@@ -130,6 +101,7 @@ class SqlAlchemyRoleRepository(RoleRepositoryInterface):
     def delete(self, role_id: str) -> bool:
         """Soft-delete: preserva histórico."""
         from sqlalchemy import func
+
         model = self._session.get(RoleModel, UUID(role_id))
         if model is None:
             return False
@@ -139,10 +111,14 @@ class SqlAlchemyRoleRepository(RoleRepositoryInterface):
         return True
 
     def exists_by_codigo(self, codigo: str) -> bool:
-        stmt = select(RoleModel.id).where(
-            RoleModel.codigo == codigo,
-            RoleModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(RoleModel.id)
+            .where(
+                RoleModel.codigo == codigo,
+                RoleModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
     def _to_entity(self, model: RoleModel) -> Role:
@@ -166,16 +142,18 @@ class SqlAlchemyRoleRepository(RoleRepositoryInterface):
             )
         )
         for perm_model in self._session.scalars(stmt).all():
-            entity.permissoes.append(Permissao(
-                id=str(perm_model.id),
-                codigo=perm_model.codigo,
-                nome=perm_model.nome,
-                descricao=perm_model.descricao or "",
-                escopo=PermissaoEscopo(perm_model.escopo),
-                modulo=perm_model.modulo,
-                created_at=perm_model.created_at,
-                is_deleted=perm_model.deleted_at is not None,
-            ))
+            entity.permissoes.append(
+                Permissao(
+                    id=str(perm_model.id),
+                    codigo=perm_model.codigo,
+                    nome=perm_model.nome,
+                    descricao=perm_model.descricao or "",
+                    escopo=PermissaoEscopo(perm_model.escopo),
+                    modulo=perm_model.modulo,
+                    created_at=perm_model.created_at,
+                    is_deleted=perm_model.deleted_at is not None,
+                )
+            )
         return entity
 
 

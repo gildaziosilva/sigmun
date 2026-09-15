@@ -3,14 +3,13 @@ Interfaces para repositórios do módulo de Identidade e Acesso.
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from src.modules.sigmun_idn.domain.entities import (
-    Usuario,
-    Role,
-    Permissao,
-    Sessao,
     AuditoriaLogin,
+    Permissao,
+    Role,
+    Sessao,
+    Usuario,
 )
 
 
@@ -18,17 +17,17 @@ class UsuarioRepositoryInterface(ABC):
     """Interface para repositório de usuários."""
 
     @abstractmethod
-    def get_by_id(self, usuario_id: str) -> Optional[Usuario]:
+    def get_by_id(self, usuario_id: str) -> Usuario | None:
         """Busca usuário por ID."""
         pass
 
     @abstractmethod
-    def get_by_login(self, login: str) -> Optional[Usuario]:
+    def get_by_login(self, login: str) -> Usuario | None:
         """Busca usuário por login."""
         pass
 
     @abstractmethod
-    def get_by_email(self, email: str) -> Optional[Usuario]:
+    def get_by_email(self, email: str) -> Usuario | None:
         """Busca usuário por email."""
         pass
 
@@ -37,7 +36,7 @@ class UsuarioRepositoryInterface(ABC):
         self,
         page: int = 0,
         page_size: int = 50,
-        status: Optional[str] = None,
+        status: str | None = None,
     ) -> tuple[list[Usuario], int]:
         """Lista usuários com paginação."""
         pass
@@ -67,12 +66,12 @@ class RoleRepositoryInterface(ABC):
     """Interface para repositório de roles."""
 
     @abstractmethod
-    def get_by_id(self, role_id: str) -> Optional[Role]:
+    def get_by_id(self, role_id: str) -> Role | None:
         """Busca role por ID."""
         pass
 
     @abstractmethod
-    def get_by_codigo(self, codigo: str) -> Optional[Role]:
+    def get_by_codigo(self, codigo: str) -> Role | None:
         """Busca role por código."""
         pass
 
@@ -105,12 +104,12 @@ class PermissaoRepositoryInterface(ABC):
     """Interface para repositório de permissões."""
 
     @abstractmethod
-    def get_by_id(self, permissao_id: str) -> Optional[Permissao]:
+    def get_by_id(self, permissao_id: str) -> Permissao | None:
         """Busca permissão por ID."""
         pass
 
     @abstractmethod
-    def get_by_codigo(self, codigo: str) -> Optional[Permissao]:
+    def get_by_codigo(self, codigo: str) -> Permissao | None:
         """Busca permissão por código."""
         pass
 
@@ -119,7 +118,7 @@ class PermissaoRepositoryInterface(ABC):
         self,
         page: int = 0,
         page_size: int = 50,
-        modulo: Optional[str] = None,
+        modulo: str | None = None,
     ) -> tuple[list[Permissao], int]:
         """Lista permissões com paginação."""
         pass
@@ -144,7 +143,7 @@ class SessaoRepositoryInterface(ABC):
     """Interface para repositório de sessões."""
 
     @abstractmethod
-    def get_by_token(self, token: str) -> Optional[Sessao]:
+    def get_by_token(self, token: str) -> Sessao | None:
         """Busca sessão por token."""
         pass
 

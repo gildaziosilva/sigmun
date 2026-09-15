@@ -1,6 +1,28 @@
-from src.modules.sigmun_idn.domain.events.usuario_events import *
+"""Eventos de domínio do módulo de Identidade e Acesso (re-exports)."""
+
+from src.modules.sigmun_idn.domain.events.usuario_events import (
+    DomainEvent,
+    EventoIdentidade,
+    LoginFalhouEvent,
+    LoginRealizadoEvent,
+    LogoutRealizadoEvent,
+    PermissaoConcedidaEvent,
+    PermissaoCriadaEvent,
+    PermissaoRevogadaEvent,
+    RoleAtualizadaEvent,
+    RoleCriadaEvent,
+    RoleRemovidaEvent,
+    SenhaAlteradaEvent,
+    SessaoCriadaEvent,
+    SessaoInvalidadaEvent,
+    UsuarioAtivadoEvent,
+    UsuarioBloqueadoEvent,
+    UsuarioCriadoEvent,
+    UsuarioDesativadoEvent,
+)
 
 __all__ = [
+    "EventoIdentidade",
     "DomainEvent",
     "UsuarioCriadoEvent",
     "UsuarioAtivadoEvent",
@@ -19,4 +41,3 @@ __all__ = [
     "SessaoCriadaEvent",
     "SessaoInvalidadaEvent",
 ]
-

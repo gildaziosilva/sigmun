@@ -17,8 +17,8 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.modules.sigmun_idn.domain.entities import Usuario, UsuarioStatus
 from src.modules.sigmun_idn.application.interfaces import UsuarioRepositoryInterface
+from src.modules.sigmun_idn.domain.entities import Usuario, UsuarioStatus
 from src.modules.sigmun_idn.infrastructure.database.models import UsuarioModel
 
 logger = logging.getLogger(__name__)
@@ -132,7 +132,7 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
             model.unidades_ids = _format_uuid_list(usuario.unidades_ids)
             model.roles_ids = _format_uuid_list(usuario.roles_ids)
             model.last_login = usuario.last_login
-            model.updated_at = usuario.updated_at
+            model.updated_at = usuario.updated_at  # type: ignore[assignment]
             model.deleted_at = None
             logger.info("Usuário atualizado: %s", usuario.id)
         self._session.flush()
@@ -142,6 +142,7 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
     def delete(self, usuario_id: str) -> bool:
         """Soft-delete: preserva histórico."""
         from sqlalchemy import func
+
         model = self._session.get(UsuarioModel, UUID(usuario_id))
         if model is None:
             return False
@@ -152,17 +153,25 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
         return True
 
     def exists_by_login(self, login: str) -> bool:
-        stmt = select(UsuarioModel.id).where(
-            UsuarioModel.login == login,
-            UsuarioModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(UsuarioModel.id)
+            .where(
+                UsuarioModel.login == login,
+                UsuarioModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
     def exists_by_email(self, email: str) -> bool:
-        stmt = select(UsuarioModel.id).where(
-            UsuarioModel.email == email,
-            UsuarioModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(UsuarioModel.id)
+            .where(
+                UsuarioModel.email == email,
+                UsuarioModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 

@@ -1,11 +1,11 @@
 from src.modules.sigmun_idn.domain.entities.usuario import (
-    Usuario,
-    UsuarioStatus,
-    Role,
+    AuditoriaLogin,
     Permissao,
     PermissaoEscopo,
+    Role,
     Sessao,
-    AuditoriaLogin,
+    Usuario,
+    UsuarioStatus,
 )
 
 __all__ = [
@@ -17,4 +17,3 @@ __all__ = [
     "Sessao",
     "AuditoriaLogin",
 ]
-

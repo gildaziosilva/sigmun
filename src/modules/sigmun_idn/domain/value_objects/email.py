@@ -9,13 +9,14 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Email:
     """Value Object que representa um email validado."""
+
     valor: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self._validar(self.valor)
 
     @staticmethod
-    def _validar(email: str):
+    def _validar(email: str) -> None:
         """Valida formato do email."""
         if not email:
             raise ValueError("Email não pode ser vazio")

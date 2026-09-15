@@ -8,8 +8,8 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.modules.sigmun_idn.domain.entities import Sessao
 from src.modules.sigmun_idn.application.interfaces import SessaoRepositoryInterface
+from src.modules.sigmun_idn.domain.entities import Sessao
 from src.modules.sigmun_idn.infrastructure.database.models import SessaoModel
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ class SqlAlchemySessaoRepository(SessaoRepositoryInterface):
     def get_by_usuario(self, usuario_id: str) -> list[Sessao]:
         stmt = select(SessaoModel).where(
             SessaoModel.usuario_id == UUID(usuario_id),
-            SessaoModel.is_active == True,
+            SessaoModel.is_active.is_(True),
         )
         models = self._session.scalars(stmt).all()
         return [_to_entity(m) for m in models]
@@ -79,17 +79,18 @@ class SqlAlchemySessaoRepository(SessaoRepositoryInterface):
     def invalidate_all_for_usuario(self, usuario_id: str) -> int:
         """Invalida todas as sessões ativas do usuário."""
         from sqlalchemy import update
+
         stmt = (
             update(SessaoModel)
             .where(
                 SessaoModel.usuario_id == UUID(usuario_id),
-                SessaoModel.is_active == True,
+                SessaoModel.is_active.is_(True),
             )
             .values(is_active=False)
         )
         result = self._session.execute(stmt)
         self._session.flush()
-        count = result.rowcount
+        count: int = result.rowcount  # type: ignore[attr-defined]
         logger.info("%d sessões invalidadas para usuário: %s", count, usuario_id)
         return count
 

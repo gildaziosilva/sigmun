@@ -9,13 +9,14 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Senha:
     """Value Object que representa uma senha validada."""
+
     valor: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self._validar(self.valor)
 
     @staticmethod
-    def _validar(senha: str):
+    def _validar(senha: str) -> None:
         """Valida requisitos mínimos de senha."""
         if not senha:
             raise ValueError("Senha não pode ser vazia")

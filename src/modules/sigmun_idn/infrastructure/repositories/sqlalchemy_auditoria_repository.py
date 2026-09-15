@@ -9,8 +9,8 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.modules.sigmun_idn.domain.entities import AuditoriaLogin
 from src.modules.sigmun_idn.application.interfaces import AuditoriaLoginRepositoryInterface
+from src.modules.sigmun_idn.domain.entities import AuditoriaLogin
 from src.modules.sigmun_idn.infrastructure.database.models import AuditoriaLoginModel
 
 logger = logging.getLogger(__name__)
@@ -58,9 +58,11 @@ class SqlAlchemyAuditoriaLoginRepository(AuditoriaLoginRepositoryInterface):
         page: int = 0,
         page_size: int = 50,
     ) -> tuple[builtins.list[AuditoriaLogin], int]:
-        stmt = select(AuditoriaLoginModel).where(
-            AuditoriaLoginModel.usuario_id == UUID(usuario_id)
-        ).order_by(AuditoriaLoginModel.created_at.desc())
+        stmt = (
+            select(AuditoriaLoginModel)
+            .where(AuditoriaLoginModel.usuario_id == UUID(usuario_id))
+            .order_by(AuditoriaLoginModel.created_at.desc())
+        )
         total = len(self._session.scalars(stmt).all())
         stmt = stmt.offset(page * page_size).limit(page_size)
         models = self._session.scalars(stmt).all()
@@ -69,11 +71,13 @@ class SqlAlchemyAuditoriaLoginRepository(AuditoriaLoginRepositoryInterface):
     def count_failed_recent(self, login: str, minutes: int = 30) -> int:
         """Conta falhas recentes de login."""
         from datetime import datetime, timedelta
+
         from sqlalchemy import func
+
         cutoff = datetime.utcnow() - timedelta(minutes=minutes)
         stmt = select(func.count(AuditoriaLoginModel.id)).where(
             AuditoriaLoginModel.login == login,
-            AuditoriaLoginModel.sucesso == False,
+            AuditoriaLoginModel.sucesso.is_(False),
             AuditoriaLoginModel.created_at >= cutoff,
         )
         return self._session.scalar(stmt) or 0

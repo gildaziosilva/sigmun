@@ -5,22 +5,13 @@ Serviços de domínio do módulo de Identidade e Acesso.
 import hashlib
 import secrets
 from datetime import datetime, timedelta
-from typing import Optional
 
 from src.modules.sigmun_idn.domain.entities import (
+    AuditoriaLogin,
+    Role,
+    Sessao,
     Usuario,
     UsuarioStatus,
-    Role,
-    Permissao,
-    Sessao,
-    AuditoriaLogin,
-)
-from src.modules.sigmun_idn.domain.exceptions import (
-    CredenciaisInvalidasError,
-    UsuarioInativoError,
-    UsuarioBloqueadoError,
-    SessaoInvalidaError,
-    PermissaoNegadaError,
 )
 
 
@@ -56,7 +47,7 @@ class AutenticacaoService:
         senha: str,
         ip_origem: str = "",
         user_agent: str = "",
-    ) -> tuple[bool, Optional[str]]:
+    ) -> tuple[bool, str | None]:
         """
         Autentica um usuário.
 
@@ -100,15 +91,13 @@ class AutenticacaoService:
         )
 
     @staticmethod
-    def validar_sessao(sessao: Optional[Sessao]) -> bool:
+    def validar_sessao(sessao: Sessao | None) -> bool:
         """Valida se sessão é válida."""
         if sessao is None:
             return False
         if not sessao.is_active:
             return False
-        if sessao.is_expired:
-            return False
-        return True
+        return not sessao.esta_expirada
 
 
 class AutorizacaoService:
@@ -131,15 +120,15 @@ class AutorizacaoService:
         Returns:
             True se usuário possui permissão
         """
-        if usuario.is_deleted or not usuario.is_active:
+        if usuario.is_deleted or not usuario.esta_ativo:
             return False
 
-        return usuario.has_permission(codigo_permissao, roles)
+        return usuario.tem_permissao(codigo_permissao, roles)
 
     @staticmethod
     def verificar_role(usuario: Usuario, codigo_role: str, roles: list[Role]) -> bool:
         """Verifica se usuário possui role específica."""
-        if usuario.is_deleted or not usuario.is_active:
+        if usuario.is_deleted or not usuario.esta_ativo:
             return False
 
         for role in roles:
@@ -150,7 +139,7 @@ class AutorizacaoService:
     @staticmethod
     def pode_acessar_unidade(usuario: Usuario, unidade_id: str) -> bool:
         """Verifica se usuário pode acessar unidade."""
-        if usuario.is_deleted or not usuario.is_active:
+        if usuario.is_deleted or not usuario.esta_ativo:
             return False
 
         # Admin global tem acesso a todas as unidades

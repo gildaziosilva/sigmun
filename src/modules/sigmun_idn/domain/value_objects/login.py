@@ -9,13 +9,14 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Login:
     """Value Object que representa um login validado."""
+
     valor: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self._validar(self.valor)
 
     @staticmethod
-    def _validar(login: str):
+    def _validar(login: str) -> None:
         """Valida formato do login."""
         if not login:
             raise ValueError("Login não pode ser vazio")
@@ -24,7 +25,9 @@ class Login:
         if len(login) > 50:
             raise ValueError("Login deve ter no máximo 50 caracteres")
         if not re.match(r"^[a-zA-Z0-9_.-]+$", login):
-            raise ValueError("Login pode conter apenas letras, números, pontos, hífens e underlines")
+            raise ValueError(
+                "Login pode conter apenas letras, números, pontos, hífens e underlines"
+            )
         if login.startswith(".") or login.startswith("-") or login.startswith("_"):
             raise ValueError("Login não pode começar com ponto, hífen ou underline")
 

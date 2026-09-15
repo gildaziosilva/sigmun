@@ -25,9 +25,7 @@ class UsuarioModel(IdnBase):
     __tablename__ = "usuarios"
     __table_args__ = {"schema": "idn"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     login: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     email: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     nome: Mapped[str] = mapped_column(Text, nullable=False)
@@ -59,9 +57,7 @@ class RoleModel(IdnBase):
     __tablename__ = "roles"
     __table_args__ = {"schema": "idn"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     codigo: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     nome: Mapped[str] = mapped_column(Text, nullable=False)
     descricao: Mapped[str | None] = mapped_column(Text)
@@ -88,9 +84,7 @@ class PermissaoModel(IdnBase):
     __tablename__ = "permissoes"
     __table_args__ = {"schema": "idn"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     codigo: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     nome: Mapped[str] = mapped_column(Text, nullable=False)
     descricao: Mapped[str | None] = mapped_column(Text)
@@ -119,9 +113,7 @@ class UsuarioRoleModel(IdnBase):
     __tablename__ = "usuario_roles"
     __table_args__ = {"schema": "idn"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     usuario_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
 
@@ -141,9 +133,7 @@ class RolePermissaoModel(IdnBase):
     __tablename__ = "role_permissoes"
     __table_args__ = {"schema": "idn"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     permissao_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
 
@@ -163,9 +153,7 @@ class SessaoModel(IdnBase):
     __tablename__ = "sessoes"
     __table_args__ = {"schema": "idn"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     usuario_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     token: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     ip_origem: Mapped[str | None] = mapped_column(Text)
@@ -192,9 +180,7 @@ class AuditoriaLoginModel(IdnBase):
     __tablename__ = "auditoria_logins"
     __table_args__ = {"schema": "idn"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     usuario_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
     login: Mapped[str] = mapped_column(Text, nullable=False)
     ip_origem: Mapped[str | None] = mapped_column(Text)

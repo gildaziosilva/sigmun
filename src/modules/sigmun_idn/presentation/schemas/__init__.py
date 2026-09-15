@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.modules.sigmun_idn.domain.entities import PermissaoEscopo, UsuarioStatus
-
 
 # -- Payloads de criação -------------------------------------------------------
 

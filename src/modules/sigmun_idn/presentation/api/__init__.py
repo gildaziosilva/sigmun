@@ -26,7 +26,7 @@ from src.modules.sigmun_idn.application.use_cases import (
     DesativarUsuarioUseCase,
     LogoutUseCase,
 )
-from src.modules.sigmun_idn.domain.entities import UsuarioStatus
+from src.modules.sigmun_idn.domain.entities import Usuario
 from src.modules.sigmun_idn.domain.exceptions import (
     UsuarioJaExisteError,
     UsuarioNaoEncontradoError,
@@ -77,7 +77,7 @@ def get_auditoria_repository(
 # -- Helper functions ----------------------------------------------------------
 
 
-def _to_usuario_response(usuario) -> UsuarioResponse:
+def _to_usuario_response(usuario: Usuario) -> UsuarioResponse:
     """Converte entidade Usuario para schema de resposta."""
     return UsuarioResponse(
         id=usuario.id,
@@ -144,6 +144,7 @@ def buscar_usuario(
     from src.modules.sigmun_idn.application.use_cases.usuario_use_cases import (
         BuscarUsuarioUseCase,
     )
+
     use_case = BuscarUsuarioUseCase(repository)
     try:
         usuario = use_case.get_by_id(usuario_id)

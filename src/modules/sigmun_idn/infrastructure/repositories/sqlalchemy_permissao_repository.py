@@ -9,8 +9,8 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.modules.sigmun_idn.domain.entities import Permissao, PermissaoEscopo
 from src.modules.sigmun_idn.application.interfaces import PermissaoRepositoryInterface
+from src.modules.sigmun_idn.domain.entities import Permissao, PermissaoEscopo
 from src.modules.sigmun_idn.infrastructure.database.models import PermissaoModel
 
 logger = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ def _to_entity(model: PermissaoModel) -> Permissao:
         escopo=PermissaoEscopo(model.escopo),
         modulo=model.modulo,
         created_at=model.created_at,
+        updated_at=model.updated_at,
         is_deleted=model.deleted_at is not None,
     )
 
@@ -84,7 +85,7 @@ class SqlAlchemyPermissaoRepository(PermissaoRepositoryInterface):
             model.descricao = permissao.descricao
             model.escopo = permissao.escopo.value
             model.modulo = permissao.modulo
-            model.updated_at = permissao.updated_at
+            model.updated_at = permissao.updated_at  # type: ignore[assignment]
             model.deleted_at = None
             logger.info("Permissão atualizada: %s", permissao.id)
         self._session.flush()
@@ -94,6 +95,7 @@ class SqlAlchemyPermissaoRepository(PermissaoRepositoryInterface):
     def delete(self, permissao_id: str) -> bool:
         """Soft-delete: preserva histórico."""
         from sqlalchemy import func
+
         model = self._session.get(PermissaoModel, UUID(permissao_id))
         if model is None:
             return False
@@ -103,10 +105,14 @@ class SqlAlchemyPermissaoRepository(PermissaoRepositoryInterface):
         return True
 
     def exists_by_codigo(self, codigo: str) -> bool:
-        stmt = select(PermissaoModel.id).where(
-            PermissaoModel.codigo == codigo,
-            PermissaoModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(PermissaoModel.id)
+            .where(
+                PermissaoModel.codigo == codigo,
+                PermissaoModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 

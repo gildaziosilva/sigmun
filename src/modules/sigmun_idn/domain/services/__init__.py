@@ -1,7 +1,7 @@
 from src.modules.sigmun_idn.domain.services.auth_service import (
+    AuditoriaService,
     AutenticacaoService,
     AutorizacaoService,
-    AuditoriaService,
 )
 
 __all__ = [
@@ -9,4 +9,3 @@ __all__ = [
     "AutorizacaoService",
     "AuditoriaService",
 ]
-
