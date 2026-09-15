@@ -3,14 +3,15 @@
 import logging
 
 from src.modules.sigmun_met.domain.entities import (
+    Classificacao,
     Metadado,
     Taxonomia,
     TermoTaxonomia,
     TipoDadoMetadado,
 )
 from src.modules.sigmun_met.domain.exceptions import (
-    HierarquiaCiclicaError,
-    TermoJaExisteError,
+    CicloHierarquiaError,
+    TermoDuplicadoError,
     ValorMetadadoInvalidoError,
 )
 
@@ -31,6 +32,7 @@ class MetadadoService:
                 return False
         if metadado.tipo_dado == TipoDadoMetadado.DATA:
             from datetime import datetime
+
             for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y-%m-%dT%H:%M:%S"):
                 try:
                     datetime.strptime(valor, fmt)
@@ -44,6 +46,7 @@ class MetadadoService:
             return "," in valor or bool(valor)
         if metadado.tipo_dado == TipoDadoMetadado.JSON:
             import json
+
             try:
                 json.loads(valor)
                 return True
@@ -84,19 +87,17 @@ class TaxonomiaService:
     def validar_hierarquia(termos: list[TermoTaxonomia], termo_pai_id: str, termo_id: str) -> None:
         """Valida que associar termo_id sob termo_pai_id não cria ciclo."""
         if termo_pai_id == termo_id:
-            raise HierarquiaCiclicaError("Um termo não pode ser pai de si mesmo")
+            raise CicloHierarquiaError("Um termo não pode ser pai de si mesmo")
         # Sobe a hierarquia a partir do pai procurando o termo filho
         atual_id = termo_pai_id
         visitados: set[str] = set()
         mapa = {t.id: t for t in termos}
         while atual_id:
             if atual_id in visitados:
-                raise HierarquiaCiclicaError("Ciclo detectado na hierarquia existente")
+                raise CicloHierarquiaError("Ciclo detectado na hierarquia existente")
             visitados.add(atual_id)
             if atual_id == termo_id:
-                raise HierarquiaCiclicaError(
-                    "Associação criaria ciclo na hierarquia da taxonomia"
-                )
+                raise CicloHierarquiaError("Associação criaria ciclo na hierarquia da taxonomia")
             pai = mapa.get(atual_id)
             atual_id = pai.termo_pai_id if pai else ""
 
@@ -147,9 +148,7 @@ class TaxonomiaService:
                 and termo.codigo.lower() == codigo.lower()
                 and termo.id != exclude_id
             ):
-                raise TermoJaExisteError(
-                    f"Termo com código '{codigo}' já existe na taxonomia"
-                )
+                raise TermoDuplicadoError(f"Termo com código '{codigo}' já existe na taxonomia")
 
     @staticmethod
     def adicionar_termo_raiz(taxonomia: Taxonomia, termo: TermoTaxonomia) -> Taxonomia:
@@ -157,8 +156,8 @@ class TaxonomiaService:
         if termo.termo_pai_id:
             raise ValueError("Apenas termos raiz podem ser adicionados à taxonomia")
         if termo.id in taxonomia.termos_ids:
-            raise TermoJaExisteError(f"Termo '{termo.nome}' já está na taxonomia")
-        taxonomia.add_termo(termo.id)
+            raise TermoDuplicadoError(f"Termo '{termo.nome}' já está na taxonomia")
+        taxonomia.adicionar_termo(termo.id)
         logger.info("Termo raiz '%s' adicionado à taxonomia '%s'", termo.codigo, taxonomia.codigo)
         return taxonomia
 
@@ -172,14 +171,14 @@ class ClassificacaoService:
         return sorted(classificacoes, key=lambda c: c.nivel)
 
     @staticmethod
-    def nivel_maximo(classificacoes: list) -> int:
+    def nivel_maximo(classificacoes: list["Classificacao"]) -> int:
         """Retorna o nível máximo entre as classificações."""
         if not classificacoes:
             return 0
         return max(c.nivel for c in classificacoes)
 
     @staticmethod
-    def e_mais_restritiva(classificacao, outras: list) -> bool:
+    def e_mais_restritiva(classificacao: "Classificacao", outras: list["Classificacao"]) -> bool:
         """Verifica se a classificação é mais restritiva (nível maior) que as outras."""
         return all(classificacao.nivel > c.nivel for c in outras)
 
