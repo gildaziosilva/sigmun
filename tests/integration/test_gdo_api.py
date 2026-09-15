@@ -152,9 +152,7 @@ def test_post_documentos_cria_201(client: TestClient):
 
 def test_post_documentos_hash_invalido_retorna_400(client: TestClient):
     """RN-GDO-002: hash informado deve ser SHA-256 (64 hex chars)."""
-    response = client.post(
-        "/api/v1/gdo/documentos", json=_payload(hash_integridade="hash-curto")
-    )
+    response = client.post("/api/v1/gdo/documentos", json=_payload(hash_integridade="hash-curto"))
 
     assert response.status_code == 400
     assert "SHA-256" in response.json()["detail"]
@@ -172,7 +170,8 @@ def test_post_documentos_codigo_duplicado_retorna_409(client: TestClient):
 
 def test_post_documentos_payload_invalido_retorna_422(client: TestClient):
     response = client.post(
-        "/api/v1/gdo/documentos", json=_payload(titulo="ab")  # < 3 chars
+        "/api/v1/gdo/documentos",
+        json=_payload(titulo="ab"),  # < 3 chars
     )
 
     assert response.status_code == 422
@@ -180,7 +179,7 @@ def test_post_documentos_payload_invalido_retorna_422(client: TestClient):
 
 @pytest.fixture(autouse=True)
 def tipo_documental_ativo(db_session) -> str:
-    """Cria um tipo documental ativo para testes (autouse: todos os testes têm pelo menos um tipo válido)."""
+    """Cria um tipo documental ativo para os testes (autouse: garante um tipo válido)."""
     model = TipoDocumentalModel(
         codigo="TD-OFICIO",
         nome="Ofício",
@@ -216,9 +215,7 @@ def test_post_documentos_tipo_invalido_retorna_400(client: TestClient):
     assert "Tipo documental" in response.json()["detail"]
 
 
-def test_post_documentos_tipo_inativo_retorna_400(
-    client: TestClient, tipo_documental_inativo: str
-):
+def test_post_documentos_tipo_inativo_retorna_400(client: TestClient, tipo_documental_inativo: str):
     """Validação: tipo documental inativo deve retornar 400."""
     response = client.post(
         "/api/v1/gdo/documentos",
@@ -229,9 +226,7 @@ def test_post_documentos_tipo_inativo_retorna_400(
     assert "Tipo documental" in response.json()["detail"]
 
 
-def test_post_documentos_tipo_valido_retorna_201(
-    client: TestClient, tipo_documental_ativo: str
-):
+def test_post_documentos_tipo_valido_retorna_201(client: TestClient, tipo_documental_ativo: str):
     """Validação: tipo documental ativo deve permitir criação (201)."""
     response = client.post(
         "/api/v1/gdo/documentos",
@@ -366,6 +361,7 @@ def test_get_documentos_paginacao(client: TestClient):
     for _ in range(3):
         client.post("/api/v1/gdo/documentos", json=_payload())
 
+
 # =============================================================================
 # GET /api/v1/gdo/documentos/{documento_id} e /processo/{processo_id}
 # =============================================================================
@@ -383,9 +379,7 @@ def test_get_documento_por_id_200_e_404(client: TestClient):
 
 
 def test_get_documentos_do_processo(client: TestClient, processo_id: str):
-    criado = client.post(
-        "/api/v1/gdo/documentos", json=_payload(processo_id=processo_id)
-    ).json()
+    criado = client.post("/api/v1/gdo/documentos", json=_payload(processo_id=processo_id)).json()
 
     response = client.get(f"/api/v1/gdo/documentos/processo/{processo_id}")
 
@@ -499,9 +493,7 @@ def test_get_processo_por_id_200_e_404(client: TestClient, processo_id: str):
 # =============================================================================
 
 
-def test_get_temporalidade_por_codigo_200_e_404(
-    client: TestClient, temporalidade_codigo: str
-):
+def test_get_temporalidade_por_codigo_200_e_404(client: TestClient, temporalidade_codigo: str):
     ok = client.get(f"/api/v1/gdo/temporalidades/{temporalidade_codigo}")
     inexistente = client.get("/api/v1/gdo/temporalidades/TEMP-INEXISTENTE")
 
@@ -769,7 +761,3 @@ def test_post_destinacao_documento_inexistente_retorna_404(client: TestClient):
     )
 
     assert response.status_code == 404
-
-
-
-

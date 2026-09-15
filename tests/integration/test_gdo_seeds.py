@@ -17,7 +17,6 @@ from src.modules.sigmun_gdo.infrastructure.database.seeds import (
     PLANO_CLASSIFICACAO_INICIAL,
     TABELAS_TEMPORALIDADE_INICIAIS,
     executar_seed_gdo,
-    popular_seed_gdo,
 )
 
 TABELAS_GDO_SEED = (
@@ -44,12 +43,8 @@ def test_seed_popula_plano_classificacao_e_temporalidades():
     with SessionLocal() as session:
         resultado = executar_seed_gdo(session)
 
-        total_classificacoes = len(
-            session.scalars(select(ClassificacaoDocumentalModel)).all()
-        )
-        total_temporalidades = len(
-            session.scalars(select(TabelaTemporalidadeModel)).all()
-        )
+        total_classificacoes = len(session.scalars(select(ClassificacaoDocumentalModel)).all())
+        total_temporalidades = len(session.scalars(select(TabelaTemporalidadeModel)).all())
 
     assert resultado["classificacoes_criadas"] == len(PLANO_CLASSIFICACAO_INICIAL)
     assert resultado["temporalidades_criadas"] == len(TABELAS_TEMPORALIDADE_INICIAIS)

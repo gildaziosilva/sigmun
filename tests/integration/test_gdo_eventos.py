@@ -41,9 +41,7 @@ def _isolamento_eventos():
     with SessionLocal() as session:
         session.execute(text(f"TRUNCATE TABLE {', '.join(TABELAS_EVENTOS)} CASCADE"))
         session.commit()
-    redis = redis_lib.Redis.from_url(
-        "redis://localhost:6379/0", decode_responses=True
-    )
+    redis = redis_lib.Redis.from_url("redis://localhost:6379/0", decode_responses=True)
     redis.delete(*TOPICOS)
     yield
     redis.delete(*TOPICOS)
@@ -62,12 +60,15 @@ def client() -> TestClient:
 def _tipo_documento_para_eventos():
     """Garante um tipo documental ativo para os testes de eventos."""
     from src.modules.sigmun_gdo.infrastructure.database.models import TipoDocumentalModel
+
     with SessionLocal() as session:
         tipo = session.query(TipoDocumentalModel).filter_by(codigo="TD-OFICIO").first()
         if not tipo:
-            session.add(TipoDocumentalModel(
-                codigo="TD-OFICIO", nome="Ofício", descricao="Documento de teste", is_ativo=True
-            ))
+            session.add(
+                TipoDocumentalModel(
+                    codigo="TD-OFICIO", nome="Ofício", descricao="Documento de teste", is_ativo=True
+                )
+            )
             session.commit()
     yield
 
@@ -125,9 +126,7 @@ def test_criar_documento_publica_evento_criado(client: TestClient, db):
     assert evento.payload["status"] == criado["status"]
 
 
-def test_criar_documento_com_processo_publica_dois_eventos(
-    client: TestClient, db
-):
+def test_criar_documento_com_processo_publica_dois_eventos(client: TestClient, db):
     """Documento vinculado a processo publica `criado` e `vinculado_processo`."""
     from sqlalchemy import text as sql_text
 
@@ -292,9 +291,7 @@ def test_despachar_falha_incrementa_tentativas_e_marca_erro(db):
         DespachadorRedisStreams,
     )
 
-    despachador = DespachadorRedisStreams(
-        "redis://localhost:59999/0", max_tentativas=2
-    )
+    despachador = DespachadorRedisStreams("redis://localhost:59999/0", max_tentativas=2)
 
     primeira = despachador.despachar(db)
     segunda = despachador.despachar(db)
