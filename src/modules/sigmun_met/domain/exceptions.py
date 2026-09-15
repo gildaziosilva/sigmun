@@ -1,83 +1,112 @@
 """Exceções de domínio do módulo de Metadados Corporativos."""
 
 
-class DomainException(Exception):
-    """Exceção base do domínio."""
-    pass
+class MetadadosDomainError(Exception):
+    """Base das exceções de negócio do domínio Metadados (espelho DOM-COMPRAS-001)."""
 
 
-class MetadadoNaoEncontradoError(DomainException):
+class MetadadoNaoEncontradoError(MetadadosDomainError):
     """Metadado não encontrado."""
+
     pass
 
 
-class MetadadoJaExisteError(DomainException):
+class MetadadoJaCadastradoError(MetadadosDomainError):
     """Metadado já cadastrado."""
+
     pass
 
 
-class ValorMetadadoNaoEncontradoError(DomainException):
+class ValorMetadadoNaoEncontradoError(MetadadosDomainError):
     """Valor de metadado não encontrado."""
+
     pass
 
 
-class ValorMetadadoInvalidoError(DomainException):
+class ValorMetadadoInvalidoError(MetadadosDomainError):
     """Valor inválido para o tipo de dado do metadado."""
+
     pass
 
 
-class ClassificacaoNaoEncontradaError(DomainException):
+class ClassificacaoNaoEncontradaError(MetadadosDomainError):
     """Classificação não encontrada."""
+
     pass
 
 
-class ClassificacaoJaExisteError(DomainException):
+class ClassificacaoDuplicadaError(MetadadosDomainError):
     """Classificação já cadastrada."""
+
     pass
 
 
-class TaxonomiaNaoEncontradaError(DomainException):
+class TaxonomiaNaoEncontradaError(MetadadosDomainError):
     """Taxonomia não encontrada."""
+
     pass
 
 
-class TaxonomiaJaExisteError(DomainException):
+class TaxonomiaDuplicadaError(MetadadosDomainError):
     """Taxonomia já cadastrada."""
+
     pass
 
 
-class TermoNaoEncontradoError(DomainException):
+class TermoNaoEncontradoError(MetadadosDomainError):
     """Termo de taxonomia não encontrado."""
+
     pass
 
 
-class TermoJaExisteError(DomainException):
+class TermoDuplicadoError(MetadadosDomainError):
     """Termo de taxonomia já cadastrado."""
+
     pass
 
 
-class HierarquiaCiclicaError(DomainException):
+class CicloHierarquiaError(MetadadosDomainError):
     """Hierarquia de termos criaria um ciclo."""
+
     pass
 
 
-class CodigoInvalidoError(DomainException):
+class CodigoInvalidoError(MetadadosDomainError):
     """Código inválido."""
+
     pass
+
+
+# ---------------------------------------------------------------------------
+# Aliases de compatibilidade (nomes anteriores em inglês/híbridos).
+# Mantidos para não quebrar importadores externos; remover em major futura.
+# ---------------------------------------------------------------------------
+DomainException = MetadadosDomainError
+MetadadoJaExisteError = MetadadoJaCadastradoError
+ClassificacaoJaExisteError = ClassificacaoDuplicadaError
+TaxonomiaJaExisteError = TaxonomiaDuplicadaError
+TermoJaExisteError = TermoDuplicadoError
+HierarquiaCiclicaError = CicloHierarquiaError
 
 
 __all__ = [
+    "MetadadosDomainError",
     "DomainException",
     "MetadadoNaoEncontradoError",
+    "MetadadoJaCadastradoError",
     "MetadadoJaExisteError",
     "ValorMetadadoNaoEncontradoError",
     "ValorMetadadoInvalidoError",
     "ClassificacaoNaoEncontradaError",
+    "ClassificacaoDuplicadaError",
     "ClassificacaoJaExisteError",
     "TaxonomiaNaoEncontradaError",
+    "TaxonomiaDuplicadaError",
     "TaxonomiaJaExisteError",
     "TermoNaoEncontradoError",
+    "TermoDuplicadoError",
     "TermoJaExisteError",
+    "CicloHierarquiaError",
     "HierarquiaCiclicaError",
     "CodigoInvalidoError",
 ]
