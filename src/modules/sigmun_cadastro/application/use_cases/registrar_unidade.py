@@ -20,7 +20,7 @@ from src.modules.sigmun_cadastro.domain.entities.unidade_administrativa import (
 from src.modules.sigmun_cadastro.domain.events.unidade_events import (
     UnidadeRegistradaEvent,
 )
-from src.modules.sigmun_cadastro.domain.exceptions import UnidadeJaExistenteError
+from src.modules.sigmun_cadastro.domain.exceptions import UnidadeJaCadastradaError
 from src.modules.sigmun_cadastro.domain.repositories.unidade_administrativa_repository import (
     UnidadeAdministrativaRepository,
 )
@@ -39,16 +39,16 @@ class RegistrarUnidadeUseCase:
 
         # RN-CUM-009: unicidade de sigla e códigos
         if command.sigla and self._repository.exists_sigla(command.sigla):
-            raise UnidadeJaExistenteError(
+            raise UnidadeJaCadastradaError(
                 f"Já existe unidade administrativa com a sigla {command.sigla} (RN-CUM-009)"
             )
         if command.codigo_ibge and self._repository.exists_codigo_ibge(command.codigo_ibge):
-            raise UnidadeJaExistenteError(
+            raise UnidadeJaCadastradaError(
                 f"Já existe unidade administrativa com o código IBGE "
                 f"{command.codigo_ibge} (RN-CUM-009)"
             )
         if command.codigo_siafi and self._repository.exists_codigo_siafi(command.codigo_siafi):
-            raise UnidadeJaExistenteError(
+            raise UnidadeJaCadastradaError(
                 f"Já existe unidade administrativa com o código SIAFI "
                 f"{command.codigo_siafi} (RN-CUM-009)"
             )

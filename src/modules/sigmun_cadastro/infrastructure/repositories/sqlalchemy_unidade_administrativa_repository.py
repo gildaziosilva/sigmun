@@ -76,10 +76,8 @@ class SqlAlchemyUnidadeAdministrativaRepository(UnidadeAdministrativaRepository)
         if unidade.unidade_pai_id is None:
             return
         if unidade.unidade_pai_id == unidade.id:
-            raise CicloHierarquiaError(
-                "Unidade não pode ser pai de si mesma (RN-CUM-008)"
-            )
-        ancestrais = self.get_ancestral_ids(unidade.unidade_pai_id)
+            raise CicloHierarquiaError("Unidade não pode ser pai de si mesma (RN-CUM-008)")
+        ancestrais: list[UUID] = self.get_ancestral_ids(unidade.unidade_pai_id)
         if unidade.id in ancestrais:
             raise CicloHierarquiaError(
                 f"Alteração criaria ciclo na hierarquia de unidades (RN-CUM-008): "
@@ -196,7 +194,7 @@ class SqlAlchemyUnidadeAdministrativaRepository(UnidadeAdministrativaRepository)
             stmt = stmt.where(UnidadeAdministrativaModel.id != exclude_id)
         return self._session.scalars(stmt.limit(1)).first() is not None
 
-    def get_ancestral_ids(self, unidade_id: UUID, *, max_depth: int = 32) -> list[UUID]:
+    def get_ancestral_ids(self, unidade_id: UUID, *, max_depth: int = 32) -> builtins.list[UUID]:
         """Cadeia de ancestrais (do pai até a raiz), com profundidade limitada.
 
         Proteção adicional contra ciclos já persistidos: interrompe a
@@ -205,9 +203,7 @@ class SqlAlchemyUnidadeAdministrativaRepository(UnidadeAdministrativaRepository)
         ancestrais: list[UUID] = []
         atual = self._get_model(unidade_id, include_deleted=True)
         while (
-            atual is not None
-            and atual.unidade_pai_id is not None
-            and len(ancestrais) < max_depth
+            atual is not None and atual.unidade_pai_id is not None and len(ancestrais) < max_depth
         ):
             pai_id = atual.unidade_pai_id
             if pai_id in ancestrais:

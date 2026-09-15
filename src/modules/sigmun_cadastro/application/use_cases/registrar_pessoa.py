@@ -53,8 +53,7 @@ class RegistrarPessoaUseCase:
             numero = _normalizar_documento(tipo, doc["numero"])
             if self._repository.exists_documento(tipo, numero):
                 raise DocumentoDuplicadoError(
-                    f"Documento {tipo.value} {numero} já registrado para outra pessoa "
-                    "(RN-CUM-004)"
+                    f"Documento {tipo.value} {numero} já registrado para outra pessoa (RN-CUM-004)"
                 )
             documentos_normalizados.append((tipo, numero, doc))
 
@@ -78,9 +77,7 @@ class RegistrarPessoaUseCase:
                 principal=doc.get("principal", False),
             )
         for end in command.enderecos:
-            extras = {
-                k: v for k, v in end.items() if k not in ("tipo", "logradouro", "numero")
-            }
+            extras = {k: v for k, v in end.items() if k not in ("tipo", "logradouro", "numero")}
             pessoa.adicionar_endereco(
                 tipo=end["tipo"],
                 logradouro=end["logradouro"],

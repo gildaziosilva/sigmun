@@ -186,7 +186,7 @@ class Pessoa:
             numero=numero,
             principal=principal,
             created_by=usuario_id,
-            **campos,
+            **campos,  # type: ignore[arg-type]
         )
         self.enderecos.append(endereco)
         self._registrar_alteracao(usuario_id)
@@ -233,7 +233,7 @@ class Pessoa:
             numero=numero_limpo,
             principal=principal,
             created_by=usuario_id,
-            **campos,
+            **campos,  # type: ignore[arg-type]
         )
         self.documentos.append(documento)
         self._registrar_alteracao(usuario_id)
@@ -309,12 +309,8 @@ class Pessoa:
         atual = self.dados_juridicos
         self.dados_juridicos = DadosJuridicos(
             razao_social=razao_social if razao_social is not None else atual.razao_social,
-            nome_fantasia=(
-                nome_fantasia if nome_fantasia is not None else atual.nome_fantasia
-            ),
-            cnae_principal=(
-                cnae_principal if cnae_principal is not None else atual.cnae_principal
-            ),
+            nome_fantasia=(nome_fantasia if nome_fantasia is not None else atual.nome_fantasia),
+            cnae_principal=(cnae_principal if cnae_principal is not None else atual.cnae_principal),
             capital=capital if capital is not None else atual.capital,
         )
         self._registrar_alteracao(usuario_id)

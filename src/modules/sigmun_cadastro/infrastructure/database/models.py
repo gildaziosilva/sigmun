@@ -42,9 +42,7 @@ class PessoaModel(CadastroBase, AuditMixin):
     __tablename__ = "pessoas"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tipo: Mapped[str] = mapped_column(Text, nullable=False)
     categoria: Mapped[str] = mapped_column(Text, nullable=False)
     unidade_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
@@ -59,9 +57,7 @@ class PessoaFisicaModel(CadastroBase, AuditMixin):
     __tablename__ = "pessoas_fisicas"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     pessoa_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, unique=True)
     nome: Mapped[str] = mapped_column(Text, nullable=False)
     data_nascimento: Mapped[date | None] = mapped_column(Date)
@@ -80,9 +76,7 @@ class PessoaJuridicaModel(CadastroBase, AuditMixin):
     __tablename__ = "pessoas_juridicas"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     pessoa_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, unique=True)
     razao_social: Mapped[str] = mapped_column(Text, nullable=False)
     nome_fantasia: Mapped[str | None] = mapped_column(Text)
@@ -99,9 +93,7 @@ class EnderecoModel(CadastroBase, AuditMixin):
     __tablename__ = "enderecos"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     pessoa_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     tipo: Mapped[str] = mapped_column(Text, nullable=False)
     logradouro: Mapped[str] = mapped_column(Text, nullable=False)
@@ -129,9 +121,7 @@ class DocumentoModel(CadastroBase, AuditMixin):
     __tablename__ = "documentos"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     pessoa_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     tipo: Mapped[str] = mapped_column(Text, nullable=False)
     numero: Mapped[str] = mapped_column(Text, nullable=False)
@@ -150,9 +140,7 @@ class ContatoModel(CadastroBase, AuditMixin):
     __tablename__ = "contatos"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     pessoa_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     tipo: Mapped[str] = mapped_column(Text, nullable=False)
     valor: Mapped[str] = mapped_column(Text, nullable=False)
@@ -168,9 +156,7 @@ class UnidadeAdministrativaModel(CadastroBase, AuditMixin):
     __tablename__ = "unidades_administrativas"
     __table_args__ = {"schema": "core"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     unidade_pai_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
     codigo_ibge: Mapped[str | None] = mapped_column(Text)
     codigo_siafi: Mapped[str | None] = mapped_column(Text)

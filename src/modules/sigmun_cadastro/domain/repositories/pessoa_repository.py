@@ -9,12 +9,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from uuid import UUID
 
+from src.modules.sigmun_cadastro.domain.entities.documento import TipoDocumento
 from src.modules.sigmun_cadastro.domain.entities.pessoa import (
     CategoriaPessoa,
     Pessoa,
     TipoPessoa,
 )
-from src.modules.sigmun_cadastro.domain.entities.documento import TipoDocumento
 
 
 class PessoaRepository(ABC):
@@ -25,9 +25,7 @@ class PessoaRepository(ABC):
         """Cria ou atualiza o agregado (raiz + extensão + filhos)."""
 
     @abstractmethod
-    def get_by_id(
-        self, pessoa_id: UUID, *, include_deleted: bool = False
-    ) -> Pessoa | None:
+    def get_by_id(self, pessoa_id: UUID, *, include_deleted: bool = False) -> Pessoa | None:
         """Retorna o agregado hidratado (endereços, documentos, contatos)."""
 
     @abstractmethod

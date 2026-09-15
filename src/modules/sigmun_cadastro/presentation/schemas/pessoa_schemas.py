@@ -22,7 +22,6 @@ from src.modules.sigmun_cadastro.domain.entities.pessoa import (
     TipoPessoa,
 )
 
-
 # -- Payloads de criação -------------------------------------------------------
 
 
@@ -106,6 +105,7 @@ class PessoaCreateRequest(BaseModel):
     enderecos: list[EnderecoPayload] = Field(default_factory=list)
     documentos: list[DocumentoPayload] = Field(default_factory=list)
     contatos: list[ContatoPayload] = Field(default_factory=list)
+
 
 # -- Schemas de resposta --------------------------------------------------------
 
@@ -261,4 +261,3 @@ __all__ = [
     "CategoriaUpdateRequest",
     "ErrorResponse",
 ]
-

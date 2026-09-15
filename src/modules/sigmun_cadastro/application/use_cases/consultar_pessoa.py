@@ -23,13 +23,9 @@ class ConsultarPessoaUseCase:
         self._repository = repository
 
     def execute(self, query: ConsultarPessoaQuery) -> Pessoa:
-        pessoa = self._repository.get_by_id(
-            query.pessoa_id, include_deleted=query.include_deleted
-        )
+        pessoa = self._repository.get_by_id(query.pessoa_id, include_deleted=query.include_deleted)
         if pessoa is None:
-            raise PessoaNaoEncontradoError(
-                f"Pessoa {query.pessoa_id} não encontrada"
-            )
+            raise PessoaNaoEncontradoError(f"Pessoa {query.pessoa_id} não encontrada")
         return pessoa
 
 

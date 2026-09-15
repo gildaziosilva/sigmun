@@ -31,8 +31,12 @@ class UnidadeNaoEncontradaError(CadastroDomainError):
     """Unidade administrativa não encontrada."""
 
 
-class UnidadeJaExistenteError(CadastroDomainError):
+class UnidadeJaCadastradaError(CadastroDomainError):
     """Unidade administrativa com sigla/código já registrado (RN-CUM-009)."""
+
+
+# Alias de compatibilidade (nome anterior).
+UnidadeJaExistenteError = UnidadeJaCadastradaError
 
 
 class UnidadeComFilhasAtivasError(CadastroDomainError):
@@ -51,6 +55,7 @@ __all__ = [
     "DocumentoInvalidoError",
     "EnderecoNaoEncontradoError",
     "UnidadeNaoEncontradaError",
+    "UnidadeJaCadastradaError",
     "UnidadeJaExistenteError",
     "UnidadeComFilhasAtivasError",
     "CicloHierarquiaError",

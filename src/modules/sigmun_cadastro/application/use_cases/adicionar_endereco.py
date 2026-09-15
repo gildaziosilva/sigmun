@@ -44,9 +44,7 @@ class AdicionarEnderecoUseCase:
             principal=command.principal,
         )
         salvo = self._repository.save(pessoa)
-        logger.info(
-            "Endereço %s adicionado à pessoa %s", endereco.id, command.pessoa_id
-        )
+        logger.info("Endereço %s adicionado à pessoa %s", endereco.id, command.pessoa_id)
         return salvo
 
 

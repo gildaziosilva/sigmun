@@ -5,6 +5,7 @@ Padrão validado no DOM-COMPRAS-001.
 
 from __future__ import annotations
 
+import builtins
 from abc import ABC, abstractmethod
 from uuid import UUID
 
@@ -45,7 +46,7 @@ class UnidadeAdministrativaRepository(ABC):
         """Verifica unicidade de sigla (RN-CUM-009)."""
 
     @abstractmethod
-    def get_ancestral_ids(self, unidade_id: UUID, *, max_depth: int = 32) -> list[UUID]:
+    def get_ancestral_ids(self, unidade_id: UUID, *, max_depth: int = 32) -> builtins.list[UUID]:
         """Retorna a cadeia de ancestrais (para validar RN-CUM-008)."""
 
     @abstractmethod

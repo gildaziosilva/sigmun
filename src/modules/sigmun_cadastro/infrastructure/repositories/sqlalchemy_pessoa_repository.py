@@ -20,8 +20,8 @@ import logging
 import re
 from uuid import UUID
 
-from sqlalchemy import func, select, update
 import sqlalchemy as ja
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from src.modules.sigmun_cadastro.domain.entities.contato import Contato, TipoContato
@@ -236,9 +236,7 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
         self._session.flush()
         return self._hydrate(model)
 
-    def get_by_id(
-        self, pessoa_id: UUID, *, include_deleted: bool = False
-    ) -> Pessoa | None:
+    def get_by_id(self, pessoa_id: UUID, *, include_deleted: bool = False) -> Pessoa | None:
         model = self._get_model(pessoa_id, include_deleted=include_deleted)
         return self._hydrate(model, include_deleted=include_deleted) if model else None
 
@@ -262,7 +260,10 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
             stmt = stmt.limit(limit)
         if offset:
             stmt = stmt.offset(offset)
-        return [self._hydrate(m, include_deleted=include_deleted) for m in self._session.scalars(stmt).all()]
+        return [
+            self._hydrate(m, include_deleted=include_deleted)
+            for m in self._session.scalars(stmt).all()
+        ]
 
     def delete(self, pessoa_id: UUID, usuario_id: UUID) -> None:
         """Soft-delete da pessoa e de extensão/filhos (RN-CUM-007)."""
@@ -309,7 +310,7 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
     def _salvar_extensao(self, pessoa: Pessoa) -> None:
         """Sobresscreve a extensão 1:1 (física ou jurídica) da pessoa."""
         if pessoa.dados_fisicos is not None:
-            d = pessoa.dados_fisicos
+            dados_fisicos = pessoa.dados_fisicos
             pf = self._session.scalars(
                 select(PessoaFisicaModel).where(PessoaFisicaModel.pessoa_id == pessoa.id)
             ).first()
@@ -317,12 +318,12 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
                 self._session.add(
                     PessoaFisicaModel(
                         pessoa_id=pessoa.id,
-                        nome=d.nome,
-                        data_nascimento=d.data_nascimento,
-                        sexo=d.sexo.value if d.sexo else None,
-                        estado_civil=d.estado_civil,
-                        mae=d.mae,
-                        pai=d.pai,
+                        nome=dados_fisicos.nome,
+                        data_nascimento=dados_fisicos.data_nascimento,
+                        sexo=dados_fisicos.sexo.value if dados_fisicos.sexo else None,
+                        estado_civil=dados_fisicos.estado_civil,
+                        mae=dados_fisicos.mae,
+                        pai=dados_fisicos.pai,
                         created_at=pessoa.created_at,
                         created_by=pessoa.created_by,
                         updated_at=pessoa.updated_at,
@@ -332,18 +333,18 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
                     )
                 )
             else:
-                pf.nome = d.nome
-                pf.data_nascimento = d.data_nascimento
-                pf.sexo = d.sexo.value if d.sexo else None
-                pf.estado_civil = d.estado_civil
-                pf.mae = d.mae
-                pf.pai = d.pai
+                pf.nome = dados_fisicos.nome
+                pf.data_nascimento = dados_fisicos.data_nascimento
+                pf.sexo = dados_fisicos.sexo.value if dados_fisicos.sexo else None
+                pf.estado_civil = dados_fisicos.estado_civil
+                pf.mae = dados_fisicos.mae
+                pf.pai = dados_fisicos.pai
                 pf.updated_at = pessoa.updated_at
                 pf.updated_by = pessoa.updated_by
                 pf.deleted_at = pessoa.deleted_at
                 pf.deleted_by = pessoa.deleted_by
         elif pessoa.dados_juridicos is not None:
-            d = pessoa.dados_juridicos
+            dados_juridicos = pessoa.dados_juridicos
             pj = self._session.scalars(
                 select(PessoaJuridicaModel).where(PessoaJuridicaModel.pessoa_id == pessoa.id)
             ).first()
@@ -351,10 +352,10 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
                 self._session.add(
                     PessoaJuridicaModel(
                         pessoa_id=pessoa.id,
-                        razao_social=d.razao_social,
-                        nome_fantasia=d.nome_fantasia,
-                        cnae_principal=d.cnae_principal,
-                        capital=d.capital,
+                        razao_social=dados_juridicos.razao_social,
+                        nome_fantasia=dados_juridicos.nome_fantasia,
+                        cnae_principal=dados_juridicos.cnae_principal,
+                        capital=dados_juridicos.capital,
                         created_at=pessoa.created_at,
                         created_by=pessoa.created_by,
                         updated_at=pessoa.updated_at,
@@ -364,10 +365,10 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
                     )
                 )
             else:
-                pj.razao_social = d.razao_social
-                pj.nome_fantasia = d.nome_fantasia
-                pj.cnae_principal = d.cnae_principal
-                pj.capital = d.capital
+                pj.razao_social = dados_juridicos.razao_social
+                pj.nome_fantasia = dados_juridicos.nome_fantasia
+                pj.cnae_principal = dados_juridicos.cnae_principal
+                pj.capital = dados_juridicos.capital
                 pj.updated_at = pessoa.updated_at
                 pj.updated_by = pessoa.updated_by
                 pj.deleted_at = pessoa.deleted_at

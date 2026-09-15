@@ -65,9 +65,7 @@ class UnidadeAdministrativa:
     ) -> None:
         """Atualiza os dados da unidade (RN-CUM-007: não operar excluída)."""
         if self.foi_excluido():
-            raise ValueError(
-                "Unidade administrativa excluída não pode ser atualizada (RN-CUM-007)"
-            )
+            raise ValueError("Unidade administrativa excluída não pode ser atualizada (RN-CUM-007)")
         if self.unidade_pai_id == self.id or unidade_pai_id == self.id:
             raise ValueError("Unidade não pode ser pai de si mesma (RN-CUM-008)")
         if nome is not None:

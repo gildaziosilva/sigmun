@@ -3,7 +3,7 @@
 from src.modules.sigmun_cadastro.infrastructure.repositories.sqlalchemy_pessoa_repository import (
     SqlAlchemyPessoaRepository,
 )
-from src.modules.sigmun_cadastro.infrastructure.repositories.sqlalchemy_unidade_administrativa_repository import (
+from src.modules.sigmun_cadastro.infrastructure.repositories.sqlalchemy_unidade_administrativa_repository import (  # noqa: E501
     SqlAlchemyUnidadeAdministrativaRepository,
 )
 

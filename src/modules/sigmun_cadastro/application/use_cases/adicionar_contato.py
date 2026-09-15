@@ -33,9 +33,7 @@ class AdicionarContatoUseCase:
             principal=command.principal,
         )
         salvo = self._repository.save(pessoa)
-        logger.info(
-            "Contato %s adicionado à pessoa %s", command.tipo.value, command.pessoa_id
-        )
+        logger.info("Contato %s adicionado à pessoa %s", command.tipo.value, command.pessoa_id)
         return salvo
 
 

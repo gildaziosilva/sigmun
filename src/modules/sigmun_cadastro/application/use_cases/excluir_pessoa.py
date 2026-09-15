@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from uuid import uuid4
 
 from src.modules.sigmun_cadastro.application.commands.pessoa_commands import (
@@ -35,7 +36,11 @@ class ExcluirPessoaUseCase:
             PessoaExcluidaEvent(
                 event_id=uuid4(),
                 pessoa_id=command.pessoa_id,
-                occurred_at=excluida.deleted_at if excluida else pessoa.updated_at,
+                occurred_at=(
+                    excluida.deleted_at
+                    if excluida and excluida.deleted_at
+                    else (pessoa.updated_at or datetime.utcnow())
+                ),
             ),
         )
         return excluida if excluida is not None else pessoa

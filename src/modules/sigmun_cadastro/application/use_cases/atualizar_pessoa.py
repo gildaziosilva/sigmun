@@ -7,6 +7,7 @@ alteração de categoria (RN-CUM-007: não operar sobre excluída).
 from __future__ import annotations
 
 import logging
+from uuid import uuid4
 
 from src.modules.sigmun_cadastro.application.commands.pessoa_commands import (
     AlterarCategoriaPessoaCommand,
@@ -22,7 +23,6 @@ from src.modules.sigmun_cadastro.domain.exceptions import (
 from src.modules.sigmun_cadastro.domain.repositories.pessoa_repository import (
     PessoaRepository,
 )
-from uuid import uuid4
 
 logger = logging.getLogger(__name__)
 

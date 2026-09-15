@@ -13,7 +13,7 @@ _PADRAO = re.compile(r"^\d{14}$")
 
 
 def _calcular_digito(digitos: str, pesos: tuple[int, ...]) -> int:
-    total = sum(int(d) * p for d, p in zip(digitos, pesos))
+    total = sum(int(d) * p for d, p in zip(digitos, pesos, strict=True))
     resto = total % 11
     return 0 if resto < 2 else 11 - resto
 

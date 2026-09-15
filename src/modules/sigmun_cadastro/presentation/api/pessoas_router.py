@@ -80,8 +80,13 @@ from src.modules.sigmun_cadastro.infrastructure.repositories import (
 from src.modules.sigmun_cadastro.presentation.schemas.pessoa_schemas import (
     CategoriaUpdateRequest,
     ContatoPayload,
+    ContatoResponse,
+    DadosFisicosResponse,
+    DadosJuridicosResponse,
     DocumentoPayload,
+    DocumentoResponse,
     EnderecoPayload,
+    EnderecoResponse,
     PessoaCreateRequest,
     PessoaFisicaUpdateRequest,
     PessoaJuridicaUpdateRequest,
@@ -170,20 +175,61 @@ def registrar_pessoa(
 )
 def listar_pessoas(
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    tipo: TipoPessoa | None = Query(default=None, description="Filtro por tipo (FISICA/JURIDICA)"),
-    categoria: CategoriaPessoa | None = Query(default=None, description="Filtro por categoria"),
+    tipo: Annotated[
+        TipoPessoa | None, Query(description="Filtro por tipo (FISICA/JURIDICA)")
+    ] = None,
+    categoria: Annotated[CategoriaPessoa | None, Query(description="Filtro por categoria")] = None,
     include_deleted: bool = Query(default=False, description="Incluir logicamente excluídas"),
     page: int = Query(default=1, ge=1, description="Página (base 1)"),
     page_size: int = Query(default=50, ge=1, le=200, description="Itens por página"),
 ) -> PessoaListResponse:
     """Lista paginada de pessoas (padrão do DOM-COMPRAS-001)."""
+    def _to_response(pessoa: Pessoa) -> PessoaResponse:
+        """Converte entidade Pessoa em schema de resposta."""
+        dados_fisicos = (
+            DadosFisicosResponse(
+                nome=pessoa.dados_fisicos.nome,
+                data_nascimento=pessoa.dados_fisicos.data_nascimento,
+                sexo=pessoa.dados_fisicos.sexo,
+                estado_civil=pessoa.dados_fisicos.estado_civil,
+                mae=pessoa.dados_fisicos.mae,
+                pai=pessoa.dados_fisicos.pai,
+            )
+            if pessoa.dados_fisicos
+            else None
+        )
+        dados_juridicos = (
+            DadosJuridicosResponse(
+                razao_social=pessoa.dados_juridicos.razao_social,
+                nome_fantasia=pessoa.dados_juridicos.nome_fantasia,
+                cnae_principal=pessoa.dados_juridicos.cnae_principal,
+                capital=pessoa.dados_juridicos.capital,
+            )
+            if pessoa.dados_juridicos
+            else None
+        )
+        return PessoaResponse(
+            id=pessoa.id,
+            tipo=pessoa.tipo,
+            categoria=pessoa.categoria,
+            unidade_id=pessoa.unidade_id,
+            nome_identificacao=pessoa.nome_identificacao,
+            dados_fisicos=dados_fisicos,
+            dados_juridicos=dados_juridicos,
+            enderecos=[EnderecoResponse.model_validate(e) for e in pessoa.enderecos],
+            documentos=[DocumentoResponse.model_validate(d) for d in pessoa.documentos],
+            contatos=[ContatoResponse.model_validate(c) for c in pessoa.contatos],
+            created_at=pessoa.created_at,
+            updated_at=pessoa.updated_at,
+        )
+
     use_case = ListarPessoasUseCase(repository)
     todas = use_case.execute(
         ListarPessoasQuery(tipo=tipo, categoria=categoria, include_deleted=include_deleted)
     )
     total = len(todas)
     inicio = (page - 1) * page_size
-    items = todas[inicio : inicio + page_size]
+    items = [_to_response(p) for p in todas[inicio : inicio + page_size]]
     return PessoaListResponse(total=total, page=page, page_size=page_size, items=items)
 
 
@@ -446,4 +492,3 @@ def adicionar_contato(
 
 
 __all__ = ["router", "get_pessoa_repository"]
-

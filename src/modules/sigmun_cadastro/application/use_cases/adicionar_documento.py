@@ -59,7 +59,9 @@ class AdicionarDocumentoUseCase:
             raise DocumentoInvalidoError(str(exc)) from exc
 
         salvo = self._repository.save(pessoa)
-        logger.info("Documento %s/%s adicionado à pessoa %s", command.tipo.value, numero, command.pessoa_id)
+        logger.info(
+            "Documento %s/%s adicionado à pessoa %s", command.tipo.value, numero, command.pessoa_id
+        )
         return salvo
 
 
