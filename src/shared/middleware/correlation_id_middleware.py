@@ -8,6 +8,7 @@ Referência: Pendência P-002 (Seção 41 do Checklist de Prontidão)
 """
 
 import logging
+from collections.abc import Awaitable, Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -33,7 +34,9 @@ class CorrelationIDMiddleware(BaseHTTPMiddleware):
 
     HEADER_NAME = "X-Correlation-ID"
 
-    async def dispatch(self, request: Request, call_next) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         # Obtém correlation ID do header ou gera novo
         corr_id = request.headers.get(self.HEADER_NAME)
         if corr_id:
@@ -46,12 +49,14 @@ class CorrelationIDMiddleware(BaseHTTPMiddleware):
         # Log da requisição recebida
         logger.info(
             "Requisição recebida",
-            extra={"extra_data": {
-                "method": request.method,
-                "path": str(request.url.path),
-                "client_ip": request.client.host if request.client else "unknown",
-                "correlation_id": current_corr_id,
-            }},
+            extra={
+                "extra_data": {
+                    "method": request.method,
+                    "path": str(request.url.path),
+                    "client_ip": request.client.host if request.client else "unknown",
+                    "correlation_id": current_corr_id,
+                }
+            },
         )
 
         try:
@@ -63,12 +68,14 @@ class CorrelationIDMiddleware(BaseHTTPMiddleware):
             # Log da resposta
             logger.info(
                 "Resposta enviada",
-                extra={"extra_data": {
-                    "method": request.method,
-                    "path": str(request.url.path),
-                    "status_code": response.status_code,
-                    "correlation_id": current_corr_id,
-                }},
+                extra={
+                    "extra_data": {
+                        "method": request.method,
+                        "path": str(request.url.path),
+                        "status_code": response.status_code,
+                        "correlation_id": current_corr_id,
+                    }
+                },
             )
 
             return response
@@ -76,12 +83,14 @@ class CorrelationIDMiddleware(BaseHTTPMiddleware):
             logger.error(
                 "Erro não tratado na requisição",
                 exc_info=True,
-                extra={"extra_data": {
-                    "method": request.method,
-                    "path": str(request.url.path),
-                    "error": str(exc),
-                    "correlation_id": current_corr_id,
-                }},
+                extra={
+                    "extra_data": {
+                        "method": request.method,
+                        "path": str(request.url.path),
+                        "error": str(exc),
+                        "correlation_id": current_corr_id,
+                    }
+                },
             )
             raise
         finally:

@@ -8,10 +8,10 @@ ser substituído por ``from src.shared.compat import UTC``.
 
 from __future__ import annotations
 
-try:
-    from datetime import UTC  # Python 3.11+
-except ImportError:  # Python 3.10
-    from datetime import timezone
-    UTC = timezone.utc  # type: ignore[assignment, misc]
+from datetime import timezone
+
+# ``datetime.UTC`` só existe em Python 3.11+; o alias abaixo é equivalente e
+# funciona em todas as versões suportadas (3.10+).
+UTC = timezone.utc
 
 __all__ = ["UTC"]

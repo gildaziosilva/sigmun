@@ -98,9 +98,7 @@ def exigir_papeis(*papeis_permitidos: str) -> Callable:
         if not contexto.papeis or not contexto.possui_algum_papel(*papeis_permitidos):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=(
-                    f"Acesso negado. Requer um dos papéis: {', '.join(papeis_permitidos)}"
-                ),
+                detail=(f"Acesso negado. Requer um dos papéis: {', '.join(papeis_permitidos)}"),
             )
         return contexto
 

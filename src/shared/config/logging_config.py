@@ -7,6 +7,7 @@ de requisições em ambiente de produção.
 Referência: Pendência P-002 (Seção 41 do Checklist de Prontidão)
 """
 
+import json
 import logging
 import logging.handlers
 import os
@@ -14,12 +15,10 @@ import sys
 import uuid
 from contextvars import ContextVar
 from datetime import datetime, timezone
-from typing import Any, Optional
-
-import json
+from typing import Any
 
 # ContextVar para armazenar o correlation ID por requisição
-correlation_id_var: ContextVar[Optional[str]] = ContextVar("correlation_id", default=None)
+correlation_id_var: ContextVar[str | None] = ContextVar("correlation_id", default=None)
 
 
 class JSONFormatter(logging.Formatter):
@@ -73,7 +72,7 @@ def get_correlation_id() -> str:
     return current
 
 
-def set_correlation_id(corr_id: Optional[str] = None) -> str:
+def set_correlation_id(corr_id: str | None = None) -> str:
     """Define o correlation ID. Se não fornecido, gera um novo."""
     new_id = corr_id or str(uuid.uuid4())
     correlation_id_var.set(new_id)
@@ -86,8 +85,8 @@ def clear_correlation_id() -> None:
 
 
 def setup_logging(
-    log_level: Optional[str] = None,
-    log_file: Optional[str] = None,
+    log_level: str | None = None,
+    log_file: str | None = None,
     retention_days: int = 30,
 ) -> None:
     """
@@ -98,7 +97,8 @@ def setup_logging(
         log_file: Caminho para o arquivo de log
         retention_days: Número de dias para retenção dos logs
     """
-    level = getattr(logging, (log_level or os.getenv("LOG_LEVEL", "INFO")).upper())
+    resolved_level = log_level or os.getenv("LOG_LEVEL") or "INFO"
+    level = getattr(logging, resolved_level.upper())
 
     # Configura logger raiz
     root_logger = logging.getLogger()

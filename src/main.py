@@ -14,11 +14,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from src.core.infrastructure.database.session import engine
-from src.modules.sigmun_compras.presentation.api.compras_router import (
-    router as compras_router,
+from src.modules.sigmun_cadastro.presentation.api.pessoas_router import (
+    router as pessoas_router,
+)
+from src.modules.sigmun_cadastro.presentation.api.unidades_router import (
+    router as unidades_router,
 )
 from src.modules.sigmun_compras.presentation.api.auditoria_router import (
     router as auditoria_router,
+)
+from src.modules.sigmun_compras.presentation.api.compras_router import (
+    router as compras_router,
 )
 from src.modules.sigmun_compras.presentation.api.contratos_router import (
     router as contratos_router,
@@ -32,14 +38,11 @@ from src.modules.sigmun_compras.presentation.api.itens_compras_router import (
 from src.modules.sigmun_compras.presentation.api.processo_documental_router import (
     router as processo_documental_router,
 )
-from src.modules.sigmun_cadastro.presentation.api.pessoas_router import (
-    router as pessoas_router,
-)
-from src.modules.sigmun_cadastro.presentation.api.unidades_router import (
-    router as unidades_router,
-)
 from src.modules.sigmun_dad.presentation.api import (
     router as dad_router,
+)
+from src.modules.sigmun_gdo.presentation.api import (
+    router as gdo_router,
 )
 from src.modules.sigmun_idn.presentation.api import (
     router as idn_router,
@@ -47,11 +50,11 @@ from src.modules.sigmun_idn.presentation.api import (
 from src.modules.sigmun_int.presentation.api import (
     router as int_router,
 )
+from src.modules.sigmun_seg.presentation.api import (
+    router as seg_router,
+)
 from src.modules.sigmun_met.presentation.api import (
     router as met_router,
-)
-from src.modules.sigmun_gdo.presentation.api import (
-    router as gdo_router,
 )
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
@@ -120,9 +123,7 @@ app = FastAPI(
         },
         {
             "name": "Cadastro - Unidades Administrativas",
-            "description": (
-                "Estrutura organizacional hierárquica do município (DOM-CUM)."
-            ),
+            "description": ("Estrutura organizacional hierárquica do município (DOM-CUM)."),
         },
         {
             "name": "Identidade e Acesso",
@@ -132,15 +133,11 @@ app = FastAPI(
         },
         {
             "name": "Dados Corporativos",
-            "description": (
-                "Catálogo de dados, linhagem, políticas e qualidade (DOM-DAD)."
-            ),
+            "description": ("Catálogo de dados, linhagem, políticas e qualidade (DOM-DAD)."),
         },
         {
             "name": "Metadados Corporativos",
-            "description": (
-                "Metadados, classificações e taxonomias corporativas (DOM-MET)."
-            ),
+            "description": ("Metadados, classificações e taxonomias corporativas (DOM-MET)."),
         },
         {
             "name": "Gestão Documental",
@@ -150,10 +147,10 @@ app = FastAPI(
             ),
         },
         {
-            "name": "Integración e Interoperabilidad",
+            "name": "Integração e Interoperabilidade",
             "description": (
-                "Catálogo de APIs, contratos, conectores oficiales, "
-                "webhooks y barramento de eventos (DOM-INT)."
+                "Catálogo de APIs, contratos, conectores oficiais, "
+                "webhooks e barramento de eventos (DOM-INT)."
             ),
         },
     ],
@@ -188,18 +185,23 @@ def _verificar_banco() -> str:
 
 
 @app.on_event("startup")
-async def startup_event():
+async def startup_event() -> None:
     """Executado na inicialização da aplicação."""
     status_banco = _verificar_banco()
-    logger.info("SIGMUN API iniciada", extra={"extra_data": {
-        "version": "0.1.0",
-        "environment": settings.APP_ENV,
-        "database": status_banco,
-    }})
+    logger.info(
+        "SIGMUN API iniciada",
+        extra={
+            "extra_data": {
+                "version": "0.1.0",
+                "environment": settings.APP_ENV,
+                "database": status_banco,
+            }
+        },
+    )
 
 
 @app.on_event("shutdown")
-async def shutdown_event():
+async def shutdown_event() -> None:
     """Executado no encerramento da aplicação."""
     logger.info("SIGMUN API encerrada")
     try:
@@ -217,6 +219,7 @@ app.include_router(auditoria_router)
 app.include_router(pessoas_router)
 app.include_router(unidades_router)
 app.include_router(idn_router)
+app.include_router(seg_router)
 app.include_router(dad_router)
 app.include_router(met_router)
 app.include_router(gdo_router)

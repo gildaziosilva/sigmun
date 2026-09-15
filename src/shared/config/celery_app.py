@@ -3,7 +3,7 @@ Configuração do Celery para processamento assíncrono.
 Baseado na Arquitetura de Software - Comunicação Assíncrona.
 """
 
-from celery import Celery
+from celery import Celery  # type: ignore[import-untyped]
 
 from src.shared.config.settings import settings
 
