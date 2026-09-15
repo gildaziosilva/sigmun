@@ -10,7 +10,7 @@
 
 **Versão:** 1.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 

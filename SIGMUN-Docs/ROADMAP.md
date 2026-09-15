@@ -7,11 +7,11 @@
 
 **Domínio:** Governança
 
-**Versão:** 1.3
+**Versão:** 1.4
 
 **Status:** Vigente
 
-**Última atualização:** 2026-09-01
+**Última atualização:** 2026-09-07
 
 **Responsável:** Equipe SIGMUN
 
@@ -35,7 +35,7 @@ O Mapa Consolidado de Domínios possui atualmente **33 domínios**, incluindo o 
 |---|---|---|
 | Documentação | Artefatos que especificam, modelam ou governam o produto. | Documentação corporativa, arquitetural e de domínios em evolução contínua. |
 | Scaffolding | Estruturas iniciais que preparam o desenvolvimento ou a operação. | Estruturas iniciais de aplicação, infraestrutura, API, banco e CI/CD. |
-| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COMPRAS-001 implementado e em operação controlada; DOM-CUM-001, DOM-IDN-001, DOM-DAD-001, DOM-MET-001 e DOM-GDO-001 implementados com repositórios SQLAlchemy, APIs REST e migrações. |
+| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COMPRAS-001 implementado e em operação controlada; DOM-CUM-001, DOM-IDN-001, DOM-DAD-001, DOM-MET-001 e DOM-GDO-001 implementados com repositórios SQLAlchemy, APIs REST e migrações. DOM-SEG 🟢 (router `/api/v1/seg` com 32 endpoints reativado; 65 testes unitários). DOM-INT em scaffolding (módulo `sigmun_int` criado sem código real; sem migração/mensageria/conectores). |
 
 Documentação concluída não equivale a implementação real.
 
@@ -177,7 +177,7 @@ O domínio será considerado implementado somente quando possuir:
 
 # 5. Onda 2 - Domínios Mestres e Transversais
 
-**Status:** 🟡 Em andamento (slices 1 a 3 entregues: DOM-CUM, DOM-IDN, DOM-DAD e DOM-MET)
+**Status:** 🟡 Em andamento — slices 1 a 4 entregues e DOM-SEG concluído (DOM-CUM, DOM-IDN, DOM-DAD, DOM-MET, DOM-GDO e DOM-SEG 🟢, com router `/api/v1/seg` reativado). Pendência para conclusão formal da Onda 2 (Fase V): DOM-INT (scaffolding — sem código real, migração, mensageria ou conectores).
 
 **Objetivo:** implementar os domínios que fornecem dados, identidade, serviços e capacidades corporativas reutilizáveis.
 
@@ -322,7 +322,7 @@ Responsável por:
 
 **Implementação:** módulo `sigmun_gdo` completo com domínio, aplicação, infraestrutura e apresentação (12 use cases, 9 repositórios SQLAlchemy e 20 endpoints em `/api/v1/gdo`).
 
-### `DOM-SEG` — Segurança da Informação
+### `DOM-SEG` — Segurança da Informação 🟢
 
 Responsável por:
 
@@ -333,7 +333,9 @@ Responsável por:
 - monitoramento;
 - segurança corporativa.
 
-### `DOM-INT` — Integração e Interoperabilidade
+**Implementação:** documentação `SIGMUN-Docs/DOM-SEG/001-026` consolidada (`Status: Vigente`); módulo `sigmun_seg` completo em Clean Architecture, agregados (Controle, Politica, Incidente, ChaveCriptografica, Credencial) com use cases e schemas de todos os 5 agregados, e migração Alembic `20260901_04` aplicada (schema `seg`, 5 tabelas). Suíte unitária **65 testes** (`test_dom_seg_use_cases.py` + `test_dom_seg_chave_credencial_use_cases.py`). **Router `/api/v1/seg` reativado em `src/main.py` com 32 endpoints** (controles, politicas, incidentes, chaves e credenciais).
+
+### `DOM-INT` — Integração e Interoperabilidade 🟡
 
 Responsável por:
 
@@ -343,6 +345,8 @@ Responsável por:
 - integrações externas;
 - interoperabilidade;
 - contratos de integração.
+
+**Implementação:** documentação `SIGMUN-Docs/DOM-INT/001-026` consolidada (`Status: Vigente`); módulo `sigmun_int` criado como **scaffolding vazio** (estrutura de diretórios Clean Architecture/DDD sem código real). **Pendências:** implementar Event Bus consumindo o Transactional Outbox (base existente em `gdo.eventos_outbox` com `infrastructure/messaging/outbox.py` e `dispatcher.py`; estender para Compras), catálogo de APIs externas e webhooks com retry/dead-letter, conectores oficiais (GOV.BR, e-Social, SIAFIC, PNCP), migração Alembic para o schema `integracao` e testes.
 
 ### `DOM-GOV` — Governança Municipal
 
@@ -502,6 +506,42 @@ A implantação deverá considerar:
 - `DOM-INF` — Infraestrutura Tecnológica
 
 **Observação:** o `DOM-CUM` possui sua implementação estrutural na Onda 2. Sua reutilização pelas capacidades de atendimento ocorrerá progressivamente nas ondas posteriores.
+
+---
+
+# 8A. Fase VI — Fundação e Evolução do Frontend
+
+**Status:** 🟢 Pronta para iniciar — backend no ar (19 rotas), DOM-SEG completo com `/api/v1/seg` reativado e 65 testes unitários. Bloqueios da Fase V (exceto DOM-INT, não bloqueante) resolvidos.
+
+**Prioridade:** Média (conforme `TODO.md`)
+
+**Objetivo:** conectar o Frontend Admin à API real do SIGMUN e evoluir a fundação dos portais externos, consolidando a camada de apresentação sobre os domínios já implementados.
+
+## 8A.1 O que já está implementado (pré-requisitos disponíveis)
+
+| Item | Estado |
+|---|---|
+| Domínios de backend com APIs REST disponíveis | 🟢 `sigmun_compras` (fornecedores, itens, compras, processos, contratos, auditoria), `sigmun_cadastro` (pessoas, unidades), `sigmun_idn`, `sigmun_dad`, `sigmun_met`, `sigmun_gdo` — todos com routers registrados em `src/main.py` |
+| Endpoint de autenticação do DOM-IDN | 🟢 `POST /api/v1/idn/auth/login` (e `/auth/logout`) disponível no router `sigmun_idn` |
+| Scaffolding do Frontend Admin | 🟡 `frontend/admin` com Vite + React 19 + TypeScript + oxlint; páginas `Dashboard.tsx` e `Login.tsx`; cliente HTTP mínimo `lib/api.ts` (apenas `/health`) |
+| Scaffolding dos portais externos | 🟡 `frontend/portal-cidadao` e `frontend/portal-fornecedor` com Vite + React (páginas `App.tsx` placeholder) |
+| infraestrutura Docker/nginx dos frontends | 🟡 `infra/docker/frontend/Dockerfile` e `nginx.conf` com proxy `/api` e `/health` |
+
+## 8A.2 O que falta para iniciar a Fase VI
+
+| Bloqueio | Estado | Impacto |
+|---|---|---|
+| Backend inicia? | 🟢 **SIM** — `src/main.py` importa e o app carrega (19 rotas) com o router `/api/v1/seg` **reativado** | Desbloqueado: frontend pode consumir as APIs reais (compras, cadastro, idn, dad, met, gdo, seg) |
+| Concluir DOM-SEG (Fase V.1) | 🟢 **Concluído** — router `/api/v1/seg` com 32 endpoints ativo; **65 testes unitários** passam | Não bloqueia o frontend |
+| Concluir DOM-INT (Fase V.2) | ⚪ módulo `sigmun_int` vazio (Event Bus, webhooks, conectores, migração e testes) | Não é bloqueante estrito, mas integra a formalização da Onda 2 |
+| Migração Tabela do Plano de Trabalho regenerada | 🟡 executar `python scripts/atualizar_tabela_plano.py` após novas marcações | Manutenção documental |
+
+## 8A.3 Sequência recomendada da Fase VI
+
+1. **Estabilizar o backend** — corrigir o router `sigmun_seg` (ou simplesmente não registrar `/api/v1/seg` em `main.py` até estar completo) para que `uvicorn src.main:app` suba e `/health` responda `database: up`. *(Pré-requisito absoluto)*
+2. **VI.1 Conectar Frontend Admin à API** — substituir o mock de login de `Login.tsx` pela chamada real a `POST /api/v1/idn/auth/login`; armazenar o token JWT de forma segura; injetar o token via cliente Axios/Fetch; implementar estado de usuário e roteamento por perfis/roles (RBAC).
+3. **VI.2 Módulos de interface no Admin** — Compras e Contratos, Gestão Documental (GDO), Cadastro Único (CUM) e Identidade (IDN).
+4. **VI.3 Scaffolding real dos portais** — `portal-cidadao` e `portal-fornecedor` com Vite + React + Tailwind e primeiras páginas.
 
 ---
 

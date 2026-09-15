@@ -10,7 +10,30 @@
 
 **Versão:** 1.0
 
-**Status:** Em elaboração
+**Status:** Vigente
+
+**Entidades Implementadas:**
+- `Pessoa` - Agregado familiar com atributos: CPF/CNPJ, nome, tipo (Física/Jurídica), data de nascimento, endereço principal
+- `UnidadeAdministrativa` - Estrutura administrativa (cidade, bairro, rua, CEP) relacionada ao cadastro
+- `DadosFisicos` - Endereço, telefone, contato de emergência (para pessoa física)
+- `DadosJuridicos` - Razão social, inscrição estadual, atividade econômica (para pessoa jurídica)
+
+**Casos de Uso Principais (15 total):**
+1. Cadastro de pessoa física (RN-CUM-001 a 003: CPF/CNPJ unicidade, endereço principal)
+2. Cadastro de pessoa jurídica (RN-CUM-004 a 007: CNPJ unicidade, atividade econômica)
+3. Inclusão de endereço ao agregado (RN-CUM-005: endereço principal/alternativo)
+4. Inclusão de documento (RN-CUM-002/003: validação CPF/CNPJ; RN-CUM-006: contato)
+5. Inclusão de contato (telefone, e-mail, redes sociais) (RN-CUM-006)
+6. Consultas e listagens de pessoas cadastradas
+7. Atualização de dados cadastrais
+8. Exclusão lógica de pessoas e documentos
+9. Consulta de unidade administrativa associated a pessoa
+10. Agrupamento familiar (vínculo entre pessoas Físicas e Jurídicas)
+11. Consulta por CPF/CNPJ (validade e status)
+12. Registro de histórico de alterações
+13. Integração com DOM-IDN para autenticação e autorização
+14. Integração com DOM-DAD para metadados e qualidade da informação
+15. Geração de relatórios e indicadores cadastrais
 
 **Classificação da Informação:** Pública
 
@@ -60,4 +83,4 @@ Até que o esboço seja substituído por conteúdo específico, considere que:
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente

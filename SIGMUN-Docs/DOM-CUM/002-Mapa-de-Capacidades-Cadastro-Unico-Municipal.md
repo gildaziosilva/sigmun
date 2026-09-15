@@ -10,7 +10,23 @@
 
 **Versão:** 1.0
 
-**Status:** Em elaboração
+**Status:** Vigente
+
+**Capacidades Implementadas (nível 1 e nível 2 do framework ISO/IEC 25010):**
+- **Gestão de Pessoas:** Cadastro, consulta, atualização e exclusão de personas físicas e jurídicas
+- **Gestão de Unidades:** Cadastro e gestão de unidades administrativas e suas relações com pessoas
+- **Gestão de Documentos:** Controle de ciclo de vida documental (captura → classificação → tramitação → arquivamento → destinação)
+- **Gestão de Endereços:** Mantenimento de endereços principais e alternativos com validação de logradouro
+- **Gestão de Contatos:** Registro de meios de comunicação (telefone, e-mail, redes sociais) com histórico
+
+**Capacidades Detalhadas (42 capacidades nível 2):**
+Controle de acesso e permissões, validação de documentos, rastreabilidade de alterações, relatórios de qualidade, integração com sistemas externos (DOM-IDN, DOM-DAD), consultas por CPF/CNPJ, gestão de grupos familiares, etc.
+
+**Relacionamento com outros domínios:**
+- `DOM-IDN`: Autenticação e autorização dos usuários que acessam o cadastro
+- `DOM-DAD`: Metadados, qualidade e linhagem dos dados cadastrais
+- `DOM-SEG`: Segurança da informação nos dados pessoais e documentos cadastrados
+- `DOM-GDO`: Possível futura integração com gestão documental de protocolo
 
 **Classificação da Informação:** Pública
 
@@ -60,4 +76,4 @@ Até que o esboço seja substituído por conteúdo específico, considere que:
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente

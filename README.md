@@ -46,6 +46,16 @@ sigmun-v1/
 │   │   ├── sigmun_transparencia/
 │   │   └── sigmun_financas/
 │   └── main.py                   # Ponto de entrada da aplicação
+
+## Domínios (Domains / Bounded Contexts)
+
+A arquitetura do SIGMUN inclui os seguintes domínios domain-driven design:
+
+- **DOM-CUM** (Cadastro Único Municipal) — Gestão de cadastro de beneficiários, pessoas físicas e jurídicas, com 15 casos de uso (RN-CUM-001 a 015). Entidades: Pessoa, DadosFisicos, DadosJuridicos, Endereço, Documento, Contato, UnidadeAdministrativa.
+- **DOM-IDN** (Identidade e Acesso) — Gestão de identidade e acesso, autenticação e autorização. Entidades: Usuario, Role, Permissao, Sessao, AuditoriaLogin. Cases de uso: auth flows, JWT, role-based access, session management, login audit.
+- **DOM-DAD** (Dados Corporativos) — Gerenciamento de metadados corporativos, catálogos, linhagens, políticas de qualidade e indicadores. Entidades: Ativos, Catalogos, Linhagens, Politicas, Qualidade. Cases de uso: 22 RN-DAD.
+- **DOM-SEG** (Segurança da Informação) — Segurança da informação com controles, políticas, incidentes e credenciais. Entidades: Controle, Politica, Incidente, ChaveCriptografica, Credencial.
+- **DOM-GDO** (Gestão Documental) — Gestão documental completa com classificação, tramitação, integração e outbox de eventos. 21 artifacts (Cycles 1-5).
 ├── frontend/                     # Aplicações frontend
 │   ├── admin/                    # Aplicação administrativa
 │   ├── portal-cidadao/           # Portal do cidadão

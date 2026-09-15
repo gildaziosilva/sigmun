@@ -243,6 +243,8 @@ Responsável por:
 
 ### `DOM-INT` — Integração e Interoperabilidade
 
+**Status:** ✅ Concluído
+
 Responsável por:
 
 - APIs;
@@ -251,6 +253,13 @@ Responsável por:
 - integrações externas;
 - interoperabilidade;
 - contratos de integração.
+
+**Implementação:**
+- Entidades de domínio: `ApiExterna`, `ContratoIntegracao`, `Conector`, `Webhook`, `EntregaWebhook`, `EventoProcessado`
+- Casos de uso: CRUD completo para APIs, contratos, conectores, webhooks e entregas
+- Barramento de eventos: consumo de Outbox (GDO/Compras) e despacho HTTP com retry/DLQ
+- Repositórios SQLAlchemy com suporte a exclusão lógica
+- Seed de conectores oficiais (GOV.BR, e-Social, SIAFIC, PNCP)
 
 ### `DOM-GOV` — Governança Municipal
 

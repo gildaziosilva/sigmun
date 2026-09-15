@@ -10,7 +10,7 @@
 
 **Versão:** 1.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -60,4 +60,4 @@ Até que o esboço seja substituído por conteúdo específico, considere que:
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
