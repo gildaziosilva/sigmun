@@ -59,6 +59,12 @@ class SqlAlchemyCatalogoRepository(CatalogoRepositoryInterface):
         model = self._session.scalars(stmt).first()
         return _to_entity(model) if model else None
 
+    def exists_by_nome(self, nome: str) -> bool:
+        stmt = select(CatalogoModel.id).where(
+            CatalogoModel.nome == nome, CatalogoModel.deleted_at.is_(None)
+        )
+        return self._session.scalars(stmt).first() is not None
+
     def list_all(
         self,
         page: int = 0,
@@ -88,7 +94,7 @@ class SqlAlchemyCatalogoRepository(CatalogoRepositoryInterface):
             model.descricao = catalogo.descricao
             model.dominio = catalogo.dominio
             model.ativos_ids = _format_list(catalogo.ativos_ids)
-            model.updated_at = catalogo.updated_at
+            model.updated_at = catalogo.updated_at  # type: ignore[assignment]
             logger.info("Catálogo atualizado: %s", catalogo.id)
         self._session.flush()
         self._session.refresh(model)
@@ -96,6 +102,7 @@ class SqlAlchemyCatalogoRepository(CatalogoRepositoryInterface):
 
     def delete(self, catalogo_id: str) -> bool:
         from sqlalchemy import func
+
         model = self._session.get(CatalogoModel, UUID(catalogo_id))
         if model is None:
             return False
@@ -104,12 +111,7 @@ class SqlAlchemyCatalogoRepository(CatalogoRepositoryInterface):
         self._session.flush()
         return True
 
-    def exists_by_nome(self, nome: str) -> bool:
-        stmt = select(CatalogoModel.id).where(
-            CatalogoModel.nome == nome,
-            CatalogoModel.deleted_at.is_(None),
-        ).limit(1)
-        return self._session.scalars(stmt).first() is not None
+
 
 
 __all__ = ["SqlAlchemyCatalogoRepository"]

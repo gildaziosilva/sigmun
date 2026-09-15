@@ -143,13 +143,15 @@ class InMemoryLinhagemRepository(LinhagemRepositoryInterface):
 
     def get_by_origem(self, ativo_origem_id: str) -> list[LinhagemDado]:
         return [
-            linhagem for linhagem in self._data.values()
+            linhagem
+            for linhagem in self._data.values()
             if linhagem.ativo_origem_id == ativo_origem_id
         ]
 
     def get_by_destino(self, ativo_destino_id: str) -> list[LinhagemDado]:
         return [
-            linhagem for linhagem in self._data.values()
+            linhagem
+            for linhagem in self._data.values()
             if linhagem.ativo_destino_id == ativo_destino_id
         ]
 
@@ -414,7 +416,8 @@ class TestCriarLinhagemUseCase:
 class TestBuscarLinhagemUseCase:
     def test_buscar_linhagem_por_id(self, linhagem_repo):
         criado = CriarLinhagemUseCase(linhagem_repo).execute(
-            ativo_origem_id=str(uuid4()), ativo_destino_id=str(uuid4()))
+            ativo_origem_id=str(uuid4()), ativo_destino_id=str(uuid4())
+        )
         buscado = BuscarLinhagemUseCase(linhagem_repo).get_by_id(criado.id)
         assert buscado.id == criado.id
 
@@ -426,7 +429,8 @@ class TestBuscarLinhagemUseCase:
 class TestDeletarLinhagemUseCase:
     def test_deletar_linhagem_sucesso(self, linhagem_repo):
         criado = CriarLinhagemUseCase(linhagem_repo).execute(
-            ativo_origem_id=str(uuid4()), ativo_destino_id=str(uuid4()))
+            ativo_origem_id=str(uuid4()), ativo_destino_id=str(uuid4())
+        )
         assert DeletarLinhagemUseCase(linhagem_repo).execute(criado.id) is True
 
     def test_deletar_linhagem_inexistente_lanca_erro(self, linhagem_repo):
@@ -505,8 +509,7 @@ class TestAvaliarQualidadeUseCase:
 
 class TestBuscarQualidadeUseCase:
     def test_buscar_qualidade_por_id(self, qualidade_repo):
-        criado = AvaliarQualidadeUseCase(qualidade_repo).execute(
-            ativo_id=str(uuid4()), score=80.0)
+        criado = AvaliarQualidadeUseCase(qualidade_repo).execute(ativo_id=str(uuid4()), score=80.0)
         buscado = BuscarQualidadeUseCase(qualidade_repo).get_by_id(criado.id)
         assert buscado.id == criado.id
 
@@ -523,8 +526,7 @@ class TestBuscarQualidadeUseCase:
 
 class TestDeletarQualidadeUseCase:
     def test_deletar_qualidade_sucesso(self, qualidade_repo):
-        criado = AvaliarQualidadeUseCase(qualidade_repo).execute(
-            ativo_id=str(uuid4()), score=80.0)
+        criado = AvaliarQualidadeUseCase(qualidade_repo).execute(ativo_id=str(uuid4()), score=80.0)
         assert DeletarQualidadeUseCase(qualidade_repo).execute(criado.id) is True
 
     def test_deletar_qualidade_inexistente_lanca_erro(self, qualidade_repo):

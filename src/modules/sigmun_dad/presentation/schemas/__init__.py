@@ -15,6 +15,7 @@ from src.modules.sigmun_dad.domain.entities import TipoAtivoDado
 
 class AtivoCreateRequest(BaseModel):
     """Payload de criação de ativo de dado."""
+
     nome: str = Field(..., min_length=3, max_length=200)
     descricao: str | None = None
     tipo: TipoAtivoDado = TipoAtivoDado.TABELA
@@ -28,6 +29,7 @@ class AtivoCreateRequest(BaseModel):
 
 class AtivoResponse(BaseModel):
     """Representação de um ativo de dado."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     nome: str
@@ -47,6 +49,7 @@ class AtivoResponse(BaseModel):
 
 class AtivoListResponse(BaseModel):
     """Envelope paginado de listagem de ativos."""
+
     total: int
     page: int
     page_size: int
@@ -60,6 +63,7 @@ class AtivoListResponse(BaseModel):
 
 class CatalogoCreateRequest(BaseModel):
     """Payload de criação de catálogo."""
+
     nome: str = Field(..., min_length=3, max_length=200)
     descricao: str | None = None
     dominio: str | None = None
@@ -67,6 +71,7 @@ class CatalogoCreateRequest(BaseModel):
 
 class CatalogoUpdateRequest(BaseModel):
     """Payload de atualização de catálogo."""
+
     nome: str | None = None
     descricao: str | None = None
     dominio: str | None = None
@@ -74,6 +79,7 @@ class CatalogoUpdateRequest(BaseModel):
 
 class CatalogoResponse(BaseModel):
     """Representação de um catálogo."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     nome: str
@@ -86,6 +92,7 @@ class CatalogoResponse(BaseModel):
 
 class CatalogoListResponse(BaseModel):
     """Envelope paginado de listagem de catálogos."""
+
     total: int
     page: int
     page_size: int
@@ -99,6 +106,7 @@ class CatalogoListResponse(BaseModel):
 
 class LinhagemCreateRequest(BaseModel):
     """Payload de criação de linhagem."""
+
     ativo_origem_id: str
     ativo_destino_id: str
     tipo_transformacao: str | None = None
@@ -108,6 +116,7 @@ class LinhagemCreateRequest(BaseModel):
 
 class LinhagemUpdateRequest(BaseModel):
     """Payload de atualização de linhagem."""
+
     tipo_transformacao: str | None = None
     descricao: str | None = None
     regras: str | None = None
@@ -115,6 +124,7 @@ class LinhagemUpdateRequest(BaseModel):
 
 class LinhagemResponse(BaseModel):
     """Representação de uma linhagem."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     ativo_origem_id: str
@@ -127,6 +137,7 @@ class LinhagemResponse(BaseModel):
 
 class LinhagemListResponse(BaseModel):
     """Envelope paginado de listagem de linhagens."""
+
     total: int
     page: int
     page_size: int
@@ -140,6 +151,7 @@ class LinhagemListResponse(BaseModel):
 
 class PoliticaCreateRequest(BaseModel):
     """Payload de criação de política."""
+
     codigo: str = Field(..., min_length=2, max_length=50)
     nome: str = Field(..., min_length=3, max_length=200)
     descricao: str | None = None
@@ -149,6 +161,7 @@ class PoliticaCreateRequest(BaseModel):
 
 class PoliticaUpdateRequest(BaseModel):
     """Payload de atualização de política."""
+
     nome: str | None = None
     descricao: str | None = None
     tipo: str | None = None
@@ -156,6 +169,7 @@ class PoliticaUpdateRequest(BaseModel):
 
 class PoliticaResponse(BaseModel):
     """Representação de uma política."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     codigo: str
@@ -169,6 +183,7 @@ class PoliticaResponse(BaseModel):
 
 class PoliticaListResponse(BaseModel):
     """Envelope paginado de listagem de políticas."""
+
     total: int
     page: int
     page_size: int
@@ -182,6 +197,7 @@ class PoliticaListResponse(BaseModel):
 
 class QualidadeCreateRequest(BaseModel):
     """Payload de avaliação de qualidade."""
+
     ativo_id: str
     score: float = Field(..., ge=0, le=100)
     criterios: list[str] = Field(default_factory=list)
@@ -190,6 +206,7 @@ class QualidadeCreateRequest(BaseModel):
 
 class QualidadeUpdateRequest(BaseModel):
     """Payload de atualização de qualidade."""
+
     score: float | None = Field(None, ge=0, le=100)
     nivel: str | None = None
     criterios: list[str] | None = None
@@ -198,6 +215,7 @@ class QualidadeUpdateRequest(BaseModel):
 
 class QualidadeResponse(BaseModel):
     """Representação de um registro de qualidade."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     ativo_id: str
@@ -211,6 +229,7 @@ class QualidadeResponse(BaseModel):
 
 class QualidadeListResponse(BaseModel):
     """Envelope paginado de listagem de registros de qualidade."""
+
     total: int
     page: int
     page_size: int
@@ -224,6 +243,7 @@ class QualidadeListResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Erro padronizado da API."""
+
     detail: str
 
 

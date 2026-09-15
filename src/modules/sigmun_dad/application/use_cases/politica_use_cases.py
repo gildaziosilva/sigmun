@@ -5,7 +5,7 @@ import logging
 from src.modules.sigmun_dad.application.interfaces import PoliticaRepositoryInterface
 from src.modules.sigmun_dad.domain.entities import PoliticaDado
 from src.modules.sigmun_dad.domain.exceptions import (
-    PoliticaJaExisteError,
+    PoliticaDuplicadaError,
     PoliticaNaoEncontradaError,
 )
 
@@ -32,8 +32,8 @@ class CriarPoliticaUseCase:
         if not nome or len(nome.strip()) < 3:
             raise ValueError("Nome da política deve ter pelo menos 3 caracteres")
 
-        if self._repo.exists_by_codigo(codigo):
-            raise PoliticaJaExisteError(f"Política com código '{codigo}' já existe")
+        if self._repo.get_by_codigo(codigo) is not None:
+            raise PoliticaDuplicadaError(f"Política com código '{codigo}' já existe")
 
         politica = PoliticaDado(
             codigo=codigo,
@@ -71,6 +71,7 @@ class AtualizarPoliticaUseCase:
             politica.tipo = tipo
 
         from datetime import datetime
+
         politica.updated_at = datetime.utcnow()
         return self._repo.save(politica)
 
@@ -126,7 +127,7 @@ class AdicionarRegraPoliticaUseCase:
         if politica is None:
             raise PoliticaNaoEncontradaError(f"Política '{politica_id}' não encontrada")
 
-        politica.add_rule(regra)
+        politica.adicionar_regra(regra)
         return self._repo.save(politica)
 
 
@@ -142,7 +143,7 @@ class RemoverRegraPoliticaUseCase:
         if politica is None:
             raise PoliticaNaoEncontradaError(f"Política '{politica_id}' não encontrada")
 
-        politica.remove_rule(regra)
+        politica.remover_regra(regra)
         return self._repo.save(politica)
 
 

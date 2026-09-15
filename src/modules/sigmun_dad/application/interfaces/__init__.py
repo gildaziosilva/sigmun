@@ -24,8 +24,11 @@ class AtivoRepositoryInterface(ABC):
 
     @abstractmethod
     def list_all(
-        self, page: int = 0, page_size: int = 50,
-        tipo: str | None = None, status: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        tipo: str | None = None,
+        status: str | None = None,
     ) -> tuple[list[AtivoDado], int]:
         """Lista ativos com paginação."""
         pass
@@ -55,6 +58,10 @@ class CatalogoRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    def exists_by_nome(self, nome: str) -> bool:
+        pass
+
+    @abstractmethod
     def list_all(self, page: int = 0, page_size: int = 50) -> tuple[list[Catalogo], int]:
         pass
 
@@ -80,6 +87,10 @@ class LinhagemRepositoryInterface(ABC):
 
     @abstractmethod
     def get_by_destino(self, ativo_destino_id: str) -> list[LinhagemDado]:
+        pass
+
+    @abstractmethod
+    def exists_linhagem(self, ativo_origem_id: str, ativo_destino_id: str) -> bool:
         pass
 
     @abstractmethod

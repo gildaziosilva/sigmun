@@ -23,4 +23,3 @@ __all__ = [
     "SqlAlchemyPoliticaRepository",
     "SqlAlchemyQualidadeRepository",
 ]
-

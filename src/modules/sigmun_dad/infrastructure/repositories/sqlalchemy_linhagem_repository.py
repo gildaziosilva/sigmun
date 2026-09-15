@@ -57,6 +57,14 @@ class SqlAlchemyLinhagemRepository(LinhagemRepositoryInterface):
         models = self._session.scalars(stmt).all()
         return [_to_entity(m) for m in models]
 
+    def exists_linhagem(self, ativo_origem_id: str, ativo_destino_id: str) -> bool:
+        stmt = select(LinhagemDadoModel.id).where(
+            LinhagemDadoModel.ativo_origem_id == UUID(ativo_origem_id),
+            LinhagemDadoModel.ativo_destino_id == UUID(ativo_destino_id),
+            LinhagemDadoModel.deleted_at.is_(None),
+        )
+        return self._session.scalars(stmt).first() is not None
+
     def list_all(
         self,
         page: int = 0,
@@ -95,6 +103,7 @@ class SqlAlchemyLinhagemRepository(LinhagemRepositoryInterface):
 
     def delete(self, linhagem_id: str) -> bool:
         from sqlalchemy import func
+
         model = self._session.get(LinhagemDadoModel, UUID(linhagem_id))
         if model is None:
             return False
@@ -103,12 +112,16 @@ class SqlAlchemyLinhagemRepository(LinhagemRepositoryInterface):
         self._session.flush()
         return True
 
-    def exists_linhagem(self, origem_id: str, destino_id: str) -> bool:
-        stmt = select(LinhagemDadoModel.id).where(
-            LinhagemDadoModel.ativo_origem_id == UUID(origem_id),
-            LinhagemDadoModel.ativo_destino_id == UUID(destino_id),
-            LinhagemDadoModel.deleted_at.is_(None),
-        ).limit(1)
+    def exists_linhagem_por_ids(self, origem_id: str, destino_id: str) -> bool:
+        stmt = (
+            select(LinhagemDadoModel.id)
+            .where(
+                LinhagemDadoModel.ativo_origem_id == UUID(origem_id),
+                LinhagemDadoModel.ativo_destino_id == UUID(destino_id),
+                LinhagemDadoModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 

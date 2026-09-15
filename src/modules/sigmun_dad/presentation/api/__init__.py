@@ -42,15 +42,22 @@ from src.modules.sigmun_dad.application.use_cases import (
     DesativarAtivoUseCase,
     RemoverAtivoCatalogoUseCase,
 )
+from src.modules.sigmun_dad.domain.entities import (
+    AtivoDado,
+    Catalogo,
+    LinhagemDado,
+    PoliticaDado,
+    QualidadeDado,
+)
 from src.modules.sigmun_dad.domain.exceptions import (
-    AtivoJaExisteError,
+    AtivoJaCadastradoError,
     AtivoNaoEncontradoError,
-    CatalogoJaExisteError,
+    CatalogoDuplicadoError,
     CatalogoNaoEncontradoError,
-    LinhagemJaExisteError,
+    LinhagemDuplicadaError,
     LinhagemNaoEncontradaError,
     NomeAtivoInvalidoError,
-    PoliticaJaExisteError,
+    PoliticaDuplicadaError,
     PoliticaNaoEncontradaError,
     QualidadeNaoEncontradaError,
 )
@@ -127,7 +134,7 @@ def get_qualidade_repository(
     return SqlAlchemyQualidadeRepository(session)
 
 
-def _to_response(ativo) -> AtivoResponse:
+def _to_response(ativo: AtivoDado) -> AtivoResponse:
     return AtivoResponse(
         id=ativo.id,
         nome=ativo.nome,
@@ -170,7 +177,7 @@ def criar_ativo(
             tags=payload.tags,
         )
         return _to_response(ativo)
-    except AtivoJaExisteError as exc:
+    except AtivoJaCadastradoError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     except NomeAtivoInvalidoError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
@@ -271,7 +278,7 @@ def arquivar_ativo(
 # =============================================================================
 
 
-def _to_catalogo_response(catalogo) -> CatalogoResponse:
+def _to_catalogo_response(catalogo: Catalogo) -> CatalogoResponse:
     return CatalogoResponse(
         id=catalogo.id,
         nome=catalogo.nome,
@@ -301,7 +308,7 @@ def criar_catalogo(
             dominio=payload.dominio or "",
         )
         return _to_catalogo_response(catalogo)
-    except CatalogoJaExisteError as exc:
+    except CatalogoDuplicadoError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
 
@@ -373,7 +380,7 @@ def atualizar_catalogo(
 def deletar_catalogo(
     catalogo_id: str,
     repo: Annotated[CatalogoRepositoryInterface, Depends(get_catalogo_repository)],
-):
+) -> None:
     use_case = DeletarCatalogoUseCase(repo)
     try:
         use_case.execute(catalogo_id)
@@ -423,7 +430,7 @@ def remover_ativo_catalogo(
 # =============================================================================
 
 
-def _to_linhagem_response(linhagem) -> LinhagemResponse:
+def _to_linhagem_response(linhagem: LinhagemDado) -> LinhagemResponse:
     return LinhagemResponse(
         id=linhagem.id,
         ativo_origem_id=linhagem.ativo_origem_id,
@@ -455,7 +462,7 @@ def criar_linhagem(
             regras=payload.regras or "",
         )
         return _to_linhagem_response(linhagem)
-    except LinhagemJaExisteError as exc:
+    except LinhagemDuplicadaError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
 
@@ -527,7 +534,7 @@ def atualizar_linhagem(
 def deletar_linhagem(
     linhagem_id: str,
     repo: Annotated[LinhagemRepositoryInterface, Depends(get_linhagem_repository)],
-):
+) -> None:
     use_case = DeletarLinhagemUseCase(repo)
     try:
         use_case.execute(linhagem_id)
@@ -540,7 +547,7 @@ def deletar_linhagem(
 # =============================================================================
 
 
-def _to_politica_response(politica) -> PoliticaResponse:
+def _to_politica_response(politica: PoliticaDado) -> PoliticaResponse:
     return PoliticaResponse(
         id=politica.id,
         codigo=politica.codigo,
@@ -573,7 +580,7 @@ def criar_politica(
             regras=payload.regras,
         )
         return _to_politica_response(politica)
-    except PoliticaJaExisteError as exc:
+    except PoliticaDuplicadaError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
 
@@ -645,7 +652,7 @@ def atualizar_politica(
 def deletar_politica(
     politica_id: str,
     repo: Annotated[PoliticaRepositoryInterface, Depends(get_politica_repository)],
-):
+) -> None:
     use_case = DeletarPoliticaUseCase(repo)
     try:
         use_case.execute(politica_id)
@@ -676,7 +683,7 @@ def adicionar_regra_politica(
 # =============================================================================
 
 
-def _to_qualidade_response(qualidade) -> QualidadeResponse:
+def _to_qualidade_response(qualidade: QualidadeDado) -> QualidadeResponse:
     return QualidadeResponse(
         id=qualidade.id,
         ativo_id=qualidade.ativo_id,
@@ -781,7 +788,7 @@ def atualizar_qualidade(
 def deletar_qualidade(
     qualidade_id: str,
     repo: Annotated[QualidadeRepositoryInterface, Depends(get_qualidade_repository)],
-):
+) -> None:
     use_case = DeletarQualidadeUseCase(repo)
     try:
         use_case.execute(qualidade_id)

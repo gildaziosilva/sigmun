@@ -7,9 +7,10 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class NomeAtivo:
     """Value Object para nome de ativo de dado."""
+
     valor: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.valor:
             raise ValueError("Nome do ativo não pode ser vazio")
         if len(self.valor) < 3:
@@ -29,11 +30,12 @@ class NomeAtivo:
 @dataclass(frozen=True)
 class ClassificacaoDado:
     """Value Object para classificação de dado."""
+
     valor: str
 
     VALORES_VALIDOS = ["PUBLICO", "INTERNO", "CONFIDENCIAL", "RESTRITO", "SENSIVEL"]
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.valor:
             raise ValueError("Classificação não pode ser vazia")
         if self.valor.upper() not in self.VALORES_VALIDOS:
@@ -51,9 +53,10 @@ class ClassificacaoDado:
 @dataclass(frozen=True)
 class Tag:
     """Value Object para tag."""
+
     valor: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.valor:
             raise ValueError("Tag não pode ser vazia")
         if len(self.valor) > 50:

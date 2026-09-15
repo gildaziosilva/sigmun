@@ -91,7 +91,7 @@ class SqlAlchemyPoliticaRepository(PoliticaRepositoryInterface):
             model.descricao = politica.descricao
             model.tipo = politica.tipo
             model.regras = _format_list(politica.regras)
-            model.updated_at = politica.updated_at
+            model.updated_at = politica.updated_at  # type: ignore[assignment]
             logger.info("Política atualizada: %s", politica.id)
         self._session.flush()
         self._session.refresh(model)
@@ -99,6 +99,7 @@ class SqlAlchemyPoliticaRepository(PoliticaRepositoryInterface):
 
     def delete(self, politica_id: str) -> bool:
         from sqlalchemy import func
+
         model = self._session.get(PoliticaDadoModel, UUID(politica_id))
         if model is None:
             return False
@@ -108,10 +109,14 @@ class SqlAlchemyPoliticaRepository(PoliticaRepositoryInterface):
         return True
 
     def exists_by_codigo(self, codigo: str) -> bool:
-        stmt = select(PoliticaDadoModel.id).where(
-            PoliticaDadoModel.codigo == codigo,
-            PoliticaDadoModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(PoliticaDadoModel.id)
+            .where(
+                PoliticaDadoModel.codigo == codigo,
+                PoliticaDadoModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 

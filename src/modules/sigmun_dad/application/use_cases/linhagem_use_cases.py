@@ -5,7 +5,7 @@ import logging
 from src.modules.sigmun_dad.application.interfaces import LinhagemRepositoryInterface
 from src.modules.sigmun_dad.domain.entities import LinhagemDado
 from src.modules.sigmun_dad.domain.exceptions import (
-    LinhagemJaExisteError,
+    LinhagemDuplicadaError,
     LinhagemNaoEncontradaError,
 )
 
@@ -35,7 +35,7 @@ class CriarLinhagemUseCase:
             raise ValueError("Ativo de origem e destino devem ser diferentes")
 
         if self._repo.exists_linhagem(ativo_origem_id, ativo_destino_id):
-            raise LinhagemJaExisteError(
+            raise LinhagemDuplicadaError(
                 f"Já existe linhagem entre '{ativo_origem_id}' e '{ativo_destino_id}'"
             )
 

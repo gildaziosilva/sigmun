@@ -34,7 +34,7 @@ class AvaliarQualidadeUseCase:
         if qualidade is None:
             qualidade = QualidadeDado(ativo_id=ativo_id)
 
-        qualidade.update_score(score)
+        qualidade.atualizar_pontuacao(score)
         if criterios:
             qualidade.criterios = criterios
         if observacao:
@@ -65,7 +65,7 @@ class AtualizarQualidadeDadosUseCase:
             )
 
         if score is not None:
-            qualidade.update_score(score)
+            qualidade.atualizar_pontuacao(score)
         if nivel is not None:
             qualidade.nivel = QualidadeNivel(nivel)
         if criterios is not None:
@@ -74,6 +74,7 @@ class AtualizarQualidadeDadosUseCase:
             qualidade.observacao = observacao
 
         from datetime import datetime
+
         qualidade.updated_at = datetime.utcnow()
         return self._repo.save(qualidade)
 
@@ -97,9 +98,7 @@ class BuscarQualidadeUseCase:
         """Busca qualidade por ativo."""
         qualidade = self._repo.get_by_ativo(ativo_id)
         if qualidade is None:
-            raise QualidadeNaoEncontradaError(
-                f"Qualidade do ativo '{ativo_id}' não encontrada"
-            )
+            raise QualidadeNaoEncontradaError(f"Qualidade do ativo '{ativo_id}' não encontrada")
         return qualidade
 
     def list_all(self, page: int = 0, page_size: int = 50) -> tuple:

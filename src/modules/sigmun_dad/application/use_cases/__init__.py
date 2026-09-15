@@ -36,7 +36,7 @@ from src.modules.sigmun_dad.domain.entities import (
     TipoAtivoDado,
 )
 from src.modules.sigmun_dad.domain.exceptions import (
-    AtivoJaExisteError,
+    AtivoJaCadastradoError,
     AtivoNaoEncontradoError,
     NomeAtivoInvalidoError,
 )
@@ -61,7 +61,7 @@ class CriarAtivoUseCase:
         schema_origem: str = "",
         tabela_origem: str = "",
         classificacao: str = "",
-        tags: list[str] = None,
+        tags: list[str] | None = None,
     ) -> AtivoDado:
         """Cria um novo ativo de dado."""
         valido, msg = NomeAtivo.validar(nome)
@@ -69,7 +69,7 @@ class CriarAtivoUseCase:
             raise NomeAtivoInvalidoError(f"Nome inválido: {msg}")
 
         if self._repo.exists_by_nome(nome):
-            raise AtivoJaExisteError(f"Ativo com nome '{nome}' já existe")
+            raise AtivoJaCadastradoError(f"Ativo com nome '{nome}' já existe")
 
         ativo = AtivoDado(
             nome=nome,
@@ -97,7 +97,7 @@ class AtivarAtivoUseCase:
         ativo = self._repo.get_by_id(ativo_id)
         if ativo is None:
             raise AtivoNaoEncontradoError(f"Ativo '{ativo_id}' não encontrado")
-        ativo.activate()
+        ativo.ativar()
         return self._repo.save(ativo)
 
 
@@ -112,7 +112,7 @@ class DesativarAtivoUseCase:
         ativo = self._repo.get_by_id(ativo_id)
         if ativo is None:
             raise AtivoNaoEncontradoError(f"Ativo '{ativo_id}' não encontrado")
-        ativo.deactivate()
+        ativo.desativar()
         return self._repo.save(ativo)
 
 
@@ -127,7 +127,7 @@ class ArquivarAtivoUseCase:
         ativo = self._repo.get_by_id(ativo_id)
         if ativo is None:
             raise AtivoNaoEncontradoError(f"Ativo '{ativo_id}' não encontrado")
-        ativo.archive()
+        ativo.arquivar()
         return self._repo.save(ativo)
 
 
@@ -167,10 +167,11 @@ class AtualizarQualidadeUseCase:
     def execute(self, ativo_id: str, nivel: str) -> AtivoDado:
         """Atualiza nível de qualidade do ativo."""
         from src.modules.sigmun_dad.domain.entities import QualidadeNivel
+
         ativo = self._repo.get_by_id(ativo_id)
         if ativo is None:
             raise AtivoNaoEncontradoError(f"Ativo '{ativo_id}' não encontrado")
-        ativo.update_quality(QualidadeNivel(nivel))
+        ativo.atualizar_qualidade(QualidadeNivel(nivel))
         return self._repo.save(ativo)
 
 

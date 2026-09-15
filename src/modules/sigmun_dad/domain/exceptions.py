@@ -1,75 +1,104 @@
-"""Exceções de domínio do módulo de Dados Corporativos."""
+"""Exceções de domínio do módulo de Dados Corporativos.
+
+Base PT-BR espelhada no DOM-COMPRAS-001 (ComprasDomainError).
+Aliases dos nomes anteriores mantidos por compatibilidade.
+"""
 
 
-class DomainException(Exception):
-    """Exceção base do domínio."""
-    pass
+class DadosDomainError(Exception):
+    """Base das exceções de negócio do domínio Dados."""
 
 
-class AtivoNaoEncontradoError(DomainException):
+class AtivoNaoEncontradoError(DadosDomainError):
     """Ativo de dado não encontrado."""
+
     pass
 
 
-class AtivoJaExisteError(DomainException):
+class AtivoJaCadastradoError(DadosDomainError):
     """Ativo de dado já cadastrado."""
+
     pass
 
 
-class CatalogoNaoEncontradoError(DomainException):
+class CatalogoNaoEncontradoError(DadosDomainError):
     """Catálogo não encontrado."""
+
     pass
 
 
-class CatalogoJaExisteError(DomainException):
+class CatalogoDuplicadoError(DadosDomainError):
     """Catálogo já cadastrado."""
+
     pass
 
 
-class LinhagemNaoEncontradaError(DomainException):
+class LinhagemNaoEncontradaError(DadosDomainError):
     """Linhagem não encontrada."""
+
     pass
 
 
-class LinhagemJaExisteError(DomainException):
+class LinhagemDuplicadaError(DadosDomainError):
     """Linhagem já cadastrada."""
+
     pass
 
 
-class PoliticaNaoEncontradaError(DomainException):
+class PoliticaNaoEncontradaError(DadosDomainError):
     """Política não encontrada."""
+
     pass
 
 
-class PoliticaJaExisteError(DomainException):
+class PoliticaDuplicadaError(DadosDomainError):
     """Política já cadastrada."""
+
     pass
 
 
-class QualidadeNaoEncontradaError(DomainException):
+class QualidadeNaoEncontradaError(DadosDomainError):
     """Registro de qualidade não encontrado."""
+
     pass
 
 
-class ClassificacaoInvalidaError(DomainException):
+class ClassificacaoInvalidaError(DadosDomainError):
     """Classificação de dado inválida."""
+
     pass
 
 
-class NomeAtivoInvalidoError(DomainException):
+class NomeAtivoInvalidoError(DadosDomainError):
     """Nome de ativo inválido."""
+
     pass
+
+
+# ---------------------------------------------------------------------------
+# Aliases de compatibilidade.
+# ---------------------------------------------------------------------------
+DomainException = DadosDomainError
+AtivoJaExisteError = AtivoJaCadastradoError
+CatalogoJaExisteError = CatalogoDuplicadoError
+LinhagemJaExisteError = LinhagemDuplicadaError
+PoliticaJaExisteError = PoliticaDuplicadaError
 
 
 __all__ = [
+    "DadosDomainError",
     "DomainException",
     "AtivoNaoEncontradoError",
+    "AtivoJaCadastradoError",
     "AtivoJaExisteError",
     "CatalogoNaoEncontradoError",
+    "CatalogoDuplicadoError",
     "CatalogoJaExisteError",
     "LinhagemNaoEncontradaError",
+    "LinhagemDuplicadaError",
     "LinhagemJaExisteError",
     "PoliticaNaoEncontradaError",
+    "PoliticaDuplicadaError",
     "PoliticaJaExisteError",
     "QualidadeNaoEncontradaError",
     "ClassificacaoInvalidaError",

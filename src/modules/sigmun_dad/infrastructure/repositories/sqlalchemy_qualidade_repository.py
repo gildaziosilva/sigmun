@@ -91,7 +91,7 @@ class SqlAlchemyQualidadeRepository(QualidadeRepositoryInterface):
             model.score = qualidade.score
             model.criterios = _format_list(qualidade.criterios)
             model.observacao = qualidade.observacao
-            model.updated_at = qualidade.updated_at
+            model.updated_at = qualidade.updated_at  # type: ignore[assignment]
             logger.info("Qualidade de dados atualizada: %s", qualidade.id)
         self._session.flush()
         self._session.refresh(model)
@@ -99,6 +99,7 @@ class SqlAlchemyQualidadeRepository(QualidadeRepositoryInterface):
 
     def delete(self, qualidade_id: str) -> bool:
         from sqlalchemy import func
+
         model = self._session.get(QualidadeDadoModel, UUID(qualidade_id))
         if model is None:
             return False
@@ -108,10 +109,14 @@ class SqlAlchemyQualidadeRepository(QualidadeRepositoryInterface):
         return True
 
     def exists_by_ativo(self, ativo_id: str) -> bool:
-        stmt = select(QualidadeDadoModel.id).where(
-            QualidadeDadoModel.ativo_id == UUID(ativo_id),
-            QualidadeDadoModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(QualidadeDadoModel.id)
+            .where(
+                QualidadeDadoModel.ativo_id == UUID(ativo_id),
+                QualidadeDadoModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 

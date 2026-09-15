@@ -2,10 +2,13 @@
 
 import logging
 
-from src.modules.sigmun_dad.application.interfaces import CatalogoRepositoryInterface
+from src.modules.sigmun_dad.application.interfaces import (
+    AtivoRepositoryInterface,
+    CatalogoRepositoryInterface,
+)
 from src.modules.sigmun_dad.domain.entities import Catalogo
 from src.modules.sigmun_dad.domain.exceptions import (
-    CatalogoJaExisteError,
+    CatalogoDuplicadoError,
     CatalogoNaoEncontradoError,
 )
 
@@ -29,7 +32,7 @@ class CriarCatalogoUseCase:
             raise ValueError("Nome do catálogo deve ter pelo menos 3 caracteres")
 
         if self._repo.exists_by_nome(nome):
-            raise CatalogoJaExisteError(f"Catálogo com nome '{nome}' já existe")
+            raise CatalogoDuplicadoError(f"Catálogo com nome '{nome}' já existe")
 
         catalogo = Catalogo(
             nome=nome,
@@ -65,6 +68,7 @@ class AtualizarCatalogoUseCase:
             catalogo.dominio = dominio
 
         from datetime import datetime
+
         catalogo.updated_at = datetime.utcnow()
         return self._repo.save(catalogo)
 
@@ -114,7 +118,7 @@ class AdicionarAtivoCatalogoUseCase:
     def __init__(
         self,
         catalogo_repo: CatalogoRepositoryInterface,
-        ativo_repo,
+        ativo_repo: AtivoRepositoryInterface,
     ):
         self._catalogo_repo = catalogo_repo
         self._ativo_repo = ativo_repo
@@ -128,9 +132,10 @@ class AdicionarAtivoCatalogoUseCase:
         ativo = self._ativo_repo.get_by_id(ativo_id)
         if ativo is None:
             from src.modules.sigmun_dad.domain.exceptions import AtivoNaoEncontradoError
+
             raise AtivoNaoEncontradoError(f"Ativo '{ativo_id}' não encontrado")
 
-        catalogo.add_ativo(ativo_id)
+        catalogo.adicionar_ativo(ativo_id)
         return self._catalogo_repo.save(catalogo)
 
 
@@ -146,7 +151,7 @@ class RemoverAtivoCatalogoUseCase:
         if catalogo is None:
             raise CatalogoNaoEncontradoError(f"Catálogo '{catalogo_id}' não encontrado")
 
-        catalogo.remove_ativo(ativo_id)
+        catalogo.remover_ativo(ativo_id)
         return self._repo.save(catalogo)
 
 

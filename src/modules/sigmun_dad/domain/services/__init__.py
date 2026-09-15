@@ -8,7 +8,7 @@ from src.modules.sigmun_dad.domain.entities import (
     LinhagemDado,
 )
 from src.modules.sigmun_dad.domain.exceptions import (
-    AtivoJaExisteError,
+    AtivoJaCadastradoError,
     AtivoNaoEncontradoError,
 )
 
@@ -19,7 +19,9 @@ class CatalogoService:
     """Serviço de catálogo de dados."""
 
     @staticmethod
-    def validar_ativo_unico(ativos: list[AtivoDado], nome: str, exclude_id: str = None) -> bool:
+    def validar_ativo_unico(
+        ativos: list[AtivoDado], nome: str, exclude_id: str | None = None
+    ) -> bool:
         """Valida se nome do ativo é único no catálogo."""
         for ativo in ativos:
             if ativo.nome.lower() == nome.lower() and ativo.id != exclude_id:
@@ -30,8 +32,8 @@ class CatalogoService:
     def adicionar_ativo_ao_catalogo(catalogo: Catalogo, ativo: AtivoDado) -> Catalogo:
         """Adiciona ativo ao catálogo."""
         if ativo.id in catalogo.ativos_ids:
-            raise AtivoJaExisteError(f"Ativo '{ativo.nome}' já está no catálogo")
-        catalogo.add_ativo(ativo.id)
+            raise AtivoJaCadastradoError(f"Ativo '{ativo.nome}' já está no catálogo")
+        catalogo.adicionar_ativo(ativo.id)
         logger.info("Ativo '%s' adicionado ao catálogo '%s'", ativo.nome, catalogo.nome)
         return catalogo
 
@@ -40,7 +42,7 @@ class CatalogoService:
         """Remove ativo do catálogo."""
         if ativo_id not in catalogo.ativos_ids:
             raise AtivoNaoEncontradoError(f"Ativo '{ativo_id}' não encontrado no catálogo")
-        catalogo.remove_ativo(ativo_id)
+        catalogo.remover_ativo(ativo_id)
         logger.info("Ativo '%s' removido do catálogo '%s'", ativo_id, catalogo.nome)
         return catalogo
 
@@ -87,6 +89,7 @@ class GovernançaService:
     def validar_classificacao(classificacao: str) -> bool:
         """Valida classificação do dado."""
         from src.modules.sigmun_dad.domain.value_objects import ClassificacaoDado
+
         valido, _ = ClassificacaoDado.validar(classificacao)
         return valido
 

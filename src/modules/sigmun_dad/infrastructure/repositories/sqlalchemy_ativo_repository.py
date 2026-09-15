@@ -123,7 +123,7 @@ class SqlAlchemyAtivoRepository(AtivoRepositoryInterface):
             model.classificacao = ativo.classificacao
             model.tags = _format_list(ativo.tags)
             model.metadata_json = ativo.metadata
-            model.updated_at = ativo.updated_at
+            model.updated_at = ativo.updated_at  # type: ignore[assignment]
             logger.info("Ativo de dado atualizado: %s", ativo.id)
         self._session.flush()
         self._session.refresh(model)
@@ -131,6 +131,7 @@ class SqlAlchemyAtivoRepository(AtivoRepositoryInterface):
 
     def delete(self, ativo_id: str) -> bool:
         from sqlalchemy import func
+
         model = self._session.get(AtivoDadoModel, UUID(ativo_id))
         if model is None:
             return False
@@ -140,10 +141,14 @@ class SqlAlchemyAtivoRepository(AtivoRepositoryInterface):
         return True
 
     def exists_by_nome(self, nome: str) -> bool:
-        stmt = select(AtivoDadoModel.id).where(
-            AtivoDadoModel.nome == nome,
-            AtivoDadoModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(AtivoDadoModel.id)
+            .where(
+                AtivoDadoModel.nome == nome,
+                AtivoDadoModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 
