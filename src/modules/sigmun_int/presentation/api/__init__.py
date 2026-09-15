@@ -28,9 +28,6 @@ from src.modules.sigmun_int.application.use_cases import (
     BuscarContratoIntegracaoUseCase,
     BuscarEntregaWebhookUseCase,
     BuscarWebhookUseCase,
-    MudarEstadoApiUseCase,
-    MudarEstadoConectorUseCase,
-    MudarEstadoWebhookUseCase,
     ConsumirOutboxUseCase,
     CriarApiExternaUseCase,
     CriarConectorUseCase,
@@ -40,9 +37,12 @@ from src.modules.sigmun_int.application.use_cases import (
     DeletarContratoIntegracaoUseCase,
     DeletarWebhookUseCase,
     DespacharWebhooksUseCase,
+    MudarEstadoApiUseCase,
+    MudarEstadoConectorUseCase,
+    MudarEstadoWebhookUseCase,
     RegistrarWebhookUseCase,
-    RetryEntregaWebhookUseCase,
     RetirarContratoIntegracaoUseCase,
+    RetryEntregaWebhookUseCase,
 )
 from src.modules.sigmun_int.domain.entities import (
     ApiExterna,
@@ -98,6 +98,7 @@ from src.modules.sigmun_int.presentation.schemas import (
     WebhookPayload,
     WebhookResponse,
 )
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/int", tags=["Integraci\u00f3n e Interoperabilidade"])
@@ -136,6 +137,8 @@ def get_evento_processado_repo(
     session: Annotated[Session, Depends(get_db)],
 ) -> SqlAlchemyEventoProcessadoRepository:
     return SqlAlchemyEventoProcessadoRepository(session)
+
+
 # =============================================================================
 # Helpers de mapeamento para respostas
 # =============================================================================
@@ -280,6 +283,8 @@ def _error_http(exc: Exception, default: int = status.HTTP_400_BAD_REQUEST) -> H
     if isinstance(exc, IntegracaoError):
         return HTTPException(status_code=default, detail=str(exc))
     return HTTPException(status_code=default, detail=str(exc))
+
+
 # =============================================================================
 # APIs externas do catálogo
 # =============================================================================
@@ -362,7 +367,9 @@ def atualizar_api(
     return _api_to_response(api)
 
 
-@router.post("/apis/{api_id}/estado", response_model=ApiResponse, summary="Muda o estado de uma API")
+@router.post(
+    "/apis/{api_id}/estado", response_model=ApiResponse, summary="Muda o estado de uma API"
+)
 def mudar_estado_api(
     api_id: str,
     estado: str,
@@ -388,6 +395,8 @@ def deletar_api(
         DeletarApiExternaUseCase(repo).execute(api_id)
     except Exception as exc:  # noqa: BLE001
         raise _error_http(exc) from exc
+
+
 # =============================================================================
 # Contratos de integração
 # =============================================================================
@@ -521,6 +530,8 @@ def deletar_contrato(
         DeletarContratoIntegracaoUseCase(repo).execute(contrato_id)
     except Exception as exc:  # noqa: BLE001
         raise _error_http(exc) from exc
+
+
 # =============================================================================
 # Conectores oficiais (GOV.BR, e-Social, SIAFIC, PNCP)
 # =============================================================================
@@ -631,6 +642,8 @@ def deletar_conector(
         DeletarConectorUseCase(repo).execute(conector_id)
     except Exception as exc:  # noqa: BLE001
         raise _error_http(exc) from exc
+
+
 # =============================================================================
 # Webhooks inscritos do barramento
 # =============================================================================
@@ -672,7 +685,9 @@ def registrar_webhook(
     return _webhook_to_response(webhook)
 
 
-@router.get("/webhooks/{webhook_id}", response_model=WebhookResponse, summary="Busca um webhook por ID")
+@router.get(
+    "/webhooks/{webhook_id}", response_model=WebhookResponse, summary="Busca um webhook por ID"
+)
 def obter_webhook(
     webhook_id: str,
     repo: Annotated[object, Depends(get_webhook_repo)] = None,
@@ -744,7 +759,9 @@ def deletar_webhook(
 # =============================================================================
 
 
-@router.get("/entregas", response_model=list[EntregaResponse], summary="Lista entregas de mensagens")
+@router.get(
+    "/entregas", response_model=list[EntregaResponse], summary="Lista entregas de mensagens"
+)
 def listar_entregas(
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),

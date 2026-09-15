@@ -3,9 +3,9 @@
 from .api_use_cases import (
     AtualizarApiExternaUseCase,
     BuscarApiExternaUseCase,
-    MudarEstadoApiUseCase,
     CriarApiExternaUseCase,
     DeletarApiExternaUseCase,
+    MudarEstadoApiUseCase,
 )
 from .bus_use_cases import ConsumirOutboxUseCase, DespacharWebhooksUseCase
 from .conector_use_cases import (
@@ -13,9 +13,9 @@ from .conector_use_cases import (
     CONECTORES_OFICIAIS,
     AtualizarConectorUseCase,
     BuscarConectorUseCase,
-    MudarEstadoConectorUseCase,
     CriarConectorUseCase,
     DeletarConectorUseCase,
+    MudarEstadoConectorUseCase,
 )
 from .contrato_use_cases import (
     AprovarContratoIntegracaoUseCase,
@@ -33,8 +33,8 @@ from .entrega_use_cases import (
 from .webhook_use_cases import (
     AtualizarWebhookUseCase,
     BuscarWebhookUseCase,
-    MudarEstadoWebhookUseCase,
     DeletarWebhookUseCase,
+    MudarEstadoWebhookUseCase,
     RegistrarWebhookUseCase,
 )
 

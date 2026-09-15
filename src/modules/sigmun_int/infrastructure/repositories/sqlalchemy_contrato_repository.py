@@ -55,7 +55,9 @@ class SqlAlchemyContratoIntegracaoRepository(RepositorioContratoIntegracao):
             model.descricao = contrato.descricao or None
             model.version_formato = contrato.version_formato
             model.esquema_ref = contrato.esquema_ref or None
-            model.api_externa_id = UUID(contrato.api_externa_id) if contrato.api_externa_id else None
+            model.api_externa_id = (
+                UUID(contrato.api_externa_id) if contrato.api_externa_id else None
+            )
             model.estado = contrato.estado.value
             model.atualizado_em = func.now()
         self._session.flush()
@@ -93,15 +95,15 @@ class SqlAlchemyContratoIntegracaoRepository(RepositorioContratoIntegracao):
         estado: str | None = None,
         api_externa_id: str | None = None,
     ) -> tuple[list[ContratoIntegracao], int]:
-        base = select(ContratoIntegracaoModel).where(
-            ContratoIntegracaoModel.is_deleted.is_(False)
-        )
+        base = select(ContratoIntegracaoModel).where(ContratoIntegracaoModel.is_deleted.is_(False))
         if estado:
             base = base.where(ContratoIntegracaoModel.estado == estado)
         if api_externa_id:
             base = base.where(ContratoIntegracaoModel.api_externa_id == UUID(api_externa_id))
         total = len(self._session.scalars(base).all())
-        stmt = base.order_by(ContratoIntegracaoModel.codigo).offset(page * page_size).limit(page_size)
+        stmt = (
+            base.order_by(ContratoIntegracaoModel.codigo).offset(page * page_size).limit(page_size)
+        )
         models = self._session.scalars(stmt).all()
         return [_to_entity(m) for m in models], total
 

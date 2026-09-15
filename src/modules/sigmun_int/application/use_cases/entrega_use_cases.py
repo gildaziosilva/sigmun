@@ -8,11 +8,10 @@ O reenfileiramento permite recuperar mensagens da fila de mensagens mortas
 from datetime import datetime
 
 from ...application.interfaces import RepositorioEntregaWebhook
-from ...domain.entities import EstadoEntrega, EntregaWebhook
+from ...domain.entities import EntregaWebhook, EstadoEntrega
 from ...domain.exceptions import (
     EntregaEstadoInvalidoError,
     EntregaNaoEncontradaError,
-    LimiteRetriesExcedidoError,
 )
 
 __all__ = [

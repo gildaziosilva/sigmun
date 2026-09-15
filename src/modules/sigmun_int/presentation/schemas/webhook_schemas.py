@@ -10,7 +10,9 @@ class WebhookPayload(BaseModel):
 
     nome: str = Field(..., min_length=3, description="Nome único do webhook")
     url_destino: str = Field(..., description="URL destino (http/https) que recebe os eventos")
-    segredo_ref: str = Field(default="", description="Referência ao segredo de assinatura (nunca o valor)")
+    segredo_ref: str = Field(
+        default="", description="Referência ao segredo de assinatura (nunca o valor)"
+    )
     topicos: list[str] = Field(default_factory=list, description="Tópicos inscritos (o ['*'])")
     cabecalhos: dict = Field(default_factory=dict, description="Cabeceras HTTP adicionales")
     max_tentativas: int = Field(default=5, ge=1, le=100, description="Máximo de tentativas")

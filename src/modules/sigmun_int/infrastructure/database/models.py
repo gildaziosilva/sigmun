@@ -135,6 +135,8 @@ class WebhookModel(IntegracaoBase):
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"<WebhookModel id={self.id} nome={self.nome}>"
+
+
 class EntregaWebhookModel(IntegracaoBase):
     """Modelo ORM da tabela ``integracao.entregas_webhook`` (retry/DLQ)."""
 

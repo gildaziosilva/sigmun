@@ -13,7 +13,7 @@ from uuid import UUID
 from sqlalchemy import func, or_, select
 
 from src.modules.sigmun_int.application.interfaces import RepositorioEntregaWebhook
-from src.modules.sigmun_int.domain.entities import EstadoEntrega, EntregaWebhook
+from src.modules.sigmun_int.domain.entities import EntregaWebhook, EstadoEntrega
 from src.modules.sigmun_int.infrastructure.database.models import EntregaWebhookModel
 
 logger = logging.getLogger(__name__)
@@ -105,9 +105,7 @@ class SqlAlchemyEntregaWebhookRepository(RepositorioEntregaWebhook):
             return None
         return _to_entity(model)
 
-    def list_pendentes_para_retry(
-        self, lote: int, agora: datetime
-    ) -> list[EntregaWebhook]:
+    def list_pendentes_para_retry(self, lote: int, agora: datetime) -> list[EntregaWebhook]:
         stmt = (
             select(EntregaWebhookModel)
             .where(
@@ -131,7 +129,9 @@ class SqlAlchemyEntregaWebhookRepository(RepositorioEntregaWebhook):
             EntregaWebhookModel.webhook_id == UUID(webhook_id),
         )
         total = len(self._session.scalars(base).all())
-        stmt = base.order_by(EntregaWebhookModel.criado_em).offset(page * page_size).limit(page_size)
+        stmt = (
+            base.order_by(EntregaWebhookModel.criado_em).offset(page * page_size).limit(page_size)
+        )
         return [_to_entity(m) for m in self._session.scalars(stmt).all()], total
 
     def list_all(
@@ -141,7 +141,9 @@ class SqlAlchemyEntregaWebhookRepository(RepositorioEntregaWebhook):
         if estado:
             base = base.where(EntregaWebhookModel.estado == estado)
         total = len(self._session.scalars(base).all())
-        stmt = base.order_by(EntregaWebhookModel.criado_em).offset(page * page_size).limit(page_size)
+        stmt = (
+            base.order_by(EntregaWebhookModel.criado_em).offset(page * page_size).limit(page_size)
+        )
         return [_to_entity(m) for m in self._session.scalars(stmt).all()], total
 
     def delete(self, entrega_id: str) -> bool:

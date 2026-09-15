@@ -14,7 +14,7 @@ Implementam o Event Bus corporativo (014-Modelo-de-Integracao):
 
 from datetime import datetime
 
-from ...domain.entities import EstadoEntrega, EntregaWebhook, EventoProcessado
+from ...domain.entities import EntregaWebhook, EstadoEntrega, EventoProcessado
 from ...domain.exceptions import FonteOutboxInvalidaError
 from ..interfaces import (
     FonteOutbox,

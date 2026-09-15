@@ -8,12 +8,16 @@ from pydantic import BaseModel, Field
 class ConectorPayload(BaseModel):
     """Payload de criação/atualização de um conector oficial."""
 
-    codigo: str = Field(..., min_length=2, max_length=50, description="GOVBR, ESOCIAL, SIAFIC, PNCP...")
+    codigo: str = Field(
+        ..., min_length=2, max_length=50, description="GOVBR, ESOCIAL, SIAFIC, PNCP..."
+    )
     nome: str = Field(default="", description="Nome (se autocompleta si é oficial)")
     descricao: str = Field(default="", description="Descrição")
     provedor: str = Field(default="", description="Proveedor da plataforma")
     url_base: str = Field(default="", description="URL base")
-    autenticacao_tipo: str = Field(default="oauth2", description="ninguno, api_key, basic, oauth2, mtls")
+    autenticacao_tipo: str = Field(
+        default="oauth2", description="ninguno, api_key, basic, oauth2, mtls"
+    )
     config: dict = Field(default_factory=dict, description="Configuración (sin secretos em claro)")
 
 

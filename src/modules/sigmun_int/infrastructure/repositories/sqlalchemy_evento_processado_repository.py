@@ -8,7 +8,7 @@ evento já consumido.
 import logging
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 
 from src.modules.sigmun_int.application.interfaces import RepositorioEventoProcessado
 from src.modules.sigmun_int.domain.entities import EventoProcessado
@@ -82,7 +82,11 @@ class SqlAlchemyEventoProcessadoRepository(RepositorioEventoProcessado):
         if fonte:
             base = base.where(EventoProcessadoModel.fonte == fonte)
         total = len(self._session.scalars(base).all())
-        stmt = base.order_by(EventoProcessadoModel.recebido_em).offset(page * page_size).limit(page_size)
+        stmt = (
+            base.order_by(EventoProcessadoModel.recebido_em)
+            .offset(page * page_size)
+            .limit(page_size)
+        )
         return [_to_entity(m) for m in self._session.scalars(stmt).all()], total
 
     def delete(self, evento_id: str) -> bool:
