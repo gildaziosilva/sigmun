@@ -7,17 +7,19 @@ Observacoes de projeto:
   - O repositorio executa flush (nao commit); a transacao e
     controlada pela sessao da requisicao (ver core get_db).
 """
+
 import logging
 from uuid import UUID
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-
-logger = logging.getLogger(__name__)
 
 from src.modules.sigmun_seg.application.interfaces import PoliticaSegurancaRepositoryInterface
 from src.modules.sigmun_seg.domain.entities import PoliticaSeguranca
 from src.modules.sigmun_seg.infrastructure.database.models import PoliticaSegurancaModel
+
+logger = logging.getLogger(__name__)
+
 
 def _to_entity(model: PoliticaSegurancaModel):
     return PoliticaSeguranca(
@@ -80,7 +82,9 @@ class SqlAlchemyPoliticaSegurancaRepository(PoliticaSegurancaRepositoryInterface
         ativa: bool | None = None,
     ) -> tuple[list[PoliticaSeguranca], int]:
         stmt = select(PoliticaSegurancaModel).where(PoliticaSegurancaModel.is_deleted.is_(False))
-        count_stmt = select(PoliticaSegurancaModel).where(PoliticaSegurancaModel.is_deleted.is_(False))
+        count_stmt = select(PoliticaSegurancaModel).where(
+            PoliticaSegurancaModel.is_deleted.is_(False)
+        )
 
         if ativa is not None:
             stmt = stmt.where(PoliticaSegurancaModel.ativa == ativa)
@@ -114,7 +118,6 @@ class SqlAlchemyPoliticaSegurancaRepository(PoliticaSegurancaRepositoryInterface
         return _to_entity(model)
 
     def delete(self, politica_id: str) -> bool:
-        from sqlalchemy import func
         model = self._session.get(PoliticaSegurancaModel, UUID(politica_id))
         if model is None:
             return False

@@ -5,6 +5,7 @@ chaves criptográficas e credenciais do domínio DOM-SEG.
 
 Base declarativa usada nas migrações Alembic do SIGMUN.
 """
+
 from __future__ import annotations
 
 import logging
@@ -35,15 +36,11 @@ class ControleSegurancaModel(SegurancaBase):
     __tablename__ = "controles_seguranca"
     __table_args__ = {"schema": "seg"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     codigo: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     nome: Mapped[str] = mapped_column(Text, nullable=False)
     descricao: Mapped[str] = mapped_column(Text, nullable=True)
-    tipo: Mapped[str] = mapped_column(
-        Text, nullable=False
-    )  # fisico, tecnico, administrativo
+    tipo: Mapped[str] = mapped_column(Text, nullable=False)  # fisico, tecnico, administrativo
     categoria: Mapped[str] = mapped_column(
         Text, nullable=False
     )  # acesso, criptografia, incidente, conformidade, continuidade
@@ -76,20 +73,14 @@ class PoliticaSegurancaModel(SegurancaBase):
     __tablename__ = "politicas_seguranca"
     __table_args__ = {"schema": "seg"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     codigo: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     titulo: Mapped[str] = mapped_column(Text, nullable=False)
     conteudo: Mapped[str] = mapped_column(Text, nullable=False)
     versao: Mapped[str] = mapped_column(Text, nullable=False, default="1.0")
     aprovador_id: Mapped[str] = mapped_column(Text, nullable=True)
-    data_aprovacao: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    data_revisao: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    data_aprovacao: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    data_revisao: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     ativa: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
@@ -113,14 +104,10 @@ class IncidenteSegurancaModel(SegurancaBase):
     __tablename__ = "incidentes_seguranca"
     __table_args__ = {"schema": "seg"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     titulo: Mapped[str] = mapped_column(Text, nullable=False)
     descricao: Mapped[str] = mapped_column(Text, nullable=False)
-    severidade: Mapped[str] = mapped_column(
-        Text, nullable=False
-    )  # baixa, media, alta, critica
+    severidade: Mapped[str] = mapped_column(Text, nullable=False)  # baixa, media, alta, critica
     impacto: Mapped[str] = mapped_column(Text, nullable=True)
     categoria: Mapped[str] = mapped_column(Text, nullable=True)
     relator_id: Mapped[str] = mapped_column(Text, nullable=True)
@@ -134,9 +121,7 @@ class IncidenteSegurancaModel(SegurancaBase):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
-    data_resolucao: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    data_resolucao: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     def __repr__(self) -> str:  # pragma: no cover
@@ -153,25 +138,15 @@ class ChaveCriptograficaModel(SegurancaBase):
     __tablename__ = "chaves_criptograficas"
     __table_args__ = {"schema": "seg"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nome: Mapped[str] = mapped_column(Text, nullable=False)
-    algoritmo: Mapped[str] = mapped_column(
-        Text, nullable=False
-    )  # AES256, RSA4096, ECDSA
-    tipo: Mapped[str] = mapped_column(
-        Text, nullable=False
-    )  # simetrica, assimetrica
-    tamanho_bits: Mapped[int] = mapped_column(
-        nullable=False
-    )  # 256, 4096, etc.
+    algoritmo: Mapped[str] = mapped_column(Text, nullable=False)  # AES256, RSA4096, ECDSA
+    tipo: Mapped[str] = mapped_column(Text, nullable=False)  # simetrica, assimetrica
+    tamanho_bits: Mapped[int] = mapped_column(nullable=False)  # 256, 4096, etc.
     status: Mapped[str] = mapped_column(
         Text, nullable=False, default="ativa"
     )  # ativa, revogada, expirada
-    data_expiracao: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    data_expiracao: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     responsavel_id: Mapped[str] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
@@ -195,28 +170,18 @@ class CredencialModel(SegurancaBase):
     __tablename__ = "credenciais"
     __table_args__ = {"schema": "seg"}
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     usuario_id: Mapped[str] = mapped_column(Text, nullable=False)
-    tipo: Mapped[str] = mapped_column(
-        Text, nullable=False
-    )  # senha, certificado, chave_api, token
+    tipo: Mapped[str] = mapped_column(Text, nullable=False)  # senha, certificado, chave_api, token
     identificador: Mapped[str] = mapped_column(
         Text, nullable=False
     )  # hash ou referência, nunca o valor real
     status: Mapped[str] = mapped_column(
         Text, nullable=False, default="ativa"
     )  # ativa, suspensa, expirada, revogada
-    validade: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    ultimo_uso: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    tentativas_falhas: Mapped[int] = mapped_column(
-        nullable=False, default=0
-    )
+    validade: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    ultimo_uso: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    tentativas_falhas: Mapped[int] = mapped_column(nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )

@@ -22,7 +22,13 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
-
+from src.modules.sigmun_seg.application.use_cases.chave_use_cases import (
+    BuscarChaveUseCase,
+    CriarChaveUseCase,
+    DeletarChaveUseCase,
+    ExpirarChaveUseCase,
+    RevogarChaveUseCase,
+)
 from src.modules.sigmun_seg.application.use_cases.controle_use_cases import (
     AtualizarControleSegurancaUseCase,
     BuscarControleSegurancaUseCase,
@@ -31,12 +37,11 @@ from src.modules.sigmun_seg.application.use_cases.controle_use_cases import (
     ImplementarControleSegurancaUseCase,
     ParcialmenteImplementadoUseCase,
 )
-from src.modules.sigmun_seg.application.use_cases.politica_use_cases import (
-    AprovarPoliticaSegurancaUseCase,
-    AtualizarPoliticaSegurancaUseCase,
-    BuscarPoliticaSegurancaUseCase,
-    CriarPoliticaSegurancaUseCase,
-    DeletarPoliticaSegurancaUseCase,
+from src.modules.sigmun_seg.application.use_cases.credencial_use_cases import (
+    BuscarCredencialUseCase,
+    CriarCredencialUseCase,
+    RevogarCredencialUseCase,
+    SuspenderCredencialUseCase,
 )
 from src.modules.sigmun_seg.application.use_cases.incidente_use_cases import (
     BuscarIncidenteSegurancaUseCase,
@@ -47,22 +52,12 @@ from src.modules.sigmun_seg.application.use_cases.incidente_use_cases import (
     RegistrarIncidenteSegurancaUseCase,
     ResolverIncidenteSegurancaUseCase,
 )
-from src.modules.sigmun_seg.application.use_cases.chave_use_cases import (
-    AtualizarChaveUseCase,
-    BuscarChaveUseCase,
-    CriarChaveUseCase,
-    DeletarChaveUseCase,
-    ExpirarChaveUseCase,
-    RevogarChaveUseCase,
-)
-from src.modules.sigmun_seg.application.use_cases.credencial_use_cases import (
-    BuscarCredencialUseCase,
-    CriarCredencialUseCase,
-    DeletarCredencialUseCase,
-    RegistrarFalhaCredencialUseCase,
-    RegistrarUsoCredencialUseCase,
-    RevogarCredencialUseCase,
-    SuspenderCredencialUseCase,
+from src.modules.sigmun_seg.application.use_cases.politica_use_cases import (
+    AprovarPoliticaSegurancaUseCase,
+    AtualizarPoliticaSegurancaUseCase,
+    BuscarPoliticaSegurancaUseCase,
+    CriarPoliticaSegurancaUseCase,
+    DeletarPoliticaSegurancaUseCase,
 )
 from src.modules.sigmun_seg.domain.exceptions import (
     ChaveJaRevogadaError,
@@ -84,6 +79,10 @@ from src.modules.sigmun_seg.infrastructure.repositories import (
     SqlAlchemyIncidenteSegurancaRepository,
     SqlAlchemyPoliticaSegurancaRepository,
 )
+from src.modules.sigmun_seg.presentation.schemas.chave_schemas import (
+    ChavePayload,
+    ChaveResponse,
+)
 from src.modules.sigmun_seg.presentation.schemas.controle_schemas import (
     ControlePayload,
     ControleResponse,
@@ -91,10 +90,6 @@ from src.modules.sigmun_seg.presentation.schemas.controle_schemas import (
 from src.modules.sigmun_seg.presentation.schemas.credencial_schemas import (
     CredencialPayload,
     CredencialResponse,
-)
-from src.modules.sigmun_seg.presentation.schemas.chave_schemas import (
-    ChavePayload,
-    ChaveResponse,
 )
 from src.modules.sigmun_seg.presentation.schemas.incidente_schemas import (
     IncidentePayload,
@@ -200,9 +195,9 @@ def criar_controle(
             nivel_risco=payload.nivel_risco,
         )
     except ControleJaExisteError as exc:
-        raise HTTPException(status_code=409, detail=str(exc))
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except (NivelRiscoInvalidoError, ValueError) as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return ControleResponse(**obj_to_dict(controle))
 
 
@@ -218,7 +213,7 @@ def obter_controle(
     try:
         controle = BuscarControleSegurancaUseCase(repo).get_by_id(str(controle_id))
     except ControleNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return ControleResponse(**obj_to_dict(controle))
 
 
@@ -241,9 +236,9 @@ def atualizar_controle(
             nivel_risco=payload.nivel_risco,
         )
     except ControleNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except (NivelRiscoInvalidoError, ValueError) as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return ControleResponse(**obj_to_dict(controle))
 
 
@@ -259,7 +254,7 @@ def implementar_controle(
     try:
         controle = ImplementarControleSegurancaUseCase(repo).execute(str(controle_id))
     except ControleNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return ControleResponse(**obj_to_dict(controle))
 
 
@@ -275,7 +270,7 @@ def parcial_controle(
     try:
         controle = ParcialmenteImplementadoUseCase(repo).execute(str(controle_id))
     except ControleNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return ControleResponse(**obj_to_dict(controle))
 
 
@@ -291,7 +286,7 @@ def deletar_controle(
     try:
         DeletarControleSegurancaUseCase(repo).execute(str(controle_id))
     except ControleNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 # ============================ POLÍTICAS DE SEGURANÇA ============================
@@ -308,9 +303,7 @@ def listar_politicas(
     ativa: bool | None = Query(default=None),
     repo: Annotated[object, Depends(get_politica_repo)] = None,
 ) -> list[PoliticaResponse]:
-    items, _ = BuscarPoliticaSegurancaUseCase(repo).list_all(
-        page, page_size, ativa
-    )
+    items, _ = BuscarPoliticaSegurancaUseCase(repo).list_all(page, page_size, ativa)
     return [PoliticaResponse(**obj_to_dict(p)) for p in items]
 
 
@@ -332,9 +325,9 @@ def criar_politica(
             versao=payload.versao,
         )
     except PoliticaJaExisteError as exc:
-        raise HTTPException(status_code=409, detail=str(exc))
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return PoliticaResponse(**obj_to_dict(politica))
 
 
@@ -350,7 +343,7 @@ def obter_politica(
     try:
         politica = BuscarPoliticaSegurancaUseCase(repo).get_by_id(str(politica_id))
     except PoliticaNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return PoliticaResponse(**obj_to_dict(politica))
 
 
@@ -369,7 +362,7 @@ def atualizar_politica(
             str(politica_id), titulo=payload.titulo, conteudo=payload.conteudo
         )
     except PoliticaNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return PoliticaResponse(**obj_to_dict(politica))
 
 
@@ -388,7 +381,7 @@ def aprovar_politica(
             str(politica_id), aprovador_id=usuario_id or "sistema"
         )
     except PoliticaNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return PoliticaResponse(**obj_to_dict(politica))
 
 
@@ -404,7 +397,9 @@ def deletar_politica(
     try:
         DeletarPoliticaSegurancaUseCase(repo).execute(str(politica_id))
     except PoliticaNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 # ============================ INCIDENTES DE SEGURANÇA ============================
 
 
@@ -420,9 +415,7 @@ def listar_incidentes(
     status: str | None = Query(default=None),
     repo: Annotated[object, Depends(get_incidente_repo)] = None,
 ) -> list[IncidenteResponse]:
-    items, _ = BuscarIncidenteSegurancaUseCase(repo).list_all(
-        page, page_size, severidade, status
-    )
+    items, _ = BuscarIncidenteSegurancaUseCase(repo).list_all(page, page_size, severidade, status)
     return [IncidenteResponse(**obj_to_dict(i)) for i in items]
 
 
@@ -447,7 +440,7 @@ def registrar_incidente(
             relator_id=usuario_id or payload.relator_id,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return IncidenteResponse(**obj_to_dict(incidente))
 
 
@@ -463,7 +456,7 @@ def obter_incidente(
     try:
         incidente = BuscarIncidenteSegurancaUseCase(repo).get_by_id(str(incidente_id))
     except IncidenteNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return IncidenteResponse(**obj_to_dict(incidente))
 
 
@@ -478,11 +471,9 @@ def escalar_incidente(
     atribuido_a: str = Query(..., description="Responsável pelo incidente"),
 ) -> IncidenteResponse:
     try:
-        incidente = EscalarIncidenteSegurancaUseCase(repo).execute(
-            str(incidente_id), atribuido_a
-        )
+        incidente = EscalarIncidenteSegurancaUseCase(repo).execute(str(incidente_id), atribuido_a)
     except IncidenteNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return IncidenteResponse(**obj_to_dict(incidente))
 
 
@@ -498,7 +489,7 @@ def mitigar_incidente(
     try:
         incidente = MitigarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
     except IncidenteNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return IncidenteResponse(**obj_to_dict(incidente))
 
 
@@ -514,9 +505,9 @@ def resolver_incidente(
     try:
         incidente = ResolverIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
     except IncidenteNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except IncidenteJaResolvidoError as exc:
-        raise HTTPException(status_code=409, detail=str(exc))
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     return IncidenteResponse(**obj_to_dict(incidente))
 
 
@@ -532,7 +523,7 @@ def encerrar_incidente(
     try:
         incidente = EncerrarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
     except IncidenteNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return IncidenteResponse(**obj_to_dict(incidente))
 
 
@@ -548,7 +539,9 @@ def deletar_incidente(
     try:
         DeletarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
     except IncidenteNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 # ============================ CHAVES CRIPTOGRÁFICAS ============================
 
 
@@ -563,9 +556,7 @@ def listar_chaves(
     status: str | None = Query(default=None),
     repo: Annotated[object, Depends(get_chave_repo)] = None,
 ) -> list[ChaveResponse]:
-    items, _ = BuscarChaveUseCase(repo).list_all(
-        page, page_size, status
-    )
+    items, _ = BuscarChaveUseCase(repo).list_all(page, page_size, status)
     return [ChaveResponse(**obj_to_dict(c)) for c in items]
 
 
@@ -588,7 +579,7 @@ def criar_chave(
             responsavel_id=payload.responsavel_id,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return ChaveResponse(**obj_to_dict(chave))
 
 
@@ -604,7 +595,7 @@ def obter_chave(
     try:
         chave = BuscarChaveUseCase(repo).get_by_id(str(chave_id))
     except ChaveNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return ChaveResponse(**obj_to_dict(chave))
 
 
@@ -620,9 +611,9 @@ def revogar_chave(
     try:
         chave = RevogarChaveUseCase(repo).execute(str(chave_id))
     except ChaveNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ChaveJaRevogadaError as exc:
-        raise HTTPException(status_code=409, detail=str(exc))
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     return ChaveResponse(**obj_to_dict(chave))
 
 
@@ -638,7 +629,7 @@ def expirar_chave(
     try:
         chave = ExpirarChaveUseCase(repo).execute(str(chave_id))
     except ChaveNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return ChaveResponse(**obj_to_dict(chave))
 
 
@@ -654,7 +645,9 @@ def deletar_chave(
     try:
         DeletarChaveUseCase(repo).execute(str(chave_id))
     except ChaveNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 # ============================ CREDENCIAIS ============================
 
 
@@ -670,9 +663,7 @@ def listar_credenciais(
     tipo: str | None = Query(default=None),
     repo: Annotated[object, Depends(get_credencial_repo)] = None,
 ) -> list[CredencialResponse]:
-    items, _ = BuscarCredencialUseCase(repo).list_all(
-        page, page_size, status, tipo
-    )
+    items, _ = BuscarCredencialUseCase(repo).list_all(page, page_size, status, tipo)
     return [CredencialResponse(**obj_to_dict(c)) for c in items]
 
 
@@ -693,7 +684,7 @@ def criar_credencial(
             tipo=payload.tipo,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return CredencialResponse(**obj_to_dict(credencial))
 
 
@@ -709,7 +700,7 @@ def obter_credencial(
     try:
         credencial = BuscarCredencialUseCase(repo).get_by_id(str(credencial_id))
     except CredencialNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return CredencialResponse(**obj_to_dict(credencial))
 
 
@@ -725,7 +716,7 @@ def suspender_credencial(
     try:
         credencial = SuspenderCredencialUseCase(repo).execute(str(credencial_id))
     except CredencialNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return CredencialResponse(**obj_to_dict(credencial))
 
 
@@ -741,9 +732,9 @@ def revogar_credencial(
     try:
         credencial = RevogarCredencialUseCase(repo).execute(str(credencial_id))
     except CredencialNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except CredencialJaRevogadaError as exc:
-        raise HTTPException(status_code=409, detail=str(exc))
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     return CredencialResponse(**obj_to_dict(credencial))
 
 

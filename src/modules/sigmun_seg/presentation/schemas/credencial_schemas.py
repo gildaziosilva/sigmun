@@ -1,7 +1,6 @@
 """Schemas Pydantic para Credenciais (DOM-SEG)."""
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -23,6 +22,6 @@ class CredencialResponse(BaseModel):
     identificador: str
     status: str
     tentativas_falhas: int = 0
-    validade: Optional[datetime] = None
-    ultimo_uso: Optional[datetime] = None
+    validade: datetime | None = None
+    ultimo_uso: datetime | None = None
     is_deleted: bool = False

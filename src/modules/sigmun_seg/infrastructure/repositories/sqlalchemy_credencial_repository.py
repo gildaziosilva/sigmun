@@ -7,17 +7,19 @@ Observacoes de projeto:
   - O repositorio executa flush (nao commit); a transacao e
     controlada pela sessao da requisicao (ver core get_db).
 """
+
 import logging
 from uuid import UUID
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-
-logger = logging.getLogger(__name__)
 
 from src.modules.sigmun_seg.application.interfaces import CredencialRepositoryInterface
 from src.modules.sigmun_seg.domain.entities import Credencial
 from src.modules.sigmun_seg.infrastructure.database.models import CredencialModel
+
+logger = logging.getLogger(__name__)
+
 
 def _to_entity(model: CredencialModel):
     return Credencial(
@@ -125,7 +127,6 @@ class SqlAlchemyCredencialRepository(CredencialRepositoryInterface):
         return _to_entity(model)
 
     def delete(self, credencial_id: str) -> bool:
-        from sqlalchemy import func
         model = self._session.get(CredencialModel, UUID(credencial_id))
         if model is None:
             return False

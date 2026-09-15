@@ -1,7 +1,6 @@
 """Casos de uso para Credenciais (DOM-SEG)."""
 
 import logging
-from datetime import datetime
 
 from src.modules.sigmun_seg.application.interfaces import CredencialRepositoryInterface
 from src.modules.sigmun_seg.domain.entities import Credencial, StatusCredencial

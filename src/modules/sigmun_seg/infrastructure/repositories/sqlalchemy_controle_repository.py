@@ -7,15 +7,17 @@ Observacoes de projeto:
   - O repositorio executa flush (nao commit); a transacao e
     controlada pela sessao da requisicao (ver core get_db).
 """
+
 import logging
 from uuid import UUID
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from src.modules.sigmun_seg.application.interfaces import ControleSegurancaRepositoryInterface
 from src.modules.sigmun_seg.domain.entities import ControleSeguranca, StatusControle
 from src.modules.sigmun_seg.infrastructure.database.models import ControleSegurancaModel
+
 
 def _to_entity(model: ControleSegurancaModel):
     return ControleSeguranca(
@@ -31,6 +33,23 @@ def _to_entity(model: ControleSegurancaModel):
         created_at=model.created_at,
         updated_at=model.updated_at,
         is_deleted=model.is_deleted,
+    )
+
+
+def _to_model(entidade: ControleSeguranca) -> ControleSegurancaModel:
+    return ControleSegurancaModel(
+        id=UUID(entidade.id),
+        codigo=entidade.codigo,
+        nome=entidade.nome,
+        descricao=entidade.descricao,
+        tipo=entidade.tipo,
+        categoria=entidade.categoria,
+        status=entidade.status.value,
+        responsavel_id=entidade.responsavel_id,
+        nivel_risco=entidade.nivel_risco,
+        created_at=entidade.created_at,
+        updated_at=entidade.updated_at,
+        is_deleted=entidade.is_deleted,
     )
 
 
@@ -59,7 +78,9 @@ class SqlAlchemyControleSegurancaRepository(ControleSegurancaRepositoryInterface
 
     def list_all(self, page=0, page_size=50, status=None, tipo=None, categoria=None):
         stmt = select(ControleSegurancaModel).where(ControleSegurancaModel.is_deleted.is_(False))
-        count_stmt = select(ControleSegurancaModel).where(ControleSegurancaModel.is_deleted.is_(False))
+        count_stmt = select(ControleSegurancaModel).where(
+            ControleSegurancaModel.is_deleted.is_(False)
+        )
 
         if status is not None:
             stmt = stmt.where(ControleSegurancaModel.status == status)
@@ -101,7 +122,6 @@ class SqlAlchemyControleSegurancaRepository(ControleSegurancaRepositoryInterface
         return _to_entity(model)
 
     def delete(self, controle_id: str) -> bool:
-        from sqlalchemy import func
         model = self._session.get(ControleSegurancaModel, UUID(controle_id))
         if model is None:
             return False

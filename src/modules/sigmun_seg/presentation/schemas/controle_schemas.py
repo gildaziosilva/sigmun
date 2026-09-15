@@ -10,9 +10,14 @@ class ControlePayload(BaseModel):
     nome: str = Field(min_length=1, description="Nome do controle")
     descricao: str = Field(default="", description="Descrição do controle")
     tipo: str = Field(default="tecnico", description="tipo: fisico, tecnico, administrativo")
-    categoria: str = Field(default="acesso", description="categoria: acesso, criptografia, incidente, conformidade, continuidade")
+    categoria: str = Field(
+        default="acesso",
+        description="categoria: acesso, criptografia, incidente, conformidade, continuidade",
+    )
     status: str = Field(default="planejado", description="status: implementado, parcial, planejado")
-    nivel_risco: str = Field(default="medio", description="nível de risco: baixo, medio, alto, critico")
+    nivel_risco: str = Field(
+        default="medio", description="nível de risco: baixo, medio, alto, critico"
+    )
     responsavel_id: str = Field(default="", description="Responsável pelo controle")
 
 

@@ -30,7 +30,9 @@ CONECTORES_OFICIAIS: list[dict] = [
     {
         "codigo": "GOVBR",
         "nome": "Plataforma Digital GOV.BR",
-        "descricao": "Interoperabilidade com a Plataforma Digital Nacional (SSO e serviços digitais).",
+        "descricao": (
+            "Interoperabilidade com a Plataforma Digital Nacional (SSO e serviços digitais)."
+        ),
         "provedor": "Presidência da República",
         "url_base": "https://api.brasil.gov.br",
         "autenticacao_tipo": "oauth2",
@@ -39,11 +41,17 @@ CONECTORES_OFICIAIS: list[dict] = [
     {
         "codigo": "ESOCIAL",
         "nome": "e-Social",
-        "descricao": "Envio de eventos de folha de pagamento, previdência social e relações trabalhistas.",
+        "descricao": (
+            "Envio de eventos de folha de pagamento, previdência social e relações trabalhistas."
+        ),
         "provedor": "e-Social Brasil",
         "url_base": "https://sgc.e-social.gov.br",
         "autenticacao_tipo": "mtls",
-        "config": {"ambiente": "producao", "certificado_ref": "ESOCIAL_CERTIFICADO", "empresa_id": ""},
+        "config": {
+            "ambiente": "producao",
+            "certificado_ref": "ESOCIAL_CERTIFICADO",
+            "empresa_id": "",
+        },
     },
     {
         "codigo": "SIAFIC",
@@ -52,7 +60,11 @@ CONECTORES_OFICIAIS: list[dict] = [
         "provedor": "Ministério da Fazenda",
         "url_base": "https://siafic.economia.gov.br",
         "autenticacao_tipo": "oauth2",
-        "config": {"ambiente": "producao", "credencial_ref": "SIAFIC_CLIENT_SECRET", "periodo_ativo": ""},
+        "config": {
+            "ambiente": "producao",
+            "credencial_ref": "SIAFIC_CLIENT_SECRET",
+            "periodo_ativo": "",
+        },
     },
     {
         "codigo": "PNCP",
@@ -97,9 +109,7 @@ class CriarConectorUseCase:
                 raise ValueError(msg)
 
         # Completar dados dos conectores oficiais
-        oficial = next(
-            (c for c in CONECTORES_OFICIAIS if c["codigo"] == codigo_upper), None
-        )
+        oficial = next((c for c in CONECTORES_OFICIAIS if c["codigo"] == codigo_upper), None)
         if oficial:
             nome = nome or oficial["nome"]
             descricao = descricao or oficial["descricao"]

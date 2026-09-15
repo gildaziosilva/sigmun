@@ -7,22 +7,6 @@ repositório injetado no construtor. Estes testes usam repositórios em memória
 
 import pytest
 
-from src.modules.sigmun_seg.domain.entities import (
-    ControleSeguranca,
-    IncidenteSeguranca,
-    PoliticaSeguranca,
-    SeveridadeIncidente,
-    StatusIncidente,
-)
-from src.modules.sigmun_seg.domain.exceptions import (
-    ControleJaExisteError,
-    ControleNaoEncontradoError,
-    IncidenteJaResolvidoError,
-    IncidenteNaoEncontradoError,
-    NivelRiscoInvalidoError,
-    PoliticaJaExisteError,
-    PoliticaNaoEncontradaError,
-)
 from src.modules.sigmun_seg.application.use_cases.controle_use_cases import (
     AtualizarControleSegurancaUseCase,
     BuscarControleSegurancaUseCase,
@@ -46,6 +30,22 @@ from src.modules.sigmun_seg.application.use_cases.politica_use_cases import (
     BuscarPoliticaSegurancaUseCase,
     CriarPoliticaSegurancaUseCase,
     DeletarPoliticaSegurancaUseCase,
+)
+from src.modules.sigmun_seg.domain.entities import (
+    ControleSeguranca,
+    IncidenteSeguranca,
+    PoliticaSeguranca,
+    SeveridadeIncidente,
+    StatusIncidente,
+)
+from src.modules.sigmun_seg.domain.exceptions import (
+    ControleJaExisteError,
+    ControleNaoEncontradoError,
+    IncidenteJaResolvidoError,
+    IncidenteNaoEncontradoError,
+    NivelRiscoInvalidoError,
+    PoliticaJaExisteError,
+    PoliticaNaoEncontradaError,
 )
 
 
@@ -177,9 +177,7 @@ class TestCriarControleSegurancaUseCase:
         repo = FakeControleRepo()
         use_case = CriarControleSegurancaUseCase(repo)
         with pytest.raises(NivelRiscoInvalidoError):
-            use_case.execute(
-                codigo="CTRL-002", nome="Controle B", nivel_risco="inexistente"
-            )
+            use_case.execute(codigo="CTRL-002", nome="Controle B", nivel_risco="inexistente")
 
 
 class TestBuscarControleSegurancaUseCase:
@@ -215,9 +213,7 @@ class TestBuscarControleSegurancaUseCase:
 class TestAtualizarControleSegurancaUseCase:
     def test_atualizar_nome_e_descricao(self) -> None:
         repo = FakeControleRepo()
-        criado = CriarControleSegurancaUseCase(repo).execute(
-            codigo="CTRL-006", nome="Antigo"
-        )
+        criado = CriarControleSegurancaUseCase(repo).execute(codigo="CTRL-006", nome="Antigo")
         atualizado = AtualizarControleSegurancaUseCase(repo).execute(
             criado.id, nome="Novo nome", descricao="Nova descrição"
         )
@@ -233,27 +229,21 @@ class TestAtualizarControleSegurancaUseCase:
 class TestFluxoControleImplementacao:
     def test_implementar_controle(self) -> None:
         repo = FakeControleRepo()
-        criado = CriarControleSegurancaUseCase(repo).execute(
-            codigo="CTRL-007", nome="Controle"
-        )
+        criado = CriarControleSegurancaUseCase(repo).execute(codigo="CTRL-007", nome="Controle")
         assert criado.is_active is False
         ImplementarControleSegurancaUseCase(repo).execute(criado.id)
         assert repo.get_by_id(criado.id).is_active is True
 
     def test_marcar_parcialmente_implementado(self) -> None:
         repo = FakeControleRepo()
-        criado = CriarControleSegurancaUseCase(repo).execute(
-            codigo="CTRL-008", nome="Controle"
-        )
+        criado = CriarControleSegurancaUseCase(repo).execute(codigo="CTRL-008", nome="Controle")
         ParcialmenteImplementadoUseCase(repo).execute(criado.id)
         controle = repo.get_by_id(criado.id)
         assert controle.status.value == "parcial"
 
     def test_deletar_controle_soft_delete(self) -> None:
         repo = FakeControleRepo()
-        criado = CriarControleSegurancaUseCase(repo).execute(
-            codigo="CTRL-009", nome="Controle"
-        )
+        criado = CriarControleSegurancaUseCase(repo).execute(codigo="CTRL-009", nome="Controle")
         assert DeletarControleSegurancaUseCase(repo).execute(criado.id) is True
         assert repo.get_by_id(criado.id).is_deleted is True
 
@@ -286,9 +276,7 @@ class TestCriarPoliticaSegurancaUseCase:
     def test_criar_politica_sem_titulo_lanca_value_error(self) -> None:
         repo = FakePoliticaRepo()
         with pytest.raises(ValueError):
-            CriarPoliticaSegurancaUseCase(repo).execute(
-                codigo="POL-002", titulo="", conteudo="c"
-            )
+            CriarPoliticaSegurancaUseCase(repo).execute(codigo="POL-002", titulo="", conteudo="c")
 
 
 class TestBuscarPoliticaSegurancaUseCase:
@@ -407,56 +395,45 @@ class TestBuscarIncidenteSegurancaUseCase:
 class TestFluxoIncidente:
     def test_escalar_incidente(self) -> None:
         repo = FakeIncidenteRepo()
-        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(
-            titulo="Incidente", descricao="d"
-        )
+        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(titulo="Incidente", descricao="d")
         EscalarIncidenteSegurancaUseCase(repo).execute(criado.id, "resp-1")
         assert repo.get_by_id(criado.id).atribuido_a == "resp-1"
         assert repo.get_by_id(criado.id).status == StatusIncidente.EM_ANALISE
 
     def test_mitigar_incidente(self) -> None:
         repo = FakeIncidenteRepo()
-        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(
-            titulo="Incidente", descricao="d"
-        )
+        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(titulo="Incidente", descricao="d")
         MitigarIncidenteSegurancaUseCase(repo).execute(criado.id)
         assert repo.get_by_id(criado.id).status == StatusIncidente.EM_MITIGACAO
 
     def test_resolver_incidente(self) -> None:
         repo = FakeIncidenteRepo()
-        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(
-            titulo="Incidente", descricao="d"
-        )
+        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(titulo="Incidente", descricao="d")
         ResolverIncidenteSegurancaUseCase(repo).execute(criado.id)
         assert repo.get_by_id(criado.id).status == StatusIncidente.RESOLVIDO
 
     def test_resolver_ja_resolvido_lanca_erro(self) -> None:
         repo = FakeIncidenteRepo()
-        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(
-            titulo="Incidente", descricao="d"
-        )
+        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(titulo="Incidente", descricao="d")
         ResolverIncidenteSegurancaUseCase(repo).execute(criado.id)
         with pytest.raises(IncidenteJaResolvidoError):
             ResolverIncidenteSegurancaUseCase(repo).execute(criado.id)
 
     def test_encerrar_incidente(self) -> None:
         repo = FakeIncidenteRepo()
-        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(
-            titulo="Incidente", descricao="d"
-        )
+        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(titulo="Incidente", descricao="d")
         EncerrarIncidenteSegurancaUseCase(repo).execute(criado.id)
         assert repo.get_by_id(criado.id).status == StatusIncidente.ENCERRADO
 
     def test_deletar_incidente(self) -> None:
         repo = FakeIncidenteRepo()
-        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(
-            titulo="Incidente", descricao="d"
-        )
+        criado = RegistrarIncidenteSegurancaUseCase(repo).execute(titulo="Incidente", descricao="d")
         assert DeletarIncidenteSegurancaUseCase(repo).execute(criado.id) is True
         assert repo.get_by_id(criado.id).is_deleted is True
 
 
 # ============================ VALIDAÇÕES DE ENTIDADES ============================
+
 
 class TestEntidades:
     def test_controle_is_active_reflete_status(self) -> None:

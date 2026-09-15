@@ -7,17 +7,23 @@ Observacoes de projeto:
   - O repositorio executa flush (nao commit); a transacao e
     controlada pela sessao da requisicao (ver core get_db).
 """
+
 import logging
 from uuid import UUID
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+
+from src.modules.sigmun_seg.application.interfaces import IncidenteSegurancaRepositoryInterface
+from src.modules.sigmun_seg.domain.entities import (
+    IncidenteSeguranca,
+    SeveridadeIncidente,
+    StatusIncidente,
+)
+from src.modules.sigmun_seg.infrastructure.database.models import IncidenteSegurancaModel
 
 logger = logging.getLogger(__name__)
 
-from src.modules.sigmun_seg.application.interfaces import IncidenteSegurancaRepositoryInterface
-from src.modules.sigmun_seg.domain.entities import IncidenteSeguranca, StatusIncidente, SeveridadeIncidente
-from src.modules.sigmun_seg.infrastructure.database.models import IncidenteSegurancaModel
 
 def _to_entity(model: IncidenteSegurancaModel):
     return IncidenteSeguranca(
@@ -83,7 +89,9 @@ class SqlAlchemyIncidenteSegurancaRepository(IncidenteSegurancaRepositoryInterfa
         status: str | None = None,
     ) -> tuple[list[IncidenteSeguranca], int]:
         stmt = select(IncidenteSegurancaModel).where(IncidenteSegurancaModel.is_deleted.is_(False))
-        count_stmt = select(IncidenteSegurancaModel).where(IncidenteSegurancaModel.is_deleted.is_(False))
+        count_stmt = select(IncidenteSegurancaModel).where(
+            IncidenteSegurancaModel.is_deleted.is_(False)
+        )
 
         if severidade is not None:
             stmt = stmt.where(IncidenteSegurancaModel.severidade == severidade)
@@ -121,7 +129,6 @@ class SqlAlchemyIncidenteSegurancaRepository(IncidenteSegurancaRepositoryInterfa
         return _to_entity(model)
 
     def delete(self, incidente_id: str) -> bool:
-        from sqlalchemy import func
         model = self._session.get(IncidenteSegurancaModel, UUID(incidente_id))
         if model is None:
             return False

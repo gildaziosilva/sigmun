@@ -1,7 +1,6 @@
 """Schemas Pydantic para Chaves Criptográficas (DOM-SEG)."""
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -26,5 +25,5 @@ class ChaveResponse(BaseModel):
     tamanho_bits: int
     status: str
     responsavel_id: str = ""
-    data_expiracao: Optional[datetime] = None
+    data_expiracao: datetime | None = None
     is_deleted: bool = False

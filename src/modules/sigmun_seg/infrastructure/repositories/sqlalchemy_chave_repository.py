@@ -7,17 +7,19 @@ Observacoes de projeto:
   - O repositorio executa flush (nao commit); a transacao e
     controlada pela sessao da requisicao (ver core get_db).
 """
+
 import logging
 from uuid import UUID
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-
-logger = logging.getLogger(__name__)
 
 from src.modules.sigmun_seg.application.interfaces import ChaveCriptograficaRepositoryInterface
 from src.modules.sigmun_seg.domain.entities import ChaveCriptografica
 from src.modules.sigmun_seg.infrastructure.database.models import ChaveCriptograficaModel
+
+logger = logging.getLogger(__name__)
+
 
 def _to_entity(model: ChaveCriptograficaModel):
     return ChaveCriptografica(
@@ -78,7 +80,9 @@ class SqlAlchemyChaveCriptograficaRepository(ChaveCriptograficaRepositoryInterfa
         status: str | None = None,
     ) -> tuple[list[ChaveCriptografica], int]:
         stmt = select(ChaveCriptograficaModel).where(ChaveCriptograficaModel.is_deleted.is_(False))
-        count_stmt = select(ChaveCriptograficaModel).where(ChaveCriptograficaModel.is_deleted.is_(False))
+        count_stmt = select(ChaveCriptograficaModel).where(
+            ChaveCriptograficaModel.is_deleted.is_(False)
+        )
 
         if status is not None:
             stmt = stmt.where(ChaveCriptograficaModel.status == status)
@@ -111,7 +115,6 @@ class SqlAlchemyChaveCriptograficaRepository(ChaveCriptograficaRepositoryInterfa
         return _to_entity(model)
 
     def delete(self, chave_id: str) -> bool:
-        from sqlalchemy import func
         model = self._session.get(ChaveCriptograficaModel, UUID(chave_id))
         if model is None:
             return False

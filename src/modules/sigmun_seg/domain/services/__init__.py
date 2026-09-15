@@ -2,9 +2,9 @@
 
 from src.modules.sigmun_seg.domain.entities import (
     ControleSeguranca,
+    IncidenteSeguranca,
     StatusControle,
     StatusIncidente,
-    IncidenteSeguranca,
 )
 
 
@@ -21,9 +21,7 @@ class ControleRiscoService:
             return "medio"
         return controle.nivel_risco
 
-    def prioritizar_controles(
-        self, controles: list[ControleSeguranca]
-    ) -> list[ControleSeguranca]:
+    def prioritizar_controles(self, controles: list[ControleSeguranca]) -> list[ControleSeguranca]:
         """Ordena controles por risco decresente."""
         ordem = {"critico": 4, "alto": 3, "medio": 2, "baixo": 1}
         return sorted(
@@ -43,9 +41,7 @@ class IncidenteService:
             return round(delta.total_seconds() / 3600, 2)
         return None
 
-    def incidente_critico_aberto(
-        self, incidentes: list[IncidenteSeguranca]
-    ) -> bool:
+    def incidente_critico_aberto(self, incidentes: list[IncidenteSeguranca]) -> bool:
         """Verifica se existe incidente crítico aberto."""
         return any(
             i.severidade.value == "critica" and i.status == StatusIncidente.ABERTO

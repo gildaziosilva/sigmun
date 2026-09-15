@@ -1,17 +1,7 @@
 """Testes unitários dos casos de uso de Chaves Criptográficas e Credenciais (DOM-SEG)."""
+
 import pytest
 
-from src.modules.sigmun_seg.domain.entities import (
-    ChaveCriptografica,
-    Credencial,
-    StatusCredencial,
-)
-from src.modules.sigmun_seg.domain.exceptions import (
-    ChaveJaRevogadaError,
-    ChaveNaoEncontradaError,
-    CredencialJaRevogadaError,
-    CredencialNaoEncontradaError,
-)
 from src.modules.sigmun_seg.application.use_cases.chave_use_cases import (
     AtualizarChaveUseCase,
     BuscarChaveUseCase,
@@ -28,6 +18,17 @@ from src.modules.sigmun_seg.application.use_cases.credencial_use_cases import (
     RegistrarUsoCredencialUseCase,
     RevogarCredencialUseCase,
     SuspenderCredencialUseCase,
+)
+from src.modules.sigmun_seg.domain.entities import (
+    ChaveCriptografica,
+    Credencial,
+    StatusCredencial,
+)
+from src.modules.sigmun_seg.domain.exceptions import (
+    ChaveJaRevogadaError,
+    ChaveNaoEncontradaError,
+    CredencialJaRevogadaError,
+    CredencialNaoEncontradaError,
 )
 
 
@@ -180,6 +181,8 @@ class TestFluxoChave:
         criada = CriarChaveUseCase(repo).execute(nome="chave-7")
         assert DeletarChaveUseCase(repo).execute(criada.id) is True
         assert repo.get_by_id(criada.id).is_deleted is True
+
+
 # ============================ CREDENCIAIS ============================
 
 
@@ -195,23 +198,17 @@ class TestCriarCredencialUseCase:
 
     def test_criar_credencial_sem_usuario_lanca_erro(self) -> None:
         with pytest.raises(ValueError):
-            CriarCredencialUseCase(FakeCredencialRepo()).execute(
-                usuario_id="", identificador="x"
-            )
+            CriarCredencialUseCase(FakeCredencialRepo()).execute(usuario_id="", identificador="x")
 
     def test_criar_credencial_sem_identificador_lanca_erro(self) -> None:
         with pytest.raises(ValueError):
-            CriarCredencialUseCase(FakeCredencialRepo()).execute(
-                usuario_id="u", identificador="  "
-            )
+            CriarCredencialUseCase(FakeCredencialRepo()).execute(usuario_id="u", identificador="  ")
 
 
 class TestBuscarCredencialUseCase:
     def test_buscar_por_id(self) -> None:
         repo = FakeCredencialRepo()
-        criada = CriarCredencialUseCase(repo).execute(
-            usuario_id="u", identificador="id-1"
-        )
+        criada = CriarCredencialUseCase(repo).execute(usuario_id="u", identificador="id-1")
         assert BuscarCredencialUseCase(repo).get_by_id(criada.id) is not None
 
     def test_buscar_por_usuario(self) -> None:
@@ -238,50 +235,38 @@ class TestBuscarCredencialUseCase:
 class TestFluxoCredencial:
     def test_suspender_credencial(self) -> None:
         repo = FakeCredencialRepo()
-        criada = CriarCredencialUseCase(repo).execute(
-            usuario_id="u", identificador="x1"
-        )
+        criada = CriarCredencialUseCase(repo).execute(usuario_id="u", identificador="x1")
         SuspenderCredencialUseCase(repo).execute(criada.id)
         assert repo.get_by_id(criada.id).status == StatusCredencial.SUSPENSA
 
     def test_revogar_credencial(self) -> None:
         repo = FakeCredencialRepo()
-        criada = CriarCredencialUseCase(repo).execute(
-            usuario_id="u", identificador="x2"
-        )
+        criada = CriarCredencialUseCase(repo).execute(usuario_id="u", identificador="x2")
         RevogarCredencialUseCase(repo).execute(criada.id)
         assert repo.get_by_id(criada.id).status == StatusCredencial.REVOGADA
 
     def test_revogar_ja_revogada_lanca_erro(self) -> None:
         repo = FakeCredencialRepo()
-        criada = CriarCredencialUseCase(repo).execute(
-            usuario_id="u", identificador="x3"
-        )
+        criada = CriarCredencialUseCase(repo).execute(usuario_id="u", identificador="x3")
         RevogarCredencialUseCase(repo).execute(criada.id)
         with pytest.raises(CredencialJaRevogadaError):
             RevogarCredencialUseCase(repo).execute(criada.id)
 
     def test_registrar_falha_incrementa_tentativas(self) -> None:
         repo = FakeCredencialRepo()
-        criada = CriarCredencialUseCase(repo).execute(
-            usuario_id="u", identificador="x4"
-        )
+        criada = CriarCredencialUseCase(repo).execute(usuario_id="u", identificador="x4")
         RegistrarFalhaCredencialUseCase(repo).execute(criada.id)
         assert repo.get_by_id(criada.id).tentativas_falhas == 1
 
     def test_registrar_uso_zera_tentativas(self) -> None:
         repo = FakeCredencialRepo()
-        criada = CriarCredencialUseCase(repo).execute(
-            usuario_id="u", identificador="x5"
-        )
+        criada = CriarCredencialUseCase(repo).execute(usuario_id="u", identificador="x5")
         RegistrarFalhaCredencialUseCase(repo).execute(criada.id)
         RegistrarUsoCredencialUseCase(repo).execute(criada.id)
         assert repo.get_by_id(criada.id).tentativas_falhas == 0
 
     def test_deletar_credencial_soft_delete(self) -> None:
         repo = FakeCredencialRepo()
-        criada = CriarCredencialUseCase(repo).execute(
-            usuario_id="u", identificador="x6"
-        )
+        criada = CriarCredencialUseCase(repo).execute(usuario_id="u", identificador="x6")
         assert DeletarCredencialUseCase(repo).execute(criada.id) is True
         assert repo.get_by_id(criada.id).is_deleted is True

@@ -16,59 +16,59 @@ from datetime import datetime, timedelta
 
 import pytest
 
+from src.modules.sigmun_int.application.interfaces import (
+    EventoOutbox,
+    ResultadoEnvio,
+    TransporteWebhook,
+)
 from src.modules.sigmun_int.application.use_cases import (
-    CancelarEntregaWebhookUseCase,
-    ConsumirOutboxUseCase,
-    DeletarApiExternaUseCase,
-    DeletarConectorUseCase,
-    DeletarContratoIntegracaoUseCase,
-    DeletarWebhookUseCase,
-    DespacharWebhooksUseCase,
-    RetryEntregaWebhookUseCase,
     BuscarApiExternaUseCase,
     BuscarConectorUseCase,
     BuscarContratoIntegracaoUseCase,
     BuscarEntregaWebhookUseCase,
     BuscarWebhookUseCase,
-    MudarEstadoApiUseCase,
-    MudarEstadoConectorUseCase,
-    MudarEstadoWebhookUseCase,
+    CancelarEntregaWebhookUseCase,
+    ConsumirOutboxUseCase,
     CriarApiExternaUseCase,
     CriarConectorUseCase,
     CriarContratoIntegracaoUseCase,
+    DeletarApiExternaUseCase,
+    DeletarConectorUseCase,
+    DeletarContratoIntegracaoUseCase,
+    DeletarWebhookUseCase,
+    DespacharWebhooksUseCase,
+    MudarEstadoApiUseCase,
+    MudarEstadoConectorUseCase,
+    MudarEstadoWebhookUseCase,
     RegistrarWebhookUseCase,
+    RetryEntregaWebhookUseCase,
+)
+from src.modules.sigmun_int.application.use_cases.api_use_cases import (
+    AtualizarApiExternaUseCase,
+)
+from src.modules.sigmun_int.application.use_cases.bus_use_cases import (
+    FONTES_OUTBOX_VALIDAS,
+)
+from src.modules.sigmun_int.application.use_cases.conector_use_cases import (
+    CODIGOS_CONECTORES_OFICIAIS,
+    CONECTORES_OFICIAIS,
+    AtualizarConectorUseCase,
 )
 from src.modules.sigmun_int.application.use_cases.contrato_use_cases import (
     AprovarContratoIntegracaoUseCase,
     AtualizarContratoIntegracaoUseCase,
     RetirarContratoIntegracaoUseCase,
 )
-from src.modules.sigmun_int.application.use_cases.conector_use_cases import (
-    CONECTORES_OFICIAIS,
-    CODIGOS_CONECTORES_OFICIAIS,
-    AtualizarConectorUseCase,
-)
-from src.modules.sigmun_int.application.use_cases.api_use_cases import (
-    AtualizarApiExternaUseCase,
-)
 from src.modules.sigmun_int.application.use_cases.webhook_use_cases import (
     AtualizarWebhookUseCase,
 )
-from src.modules.sigmun_int.application.use_cases.bus_use_cases import (
-    FONTES_OUTBOX_VALIDAS,
-)
-from src.modules.sigmun_int.application.interfaces import (
-    EventoOutbox,
-    ResultadoEnvio,
-    TransporteWebhook,
-)
 from src.modules.sigmun_int.domain.entities import (
+    EntregaWebhook,
     EstadoApi,
-    EstadoContrato,
     EstadoConector,
+    EstadoContrato,
     EstadoEntrega,
     EstadoInscricao,
-    EntregaWebhook,
     EventoProcessado,
     Webhook,
 )
@@ -87,7 +87,6 @@ from src.modules.sigmun_int.domain.exceptions import (
     WebhookJaExisteError,
     WebhookNaoEncontradoError,
 )
-
 
 # ---------------------------------------------------------------------------
 # Repositórios em memória (fakes)
@@ -232,10 +231,7 @@ class FakeWebhookRepo(_RepoMixin):
         return items, len(items)
 
     def find_ativos(self):
-        return [
-            w for w in self._db.values()
-            if w.is_active and w.estado is EstadoInscricao.ATIVA
-        ]
+        return [w for w in self._db.values() if w.is_active and w.estado is EstadoInscricao.ATIVA]
 
 
 class FakeEntregaRepo(_RepoMixin):
@@ -253,19 +249,13 @@ class FakeEntregaRepo(_RepoMixin):
         return obj if obj and not getattr(obj, "is_deleted", False) else None
 
     def list_pendentes_para_retry(self, lote, agora):
-        items = [
-            e for e in self._db.values()
-            if not e.is_deleted and e.pendente_para_retry(agora)
-        ]
+        items = [e for e in self._db.values() if not e.is_deleted and e.pendente_para_retry(agora)]
         return items[:lote]
 
     def list_by_webhook(self, webhook_id, page=0, page_size=50):
-        items = [
-            e for e in self._db.values()
-            if not e.is_deleted and e.webhook_id == webhook_id
-        ]
+        items = [e for e in self._db.values() if not e.is_deleted and e.webhook_id == webhook_id]
         total = len(items)
-        return items[page * page_size:(page + 1) * page_size], total
+        return items[page * page_size : (page + 1) * page_size], total
 
     def list_all(self, page=0, page_size=50, estado=None):
         items = [e for e in self._db.values() if not e.is_deleted]
@@ -454,6 +444,7 @@ class TestEntidadesBasicas:
 
     def test_api_eh_consumivel(self):
         from src.modules.sigmun_int.domain.entities import ApiExterna
+
         a = ApiExterna(estado=EstadoApi.ATIVA)
         assert a.eh_consumivel is True
         a.estado = EstadoApi.RASCUNHO
@@ -461,6 +452,7 @@ class TestEntidadesBasicas:
 
     def test_contrato_eh_vigente(self):
         from src.modules.sigmun_int.domain.entities import ContratoIntegracao
+
         c = ContratoIntegracao(estado=EstadoContrato.VIGENTE)
         assert c.eh_vigente is True
         c.estado = EstadoContrato.RETIRADO
@@ -468,6 +460,7 @@ class TestEntidadesBasicas:
 
     def test_conector_esta_ativo(self):
         from src.modules.sigmun_int.domain.entities import Conector
+
         c = Conector(estado=EstadoConector.ATIVO, config={"k": "v"})
         assert c.esta_ativo is True
         c.estado = EstadoConector.INATIVO
@@ -702,7 +695,9 @@ class TestApiUseCases:
         repo = FakeApiRepo()
         uc = CriarApiExternaUseCase(repo)
         uc.execute(codigo="API-01", nome="API 1", url_base="https://api.test.gov.br")
-        uc.execute(codigo="API-02", nome="API 2", url_base="https://api.test.gov.br", estado="ativa")
+        uc.execute(
+            codigo="API-02", nome="API 2", url_base="https://api.test.gov.br", estado="ativa"
+        )
         uc_bus = BuscarApiExternaUseCase(repo)
         items, total = uc_bus.list_all(estado="ativa")
         assert total == 1
