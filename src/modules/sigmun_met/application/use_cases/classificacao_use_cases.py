@@ -10,7 +10,7 @@ from src.modules.sigmun_met.domain.entities import (
     TipoClassificacao,
 )
 from src.modules.sigmun_met.domain.exceptions import (
-    ClassificacaoJaExisteError,
+    ClassificacaoDuplicadaError,
     ClassificacaoNaoEncontradaError,
     CodigoInvalidoError,
 )
@@ -44,7 +44,7 @@ class CriarClassificacaoUseCase:
             raise ValueError(f"Nome inválido: {msg}")
 
         if self._repo.exists_by_codigo(codigo):
-            raise ClassificacaoJaExisteError(f"Classificação com código '{codigo}' já existe")
+            raise ClassificacaoDuplicadaError(f"Classificação com código '{codigo}' já existe")
 
         classificacao = Classificacao(
             codigo=codigo,
@@ -95,6 +95,7 @@ class AtualizarClassificacaoUseCase:
             classificacao.cor = cor
 
         from datetime import datetime
+
         classificacao.updated_at = datetime.utcnow()
         return self._repo.save(classificacao)
 
@@ -144,9 +145,20 @@ class DeletarClassificacaoUseCase:
         return self._repo.delete(classificacao_id)
 
 
+# ---------------------------------------------------------------------------
+# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar/Excluir).
+# ---------------------------------------------------------------------------
+RegistrarClassificacaoUseCase = CriarClassificacaoUseCase
+ConsultarClassificacaoUseCase = BuscarClassificacaoUseCase
+ExcluirClassificacaoUseCase = DeletarClassificacaoUseCase
+
+
 __all__ = [
     "CriarClassificacaoUseCase",
+    "RegistrarClassificacaoUseCase",
     "AtualizarClassificacaoUseCase",
     "BuscarClassificacaoUseCase",
+    "ConsultarClassificacaoUseCase",
     "DeletarClassificacaoUseCase",
+    "ExcluirClassificacaoUseCase",
 ]

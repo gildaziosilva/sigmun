@@ -83,7 +83,7 @@ class SqlAlchemyTaxonomiaRepository(TaxonomiaRepositoryInterface):
             model.nome = taxonomia.nome
             model.descricao = taxonomia.descricao
             model.termos_ids = _format_list(taxonomia.termos_ids)
-            model.updated_at = taxonomia.updated_at
+            model.updated_at = taxonomia.updated_at  # type: ignore[assignment]
             logger.info("Taxonomia atualizada: %s", taxonomia.id)
         self._session.flush()
         self._session.refresh(model)
@@ -99,10 +99,14 @@ class SqlAlchemyTaxonomiaRepository(TaxonomiaRepositoryInterface):
         return True
 
     def exists_by_codigo(self, codigo: str) -> bool:
-        stmt = select(TaxonomiaModel.id).where(
-            TaxonomiaModel.codigo == codigo,
-            TaxonomiaModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(TaxonomiaModel.id)
+            .where(
+                TaxonomiaModel.codigo == codigo,
+                TaxonomiaModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 

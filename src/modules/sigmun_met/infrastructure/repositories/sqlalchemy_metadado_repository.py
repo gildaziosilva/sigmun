@@ -112,7 +112,7 @@ class SqlAlchemyMetadadoRepository(MetadadoRepositoryInterface):
             model.aplicavel_a = _format_list(metadado.aplicavel_a)
             model.valor_padrao = metadado.valor_padrao
             model.status = metadado.status.value
-            model.updated_at = metadado.updated_at
+            model.updated_at = metadado.updated_at  # type: ignore[assignment]
             logger.info("Metadado atualizado: %s", metadado.id)
         self._session.flush()
         self._session.refresh(model)
@@ -128,10 +128,14 @@ class SqlAlchemyMetadadoRepository(MetadadoRepositoryInterface):
         return True
 
     def exists_by_codigo(self, codigo: str) -> bool:
-        stmt = select(MetadadoModel.id).where(
-            MetadadoModel.codigo == codigo,
-            MetadadoModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(MetadadoModel.id)
+            .where(
+                MetadadoModel.codigo == codigo,
+                MetadadoModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 

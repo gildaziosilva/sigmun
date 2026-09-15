@@ -19,6 +19,7 @@ from src.modules.sigmun_met.domain.entities import (
 
 class MetadadoCreateRequest(BaseModel):
     """Payload de criação de metadado."""
+
     codigo: str = Field(..., min_length=2, max_length=50, pattern=r"^[a-zA-Z][a-zA-Z0-9_]+$")
     nome: str = Field(..., min_length=3, max_length=200)
     descricao: str | None = None
@@ -31,6 +32,7 @@ class MetadadoCreateRequest(BaseModel):
 
 class MetadadoUpdateRequest(BaseModel):
     """Payload de atualização de metadado."""
+
     nome: str | None = Field(None, min_length=3, max_length=200)
     descricao: str | None = None
     tipo_dado: TipoDadoMetadado | None = None
@@ -43,6 +45,7 @@ class MetadadoUpdateRequest(BaseModel):
 
 class MetadadoResponse(BaseModel):
     """Representação de um metadado."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     codigo: str
@@ -60,6 +63,7 @@ class MetadadoResponse(BaseModel):
 
 class MetadadoListResponse(BaseModel):
     """Envelope paginado de listagem de metadados."""
+
     total: int
     page: int
     page_size: int
@@ -73,6 +77,7 @@ class MetadadoListResponse(BaseModel):
 
 class ValorMetadadoCreateRequest(BaseModel):
     """Payload de atribuição de valor de metadado."""
+
     metadado_id: str
     entidade_tipo: str = Field(..., min_length=1, max_length=100, pattern=r"^[a-z][a-z0-9_]+$")
     entidade_id: str
@@ -81,11 +86,13 @@ class ValorMetadadoCreateRequest(BaseModel):
 
 class ValorMetadadoUpdateRequest(BaseModel):
     """Payload de atualização de valor de metadado."""
+
     valor: str = Field(..., min_length=1, max_length=1000)
 
 
 class ValorMetadadoResponse(BaseModel):
     """Representação de um valor de metadado."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     metadado_id: str
@@ -98,6 +105,7 @@ class ValorMetadadoResponse(BaseModel):
 
 class ValorMetadadoListResponse(BaseModel):
     """Envelope paginado de listagem de valores de metadados."""
+
     total: int
     page: int
     page_size: int
@@ -111,6 +119,7 @@ class ValorMetadadoListResponse(BaseModel):
 
 class ClassificacaoCreateRequest(BaseModel):
     """Payload de criação de classificação."""
+
     codigo: str = Field(..., min_length=2, max_length=50, pattern=r"^[a-zA-Z][a-zA-Z0-9_]+$")
     nome: str = Field(..., min_length=3, max_length=200)
     descricao: str | None = None
@@ -121,6 +130,7 @@ class ClassificacaoCreateRequest(BaseModel):
 
 class ClassificacaoUpdateRequest(BaseModel):
     """Payload de atualização de classificação."""
+
     nome: str | None = Field(None, min_length=3, max_length=200)
     descricao: str | None = None
     tipo: TipoClassificacao | None = None
@@ -130,6 +140,7 @@ class ClassificacaoUpdateRequest(BaseModel):
 
 class ClassificacaoResponse(BaseModel):
     """Representação de uma classificação."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     codigo: str
@@ -144,6 +155,7 @@ class ClassificacaoResponse(BaseModel):
 
 class ClassificacaoListResponse(BaseModel):
     """Envelope paginado de listagem de classificações."""
+
     total: int
     page: int
     page_size: int
@@ -157,6 +169,7 @@ class ClassificacaoListResponse(BaseModel):
 
 class TaxonomiaCreateRequest(BaseModel):
     """Payload de criação de taxonomia."""
+
     codigo: str = Field(..., min_length=2, max_length=50, pattern=r"^[a-zA-Z][a-zA-Z0-9_]+$")
     nome: str = Field(..., min_length=3, max_length=200)
     descricao: str | None = None
@@ -164,12 +177,14 @@ class TaxonomiaCreateRequest(BaseModel):
 
 class TaxonomiaUpdateRequest(BaseModel):
     """Payload de atualização de taxonomia."""
+
     nome: str | None = Field(None, min_length=3, max_length=200)
     descricao: str | None = None
 
 
 class TaxonomiaResponse(BaseModel):
     """Representação de uma taxonomia."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     codigo: str
@@ -182,6 +197,7 @@ class TaxonomiaResponse(BaseModel):
 
 class TaxonomiaListResponse(BaseModel):
     """Envelope paginado de listagem de taxonomias."""
+
     total: int
     page: int
     page_size: int
@@ -195,6 +211,7 @@ class TaxonomiaListResponse(BaseModel):
 
 class TermoCreateRequest(BaseModel):
     """Payload de criação de termo de taxonomia."""
+
     taxonomia_id: str
     codigo: str = Field(..., min_length=2, max_length=50, pattern=r"^[a-zA-Z][a-zA-Z0-9_]+$")
     nome: str = Field(..., min_length=3, max_length=200)
@@ -206,6 +223,7 @@ class TermoCreateRequest(BaseModel):
 
 class TermoUpdateRequest(BaseModel):
     """Payload de atualização de termo de taxonomia."""
+
     nome: str | None = Field(None, min_length=3, max_length=200)
     descricao: str | None = None
     sinonimos: list[str] | None = None
@@ -214,6 +232,7 @@ class TermoUpdateRequest(BaseModel):
 
 class TermoResponse(BaseModel):
     """Representação de um termo de taxonomia."""
+
     model_config = ConfigDict(from_attributes=True)
     id: str
     taxonomia_id: str
@@ -229,6 +248,7 @@ class TermoResponse(BaseModel):
 
 class TermoListResponse(BaseModel):
     """Envelope paginado de listagem de termos de taxonomia."""
+
     total: int
     page: int
     page_size: int
@@ -242,4 +262,5 @@ class TermoListResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Resposta de erro padrão da API."""
+
     detail: str

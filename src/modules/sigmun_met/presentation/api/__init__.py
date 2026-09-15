@@ -39,6 +39,13 @@ from src.modules.sigmun_met.application.use_cases import (
     DesativarMetadadoUseCase,
     RemoverValorMetadadoUseCase,
 )
+from src.modules.sigmun_met.domain.entities import (
+    Classificacao,
+    Metadado,
+    Taxonomia,
+    TermoTaxonomia,
+    ValorMetadado,
+)
 from src.modules.sigmun_met.domain.exceptions import (
     ClassificacaoJaExisteError,
     ClassificacaoNaoEncontradaError,
@@ -122,12 +129,13 @@ def get_termo_repository(
 ) -> TermoTaxonomiaRepositoryInterface:
     return SqlAlchemyTermoTaxonomiaRepository(session)
 
+
 # =============================================================================
 # Endpoints de Metadados
 # =============================================================================
 
 
-def _metadado_to_response(m) -> MetadadoResponse:
+def _metadado_to_response(m: Metadado) -> MetadadoResponse:
     return MetadadoResponse(
         id=m.id,
         codigo=m.codigo,
@@ -294,7 +302,7 @@ def deletar_metadado(
 # =============================================================================
 
 
-def _valor_to_response(v) -> ValorMetadadoResponse:
+def _valor_to_response(v: ValorMetadado) -> ValorMetadadoResponse:
     return ValorMetadadoResponse(
         id=v.id,
         metadado_id=v.metadado_id,
@@ -316,9 +324,7 @@ def _valor_to_response(v) -> ValorMetadadoResponse:
 def atribuir_valor(
     payload: ValorMetadadoCreateRequest,
     repo: Annotated[ValorMetadadoRepositoryInterface, Depends(get_valor_metadado_repository)],
-    metadado_repo: Annotated[
-        MetadadoRepositoryInterface, Depends(get_metadado_repository)
-    ],
+    metadado_repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
 ) -> ValorMetadadoResponse:
     use_case = AtribuirValorMetadadoUseCase(repo, metadado_repo)
     try:
@@ -395,9 +401,7 @@ def atualizar_valor(
     valor_id: str,
     payload: ValorMetadadoUpdateRequest,
     repo: Annotated[ValorMetadadoRepositoryInterface, Depends(get_valor_metadado_repository)],
-    metadado_repo: Annotated[
-        MetadadoRepositoryInterface, Depends(get_metadado_repository)
-    ],
+    metadado_repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
 ) -> ValorMetadadoResponse:
     from datetime import datetime
 
@@ -405,9 +409,7 @@ def atualizar_valor(
 
     existente = repo.get_by_id(valor_id)
     if existente is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, detail=f"Valor '{valor_id}' não encontrado"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=f"Valor '{valor_id}' não encontrado")
     metadado = metadado_repo.get_by_id(existente.metadado_id)
     if metadado is not None and not MetadadoService.validar_valor(metadado, payload.valor):
         raise HTTPException(
@@ -443,7 +445,7 @@ def deletar_valor(
 # =============================================================================
 
 
-def _classificacao_to_response(c) -> ClassificacaoResponse:
+def _classificacao_to_response(c: Classificacao) -> ClassificacaoResponse:
     return ClassificacaoResponse(
         id=c.id,
         codigo=c.codigo,
@@ -571,7 +573,7 @@ def deletar_classificacao(
 # =============================================================================
 
 
-def _taxonomia_to_response(t) -> TaxonomiaResponse:
+def _taxonomia_to_response(t: Taxonomia) -> TaxonomiaResponse:
     return TaxonomiaResponse(
         id=t.id,
         codigo=t.codigo,
@@ -688,7 +690,7 @@ def deletar_taxonomia(
 # =============================================================================
 
 
-def _termo_to_response(t) -> TermoResponse:
+def _termo_to_response(t: TermoTaxonomia) -> TermoResponse:
     return TermoResponse(
         id=t.id,
         taxonomia_id=t.taxonomia_id,

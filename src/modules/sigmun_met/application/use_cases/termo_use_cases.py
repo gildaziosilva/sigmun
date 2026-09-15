@@ -36,7 +36,7 @@ class CriarTermoUseCase:
         nome: str,
         descricao: str = "",
         termo_pai_id: str = "",
-        sinonimos: list[str] = None,
+        sinonimos: list[str] | None = None,
         ordem: int = 0,
     ) -> TermoTaxonomia:
         """Cria um novo termo dentro de uma taxonomia."""
@@ -101,6 +101,7 @@ class AtualizarTermoUseCase:
             termo.ordem = ordem
 
         from datetime import datetime
+
         termo.updated_at = datetime.utcnow()
         return self._repo.save(termo)
 
@@ -127,7 +128,10 @@ class BuscarTermoUseCase:
         return self._repo.get_by_pai(termo_pai_id)
 
     def list_all(
-        self, page: int = 0, page_size: int = 50, taxonomia_id: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        taxonomia_id: str | None = None,
     ) -> tuple:
         """Lista termos com paginação."""
         return self._repo.list_all(page, page_size, taxonomia_id)
@@ -148,9 +152,22 @@ class DeletarTermoUseCase:
         return self._repo.delete(termo_id)
 
 
+# ---------------------------------------------------------------------------
+# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar/Listar/Excluir).
+# ---------------------------------------------------------------------------
+RegistrarTermoUseCase = CriarTermoUseCase
+ConsultarTermoUseCase = BuscarTermoUseCase
+ListarTermosUseCase = BuscarTermoUseCase
+ExcluirTermoUseCase = DeletarTermoUseCase
+
+
 __all__ = [
     "CriarTermoUseCase",
+    "RegistrarTermoUseCase",
     "AtualizarTermoUseCase",
     "BuscarTermoUseCase",
+    "ConsultarTermoUseCase",
+    "ListarTermosUseCase",
     "DeletarTermoUseCase",
+    "ExcluirTermoUseCase",
 ]

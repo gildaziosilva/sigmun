@@ -54,7 +54,10 @@ class SqlAlchemyClassificacaoRepository(ClassificacaoRepositoryInterface):
         return _to_entity(model) if model else None
 
     def list_all(
-        self, page: int = 0, page_size: int = 50, tipo: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        tipo: str | None = None,
     ) -> tuple[builtins.list[Classificacao], int]:
         stmt = select(ClassificacaoModel).where(ClassificacaoModel.deleted_at.is_(None))
         if tipo:
@@ -85,7 +88,7 @@ class SqlAlchemyClassificacaoRepository(ClassificacaoRepositoryInterface):
             model.tipo = classificacao.tipo.value
             model.nivel = classificacao.nivel
             model.cor = classificacao.cor
-            model.updated_at = classificacao.updated_at
+            model.updated_at = classificacao.updated_at  # type: ignore[assignment]
             logger.info("Classificação atualizada: %s", classificacao.id)
         self._session.flush()
         self._session.refresh(model)
@@ -101,10 +104,14 @@ class SqlAlchemyClassificacaoRepository(ClassificacaoRepositoryInterface):
         return True
 
     def exists_by_codigo(self, codigo: str) -> bool:
-        stmt = select(ClassificacaoModel.id).where(
-            ClassificacaoModel.codigo == codigo,
-            ClassificacaoModel.deleted_at.is_(None),
-        ).limit(1)
+        stmt = (
+            select(ClassificacaoModel.id)
+            .where(
+                ClassificacaoModel.codigo == codigo,
+                ClassificacaoModel.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
         return self._session.scalars(stmt).first() is not None
 
 

@@ -43,9 +43,7 @@ class SqlAlchemyValorMetadadoRepository(ValorMetadadoRepositoryInterface):
             return None
         return _to_entity(model)
 
-    def get_by_entidade(
-        self, entidade_tipo: str, entidade_id: str
-    ) -> builtins.list[ValorMetadado]:
+    def get_by_entidade(self, entidade_tipo: str, entidade_id: str) -> builtins.list[ValorMetadado]:
         stmt = select(ValorMetadadoModel).where(
             ValorMetadadoModel.entidade_tipo == entidade_tipo,
             ValorMetadadoModel.entidade_id == UUID(entidade_id),
@@ -98,7 +96,7 @@ class SqlAlchemyValorMetadadoRepository(ValorMetadadoRepositoryInterface):
             logger.info("Valor de metadado inserido: %s", valor.id)
         else:
             model.valor = valor.valor
-            model.updated_at = valor.updated_at
+            model.updated_at = valor.updated_at  # type: ignore[assignment]
             logger.info("Valor de metadado atualizado: %s", valor.id)
         self._session.flush()
         self._session.refresh(model)

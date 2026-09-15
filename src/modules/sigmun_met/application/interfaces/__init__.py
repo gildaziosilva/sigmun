@@ -24,8 +24,11 @@ class MetadadoRepositoryInterface(ABC):
 
     @abstractmethod
     def list_all(
-        self, page: int = 0, page_size: int = 50,
-        status: str | None = None, tipo_dado: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        status: str | None = None,
+        tipo_dado: str | None = None,
     ) -> tuple[list[Metadado], int]:
         """Lista metadados com paginação."""
         pass
@@ -62,8 +65,11 @@ class ValorMetadadoRepositoryInterface(ABC):
 
     @abstractmethod
     def list_all(
-        self, page: int = 0, page_size: int = 50,
-        metadado_id: str | None = None, entidade_tipo: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        metadado_id: str | None = None,
+        entidade_tipo: str | None = None,
     ) -> tuple[list[ValorMetadado], int]:
         pass
 
@@ -89,7 +95,10 @@ class ClassificacaoRepositoryInterface(ABC):
 
     @abstractmethod
     def list_all(
-        self, page: int = 0, page_size: int = 50, tipo: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        tipo: str | None = None,
     ) -> tuple[list[Classificacao], int]:
         pass
 
@@ -151,7 +160,10 @@ class TermoTaxonomiaRepositoryInterface(ABC):
 
     @abstractmethod
     def list_all(
-        self, page: int = 0, page_size: int = 50, taxonomia_id: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        taxonomia_id: str | None = None,
     ) -> tuple[list[TermoTaxonomia], int]:
         pass
 

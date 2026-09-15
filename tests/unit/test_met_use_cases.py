@@ -70,7 +70,7 @@ class _FakeBaseRepository:
 
     def list_all(self, page: int = 0, page_size: int = 50):
         items = list(self._data.values())
-        return items[page * page_size:(page + 1) * page_size], len(items)
+        return items[page * page_size : (page + 1) * page_size], len(items)
 
 
 class FakeMetadadoRepository(_FakeBaseRepository, MetadadoRepositoryInterface):
@@ -83,7 +83,7 @@ class FakeMetadadoRepository(_FakeBaseRepository, MetadadoRepositoryInterface):
             items = [m for m in items if m.status.value == status]
         if tipo_dado:
             items = [m for m in items if m.tipo_dado.value == tipo_dado]
-        return items[page * page_size:(page + 1) * page_size], len(items)
+        return items[page * page_size : (page + 1) * page_size], len(items)
 
     def exists_by_codigo(self, codigo: str) -> bool:
         return any(m.codigo == codigo for m in self._data.values())
@@ -92,14 +92,16 @@ class FakeMetadadoRepository(_FakeBaseRepository, MetadadoRepositoryInterface):
 class FakeValorMetadadoRepository(_FakeBaseRepository, ValorMetadadoRepositoryInterface):
     def get_by_entidade(self, entidade_tipo: str, entidade_id: str):
         return [
-            v for v in self._data.values()
+            v
+            for v in self._data.values()
             if v.entidade_tipo == entidade_tipo and v.entidade_id == entidade_id
         ]
 
     def get_by_metadado_e_entidade(self, metadado_id: str, entidade_tipo: str, entidade_id: str):
         return next(
             (
-                v for v in self._data.values()
+                v
+                for v in self._data.values()
                 if v.metadado_id == metadado_id
                 and v.entidade_tipo == entidade_tipo
                 and v.entidade_id == entidade_id
@@ -113,7 +115,7 @@ class FakeValorMetadadoRepository(_FakeBaseRepository, ValorMetadadoRepositoryIn
             items = [v for v in items if v.metadado_id == metadado_id]
         if entidade_tipo:
             items = [v for v in items if v.entidade_tipo == entidade_tipo]
-        return items[page * page_size:(page + 1) * page_size], len(items)
+        return items[page * page_size : (page + 1) * page_size], len(items)
 
 
 class FakeClassificacaoRepository(_FakeBaseRepository, ClassificacaoRepositoryInterface):
@@ -124,7 +126,7 @@ class FakeClassificacaoRepository(_FakeBaseRepository, ClassificacaoRepositoryIn
         items = list(self._data.values())
         if tipo:
             items = [c for c in items if c.tipo.value == tipo]
-        return items[page * page_size:(page + 1) * page_size], len(items)
+        return items[page * page_size : (page + 1) * page_size], len(items)
 
     def exists_by_codigo(self, codigo: str) -> bool:
         return any(c.codigo == codigo for c in self._data.values())
@@ -149,8 +151,7 @@ class FakeTermoRepository(_FakeBaseRepository, TermoTaxonomiaRepositoryInterface
         items = list(self._data.values())
         if taxonomia_id:
             items = [t for t in items if t.taxonomia_id == taxonomia_id]
-        return items[page * page_size:(page + 1) * page_size], len(items)
-
+        return items[page * page_size : (page + 1) * page_size], len(items)
 
 
 # =============================================================================
@@ -283,28 +284,20 @@ class TestAtribuirValorMetadadoUseCase:
 
     def test_valor_invalido_para_tipo_numero(self):
         metadado_repo, metadado = _repo_com_metadado(tipo="numero")
-        use_case = AtribuirValorMetadadoUseCase(
-            FakeValorMetadadoRepository(), metadado_repo
-        )
+        use_case = AtribuirValorMetadadoUseCase(FakeValorMetadadoRepository(), metadado_repo)
         with pytest.raises(ValorMetadadoInvalidoError):
-            use_case.execute(
-                metadado.id, "ativo", "33333333-3333-3333-3333-333333333333", "abc"
-            )
+            use_case.execute(metadado.id, "ativo", "33333333-3333-3333-3333-333333333333", "abc")
 
     def test_metadado_inexistente_levanta_erro(self):
         use_case = AtribuirValorMetadadoUseCase(
             FakeValorMetadadoRepository(), FakeMetadadoRepository()
         )
         with pytest.raises(MetadadoNaoEncontradoError):
-            use_case.execute(
-                "nada", "ativo", "44444444-4444-4444-4444-444444444444", "x"
-            )
+            use_case.execute("nada", "ativo", "44444444-4444-4444-4444-444444444444", "x")
 
     def test_entidade_tipo_invalida_levanta_erro(self):
         metadado_repo, metadado = _repo_com_metadado()
-        use_case = AtribuirValorMetadadoUseCase(
-            FakeValorMetadadoRepository(), metadado_repo
-        )
+        use_case = AtribuirValorMetadadoUseCase(FakeValorMetadadoRepository(), metadado_repo)
         with pytest.raises(ValueError, match="Entidade alvo inválida"):
             use_case.execute(
                 metadado.id,
@@ -321,9 +314,7 @@ class TestBuscarRemoverValidarValorUseCase:
         use_case = AtribuirValorMetadadoUseCase(valor_repo, metadado_repo)
         entidade_id = "66666666-6666-6666-6666-666666666666"
         use_case.execute(metadado.id, "ativo", entidade_id, "valor-a")
-        valores = BuscarValorMetadadoUseCase(valor_repo).get_by_entidade(
-            "ativo", entidade_id
-        )
+        valores = BuscarValorMetadadoUseCase(valor_repo).get_by_entidade("ativo", entidade_id)
         assert len(valores) == 1
         assert valores[0].valor == "valor-a"
 
@@ -369,9 +360,7 @@ class TestClassificacaoUseCases:
 
     def test_atualizar_e_buscar(self):
         repo = FakeClassificacaoRepository()
-        criada = CriarClassificacaoUseCase(repo).execute(
-            codigo="interno", nome="Interno"
-        )
+        criada = CriarClassificacaoUseCase(repo).execute(codigo="interno", nome="Interno")
         atualizada = AtualizarClassificacaoUseCase(repo).execute(
             criada.id, nome="Interno Uso", nivel=2
         )
@@ -387,9 +376,7 @@ class TestClassificacaoUseCases:
 
     def test_deletar(self):
         repo = FakeClassificacaoRepository()
-        criada = CriarClassificacaoUseCase(repo).execute(
-            codigo="temporario", nome="Temporário"
-        )
+        criada = CriarClassificacaoUseCase(repo).execute(codigo="temporario", nome="Temporário")
         assert DeletarClassificacaoUseCase(repo).execute(criada.id) is True
         assert repo.get_by_id(criada.id) is None
 
@@ -410,9 +397,7 @@ class TestClassificacaoUseCases:
 class TestTaxonomiaUseCases:
     def test_cria_taxonomia(self):
         repo = FakeTaxonomiaRepository()
-        criada = CriarTaxonomiaUseCase(repo).execute(
-            codigo="assuntos", nome="Assuntos Municipais"
-        )
+        criada = CriarTaxonomiaUseCase(repo).execute(codigo="assuntos", nome="Assuntos Municipais")
         assert criada.codigo == "assuntos"
         assert criada.termos_ids == []
 
@@ -424,9 +409,7 @@ class TestTaxonomiaUseCases:
 
     def test_atualizar_e_buscar(self):
         repo = FakeTaxonomiaRepository()
-        criada = CriarTaxonomiaUseCase(repo).execute(
-            codigo="estrutura", nome="Estrutura"
-        )
+        criada = CriarTaxonomiaUseCase(repo).execute(codigo="estrutura", nome="Estrutura")
         atualizada = AtualizarTaxonomiaUseCase(repo).execute(
             criada.id, nome="Estrutura Organizacional", descricao="Desc"
         )
@@ -441,9 +424,7 @@ class TestTaxonomiaUseCases:
 
     def test_deletar(self):
         repo = FakeTaxonomiaRepository()
-        criada = CriarTaxonomiaUseCase(repo).execute(
-            codigo="apagar", nome="Para Apagar"
-        )
+        criada = CriarTaxonomiaUseCase(repo).execute(codigo="apagar", nome="Para Apagar")
         assert DeletarTaxonomiaUseCase(repo).execute(criada.id) is True
         assert repo.get_by_id(criada.id) is None
 
@@ -455,9 +436,7 @@ class TestTaxonomiaUseCases:
 
 def _taxonomia_com_repo():
     repo = FakeTaxonomiaRepository()
-    taxonomia = CriarTaxonomiaUseCase(repo).execute(
-        codigo="orgchart", nome="Organograma"
-    )
+    taxonomia = CriarTaxonomiaUseCase(repo).execute(codigo="orgchart", nome="Organograma")
     return repo, taxonomia
 
 
@@ -466,9 +445,7 @@ class TestTermoUseCases:
         tax_repo, taxonomia = _taxonomia_com_repo()
         termo_repo = FakeTermoRepository()
         criar = CriarTermoUseCase(termo_repo, tax_repo)
-        raiz = criar.execute(
-            taxonomia_id=taxonomia.id, codigo="gabinete", nome="Gabinete"
-        )
+        raiz = criar.execute(taxonomia_id=taxonomia.id, codigo="gabinete", nome="Gabinete")
         assert raiz.termo_pai_id == ""
         filho = criar.execute(
             taxonomia_id=taxonomia.id,
@@ -489,9 +466,7 @@ class TestTermoUseCases:
         criar = CriarTermoUseCase(termo_repo, tax_repo)
         criar.execute(taxonomia_id=taxonomia.id, codigo="repetido", nome="Primeiro")
         with pytest.raises(TermoJaExisteError):
-            criar.execute(
-                taxonomia_id=taxonomia.id, codigo="repetido", nome="Segundo"
-            )
+            criar.execute(taxonomia_id=taxonomia.id, codigo="repetido", nome="Segundo")
 
     def test_atualizar_termo(self):
         tax_repo, taxonomia = _taxonomia_com_repo()
@@ -509,9 +484,7 @@ class TestTermoUseCases:
         tax_repo, taxonomia = _taxonomia_com_repo()
         termo_repo = FakeTermoRepository()
         criar = CriarTermoUseCase(termo_repo, tax_repo)
-        raiz = criar.execute(
-            taxonomia_id=taxonomia.id, codigo="raiz", nome="Raiz"
-        )
+        raiz = criar.execute(taxonomia_id=taxonomia.id, codigo="raiz", nome="Raiz")
         criar.execute(
             taxonomia_id=taxonomia.id,
             codigo="filho1",

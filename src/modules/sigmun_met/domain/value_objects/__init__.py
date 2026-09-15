@@ -7,9 +7,10 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class CodigoMetadado:
     """Value Object para código de metadado/classificação/taxonomia/termo."""
+
     valor: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.valor:
             raise ValueError("Código não pode ser vazio")
         if len(self.valor) < 2:
@@ -33,9 +34,10 @@ class CodigoMetadado:
 @dataclass(frozen=True)
 class NomeEntidade:
     """Value Object para nome de metadado/classificação/taxonomia."""
+
     valor: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.valor:
             raise ValueError("Nome não pode ser vazio")
         if len(self.valor) < 3:
@@ -55,9 +57,10 @@ class NomeEntidade:
 @dataclass(frozen=True)
 class ValorAtributo:
     """Value Object para valor atribuído a uma entidade."""
+
     valor: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.valor:
             raise ValueError("Valor não pode ser vazio")
         if len(self.valor) > 1000:
@@ -75,10 +78,11 @@ class ValorAtributo:
 @dataclass(frozen=True)
 class EntidadeAlvo:
     """Value Object para identificação da entidade alvo de um valor de metadado."""
+
     tipo: str
     id: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.tipo:
             raise ValueError("Tipo da entidade não pode ser vazio")
         if not re.match(r"^[a-z][a-z0-9_]+$", self.tipo):

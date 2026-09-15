@@ -73,7 +73,10 @@ class SqlAlchemyTermoTaxonomiaRepository(TermoTaxonomiaRepositoryInterface):
         return [_termo_to_entity(m) for m in models]
 
     def list_all(
-        self, page: int = 0, page_size: int = 50, taxonomia_id: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        taxonomia_id: str | None = None,
     ) -> tuple[builtins.list[TermoTaxonomia], int]:
         stmt = select(TermoTaxonomiaModel).where(TermoTaxonomiaModel.deleted_at.is_(None))
         if taxonomia_id:
@@ -104,7 +107,7 @@ class SqlAlchemyTermoTaxonomiaRepository(TermoTaxonomiaRepositoryInterface):
             model.descricao = termo.descricao
             model.sinonimos = _format_list(termo.sinonimos)
             model.ordem = termo.ordem
-            model.updated_at = termo.updated_at
+            model.updated_at = termo.updated_at  # type: ignore[assignment]
             logger.info("Termo atualizado: %s", termo.id)
         self._session.flush()
         self._session.refresh(model)

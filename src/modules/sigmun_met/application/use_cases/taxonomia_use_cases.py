@@ -6,7 +6,7 @@ from src.modules.sigmun_met.application.interfaces import TaxonomiaRepositoryInt
 from src.modules.sigmun_met.domain.entities import Taxonomia
 from src.modules.sigmun_met.domain.exceptions import (
     CodigoInvalidoError,
-    TaxonomiaJaExisteError,
+    TaxonomiaDuplicadaError,
     TaxonomiaNaoEncontradaError,
 )
 from src.modules.sigmun_met.domain.value_objects import CodigoMetadado, NomeEntidade
@@ -36,7 +36,7 @@ class CriarTaxonomiaUseCase:
             raise ValueError(f"Nome inválido: {msg}")
 
         if self._repo.exists_by_codigo(codigo):
-            raise TaxonomiaJaExisteError(f"Taxonomia com código '{codigo}' já existe")
+            raise TaxonomiaDuplicadaError(f"Taxonomia com código '{codigo}' já existe")
 
         taxonomia = Taxonomia(
             codigo=codigo,
@@ -73,6 +73,7 @@ class AtualizarTaxonomiaUseCase:
             taxonomia.descricao = descricao
 
         from datetime import datetime
+
         taxonomia.updated_at = datetime.utcnow()
         return self._repo.save(taxonomia)
 
@@ -94,9 +95,7 @@ class BuscarTaxonomiaUseCase:
         """Busca taxonomia por código."""
         taxonomia = self._repo.get_by_codigo(codigo)
         if taxonomia is None:
-            raise TaxonomiaNaoEncontradaError(
-                f"Taxonomia com código '{codigo}' não encontrada"
-            )
+            raise TaxonomiaNaoEncontradaError(f"Taxonomia com código '{codigo}' não encontrada")
         return taxonomia
 
     def list_all(self, page: int = 0, page_size: int = 50) -> tuple:
@@ -118,9 +117,22 @@ class DeletarTaxonomiaUseCase:
         return self._repo.delete(taxonomia_id)
 
 
+# ---------------------------------------------------------------------------
+# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar/Listar/Excluir).
+# ---------------------------------------------------------------------------
+RegistrarTaxonomiaUseCase = CriarTaxonomiaUseCase
+ConsultarTaxonomiaUseCase = BuscarTaxonomiaUseCase
+ListarTaxonomiasUseCase = BuscarTaxonomiaUseCase
+ExcluirTaxonomiaUseCase = DeletarTaxonomiaUseCase
+
+
 __all__ = [
     "CriarTaxonomiaUseCase",
+    "RegistrarTaxonomiaUseCase",
     "AtualizarTaxonomiaUseCase",
     "BuscarTaxonomiaUseCase",
+    "ConsultarTaxonomiaUseCase",
+    "ListarTaxonomiasUseCase",
     "DeletarTaxonomiaUseCase",
+    "ExcluirTaxonomiaUseCase",
 ]

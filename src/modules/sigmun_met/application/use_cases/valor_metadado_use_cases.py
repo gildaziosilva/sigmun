@@ -54,10 +54,13 @@ class AtribuirValorMetadadoUseCase:
         if existente is not None:
             existente.valor = valor
             from datetime import datetime
+
             existente.updated_at = datetime.utcnow()
             logger.info(
                 "Valor do metadado '%s' atualizado para entidade %s/%s",
-                metadado.codigo, entidade_tipo, entidade_id,
+                metadado.codigo,
+                entidade_tipo,
+                entidade_id,
             )
             return self._valor_repo.save(existente)
 
@@ -69,7 +72,9 @@ class AtribuirValorMetadadoUseCase:
         )
         logger.info(
             "Valor atribuído ao metadado '%s' para entidade %s/%s",
-            metadado.codigo, entidade_tipo, entidade_id,
+            metadado.codigo,
+            entidade_tipo,
+            entidade_id,
         )
         return self._valor_repo.save(valor_metadado)
 
@@ -92,8 +97,11 @@ class BuscarValorMetadadoUseCase:
         return self._repo.get_by_entidade(entidade_tipo, entidade_id)
 
     def list_all(
-        self, page: int = 0, page_size: int = 50,
-        metadado_id: str | None = None, entidade_tipo: str | None = None,
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        metadado_id: str | None = None,
+        entidade_tipo: str | None = None,
     ) -> tuple:
         """Lista valores com paginação."""
         return self._repo.list_all(page, page_size, metadado_id, entidade_tipo)
@@ -133,9 +141,20 @@ class ValidarValorMetadadoUseCase:
         return True
 
 
+# ---------------------------------------------------------------------------
+# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar/Listar).
+# ---------------------------------------------------------------------------
+RegistrarValorMetadadoUseCase = AtribuirValorMetadadoUseCase
+ConsultarValorMetadadoUseCase = BuscarValorMetadadoUseCase
+ListarValoresMetadadoUseCase = BuscarValorMetadadoUseCase
+
+
 __all__ = [
     "AtribuirValorMetadadoUseCase",
+    "RegistrarValorMetadadoUseCase",
     "BuscarValorMetadadoUseCase",
+    "ConsultarValorMetadadoUseCase",
+    "ListarValoresMetadadoUseCase",
     "RemoverValorMetadadoUseCase",
     "ValidarValorMetadadoUseCase",
 ]
