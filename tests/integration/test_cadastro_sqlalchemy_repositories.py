@@ -18,7 +18,8 @@ from __future__ import annotations
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import event as sa_event, text
+from sqlalchemy import event as sa_event
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import engine

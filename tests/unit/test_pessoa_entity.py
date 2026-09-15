@@ -97,12 +97,8 @@ class TestRN005Enderecos:
 
     def test_endereco_principal_desativa_anterior(self):
         pessoa = _pessoa_fisica()
-        primeiro = pessoa.adicionar_endereco(
-            TipoEndereco.RESIDENCIAL, "Rua A", "1", principal=True
-        )
-        segundo = pessoa.adicionar_endereco(
-            TipoEndereco.RESIDENCIAL, "Rua B", "2", principal=True
-        )
+        primeiro = pessoa.adicionar_endereco(TipoEndereco.RESIDENCIAL, "Rua A", "1", principal=True)
+        segundo = pessoa.adicionar_endereco(TipoEndereco.RESIDENCIAL, "Rua B", "2", principal=True)
         assert not primeiro.principal
         assert segundo.principal
 
