@@ -52,7 +52,7 @@ class BuscarCredencialUseCase:
             raise CredencialNaoEncontradaError(f"Credencial '{credencial_id}' não encontrada")
         return credencial
 
-    def get_by_usuario(self, usuario_id: str):
+    def get_by_usuario(self, usuario_id: str) -> list[Credencial]:
         return self._repo.get_by_usuario(usuario_id)
 
     def list_all(
@@ -61,7 +61,7 @@ class BuscarCredencialUseCase:
         page_size: int = 50,
         status: str | None = None,
         tipo: str | None = None,
-    ):
+    ) -> tuple[list[Credencial], int]:
         return self._repo.list_all(page, page_size, status, tipo)
 
 

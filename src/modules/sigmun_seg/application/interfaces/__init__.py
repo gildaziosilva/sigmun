@@ -122,6 +122,14 @@ class ChaveCriptograficaRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    def get_by_nome(self, nome: str) -> ChaveCriptografica | None:
+        pass
+
+    @abstractmethod
+    def exists_by_nome(self, nome: str) -> bool:
+        pass
+
+    @abstractmethod
     def save(self, chave: ChaveCriptografica) -> ChaveCriptografica:
         pass
 

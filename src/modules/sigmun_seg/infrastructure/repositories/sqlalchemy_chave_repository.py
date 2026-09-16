@@ -21,7 +21,7 @@ from src.modules.sigmun_seg.infrastructure.database.models import ChaveCriptogra
 logger = logging.getLogger(__name__)
 
 
-def _to_entity(model: ChaveCriptograficaModel):
+def _to_entity(model: ChaveCriptograficaModel) -> ChaveCriptografica:
     return ChaveCriptografica(
         id=str(model.id),
         nome=model.nome,
@@ -106,9 +106,9 @@ class SqlAlchemyChaveCriptograficaRepository(ChaveCriptograficaRepositoryInterfa
             model.tipo = chave.tipo
             model.tamanho_bits = chave.tamanho_bits
             model.status = chave.status
-            model.data_expiracao = chave.data_expiracao
+            model.data_expiracao = chave.data_expiracao  # type: ignore[assignment]
             model.responsavel_id = chave.responsavel_id
-            model.updated_at = chave.updated_at
+            model.updated_at = chave.updated_at  # type: ignore[assignment]
             logger.info("Chave criptografica atualizada: %s", chave.nome)
         self._session.flush()
         self._session.refresh(model)
@@ -120,7 +120,7 @@ class SqlAlchemyChaveCriptograficaRepository(ChaveCriptograficaRepositoryInterfa
             return False
         if model.is_deleted is False:
             model.is_deleted = True
-            model.updated_at = func.now()
+            model.updated_at = func.now()  # type: ignore[assignment]
         self._session.flush()
         logger.info("Chave criptografica marcada como excluida: %s", chave_id)
         return True

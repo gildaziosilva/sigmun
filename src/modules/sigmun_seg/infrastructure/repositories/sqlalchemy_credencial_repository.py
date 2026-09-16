@@ -15,19 +15,19 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from src.modules.sigmun_seg.application.interfaces import CredencialRepositoryInterface
-from src.modules.sigmun_seg.domain.entities import Credencial
+from src.modules.sigmun_seg.domain.entities import Credencial, StatusCredencial
 from src.modules.sigmun_seg.infrastructure.database.models import CredencialModel
 
 logger = logging.getLogger(__name__)
 
 
-def _to_entity(model: CredencialModel):
+def _to_entity(model: CredencialModel) -> Credencial:
     return Credencial(
         id=str(model.id),
         usuario_id=model.usuario_id,
         tipo=model.tipo,
         identificador=model.identificador,
-        status=model.status,
+        status=StatusCredencial(model.status),
         validade=model.validade,
         ultimo_uso=model.ultimo_uso,
         tentativas_falhas=model.tentativas_falhas,
@@ -116,11 +116,11 @@ class SqlAlchemyCredencialRepository(CredencialRepositoryInterface):
             model.usuario_id = credencial.usuario_id
             model.tipo = credencial.tipo
             model.identificador = credencial.identificador
-            model.status = credencial.status
-            model.validade = credencial.validade
-            model.ultimo_uso = credencial.ultimo_uso
+            model.status = credencial.status.value  # type: ignore[assignment]
+            model.validade = credencial.validade  # type: ignore[assignment]
+            model.ultimo_uso = credencial.ultimo_uso  # type: ignore[assignment]
             model.tentativas_falhas = credencial.tentativas_falhas
-            model.updated_at = credencial.updated_at
+            model.updated_at = credencial.updated_at  # type: ignore[assignment]
             logger.info("Credencial atualizada: %s", credencial.tipo)
         self._session.flush()
         self._session.refresh(model)
@@ -132,7 +132,7 @@ class SqlAlchemyCredencialRepository(CredencialRepositoryInterface):
             return False
         if model.is_deleted is False:
             model.is_deleted = True
-            model.updated_at = func.now()
+            model.updated_at = func.now()  # type: ignore[assignment]
         self._session.flush()
         logger.info("Credencial marcada como excluida: %s", credencial_id)
         return True

@@ -21,7 +21,7 @@ from src.modules.sigmun_seg.infrastructure.database.models import PoliticaSegura
 logger = logging.getLogger(__name__)
 
 
-def _to_entity(model: PoliticaSegurancaModel):
+def _to_entity(model: PoliticaSegurancaModel) -> PoliticaSeguranca:
     return PoliticaSeguranca(
         id=str(model.id),
         codigo=model.codigo,
@@ -108,10 +108,10 @@ class SqlAlchemyPoliticaSegurancaRepository(PoliticaSegurancaRepositoryInterface
             model.conteudo = politica.conteudo
             model.versao = politica.versao
             model.aprovador_id = politica.aprovador_id
-            model.data_aprovacao = politica.data_aprovacao
-            model.data_revisao = politica.data_revisao
+            model.data_aprovacao = politica.data_aprovacao  # type: ignore[assignment]
+            model.data_revisao = politica.data_revisao  # type: ignore[assignment]
             model.ativa = politica.ativa
-            model.updated_at = politica.updated_at
+            model.updated_at = politica.updated_at  # type: ignore[assignment]
             logger.info("Politica atualizada: %s", politica.codigo)
         self._session.flush()
         self._session.refresh(model)
@@ -123,7 +123,7 @@ class SqlAlchemyPoliticaSegurancaRepository(PoliticaSegurancaRepositoryInterface
             return False
         if model.is_deleted is False:
             model.is_deleted = True
-            model.updated_at = func.now()
+            model.updated_at = func.now()  # type: ignore[assignment]
         self._session.flush()
         logger.info("Politica marcada como excluida: %s", politica_id)
         return True

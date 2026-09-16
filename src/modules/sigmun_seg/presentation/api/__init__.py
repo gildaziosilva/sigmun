@@ -22,6 +22,13 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
+from src.modules.sigmun_seg.application.interfaces import (
+    ChaveCriptograficaRepositoryInterface,
+    ControleSegurancaRepositoryInterface,
+    CredencialRepositoryInterface,
+    IncidenteSegurancaRepositoryInterface,
+    PoliticaSegurancaRepositoryInterface,
+)
 from src.modules.sigmun_seg.application.use_cases.chave_use_cases import (
     BuscarChaveUseCase,
     CriarChaveUseCase,
@@ -108,23 +115,33 @@ router = APIRouter(prefix="/api/v1/seg", tags=["Segurança da Informação"])
 # -- Providers de repositório (composition root) -----------------------------
 
 
-def get_controle_repo(session: Annotated[Session, Depends(get_db)]):
+def get_controle_repo(
+    session: Annotated[Session, Depends(get_db)],
+) -> ControleSegurancaRepositoryInterface:
     return SqlAlchemyControleSegurancaRepository(session)
 
 
-def get_politica_repo(session: Annotated[Session, Depends(get_db)]):
+def get_politica_repo(
+    session: Annotated[Session, Depends(get_db)],
+) -> PoliticaSegurancaRepositoryInterface:
     return SqlAlchemyPoliticaSegurancaRepository(session)
 
 
-def get_incidente_repo(session: Annotated[Session, Depends(get_db)]):
+def get_incidente_repo(
+    session: Annotated[Session, Depends(get_db)],
+) -> IncidenteSegurancaRepositoryInterface:
     return SqlAlchemyIncidenteSegurancaRepository(session)
 
 
-def get_chave_repo(session: Annotated[Session, Depends(get_db)]):
+def get_chave_repo(
+    session: Annotated[Session, Depends(get_db)],
+) -> ChaveCriptograficaRepositoryInterface:
     return SqlAlchemyChaveCriptograficaRepository(session)
 
 
-def get_credencial_repo(session: Annotated[Session, Depends(get_db)]):
+def get_credencial_repo(
+    session: Annotated[Session, Depends(get_db)],
+) -> CredencialRepositoryInterface:
     return SqlAlchemyCredencialRepository(session)
 
 
@@ -140,7 +157,7 @@ def _usuario_id_header(
     return x_usuario_id
 
 
-def obj_to_dict(instance) -> dict:
+def obj_to_dict(instance: object) -> dict:
     """Converte entidade (dataclass) em dict serializável (Enums e datetime)."""
     out = {}
     for k, v in vars(instance).items():
@@ -162,12 +179,12 @@ def obj_to_dict(instance) -> dict:
     summary="Lista controles de segurança",
 )
 def listar_controles(
+    repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     status: str | None = Query(default=None),
     tipo: str | None = Query(default=None),
     categoria: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_controle_repo)] = None,
 ) -> list[ControleResponse]:
     items, _ = BuscarControleSegurancaUseCase(repo).list_all(
         page, page_size, status, tipo, categoria
@@ -182,8 +199,8 @@ def listar_controles(
     summary="Registra um controle de segurança",
 )
 def criar_controle(
+    repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     payload: ControlePayload,
-    repo: Annotated[object, Depends(get_controle_repo)] = None,
 ) -> ControleResponse:
     try:
         controle = CriarControleSegurancaUseCase(repo).execute(
@@ -207,8 +224,8 @@ def criar_controle(
     summary="Busca um controle de segurança por ID",
 )
 def obter_controle(
+    repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
-    repo: Annotated[object, Depends(get_controle_repo)] = None,
 ) -> ControleResponse:
     try:
         controle = BuscarControleSegurancaUseCase(repo).get_by_id(str(controle_id))
@@ -223,9 +240,9 @@ def obter_controle(
     summary="Atualiza um controle de segurança",
 )
 def atualizar_controle(
+    repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
     payload: ControlePayload,
-    repo: Annotated[object, Depends(get_controle_repo)] = None,
 ) -> ControleResponse:
     try:
         controle = AtualizarControleSegurancaUseCase(repo).execute(
@@ -248,8 +265,8 @@ def atualizar_controle(
     summary="Marca um controle como implementado",
 )
 def implementar_controle(
+    repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
-    repo: Annotated[object, Depends(get_controle_repo)] = None,
 ) -> ControleResponse:
     try:
         controle = ImplementarControleSegurancaUseCase(repo).execute(str(controle_id))
@@ -264,8 +281,8 @@ def implementar_controle(
     summary="Marca um controle como parcialmente implementado",
 )
 def parcial_controle(
+    repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
-    repo: Annotated[object, Depends(get_controle_repo)] = None,
 ) -> ControleResponse:
     try:
         controle = ParcialmenteImplementadoUseCase(repo).execute(str(controle_id))
@@ -280,8 +297,8 @@ def parcial_controle(
     summary="Remove (exclusão lógica) um controle de segurança",
 )
 def deletar_controle(
+    repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
-    repo: Annotated[object, Depends(get_controle_repo)] = None,
 ) -> None:
     try:
         DeletarControleSegurancaUseCase(repo).execute(str(controle_id))
@@ -298,10 +315,10 @@ def deletar_controle(
     summary="Lista políticas de segurança",
 )
 def listar_politicas(
+    repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     ativa: bool | None = Query(default=None),
-    repo: Annotated[object, Depends(get_politica_repo)] = None,
 ) -> list[PoliticaResponse]:
     items, _ = BuscarPoliticaSegurancaUseCase(repo).list_all(page, page_size, ativa)
     return [PoliticaResponse(**obj_to_dict(p)) for p in items]
@@ -314,8 +331,8 @@ def listar_politicas(
     summary="Registra uma política de segurança",
 )
 def criar_politica(
+    repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     payload: PoliticaPayload,
-    repo: Annotated[object, Depends(get_politica_repo)] = None,
 ) -> PoliticaResponse:
     try:
         politica = CriarPoliticaSegurancaUseCase(repo).execute(
@@ -337,8 +354,8 @@ def criar_politica(
     summary="Busca uma política de segurança por ID",
 )
 def obter_politica(
+    repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     politica_id: UUID,
-    repo: Annotated[object, Depends(get_politica_repo)] = None,
 ) -> PoliticaResponse:
     try:
         politica = BuscarPoliticaSegurancaUseCase(repo).get_by_id(str(politica_id))
@@ -353,9 +370,9 @@ def obter_politica(
     summary="Atualiza uma política de segurança",
 )
 def atualizar_politica(
+    repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     politica_id: UUID,
     payload: PoliticaPayload,
-    repo: Annotated[object, Depends(get_politica_repo)] = None,
 ) -> PoliticaResponse:
     try:
         politica = AtualizarPoliticaSegurancaUseCase(repo).execute(
@@ -372,8 +389,8 @@ def atualizar_politica(
     summary="Aprova uma política de segurança",
 )
 def aprovar_politica(
+    repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     politica_id: UUID,
-    repo: Annotated[object, Depends(get_politica_repo)] = None,
     usuario_id: str = Depends(_usuario_id_header),
 ) -> PoliticaResponse:
     try:
@@ -391,8 +408,8 @@ def aprovar_politica(
     summary="Remove (exclusão lógica) uma política de segurança",
 )
 def deletar_politica(
+    repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     politica_id: UUID,
-    repo: Annotated[object, Depends(get_politica_repo)] = None,
 ) -> None:
     try:
         DeletarPoliticaSegurancaUseCase(repo).execute(str(politica_id))
@@ -409,11 +426,11 @@ def deletar_politica(
     summary="Lista incidentes de segurança",
 )
 def listar_incidentes(
+    repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     severidade: str | None = Query(default=None),
     status: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_incidente_repo)] = None,
 ) -> list[IncidenteResponse]:
     items, _ = BuscarIncidenteSegurancaUseCase(repo).list_all(page, page_size, severidade, status)
     return [IncidenteResponse(**obj_to_dict(i)) for i in items]
@@ -426,8 +443,8 @@ def listar_incidentes(
     summary="Registra um incidente de segurança",
 )
 def registrar_incidente(
+    repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     payload: IncidentePayload,
-    repo: Annotated[object, Depends(get_incidente_repo)] = None,
     usuario_id: str = Depends(_usuario_id_header),
 ) -> IncidenteResponse:
     try:
@@ -450,8 +467,8 @@ def registrar_incidente(
     summary="Busca um incidente de segurança por ID",
 )
 def obter_incidente(
+    repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
-    repo: Annotated[object, Depends(get_incidente_repo)] = None,
 ) -> IncidenteResponse:
     try:
         incidente = BuscarIncidenteSegurancaUseCase(repo).get_by_id(str(incidente_id))
@@ -466,8 +483,8 @@ def obter_incidente(
     summary="Escala um incidente para um responsável",
 )
 def escalar_incidente(
+    repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
-    repo: Annotated[object, Depends(get_incidente_repo)] = None,
     atribuido_a: str = Query(..., description="Responsável pelo incidente"),
 ) -> IncidenteResponse:
     try:
@@ -483,8 +500,8 @@ def escalar_incidente(
     summary="Inicia mitigação de um incidente",
 )
 def mitigar_incidente(
+    repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
-    repo: Annotated[object, Depends(get_incidente_repo)] = None,
 ) -> IncidenteResponse:
     try:
         incidente = MitigarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
@@ -499,8 +516,8 @@ def mitigar_incidente(
     summary="Resolve um incidente",
 )
 def resolver_incidente(
+    repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
-    repo: Annotated[object, Depends(get_incidente_repo)] = None,
 ) -> IncidenteResponse:
     try:
         incidente = ResolverIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
@@ -517,8 +534,8 @@ def resolver_incidente(
     summary="Encerra um incidente resolvido",
 )
 def encerrar_incidente(
+    repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
-    repo: Annotated[object, Depends(get_incidente_repo)] = None,
 ) -> IncidenteResponse:
     try:
         incidente = EncerrarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
@@ -533,8 +550,8 @@ def encerrar_incidente(
     summary="Remove (exclusão lógica) um incidente",
 )
 def deletar_incidente(
+    repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
-    repo: Annotated[object, Depends(get_incidente_repo)] = None,
 ) -> None:
     try:
         DeletarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
@@ -551,10 +568,10 @@ def deletar_incidente(
     summary="Lista chaves criptográficas",
 )
 def listar_chaves(
+    repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     status: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_chave_repo)] = None,
 ) -> list[ChaveResponse]:
     items, _ = BuscarChaveUseCase(repo).list_all(page, page_size, status)
     return [ChaveResponse(**obj_to_dict(c)) for c in items]
@@ -567,8 +584,8 @@ def listar_chaves(
     summary="Registra uma chave criptográfica",
 )
 def criar_chave(
+    repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     payload: ChavePayload,
-    repo: Annotated[object, Depends(get_chave_repo)] = None,
 ) -> ChaveResponse:
     try:
         chave = CriarChaveUseCase(repo).execute(
@@ -589,8 +606,8 @@ def criar_chave(
     summary="Busca uma chave criptográfica por ID",
 )
 def obter_chave(
+    repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     chave_id: UUID,
-    repo: Annotated[object, Depends(get_chave_repo)] = None,
 ) -> ChaveResponse:
     try:
         chave = BuscarChaveUseCase(repo).get_by_id(str(chave_id))
@@ -605,8 +622,8 @@ def obter_chave(
     summary="Revoga uma chave criptográfica",
 )
 def revogar_chave(
+    repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     chave_id: UUID,
-    repo: Annotated[object, Depends(get_chave_repo)] = None,
 ) -> ChaveResponse:
     try:
         chave = RevogarChaveUseCase(repo).execute(str(chave_id))
@@ -623,8 +640,8 @@ def revogar_chave(
     summary="Marca uma chave criptográfica como expirada",
 )
 def expirar_chave(
+    repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     chave_id: UUID,
-    repo: Annotated[object, Depends(get_chave_repo)] = None,
 ) -> ChaveResponse:
     try:
         chave = ExpirarChaveUseCase(repo).execute(str(chave_id))
@@ -639,8 +656,8 @@ def expirar_chave(
     summary="Remove (exclusão lógica) uma chave criptográfica",
 )
 def deletar_chave(
+    repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     chave_id: UUID,
-    repo: Annotated[object, Depends(get_chave_repo)] = None,
 ) -> None:
     try:
         DeletarChaveUseCase(repo).execute(str(chave_id))
@@ -657,11 +674,11 @@ def deletar_chave(
     summary="Lista credenciais",
 )
 def listar_credenciais(
+    repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     status: str | None = Query(default=None),
     tipo: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_credencial_repo)] = None,
 ) -> list[CredencialResponse]:
     items, _ = BuscarCredencialUseCase(repo).list_all(page, page_size, status, tipo)
     return [CredencialResponse(**obj_to_dict(c)) for c in items]
@@ -674,8 +691,8 @@ def listar_credenciais(
     summary="Registra uma credencial de acesso",
 )
 def criar_credencial(
+    repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
     payload: CredencialPayload,
-    repo: Annotated[object, Depends(get_credencial_repo)] = None,
 ) -> CredencialResponse:
     try:
         credencial = CriarCredencialUseCase(repo).execute(
@@ -694,8 +711,8 @@ def criar_credencial(
     summary="Busca uma credencial por ID",
 )
 def obter_credencial(
+    repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
     credencial_id: UUID,
-    repo: Annotated[object, Depends(get_credencial_repo)] = None,
 ) -> CredencialResponse:
     try:
         credencial = BuscarCredencialUseCase(repo).get_by_id(str(credencial_id))
@@ -710,8 +727,8 @@ def obter_credencial(
     summary="Suspende uma credencial",
 )
 def suspender_credencial(
+    repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
     credencial_id: UUID,
-    repo: Annotated[object, Depends(get_credencial_repo)] = None,
 ) -> CredencialResponse:
     try:
         credencial = SuspenderCredencialUseCase(repo).execute(str(credencial_id))
@@ -726,8 +743,8 @@ def suspender_credencial(
     summary="Revoga uma credencial",
 )
 def revogar_credencial(
+    repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
     credencial_id: UUID,
-    repo: Annotated[object, Depends(get_credencial_repo)] = None,
 ) -> CredencialResponse:
     try:
         credencial = RevogarCredencialUseCase(repo).execute(str(credencial_id))

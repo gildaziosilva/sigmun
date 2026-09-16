@@ -15,18 +15,23 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from src.modules.sigmun_seg.application.interfaces import ControleSegurancaRepositoryInterface
-from src.modules.sigmun_seg.domain.entities import ControleSeguranca, StatusControle
+from src.modules.sigmun_seg.domain.entities import (
+    CategoriaControle,
+    ControleSeguranca,
+    StatusControle,
+    TipoControle,
+)
 from src.modules.sigmun_seg.infrastructure.database.models import ControleSegurancaModel
 
 
-def _to_entity(model: ControleSegurancaModel):
+def _to_entity(model: ControleSegurancaModel) -> ControleSeguranca:
     return ControleSeguranca(
         id=str(model.id),
         codigo=model.codigo,
         nome=model.nome,
         descricao=model.descricao,
-        tipo=model.tipo,
-        categoria=model.categoria,
+        tipo=TipoControle(model.tipo),
+        categoria=CategoriaControle(model.categoria),
         status=StatusControle(model.status),
         responsavel_id=model.responsavel_id,
         nivel_risco=model.nivel_risco if model.nivel_risco else "medio",
@@ -62,13 +67,13 @@ class SqlAlchemyControleSegurancaRepository(ControleSegurancaRepositoryInterface
     def __init__(self, session: Session) -> None:
         self._session = session
 
-    def get_by_id(self, controle_id: str):
+    def get_by_id(self, controle_id: str) -> ControleSeguranca | None:
         model = self._session.get(ControleSegurancaModel, UUID(controle_id))
         if model is None or model.is_deleted:
             return None
         return _to_entity(model)
 
-    def get_by_codigo(self, codigo: str):
+    def get_by_codigo(self, codigo: str) -> ControleSeguranca | None:
         stmt = select(ControleSegurancaModel).where(
             ControleSegurancaModel.codigo == codigo,
             ControleSegurancaModel.is_deleted.is_(False),
@@ -76,7 +81,14 @@ class SqlAlchemyControleSegurancaRepository(ControleSegurancaRepositoryInterface
         model = self._session.scalars(stmt).first()
         return _to_entity(model) if model else None
 
-    def list_all(self, page=0, page_size=50, status=None, tipo=None, categoria=None):
+    def list_all(
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        status: str | None = None,
+        tipo: str | None = None,
+        categoria: str | None = None,
+    ) -> tuple[list[ControleSeguranca], int]:
         stmt = select(ControleSegurancaModel).where(ControleSegurancaModel.is_deleted.is_(False))
         count_stmt = select(ControleSegurancaModel).where(
             ControleSegurancaModel.is_deleted.is_(False)
@@ -110,12 +122,12 @@ class SqlAlchemyControleSegurancaRepository(ControleSegurancaRepositoryInterface
             model.codigo = controle.codigo
             model.nome = controle.nome
             model.descricao = controle.descricao
-            model.tipo = controle.tipo
-            model.categoria = controle.categoria
+            model.tipo = controle.tipo.value  # type: ignore[assignment]
+            model.categoria = controle.categoria.value  # type: ignore[assignment]
             model.status = controle.status.value
             model.nivel_risco = controle.nivel_risco
             model.responsavel_id = controle.responsavel_id
-            model.updated_at = controle.updated_at
+            model.updated_at = controle.updated_at  # type: ignore[assignment]
             logger.info("Controle atualizado: %s", controle.codigo)
         self._session.flush()
         self._session.refresh(model)
@@ -127,7 +139,7 @@ class SqlAlchemyControleSegurancaRepository(ControleSegurancaRepositoryInterface
             return False
         if model.is_deleted is False:
             model.is_deleted = True
-            model.updated_at = func.now()
+            model.updated_at = func.now()  # type: ignore[assignment]
         self._session.flush()
         logger.info("Controle marcado como excluido: %s", controle_id)
         return True

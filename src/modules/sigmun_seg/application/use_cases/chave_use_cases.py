@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class CriarChaveUseCase:
     """Cria uma nova chave criptográfica."""
 
-    def __init__(self, repository: ChaveCriptograficaRepositoryInterface):
+    def __init__(self, repository: ChaveCriptograficaRepositoryInterface) -> None:
         self._repo = repository
 
     def execute(
@@ -52,7 +52,7 @@ class CriarChaveUseCase:
 class BuscarChaveUseCase:
     """Busca chaves criptográficas."""
 
-    def __init__(self, repository: ChaveCriptograficaRepositoryInterface):
+    def __init__(self, repository: ChaveCriptograficaRepositoryInterface) -> None:
         self._repo = repository
 
     def get_by_id(self, chave_id: str) -> ChaveCriptografica:
@@ -64,14 +64,16 @@ class BuscarChaveUseCase:
     def get_by_nome(self, nome: str) -> ChaveCriptografica | None:
         return self._repo.get_by_nome(nome)
 
-    def list_all(self, page: int = 0, page_size: int = 50, status: str | None = None):
+    def list_all(
+        self, page: int = 0, page_size: int = 50, status: str | None = None
+    ) -> tuple[list[ChaveCriptografica], int]:
         return self._repo.list_all(page, page_size, status)
 
 
 class AtualizarChaveUseCase:
     """Atualiza uma chave criptográfica."""
 
-    def __init__(self, repository: ChaveCriptograficaRepositoryInterface):
+    def __init__(self, repository: ChaveCriptograficaRepositoryInterface) -> None:
         self._repo = repository
 
     def execute(
@@ -102,7 +104,7 @@ class AtualizarChaveUseCase:
 class RevogarChaveUseCase:
     """Revoga uma chave criptográfica."""
 
-    def __init__(self, repository: ChaveCriptograficaRepositoryInterface):
+    def __init__(self, repository: ChaveCriptograficaRepositoryInterface) -> None:
         self._repo = repository
 
     def execute(self, chave_id: str) -> ChaveCriptografica:
@@ -118,7 +120,7 @@ class RevogarChaveUseCase:
 class ExpirarChaveUseCase:
     """Marca uma chave criptográfica como expirada."""
 
-    def __init__(self, repository: ChaveCriptograficaRepositoryInterface):
+    def __init__(self, repository: ChaveCriptograficaRepositoryInterface) -> None:
         self._repo = repository
 
     def execute(self, chave_id: str) -> ChaveCriptografica:
@@ -132,7 +134,7 @@ class ExpirarChaveUseCase:
 class DeletarChaveUseCase:
     """Remove uma chave criptográfica (soft-delete)."""
 
-    def __init__(self, repository: ChaveCriptograficaRepositoryInterface):
+    def __init__(self, repository: ChaveCriptograficaRepositoryInterface) -> None:
         self._repo = repository
 
     def execute(self, chave_id: str) -> bool:

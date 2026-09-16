@@ -25,7 +25,7 @@ from src.modules.sigmun_seg.infrastructure.database.models import IncidenteSegur
 logger = logging.getLogger(__name__)
 
 
-def _to_entity(model: IncidenteSegurancaModel):
+def _to_entity(model: IncidenteSegurancaModel) -> IncidenteSeguranca:
     return IncidenteSeguranca(
         id=str(model.id),
         titulo=model.titulo,
@@ -122,7 +122,7 @@ class SqlAlchemyIncidenteSegurancaRepository(IncidenteSegurancaRepositoryInterfa
             model.relator_id = incidente.relator_id
             model.atribuido_a = incidente.atribuido_a
             model.status = incidente.status.value
-            model.updated_at = incidente.updated_at
+            model.updated_at = incidente.updated_at  # type: ignore[assignment]
             logger.info("Incidente atualizado: %s", incidente.titulo)
         self._session.flush()
         self._session.refresh(model)
@@ -134,7 +134,7 @@ class SqlAlchemyIncidenteSegurancaRepository(IncidenteSegurancaRepositoryInterfa
             return False
         if model.is_deleted is False:
             model.is_deleted = True
-            model.updated_at = func.now()
+            model.updated_at = func.now()  # type: ignore[assignment]
         self._session.flush()
         logger.info("Incidente marcado como excluido: %s", incidente_id)
         return True
