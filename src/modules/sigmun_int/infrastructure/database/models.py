@@ -157,7 +157,7 @@ class EntregaWebhookModel(IntegracaoBase):
     max_tentativas: Mapped[int] = mapped_column(Integer, nullable=False, default=5)
     backoff_base_seg: Mapped[int] = mapped_column(Integer, nullable=False, default=60)
     ultimo_http_status: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    ultimo_erro: Mapped[str] = mapped_column(Text, nullable=True)
+    ultimo_erro: Mapped[str | None] = mapped_column(Text, nullable=True)
     proximo_retry: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
