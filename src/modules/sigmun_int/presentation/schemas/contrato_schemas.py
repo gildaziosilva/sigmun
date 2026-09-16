@@ -11,7 +11,7 @@ class ContratoPayload(BaseModel):
     codigo: str = Field(..., min_length=2, max_length=50, description="Código único")
     nome: str = Field(..., min_length=1, description="Nome do contrato")
     descricao: str = Field(default="", description="Descrição")
-    version_formato: str = Field(default="1.0", description="Versão do formato da mensagem")
+    versao_formato: str = Field(default="1.0", description="Versão do formato da mensagem")
     esquema_ref: str = Field(default="", description="Referência ao schema (URI/JSON Schema)")
     api_externa_id: str | None = Field(default=None, description="ID da API do catálogo")
     estado: str = Field(default="rascunho", description="rascunho, vigente, obsoleto, retirado")
@@ -24,7 +24,7 @@ class ContratoResponse(BaseModel):
     codigo: str
     nome: str
     descricao: str = ""
-    version_formato: str
+    versao_formato: str
     esquema_ref: str = ""
     api_externa_id: str | None = None
     estado: str

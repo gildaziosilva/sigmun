@@ -170,7 +170,7 @@ def _contrato_to_response(contrato: ContratoIntegracao) -> ContratoResponse:
         codigo=contrato.codigo,
         nome=contrato.nome,
         descricao=contrato.descricao,
-        version_formato=contrato.version_formato,
+        versao_formato=contrato.versao_formato,
         esquema_ref=contrato.esquema_ref,
         api_externa_id=contrato.api_externa_id or None,
         estado=contrato.estado.value,
@@ -436,7 +436,7 @@ def criar_contrato(
             codigo=payload.codigo,
             nome=payload.nome,
             descricao=payload.descricao,
-            version_formato=payload.version_formato,
+            versao_formato=payload.versao_formato,
             esquema_ref=payload.esquema_ref,
             api_externa_id=payload.api_externa_id or "",
             estado=payload.estado,
@@ -477,7 +477,7 @@ def atualizar_contrato(
             contrato_id=contrato_id,
             nome=payload.nome,
             descricao=payload.descricao,
-            version_formato=payload.version_formato,
+            versao_formato=payload.versao_formato,
             esquema_ref=payload.esquema_ref,
         )
     except Exception as exc:  # noqa: BLE001

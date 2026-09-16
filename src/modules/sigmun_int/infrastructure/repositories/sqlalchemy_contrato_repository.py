@@ -18,7 +18,7 @@ def _to_entity(model: ContratoIntegracaoModel) -> ContratoIntegracao:
         codigo=model.codigo,
         nome=model.nome,
         descricao=model.descricao or "",
-        version_formato=model.version_formato,
+        versao_formato=model.versao_formato,
         esquema_ref=model.esquema_ref or "",
         api_externa_id=str(model.api_externa_id) if model.api_externa_id else "",
         estado=EstadoContrato(model.estado),
@@ -42,7 +42,7 @@ class SqlAlchemyContratoIntegracaoRepository(RepositorioContratoIntegracao):
                 codigo=contrato.codigo,
                 nome=contrato.nome,
                 descricao=contrato.descricao or None,
-                version_formato=contrato.version_formato,
+                versao_formato=contrato.versao_formato,
                 esquema_ref=contrato.esquema_ref or None,
                 api_externa_id=UUID(contrato.api_externa_id) if contrato.api_externa_id else None,
                 estado=contrato.estado.value,
@@ -53,7 +53,7 @@ class SqlAlchemyContratoIntegracaoRepository(RepositorioContratoIntegracao):
             model.codigo = contrato.codigo
             model.nome = contrato.nome
             model.descricao = contrato.descricao or None
-            model.version_formato = contrato.version_formato
+            model.versao_formato = contrato.versao_formato
             model.esquema_ref = contrato.esquema_ref or None
             model.api_externa_id = (
                 UUID(contrato.api_externa_id) if contrato.api_externa_id else None
