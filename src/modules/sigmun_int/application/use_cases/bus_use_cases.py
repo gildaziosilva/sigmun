@@ -66,17 +66,14 @@ class ConsumirOutboxUseCase:
         pendentes = self._outbox.ler_pendentes(fonte, lote)
         webhooks_ativos = self._repo_webhooks.find_ativos()
 
-        resumo = {
-            "fonte": fonte,
-            "lidos": 0,
-            "novos": 0,
-            "duplicados": 0,
-            "entregas_criadas": 0,
-        }
+        lidos = 0
+        novos = 0
+        duplicados = 0
+        entregas_criadas = 0
         for evento in pendentes:
-            resumo["lidos"] += 1
+            lidos += 1
             if self._repo_eventos.exists(fonte, evento.id):
-                resumo["duplicados"] += 1
+                duplicados += 1
                 continue
 
             for webhook in webhooks_ativos:
@@ -96,7 +93,7 @@ class ConsumirOutboxUseCase:
                     backoff_base_seg=webhook.backoff_base_seg,
                 )
                 self._repo_entregas.save(entrega)
-                resumo["entregas_criadas"] += 1
+                entregas_criadas += 1
 
             processado = EventoProcessado(
                 fonte=fonte,
@@ -109,9 +106,15 @@ class ConsumirOutboxUseCase:
             )
             self._repo_eventos.save(processado)
             self._outbox.marcar_publicado(fonte, evento.id)
-            resumo["novos"] += 1
+            novos += 1
 
-        return resumo
+        return {
+            "fonte": fonte,
+            "lidos": lidos,
+            "novos": novos,
+            "duplicados": duplicados,
+            "entregas_criadas": entregas_criadas,
+        }
 
 
 class DespacharWebhooksUseCase:

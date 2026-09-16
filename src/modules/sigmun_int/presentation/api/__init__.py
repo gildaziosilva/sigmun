@@ -292,11 +292,11 @@ def _error_http(exc: Exception, default: int = status.HTTP_400_BAD_REQUEST) -> H
 
 @router.get("/apis", response_model=list[ApiResponse], summary="Lista APIs externas do catálogo")
 def listar_apis(
+    repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     estado: str | None = Query(default=None),
     tipo: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_api_repo)] = None,
 ) -> list[ApiResponse]:
     items, _ = BuscarApiExternaUseCase(repo).list_all(page, page_size, estado, tipo)
     return [_api_to_response(a) for a in items]
@@ -309,8 +309,8 @@ def listar_apis(
     summary="Registra uma API externa no catálogo",
 )
 def criar_api(
+    repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     payload: ApiPayload,
-    repo: Annotated[object, Depends(get_api_repo)] = None,
 ) -> ApiResponse:
     try:
         api = CriarApiExternaUseCase(repo).execute(
@@ -333,8 +333,8 @@ def criar_api(
 
 @router.get("/apis/{api_id}", response_model=ApiResponse, summary="Busca uma API externa por ID")
 def obter_api(
+    repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     api_id: str,
-    repo: Annotated[object, Depends(get_api_repo)] = None,
 ) -> ApiResponse:
     try:
         api = BuscarApiExternaUseCase(repo).get_by_id(api_id)
@@ -345,9 +345,9 @@ def obter_api(
 
 @router.patch("/apis/{api_id}", response_model=ApiResponse, summary="Atualiza uma API externa")
 def atualizar_api(
+    repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     api_id: str,
     payload: ApiPayload,
-    repo: Annotated[object, Depends(get_api_repo)] = None,
 ) -> ApiResponse:
     try:
         api = AtualizarApiExternaUseCase(repo).execute(
@@ -371,9 +371,9 @@ def atualizar_api(
     "/apis/{api_id}/estado", response_model=ApiResponse, summary="Muda o estado de uma API"
 )
 def mudar_estado_api(
+    repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     api_id: str,
     estado: str,
-    repo: Annotated[object, Depends(get_api_repo)] = None,
 ) -> ApiResponse:
     try:
         api = MudarEstadoApiUseCase(repo).execute(api_id, estado)
@@ -388,8 +388,8 @@ def mudar_estado_api(
     summary="Exclui (exclusão lógica) uma API externa",
 )
 def deletar_api(
+    repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     api_id: str,
-    repo: Annotated[object, Depends(get_api_repo)] = None,
 ) -> None:
     try:
         DeletarApiExternaUseCase(repo).execute(api_id)
@@ -408,11 +408,11 @@ def deletar_api(
     summary="Lista contratos de integração",
 )
 def listar_contratos(
+    repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     estado: str | None = Query(default=None),
     api_externa_id: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_contrato_repo)] = None,
 ) -> list[ContratoResponse]:
     items, _ = BuscarContratoIntegracaoUseCase(repo).list_all(
         page, page_size, estado, api_externa_id
@@ -427,9 +427,9 @@ def listar_contratos(
     summary="Crea um contrato de integração",
 )
 def criar_contrato(
+    repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
+    repo_apis: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     payload: ContratoPayload,
-    repo: Annotated[object, Depends(get_contrato_repo)] = None,
-    repo_apis: Annotated[object, Depends(get_api_repo)] = None,
 ) -> ContratoResponse:
     try:
         contrato = CriarContratoIntegracaoUseCase(repo, repo_apis).execute(
@@ -452,8 +452,8 @@ def criar_contrato(
     summary="Busca um contrato por ID",
 )
 def obter_contrato(
+    repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
-    repo: Annotated[object, Depends(get_contrato_repo)] = None,
 ) -> ContratoResponse:
     try:
         contrato = BuscarContratoIntegracaoUseCase(repo).get_by_id(contrato_id)
@@ -468,9 +468,9 @@ def obter_contrato(
     summary="Atualiza um contrato de integração",
 )
 def atualizar_contrato(
+    repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
     payload: ContratoPayload,
-    repo: Annotated[object, Depends(get_contrato_repo)] = None,
 ) -> ContratoResponse:
     try:
         contrato = AtualizarContratoIntegracaoUseCase(repo).execute(
@@ -491,8 +491,8 @@ def atualizar_contrato(
     summary="Aprova um contrato (rascunho -> vigente)",
 )
 def aprovar_contrato(
+    repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
-    repo: Annotated[object, Depends(get_contrato_repo)] = None,
 ) -> ContratoResponse:
     try:
         contrato = AprovarContratoIntegracaoUseCase(repo).execute(contrato_id)
@@ -507,8 +507,8 @@ def aprovar_contrato(
     summary="Retira um contrato (vigente -> retirado)",
 )
 def retirar_contrato(
+    repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
-    repo: Annotated[object, Depends(get_contrato_repo)] = None,
 ) -> ContratoResponse:
     try:
         contrato = RetirarContratoIntegracaoUseCase(repo).execute(contrato_id)
@@ -523,8 +523,8 @@ def retirar_contrato(
     summary="Exclui (exclusão lógica) um contrato",
 )
 def deletar_contrato(
+    repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
-    repo: Annotated[object, Depends(get_contrato_repo)] = None,
 ) -> None:
     try:
         DeletarContratoIntegracaoUseCase(repo).execute(contrato_id)
@@ -541,10 +541,10 @@ def deletar_contrato(
     "/conectores", response_model=list[ConectorResponse], summary="Lista conectores oficiais"
 )
 def listar_conectores(
+    repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     estado: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_conector_repo)] = None,
 ) -> list[ConectorResponse]:
     items, _ = BuscarConectorUseCase(repo).list_all(page, page_size, estado)
     return [_conector_to_response(c) for c in items]
@@ -557,8 +557,8 @@ def listar_conectores(
     summary="Registra um conector oficial",
 )
 def criar_conector(
+    repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     payload: ConectorPayload,
-    repo: Annotated[object, Depends(get_conector_repo)] = None,
 ) -> ConectorResponse:
     try:
         conector = CriarConectorUseCase(repo).execute(
@@ -579,8 +579,8 @@ def criar_conector(
     "/conectores/{conector_id}", response_model=ConectorResponse, summary="Busca um conector por ID"
 )
 def obter_conector(
+    repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     conector_id: str,
-    repo: Annotated[object, Depends(get_conector_repo)] = None,
 ) -> ConectorResponse:
     try:
         conector = BuscarConectorUseCase(repo).get_by_id(conector_id)
@@ -593,9 +593,9 @@ def obter_conector(
     "/conectores/{conector_id}", response_model=ConectorResponse, summary="Atualiza um conector"
 )
 def atualizar_conector(
+    repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     conector_id: str,
     payload: ConectorPayload,
-    repo: Annotated[object, Depends(get_conector_repo)] = None,
 ) -> ConectorResponse:
     try:
         conector = AtualizarConectorUseCase(repo).execute(
@@ -618,9 +618,9 @@ def atualizar_conector(
     summary="Muda o estado de um conector (RN-INT-004)",
 )
 def mudar_estado_conector(
+    repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     conector_id: str,
     payload: ConectorEstadoPayload,
-    repo: Annotated[object, Depends(get_conector_repo)] = None,
 ) -> ConectorResponse:
     try:
         conector = MudarEstadoConectorUseCase(repo).execute(conector_id, payload.estado)
@@ -635,8 +635,8 @@ def mudar_estado_conector(
     summary="Exclui (exclusão lógica) um conector",
 )
 def deletar_conector(
+    repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     conector_id: str,
-    repo: Annotated[object, Depends(get_conector_repo)] = None,
 ) -> None:
     try:
         DeletarConectorUseCase(repo).execute(conector_id)
@@ -651,10 +651,10 @@ def deletar_conector(
 
 @router.get("/webhooks", response_model=list[WebhookResponse], summary="Lista webhooks")
 def listar_webhooks(
+    repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     estado: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_webhook_repo)] = None,
 ) -> list[WebhookResponse]:
     items, _ = BuscarWebhookUseCase(repo).list_all(page, page_size, estado)
     return [_webhook_to_response(w) for w in items]
@@ -667,8 +667,8 @@ def listar_webhooks(
     summary="Registra um webhook inscrito no barramento",
 )
 def registrar_webhook(
+    repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     payload: WebhookPayload,
-    repo: Annotated[object, Depends(get_webhook_repo)] = None,
 ) -> WebhookResponse:
     try:
         webhook = RegistrarWebhookUseCase(repo).execute(
@@ -689,8 +689,8 @@ def registrar_webhook(
     "/webhooks/{webhook_id}", response_model=WebhookResponse, summary="Busca um webhook por ID"
 )
 def obter_webhook(
+    repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     webhook_id: str,
-    repo: Annotated[object, Depends(get_webhook_repo)] = None,
 ) -> WebhookResponse:
     try:
         webhook = BuscarWebhookUseCase(repo).get_by_id(webhook_id)
@@ -703,9 +703,9 @@ def obter_webhook(
     "/webhooks/{webhook_id}", response_model=WebhookResponse, summary="Atualiza um webhook"
 )
 def atualizar_webhook(
+    repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     webhook_id: str,
     payload: WebhookPayload,
-    repo: Annotated[object, Depends(get_webhook_repo)] = None,
 ) -> WebhookResponse:
     try:
         webhook = AtualizarWebhookUseCase(repo).execute(
@@ -728,9 +728,9 @@ def atualizar_webhook(
     summary="Ativa ou desativa um webhook",
 )
 def mudar_estado_webhook(
+    repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     webhook_id: str,
     payload: WebhookEstadoPayload,
-    repo: Annotated[object, Depends(get_webhook_repo)] = None,
 ) -> WebhookResponse:
     try:
         webhook = MudarEstadoWebhookUseCase(repo).execute(webhook_id, payload.estado)
@@ -745,8 +745,8 @@ def mudar_estado_webhook(
     summary="Exclui (exclusão lógica) um webhook",
 )
 def deletar_webhook(
+    repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     webhook_id: str,
-    repo: Annotated[object, Depends(get_webhook_repo)] = None,
 ) -> None:
     try:
         DeletarWebhookUseCase(repo).execute(webhook_id)
@@ -763,10 +763,10 @@ def deletar_webhook(
     "/entregas", response_model=list[EntregaResponse], summary="Lista entregas de mensagens"
 )
 def listar_entregas(
+    repo: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     estado: str | None = Query(default=None),
-    repo: Annotated[object, Depends(get_entrega_repo)] = None,
 ) -> list[EntregaResponse]:
     items, _ = BuscarEntregaWebhookUseCase(repo).list_all(page, page_size, estado)
     return [_entrega_to_response(e) for e in items]
@@ -778,10 +778,10 @@ def listar_entregas(
     summary="Lista entregas de um webhook",
 )
 def listar_entregas_por_webhook(
+    repo: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     webhook_id: str,
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
-    repo: Annotated[object, Depends(get_entrega_repo)] = None,
 ) -> list[EntregaResponse]:
     items, _ = BuscarEntregaWebhookUseCase(repo).list_by_webhook(webhook_id, page, page_size)
     return [_entrega_to_response(e) for e in items]
@@ -791,8 +791,8 @@ def listar_entregas_por_webhook(
     "/entregas/{entrega_id}", response_model=EntregaResponse, summary="Busca uma entrega por ID"
 )
 def obter_entrega(
+    repo: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     entrega_id: str,
-    repo: Annotated[object, Depends(get_entrega_repo)] = None,
 ) -> EntregaResponse:
     try:
         entrega = BuscarEntregaWebhookUseCase(repo).get_by_id(entrega_id)
@@ -807,9 +807,9 @@ def obter_entrega(
     summary="Reenfileira uma entrega da fila de mensagens mortas",
 )
 def reenfileirar_entrega(
+    repo: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     entrega_id: str,
     payload: ReenfileirarPayload,
-    repo: Annotated[object, Depends(get_entrega_repo)] = None,
 ) -> EntregaResponse:
     try:
         entrega = RetryEntregaWebhookUseCase(repo).execute(entrega_id)
@@ -843,11 +843,11 @@ def get_transporte_webhook() -> TransporteWebhookHTTP:
     ),
 )
 def consumir_outbox(
+    outbox: Annotated[OutboxSQLAlchemySource, Depends(get_outbox_source)],
+    repo_webhooks: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
+    repo_entregas: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
+    repo_eventos: Annotated[SqlAlchemyEventoProcessadoRepository, Depends(get_evento_processado_repo)],
     payload: ConsumirOutboxPayload,
-    outbox: Annotated[OutboxSQLAlchemySource, Depends(get_outbox_source)] = None,
-    repo_webhooks: Annotated[object, Depends(get_webhook_repo)] = None,
-    repo_entregas: Annotated[object, Depends(get_entrega_repo)] = None,
-    repo_eventos: Annotated[object, Depends(get_evento_processado_repo)] = None,
 ) -> dict:
     try:
         uc = ConsumirOutboxUseCase(outbox, repo_webhooks, repo_entregas, repo_eventos)
@@ -869,9 +869,9 @@ def consumir_outbox(
     ),
 )
 def despachar_webhooks(
+    repo_entregas: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
+    transporte: Annotated[TransporteWebhookHTTP, Depends(get_transporte_webhook)],
     payload: DespacharPayload,
-    repo_entregas: Annotated[object, Depends(get_entrega_repo)] = None,
-    transporte: Annotated[TransporteWebhookHTTP, Depends(get_transporte_webhook)] = None,
 ) -> ResumoBarramento:
     try:
         uc = DespacharWebhooksUseCase(repo_entregas, transporte)

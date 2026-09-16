@@ -4,6 +4,7 @@ import logging
 from uuid import UUID
 
 from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 from src.modules.sigmun_int.application.interfaces import RepositorioContratoIntegracao
 from src.modules.sigmun_int.domain.entities import ContratoIntegracao, EstadoContrato
@@ -31,7 +32,7 @@ def _to_entity(model: ContratoIntegracaoModel) -> ContratoIntegracao:
 class SqlAlchemyContratoIntegracaoRepository(RepositorioContratoIntegracao):
     """Repositório de contratos de integração persistido via SQLAlchemy."""
 
-    def __init__(self, session) -> None:
+    def __init__(self, session: Session) -> None:
         self._session = session
 
     def save(self, contrato: ContratoIntegracao) -> ContratoIntegracao:

@@ -9,6 +9,7 @@ import logging
 from uuid import UUID
 
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from src.modules.sigmun_int.application.interfaces import RepositorioEventoProcessado
 from src.modules.sigmun_int.domain.entities import EventoProcessado
@@ -35,7 +36,7 @@ def _to_entity(model: EventoProcessadoModel) -> EventoProcessado:
 class SqlAlchemyEventoProcessadoRepository(RepositorioEventoProcessado):
     """Repositorio de eventos processados persistido via SQLAlchemy."""
 
-    def __init__(self, session) -> None:
+    def __init__(self, session: Session) -> None:
         self._session = session
 
     def save(self, evento: EventoProcessado) -> EventoProcessado:

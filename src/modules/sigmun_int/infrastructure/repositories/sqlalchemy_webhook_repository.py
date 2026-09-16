@@ -8,6 +8,7 @@ import logging
 from uuid import UUID
 
 from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 from src.modules.sigmun_int.application.interfaces import RepositorioWebhook
 from src.modules.sigmun_int.domain.entities import EstadoInscricao, Webhook
@@ -36,7 +37,7 @@ def _para_entidade(model: WebhookModel) -> Webhook:
 class SqlAlchemyWebhookRepository(RepositorioWebhook):
     """Repositório de webhooks persistido via SQLAlchemy."""
 
-    def __init__(self, session) -> None:
+    def __init__(self, session: Session) -> None:
         self._session = session
 
     def save(self, webhook: Webhook) -> Webhook:

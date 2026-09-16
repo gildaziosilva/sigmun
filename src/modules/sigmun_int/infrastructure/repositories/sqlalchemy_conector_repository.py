@@ -4,6 +4,7 @@ import logging
 from uuid import UUID
 
 from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 from src.modules.sigmun_int.application.interfaces import RepositorioConector
 from src.modules.sigmun_int.domain.entities import Conector, EstadoConector
@@ -32,7 +33,7 @@ def _to_entity(model: ConectorModel) -> Conector:
 class SqlAlchemyConectorRepository(RepositorioConector):
     """Repositorio de conectores oficiales persistido via SQLAlchemy."""
 
-    def __init__(self, session) -> None:
+    def __init__(self, session: Session) -> None:
         self._session = session
 
     def save(self, conector: Conector) -> Conector:

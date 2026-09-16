@@ -11,6 +11,7 @@ from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import func, or_, select
+from sqlalchemy.orm import Session
 
 from src.modules.sigmun_int.application.interfaces import RepositorioEntregaWebhook
 from src.modules.sigmun_int.domain.entities import EntregaWebhook, EstadoEntrega
@@ -47,7 +48,7 @@ def _to_entity(model: EntregaWebhookModel) -> EntregaWebhook:
 class SqlAlchemyEntregaWebhookRepository(RepositorioEntregaWebhook):
     """Repositório de entregas de webhooks persistido via SQLAlchemy."""
 
-    def __init__(self, session) -> None:
+    def __init__(self, session: Session) -> None:
         self._session = session
 
     def save(self, entrega: EntregaWebhook) -> EntregaWebhook:
@@ -94,7 +95,7 @@ class SqlAlchemyEntregaWebhookRepository(RepositorioEntregaWebhook):
         model.max_tentativas = entrega.max_tentativas
         model.backoff_base_seg = entrega.backoff_base_seg
         model.ultimo_http_status = entrega.ultimo_http_status
-        model.ultimo_erro = entrega.ultimo_erro or None
+        model.ultimo_erro = entrega.ultimo_erro or ""
         model.proximo_retry = entrega.proximo_retry
         model.entregue_em = entrega.entregue_em
         model.atualizado_em = func.now()
