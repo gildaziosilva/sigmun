@@ -2,7 +2,7 @@
 
 > **Projeto:** SIGMUN — Sistema Integrado de Gestão Municipal (Camacan-BA)  
 > **Status Geral do Projeto:** 🟡 Em Desenvolvimento (Onda 1 Concluída, Onda 2 em Finalização)  
-> **Última Atualização:** 2026-09-07  
+> **Última Atualização:** 2026-09-16
 > **Referência Arquitetural:** `SIGMUN-Docs/ROADMAP.md` e `SIGMUN-Docs/Plano-de-Trabalho.md`
 
 Este documento consolida todas as tarefas técnicas, funcionais, documentais e operacionais necessárias para estabilizar o estado atual do projeto, concluir as ondas em andamento e guiar as próximas fases de implementação.
@@ -170,15 +170,16 @@ Prioridade: **Alta** (Conclusão formal da Onda 2)
   - [x] Implementar APIs REST `/api/v1/seg` e integrar ao `src/main.py`.
   - [x] Criar suíte de testes unitários (≥ 30 testes) e de integração.
   - ✅ **V.1 concluído em 2026-09-07:** implementados os use cases e schemas de **Chaves Criptográficas** (`chave_use_cases.py`/`chave_schemas.py`) e **Credenciais** (`credencial_use_cases.py`/`credencial_schemas.py`); corrigidos bugs latentes do módulo (`import uuid` em `models.py`, `import logging`/`logger` nos 5 repositórios); **router `/api/v1/seg` reativado em `src/main.py` com 32 endpoints**; suíte total de DOM-SEG ampliada para **65 testes unitários** (39 base + 26 chave/credencial), todos passando; suíte completa `tests/unit` = **382 passed**. Suíte de integração pendente de execução (exige banco).
-- [x] **V.2 `DOM-INT` — Integração e Interoperabilidade (Ordem 8)** 🟡 *em andamento (checagem 2026-09-16)*
+- [x] **V.2 `DOM-INT` — Integração e Interoperabilidade (Ordem 8)** 🟢 **Concluído tecnicamente**
   - [x] Consolidar artefatos documentais `SIGMUN-Docs/DOM-INT/000` a `026` *(artefatos `001-026` marcados com `Status: Vigente`)*.
-  - [x] Criar módulo `src/modules/sigmun_int/` *(estrutura Clean Architecture/DDD criada — scaffolding em andamento, com código recente de persistência e seed)*.
-  - [ ] Implementar barramento de eventos interno (Event Bus) consumindo o Transactional Outbox de GDO e Compras.
-  - [ ] Implementar catálogo de APIs externas e webhooks com controle de retry e dead-letter queue.
-  - [ ] Implementar conectores oficiais (GOV.BR, e-Social, SIAFIC, PNCP).
-  - [ ] Migração Alembic para schema `integracao`.
-  - [ ] Testes unitários e de integração.
-  - 🟡 **Em andamento (observado na checagem de 2026-09-16):** o módulo `sigmun_int` existe em `src/modules/sigmun_int/`; os commits mais recentes focaram persistência e seed (`feat(DOM-INT): materializa persistência e seed de integração`, `fix: estabiliza persistência e DI do DOM-INT`, `fix(DOM-INT): renomeia version_formato -> versao_formato`). Ainda não há Event Bus operacional, catálogo de APIs/webhooks completo nem migração Alembic para schema `integracao`.
+  - [x] Criar módulo `src/modules/sigmun_int/` seguindo o padrão Clean Architecture/DDD.
+  - [x] Implementar barramento de eventos interno (Event Bus) consumindo os Transactional Outbox de GDO e Compras.
+  - [x] Implementar catálogo de APIs externas e webhooks com controle de retry e dead-letter queue.
+  - [x] Implementar catálogo e seed dos conectores oficiais (GOV.BR, e-Social, SIAFIC, PNCP).
+  - [x] Implementar migration Alembic para o schema `integracao`.
+  - [x] Implementar testes unitários e de integração PostgreSQL.
+  - 🟢 **DOM-INT concluído tecnicamente em 2026-09-16:** implementadas a persistência SQLAlchemy das entidades de integração, os repositórios, o Event Bus integrado aos Transactional Outbox de GDO e Compras, a idempotência de eventos, o catálogo de APIs externas e webhooks, o controle de retry/dead-letter, o catálogo e seed dos conectores oficiais, a migration do schema `integracao` e os testes unitários e de integração PostgreSQL. Validação: **98 testes unitários DOM-INT**, **25 testes de integração PostgreSQL DOM-INT** e **708 testes na suíte completa**, todos aprovados.
+  - [ ] Configurar, homologar e ativar operacionalmente as integrações externas dos conectores oficiais, conforme disponibilidade de credenciais, contratos, ambientes e serviços externos.
 - [ ] **V.3 `DOM-GOV` e `DOM-IND` (Governança e Indicadores Municipais - Ordens 9 e 10)**
   - [ ] Especificar e implementar painéis de conformidade, atos normativos e KPIs estratégicos.
 
@@ -190,11 +191,10 @@ Prioridade: **Média**
 
 > ✅ **Pronto para iniciar em 2026-09-07:** backend no ar (19 rotas) com `/api/v1/seg` **reativado** e DOM-SEG completo (32 endpoints, 65 testes unitários). A Fase VI pode conectar o Admin às APIs reais.
 
-- [x] **VI.1 Conectar Frontend Admin (`frontend/admin`) à API do SIGMUN** 🟡 *em andamento (checagem 2026-09-16)*
+- [ ] **VI.1 Conectar Frontend Admin (`frontend/admin`) à API do SIGMUN**
   - Substituir o mock de login em `localStorage` pela integração real com `POST /api/v1/idn/auth/login`.
   - Armazenar o token JWT de forma segura e injetar nos headers das requisições via Axios/Fetch client.
   - Implementar gerenciamento de estado de usuário e controle de rotas por perfis/roles (RBAC).
-  - 🟡 **Em andamento (observado na checagem de 2026-09-16):** scaffolding do `frontend/admin` existe, mas ainda não há integração funcional completa com a API nem módulos de interface implementados; a evidência atual é a estrutura preparatória do frontend e do Docker/nginx.
 - [ ] **VI.2 Construir Módulos de Interface no Frontend Admin**
   - [ ] **Módulo de Compras e Contratos:** Listagem de processos, detalhe do processo de compra, gestão de fornecedores e contratos.
   - [ ] **Módulo de Gestão Documental (GDO):** Upload de documentos, visualização de PDF, controle de versões, tramitação entre secretarias e assinaturas digitais.

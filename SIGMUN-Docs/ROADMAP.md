@@ -35,7 +35,7 @@ O Mapa Consolidado de Domínios possui atualmente **33 domínios**, incluindo o 
 |---|---|---|
 | Documentação | Artefatos que especificam, modelam ou governam o produto. | Documentação corporativa, arquitetural e de domínios em evolução contínua. |
 | Scaffolding | Estruturas iniciais que preparam o desenvolvimento ou a operação. | Estruturas iniciais de aplicação, infraestrutura, API, banco e CI/CD. |
-| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COMPRAS-001 implementado e em operação controlada; DOM-CUM-001, DOM-IDN-001, DOM-DAD-001, DOM-MET-001 e DOM-GDO-001 implementados com repositórios SQLAlchemy, APIs REST e migrações. DOM-SEG 🟢 (router `/api/v1/seg` com 32 endpoints reativado; 65 testes unitários). DOM-INT em scaffolding (módulo `sigmun_int` criado sem código real; sem migração/mensageria/conectores). |
+| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COMPRAS-001 implementado e em operação controlada; DOM-CUM-001, DOM-IDN-001, DOM-DAD-001, DOM-MET-001 e DOM-GDO-001 implementados com repositórios SQLAlchemy, APIs REST e migrações. DOM-SEG 🟢 (router `/api/v1/seg` com 32 endpoints reativado; 65 testes unitários). DOM-INT 🟢 tecnicamente (persistência, repositórios, Event Bus, idempotência, catálogo de APIs e webhooks, retry/DLQ, catálogo e seed de conectores oficiais, migração e testes PostgreSQL). |
 
 Documentação concluída não equivale a implementação real.
 
@@ -177,7 +177,7 @@ O domínio será considerado implementado somente quando possuir:
 
 # 5. Onda 2 - Domínios Mestres e Transversais
 
-**Status:** 🟡 Em andamento — slices 1 a 4 entregues e DOM-SEG concluído (DOM-CUM, DOM-IDN, DOM-DAD, DOM-MET, DOM-GDO e DOM-SEG 🟢, com router `/api/v1/seg` reativado). Pendência para conclusão formal da Onda 2 (Fase V): DOM-INT (scaffolding — sem código real, migração, mensageria ou conectores).
+**Status:** 🟡 Em andamento — slices 1 a 4 entregues e DOM-SEG e DOM-INT concluídos tecnicamente (DOM-CUM, DOM-IDN, DOM-DAD, DOM-MET, DOM-GDO, DOM-SEG e DOM-INT 🟢). Permanecem pendentes DOM-GOV e DOM-IND para conclusão formal da Onda 2.
 
 **Objetivo:** implementar os domínios que fornecem dados, identidade, serviços e capacidades corporativas reutilizáveis.
 
@@ -335,7 +335,7 @@ Responsável por:
 
 **Implementação:** documentação `SIGMUN-Docs/DOM-SEG/001-026` consolidada (`Status: Vigente`); módulo `sigmun_seg` completo em Clean Architecture, agregados (Controle, Politica, Incidente, ChaveCriptografica, Credencial) com use cases e schemas de todos os 5 agregados, e migração Alembic `20260901_04` aplicada (schema `seg`, 5 tabelas). Suíte unitária **65 testes** (`test_dom_seg_use_cases.py` + `test_dom_seg_chave_credencial_use_cases.py`). **Router `/api/v1/seg` reativado em `src/main.py` com 32 endpoints** (controles, politicas, incidentes, chaves e credenciais).
 
-### `DOM-INT` — Integração e Interoperabilidade 🟡
+### `DOM-INT` — Integração e Interoperabilidade 🟢
 
 Responsável por:
 
@@ -346,7 +346,7 @@ Responsável por:
 - interoperabilidade;
 - contratos de integração.
 
-**Implementação:** documentação `SIGMUN-Docs/DOM-INT/001-026` consolidada (`Status: Vigente`); módulo `sigmun_int` criado como **scaffolding vazio** (estrutura de diretórios Clean Architecture/DDD sem código real). **Pendências:** implementar Event Bus consumindo o Transactional Outbox (base existente em `gdo.eventos_outbox` com `infrastructure/messaging/outbox.py` e `dispatcher.py`; estender para Compras), catálogo de APIs externas e webhooks com retry/dead-letter, conectores oficiais (GOV.BR, e-Social, SIAFIC, PNCP), migração Alembic para o schema `integracao` e testes.
+**Implementação:** documentação `SIGMUN-Docs/DOM-INT/001-026` consolidada (`Status: Vigente`); módulo `sigmun_int` implementado em Clean Architecture/DDD, com persistência SQLAlchemy das entidades de integração, repositórios, Event Bus consumindo os Transactional Outbox de GDO e Compras, idempotência de eventos, catálogo de APIs externas e webhooks com retry/dead-letter, catálogo e seed dos conectores oficiais (GOV.BR, e-Social, SIAFIC, PNCP), migração Alembic para o schema `integracao` e testes unitários e de integração PostgreSQL. **Pendente:** configurar, homologar e ativar operacionalmente as integrações externas dos conectores oficiais, conforme disponibilidade de credenciais, contratos, ambientes e serviços externos.
 
 ### `DOM-GOV` — Governança Municipal
 
@@ -511,7 +511,7 @@ A implantação deverá considerar:
 
 # 8A. Fase VI — Fundação e Evolução do Frontend
 
-**Status:** 🟢 Pronta para iniciar — backend no ar (19 rotas), DOM-SEG completo com `/api/v1/seg` reativado e 65 testes unitários. Bloqueios da Fase V (exceto DOM-INT, não bloqueante) resolvidos.
+**Status:** 🟢 Pronta para iniciar — backend no ar (19 rotas), DOM-SEG e DOM-INT concluídos tecnicamente. Bloqueios técnicos da Fase V resolvidos; a ativação operacional das integrações externas do DOM-INT permanece como evolução específica e não bloqueia o início da Fase VI.
 
 **Prioridade:** Média (conforme `TODO.md`)
 
@@ -533,7 +533,7 @@ A implantação deverá considerar:
 |---|---|---|
 | Backend inicia? | 🟢 **SIM** — `src/main.py` importa e o app carrega (19 rotas) com o router `/api/v1/seg` **reativado** | Desbloqueado: frontend pode consumir as APIs reais (compras, cadastro, idn, dad, met, gdo, seg) |
 | Concluir DOM-SEG (Fase V.1) | 🟢 **Concluído** — router `/api/v1/seg` com 32 endpoints ativo; **65 testes unitários** passam | Não bloqueia o frontend |
-| Concluir DOM-INT (Fase V.2) | ⚪ módulo `sigmun_int` vazio (Event Bus, webhooks, conectores, migração e testes) | Não é bloqueante estrito, mas integra a formalização da Onda 2 |
+| Concluir DOM-INT (Fase V.2) | 🟢 **Concluído tecnicamente** — persistência, Event Bus, idempotência, webhooks, retry/DLQ, conectores, migração e testes PostgreSQL | Não bloqueia o frontend; a ativação operacional das integrações externas permanece como evolução específica |
 | Migração Tabela do Plano de Trabalho regenerada | 🟡 executar `python scripts/atualizar_tabela_plano.py` após novas marcações | Manutenção documental |
 
 ## 8A.3 Sequência recomendada da Fase VI
