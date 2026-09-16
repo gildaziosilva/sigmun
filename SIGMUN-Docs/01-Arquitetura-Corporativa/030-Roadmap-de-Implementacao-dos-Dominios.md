@@ -43,6 +43,28 @@ Scaffolding concluído indica preparação técnica, não capacidade operacional
 
 Um domínio somente será considerado implementado quando cumprir os critérios técnicos, funcionais, de segurança, qualidade, auditoria, homologação e operação definidos neste roadmap e em sua documentação específica.
 
+## 1.2 Correspondência entre Domínios e Módulos
+
+A correspondência entre os domínios corporativos (`DOM-*`) e os módulos
+implementáveis (`MOD-*`) deve ser consultada na **031 — Matriz de
+Correspondência DOM ↔ MOD**.
+
+O documento 031 constitui a referência oficial para:
+
+- identificar o módulo associado a cada domínio;
+- distinguir módulos implementados, preparados e ainda não determinados;
+- registrar evidências arquiteturais da correspondência;
+- diferenciar propriedade de domínio, dependência e referência documental;
+- orientar a futura organização documental e técnica dos módulos.
+
+O roadmap não duplica a matriz de correspondência. Alterações na relação
+`DOM ↔ MOD` devem ser registradas na matriz 031 e refletidas neste roadmap
+somente quando afetarem o planejamento, a sequência ou a maturidade de
+implementação.
+
+**Referência:** `031-Matriz-de-Correspondencia-DOM-MOD.md`.
+
+
 ---
 
 # 2. Princípios de Execução
