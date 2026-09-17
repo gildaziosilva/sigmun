@@ -46,3 +46,9 @@ Este documento encontra-se em elaboração e deverá ser atualizado conforme a e
 
 **Status da revisão:** Vigente
 
+
+## Decisão de canonicalização de Compras
+
+| ADR | Decisão | Aprovação registrada |
+| --- | --- | --- |
+| [ADR-0006](ADR-0006-Compras-canonicalizacao.md) | DOM-COM vigente; formas históricas preservadas seletivamente | Solicitante da tarefa, em 17/09/2026; sem presumir aprovação institucional adicional |

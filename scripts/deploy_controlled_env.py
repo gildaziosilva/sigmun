@@ -2,7 +2,7 @@
 """
 Script de Implantação em Ambiente Controlado - SIGMUN.
 
-Executa a implantação do domínio DOM-COMPRAS-001 em ambiente controlado.
+Executa a implantação do domínio DOM-COM em ambiente controlado.
 
 Referência: Item 19 do ROADMAP.md - Implantar em ambiente controlado
 """
@@ -196,7 +196,7 @@ def generate_evidence(result: DeploymentResult) -> None:
 
     content = f"""# Evidencia de Implantacao - Ambiente Controlado (Item 19)
 
-**Dominio:** DOM-COMPRAS-001 - Gestao de Compras e Contratacoes
+**Dominio:** DOM-COM - Gestao de Compras e Contratacoes
 
 **Data:** {result.start_time.strftime('%Y-%m-%d %H:%M:%S')}
 

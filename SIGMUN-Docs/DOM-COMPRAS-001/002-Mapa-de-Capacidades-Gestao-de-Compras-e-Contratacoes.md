@@ -1345,7 +1345,7 @@ Este documento deverá ser registrado no:
 Relação principal:
 
 ```text
-DOM-COMPRAS-001
+DOM-COM
        ↓
 CAP-MAP-COMPRAS-001
        ↓

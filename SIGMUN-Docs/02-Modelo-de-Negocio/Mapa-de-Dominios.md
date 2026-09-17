@@ -1,5 +1,7 @@
 # Mapa de Domínios
 
+> Normalização de identidade em 17/09/2026 — [ADR-0006](../00-Governanca/ADR/ADR-0006-Compras-canonicalizacao.md): Compras e Contratações mantém o identificador corporativo **DOM-COM**. As formas históricas e a localização física do piloto são tratadas no ADR, sem alterar os demais domínios.
+
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
 **Domínio:** Modelo de Negócio

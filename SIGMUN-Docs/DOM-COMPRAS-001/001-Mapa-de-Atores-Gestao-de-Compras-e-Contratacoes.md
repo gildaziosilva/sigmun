@@ -1222,7 +1222,7 @@ Identificador do artefato:
 Relações principais:
 
 ```text
-DOM-COMPRAS-001
+DOM-COM
        ↓
 ACT-MAP-COMPRAS-001
        ↓

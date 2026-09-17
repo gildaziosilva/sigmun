@@ -1,5 +1,7 @@
 # 012 – Matriz de Rastreabilidade – Gestão de Compras e Contratações
 
+> Normalização de identidade em 17/09/2026 — [ADR-0006](../00-Governanca/ADR/ADR-0006-Compras-canonicalizacao.md): Domínio vigente: **DOM-COM**. O código documental composto DOM-COMPRAS-001-012 é preservado como identificador legado, não como identidade corporativa.
+
 **SIGMUN – Sistema Integrado de Gestão da Prefeitura Municipal de Camacan-BA**
 
 ---
@@ -391,7 +393,7 @@ critérios de aceitação.
 
 Este documento integra o conjunto de artefatos do domínio:
 
-DOM-COMPRAS-001
+DOM-COM
 
 e deverá permanecer alinhado ao documento corporativo:
 

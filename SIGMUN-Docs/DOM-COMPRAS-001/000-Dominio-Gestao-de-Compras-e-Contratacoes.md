@@ -1,5 +1,7 @@
 # 000 – Domínio de Gestão de Compras e Contratações
 
+> Normalização de identidade em 17/09/2026 — [ADR-0006](../00-Governanca/ADR/ADR-0006-Compras-canonicalizacao.md): Identificador corporativo vigente: **DOM-COM — Compras e Contratações**. O diretório DOM-COMPRAS-001 é preservado por compatibilidade; a denominação Gestão de Compras e Contratações não cria outro domínio.
+
 #### Domínio de Gestão de Compras e Contratações
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
@@ -904,7 +906,7 @@ Este domínio deverá manter seus artefatos registrados no:
 A cadeia inicial deverá evoluir para:
 
 ```text
-DOM-COMPRAS
+DOM-COM
       ↓
 CAP-COMPRAS
       ↓

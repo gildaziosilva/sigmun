@@ -23,7 +23,7 @@ O SIGMUN possui a documentação corporativa, o modelo de negócio, o framework 
 
 A implementação técnica ainda está no estágio de fundação: o backend possui scaffolding para módulos, a API possui endpoints técnicos, existem estruturas iniciais de infraestrutura e CI/CD, mas ainda não há implementação completa de módulos de negócio em produção.
 
-O roadmap prioriza uma entrega vertical do `DOM-COMPRAS-001` para validar arquitetura, dados, segurança, APIs, testes e operação antes da expansão para os demais domínios.
+O roadmap prioriza uma entrega vertical do `DOM-COM` para validar arquitetura, dados, segurança, APIs, testes e operação antes da expansão para os demais domínios.
 
 O Mapa Consolidado de Domínios possui atualmente **33 domínios**, incluindo o `DOM-DIA — Gestão de Diárias`.
 
@@ -35,7 +35,7 @@ O Mapa Consolidado de Domínios possui atualmente **33 domínios**, incluindo o 
 |---|---|---|
 | Documentação | Artefatos que especificam, modelam ou governam o produto. | Documentação corporativa, arquitetural e de domínios em evolução contínua. |
 | Scaffolding | Estruturas iniciais que preparam o desenvolvimento ou a operação. | Estruturas iniciais de aplicação, infraestrutura, API, banco e CI/CD. |
-| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COMPRAS-001 em preparação para implementação; demais domínios ainda não implementados. |
+| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COM em preparação para implementação; demais domínios ainda não implementados. |
 
 Documentação concluída não equivale a implementação real.
 
@@ -139,17 +139,17 @@ A aplicação inicial deverá executar com:
 
 ---
 
-# 4. Onda 1 - DOM-COMPRAS-001
+# 4. Onda 1 - DOM-COM
 
 **Domínio:** Gestão de Compras e Contratações
 
-**Código:** `DOM-COMPRAS-001`
+**Código:** `DOM-COM`
 
 **Status:** ⚪ A iniciar após a fundação
 
 **Objetivo:** implementar a primeira capacidade operacional ponta a ponta do SIGMUN.
 
-O `DOM-COMPRAS-001` será o domínio-piloto utilizado para validar o padrão de construção dos demais domínios.
+O `DOM-COM` será o domínio-piloto utilizado para validar o padrão de construção dos demais domínios.
 
 ## 4.1 Sequência recomendada
 
@@ -304,7 +304,7 @@ Responsável por:
 
 ### Dependência
 
-A implementação da Onda 2 deverá utilizar os padrões validados pelo `DOM-COMPRAS-001`.
+A implementação da Onda 2 deverá utilizar os padrões validados pelo `DOM-COM`.
 
 ---
 
@@ -607,12 +607,12 @@ Cada domínio deverá ser responsável pelo seu próprio modelo interno.
 
 ## M1 — Primeiro Domínio Executável do SIGMUN
 
-**Domínio:** `DOM-COMPRAS-001`
+**Domínio:** `DOM-COM`
 
 O primeiro marco deverá resultar em um domínio operacional composto por:
 
 ```text
-DOM-COMPRAS-001
+DOM-COM
        │
        ├── Backend
        ├── Banco de Dados
@@ -627,7 +627,7 @@ DOM-COMPRAS-001
 
 14. Marco M2 — Framework Corporativo Reutilizável
 
-Após a implementação inicial do DOM-COMPRAS-001, os componentes reutilizáveis deverão ser consolidados como capacidades corporativas.
+Após a implementação inicial do DOM-COM, os componentes reutilizáveis deverão ser consolidados como capacidades corporativas.
 
 Exemplos:
 
@@ -829,7 +829,7 @@ rastreabilidade;
 qualidade;
 arquitetura sustentável.
 
-O DOM-COMPRAS-001 será o primeiro domínio executável e servirá como referência arquitetural para os demais domínios.
+O DOM-COM será o primeiro domínio executável e servirá como referência arquitetural para os demais domínios.
 
 O DOM-DIA — Gestão de Diárias será tratado como domínio próprio e deverá ser implementado como parte do núcleo administrativo e econômico-financeiro, mantendo integração controlada com Gestão de Pessoas, Orçamento, Contabilidade, Gestão Documental, Identidade, Dados e Integrações.
 

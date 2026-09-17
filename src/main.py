@@ -71,7 +71,7 @@ app = FastAPI(
     title="SIGMUN API",
     description=(
         "API do Sistema Integrado de Gestão Municipal da Prefeitura Municipal de Camacan-BA. "
-        "Domínio-piloto: Gestão de Compras e Contratações (DOM-COMPRAS-001)."
+        "Domínio-piloto: Gestão de Compras e Contratações (DOM-COM)."
     ),
     version="0.1.0",
     docs_url="/docs",

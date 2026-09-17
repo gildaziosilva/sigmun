@@ -1,4 +1,4 @@
-"""Roteiro de Homologação — Gestão de Compras e Contratações (DOM-COMPRAS-001).
+"""Roteiro de Homologação — Gestão de Compras e Contratações (DOM-COM).
 
 Executa o roteiro de aceitação da Fase 7 – Homologação
 (020-Plano-de-Implantacao, seção 16; ROADMAP item 17) contra a aplicação
@@ -459,7 +459,7 @@ def main() -> int:
         if MODO_PG else "aplicação real, repositórios em memória"
     )
     print("=" * 78)
-    print("HOMOLOGAÇÃO DOM-COMPRAS-001 - Gestão de Compras e Contratações")
+    print("HOMOLOGAÇÃO DOM-COM - Gestão de Compras e Contratações")
     print(f"Versão alvo: {app.version} | Ambiente: {ambiente}")
     print("=" * 78)
 

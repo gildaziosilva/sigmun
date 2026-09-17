@@ -198,7 +198,7 @@ class OperationsManager:
 
         dash = f"""
 ============================================================
-DASHBOARD OPERACIONAL - SIGMUN DOM-COMPRAS-001
+DASHBOARD OPERACIONAL - SIGMUN DOM-COM
 ============================================================
 Timestamp: {now.strftime('%Y-%m-%d %H:%M:%S UTC')}
 
