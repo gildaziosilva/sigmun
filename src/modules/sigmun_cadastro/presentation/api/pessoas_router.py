@@ -7,7 +7,7 @@ Baseado em:
     principal), 007 (exclusão lógica)
 
 Nota: autorização e auditoria estruturadas seguem o padrão do
-DOM-COMPRAS-001 (header X-Usuario-Id provisório até o DOM-IDN).
+DOM-COM (header X-Usuario-Id provisório até o DOM-IDN).
 """
 
 from __future__ import annotations
@@ -183,7 +183,7 @@ def listar_pessoas(
     page: int = Query(default=1, ge=1, description="Página (base 1)"),
     page_size: int = Query(default=50, ge=1, le=200, description="Itens por página"),
 ) -> PessoaListResponse:
-    """Lista paginada de pessoas (padrão do DOM-COMPRAS-001)."""
+    """Lista paginada de pessoas (padrão do DOM-COM)."""
 
     def _to_response(pessoa: Pessoa) -> PessoaResponse:
         """Converte entidade Pessoa em schema de resposta."""

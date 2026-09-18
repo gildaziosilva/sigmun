@@ -142,7 +142,7 @@ class ValidarValorMetadadoUseCase:
 
 
 # ---------------------------------------------------------------------------
-# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar/Listar).
+# Aliases PT-BR espelhados no DOM-COM (Registrar/Consultar/Listar).
 # ---------------------------------------------------------------------------
 RegistrarValorMetadadoUseCase = AtribuirValorMetadadoUseCase
 ConsultarValorMetadadoUseCase = BuscarValorMetadadoUseCase

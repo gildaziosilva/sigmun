@@ -5,7 +5,7 @@
 # Instala o Docker Engine (repositório oficial) e o cliente PostgreSQL no
 # Ubuntu 22.04, habilita o serviço e adiciona o usuário ao grupo docker.
 # O PostgreSQL em si é provisionado pelo docker-compose.yml do projeto
-# (postgres:15 na porta 5433 - ver SIGMUN-Docs/DOM-COMPRAS-001).
+# (postgres:15 na porta 5433 - ver SIGMUN-Docs/DOM-COM).
 #
 # Uso (exige privilégios):
 #   sudo bash scripts/instalar_docker_postgres.sh

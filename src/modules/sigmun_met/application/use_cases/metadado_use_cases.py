@@ -184,7 +184,7 @@ class DeletarMetadadoUseCase:
 
 
 class AlterarSituacaoMetadadoUseCase:
-    """Caso de uso para alterar a situação de um metadado (espelho DOM-COMPRAS-001).
+    """Caso de uso para alterar a situação de um metadado (espelho DOM-COM).
 
     Situações aceitas: "ATIVO" e "INATIVO".
     """
@@ -208,7 +208,7 @@ class AlterarSituacaoMetadadoUseCase:
 
 
 # ---------------------------------------------------------------------------
-# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar/Listar/Excluir).
+# Aliases PT-BR espelhados no DOM-COM (Registrar/Consultar/Listar/Excluir).
 # ---------------------------------------------------------------------------
 RegistrarMetadadoUseCase = CriarMetadadoUseCase
 ConsultarMetadadoUseCase = BuscarMetadadoUseCase

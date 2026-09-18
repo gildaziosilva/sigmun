@@ -117,7 +117,7 @@ def _to_output(tipo: TipoDocumental) -> TipoDocumentoOutputDTO:
 
 
 # ---------------------------------------------------------------------------
-# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar).
+# Aliases PT-BR espelhados no DOM-COM (Registrar/Consultar).
 # ---------------------------------------------------------------------------
 RegistrarTipoDocumentoUseCase = CriarTipoDocumentoUseCase
 ConsultarTipoDocumentoUseCase = BuscarTipoDocumentoUseCase

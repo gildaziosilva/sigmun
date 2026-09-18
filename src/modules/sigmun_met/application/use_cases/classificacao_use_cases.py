@@ -146,7 +146,7 @@ class DeletarClassificacaoUseCase:
 
 
 # ---------------------------------------------------------------------------
-# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar/Excluir).
+# Aliases PT-BR espelhados no DOM-COM (Registrar/Consultar/Excluir).
 # ---------------------------------------------------------------------------
 RegistrarClassificacaoUseCase = CriarClassificacaoUseCase
 ConsultarClassificacaoUseCase = BuscarClassificacaoUseCase

@@ -1,5 +1,7 @@
 # Plano-de-Trabalho.md
 
+> Normalização de identidade em 17/09/2026 — [ADR-0006](00-Governanca/ADR/ADR-0006-Compras-canonicalizacao.md): Identidade vigente de Compras: **DOM-COM**. DOM-COMPRAS-001 permanece nas colunas de localização física, árvore documental e marcos históricos. Esta normalização não atualiza percentuais ou certifica entregas.
+
 
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
@@ -140,7 +142,7 @@ Para evitar que a existência de documentos ou pastas seja confundida com softwa
 
 | Requisitos (Framework Corporativo) | ✅ Concluído |
 
-| Domínio-Piloto de Compras (DOM-COMPRAS-001) | 🟡 Documentação concluída (27/27 artefatos); implementação real pendente |
+| Domínio-Piloto de Compras (DOM-COM) | 🟡 Documentação concluída (27/27 artefatos); implementação real pendente |
 
 | Modelo de Dados (Corporativo) | 🟢 DDL físico definido e migration `20260820_01_core_compras` aplicada (9 tabelas criadas no PostgreSQL) |
 
@@ -178,7 +180,7 @@ Para evitar que a existência de documentos ou pastas seja confundida com softwa
 
 | Requisitos (Framework Corporativo) | ✅ | 100% documental |
 
-| Domínio-Piloto de Compras (DOM-COMPRAS-001) | 🟡 | 100% documental; 0% implementação real |
+| Domínio-Piloto de Compras (DOM-COM) | 🟡 | 100% documental; 0% implementação real |
 
 | Domínios do SIGMUN (32 domínios corporativos + 1 domínio-piloto = 33 domínios × 27 artefatos = 891 documentos) | ✅ | 100% documental (33 domínios, incl. DOM-DIA); implementação pendente |
 
@@ -1992,7 +1994,7 @@ As decisões detalhadas deverão ser mantidas também no arquivo `DECISOES-ARQUI
 
 - [ ] Elaborar catálogo de APIs (`06-Integracoes/APIs.md`).
 
-- [ ] Replicar o modelo do domínio-piloto de Compras (DOM-COMPRAS-001) para os demais domínios/módulos de negócio.
+- [ ] Replicar o modelo do domínio-piloto de Compras (DOM-COM) para os demais domínios/módulos de negócio.
 
 - [ ] Corrigir problemas de codificação (mojibake) identificados em arquivos como `REFERENCIAS.md`, `DECISOES-ARQUITETURAIS.md` e `tests/unit/test_health.py`.
 
@@ -2388,7 +2390,7 @@ As próximas etapas deverão seguir obrigatoriamente a sequência definida na Co
 
 2. Modelagem de Dados Corporativa (Conceitual, Lógico e Físico), com base no modelo já elaborado no domínio-piloto de Compras.
 
-3. Replicação do modelo do domínio-piloto de Compras (DOM-COMPRAS-001) para os demais domínios de negócio.
+3. Replicação do modelo do domínio-piloto de Compras (DOM-COM) para os demais domínios de negócio.
 
 4. Desenvolvimento dos Módulos (implementação das regras de negócio sobre o scaffolding já existente em `src/`), iniciando pelo módulo de Compras.
 

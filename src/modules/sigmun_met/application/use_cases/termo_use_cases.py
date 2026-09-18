@@ -153,7 +153,7 @@ class DeletarTermoUseCase:
 
 
 # ---------------------------------------------------------------------------
-# Aliases PT-BR espelhados no DOM-COMPRAS-001 (Registrar/Consultar/Listar/Excluir).
+# Aliases PT-BR espelhados no DOM-COM (Registrar/Consultar/Listar/Excluir).
 # ---------------------------------------------------------------------------
 RegistrarTermoUseCase = CriarTermoUseCase
 ConsultarTermoUseCase = BuscarTermoUseCase

@@ -237,7 +237,7 @@ Testes repetitivos deverão ser automatizados.
 | DOM-IDN | Autenticação | Login, permissões |
 | DOM-CUM | Unidades | Consulta, listagem |
 | DOM-MET | Metadados | Taxonomias, indexação |
-| DOM-COMPRAS | Processos | Vínculo de documentos |
+| DOM-COM | Processos | Vínculo de documentos |
 | Portal Transparência | Publicação | Documentos públicos |
 | ICP-Brasil | Certificados | Validação de assinaturas |
 

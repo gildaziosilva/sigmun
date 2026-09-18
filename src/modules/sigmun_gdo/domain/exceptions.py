@@ -2,7 +2,7 @@
 
 
 class DocumentalDomainError(Exception):
-    """Base das exceções de negócio do domínio Documental (espelho DOM-COMPRAS-001)."""
+    """Base das exceções de negócio do domínio Documental (espelho DOM-COM)."""
 
     pass
 

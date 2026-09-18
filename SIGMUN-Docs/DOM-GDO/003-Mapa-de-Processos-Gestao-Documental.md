@@ -42,7 +42,7 @@ O mapa de processos observa os seguintes princípios:
 * **Rastreabilidade** — cada atividade gera registro de auditoria;
 * **Segregação de funções** — separa quem cria, classifica, tramita, arquiva e destina;
 * **Conformidade arquivística** — alinhado à legislação e normas de gestão documental;
-* **Integração** — processos conectados aos domínios DOM-IDN, DOM-MET, DOM-COMPRAS, DOM-CUM;
+* **Integração** — processos conectados aos domínios DOM-IDN, DOM-MET, DOM-COM, DOM-CUM;
 * **Automação progressiva** — prioriza fluxos digitais com redução de papel.
 
 ---
@@ -610,7 +610,7 @@ Controle de permissões de acesso a documentos e processos, com classificação 
 | GDO-PRO-010 Auditoria | DOM-IDN (Identidade) | Consome `core.trilha_auditoria` |
 | GDO-PRO-011 Segurança | DOM-IDN (Identidade) | Consome perfis/permissões |
 | GDO-PRO-001 Captura | DOM-MET (Metadados) | Compartilha modelo de metadados |
-| GDO-PRO-006 Processos | DOM-COMPRAS | Vincula `processo_documental` |
+| GDO-PRO-006 Processos | DOM-COM | Vincula `processo_documental` |
 | GDO-PRO-007 Consulta Pública | DOM-CUM (Cadastro) | Valida acesso por pessoa |
 | GDO-PRO-011 LGPD | DOM-DAD (Dados) | Alinha políticas de tratamento |
 

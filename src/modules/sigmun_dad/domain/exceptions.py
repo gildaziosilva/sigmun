@@ -1,6 +1,6 @@
 """Exceções de domínio do módulo de Dados Corporativos.
 
-Base PT-BR espelhada no DOM-COMPRAS-001 (ComprasDomainError).
+Base PT-BR espelhada no DOM-COM (ComprasDomainError).
 Aliases dos nomes anteriores mantidos por compatibilidade.
 """
 

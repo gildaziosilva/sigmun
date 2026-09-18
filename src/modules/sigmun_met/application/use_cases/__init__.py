@@ -1,6 +1,6 @@
 """Casos de uso para gerenciamento de Metadados.
 
-Nomenclatura PT-BR espelhada no DOM-COMPRAS-001:
+Nomenclatura PT-BR espelhada no DOM-COM:
 Registrar* (criação), Consultar*/Listar* (leitura), Excluir* (remoção).
 
 Aliases Criar*/Buscar*/Deletar* mantidos por compatibilidade.

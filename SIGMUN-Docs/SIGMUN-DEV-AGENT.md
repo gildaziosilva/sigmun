@@ -639,7 +639,7 @@ Exemplo:
 
 Usuário:
 
-"Analise o estado atual do DOM-COMPRAS-001
+"Analise o estado atual do DOM-COM
 e diga qual é a próxima implementação recomendada."
 
 Fluxo:

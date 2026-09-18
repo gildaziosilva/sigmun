@@ -1,6 +1,6 @@
 """Eventos de domínio relacionados a Pessoas (DOM-CUM).
 
-Padrão validado no DOM-COMPRAS-001: dataclasses congeladas carregando
+Padrão validado no DOM-COM: dataclasses congeladas carregando
 os dados relevantes do fato ocorrido.
 """
 

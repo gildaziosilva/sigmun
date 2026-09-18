@@ -6,7 +6,7 @@ Baseado em:
   - RN-CUM-009 (unicidade de sigla/códigos IBGE/SIAFI)
 
 Nota: autorização e auditoria estruturadas seguem o padrão do
-DOM-COMPRAS-001 (header X-Usuario-Id provisório até o DOM-IDN).
+DOM-COM (header X-Usuario-Id provisório até o DOM-IDN).
 """
 
 from __future__ import annotations

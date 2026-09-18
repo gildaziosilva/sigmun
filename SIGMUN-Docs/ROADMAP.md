@@ -23,7 +23,7 @@ O SIGMUN possui a documentação corporativa, o modelo de negócio, o framework 
 
 A implementação técnica ainda está no estágio de fundação: o backend possui scaffolding para módulos, a API possui endpoints técnicos, existem estruturas iniciais de infraestrutura e CI/CD, mas ainda não há implementação completa de módulos de negócio em produção.
 
-O roadmap prioriza uma entrega vertical do `DOM-COMPRAS-001` para validar arquitetura, dados, segurança, APIs, testes e operação antes da expansão para os demais domínios.
+O roadmap prioriza uma entrega vertical do `DOM-COM` para validar arquitetura, dados, segurança, APIs, testes e operação antes da expansão para os demais domínios.
 
 O Mapa Consolidado de Domínios possui atualmente **33 domínios**, incluindo o `DOM-DIA — Gestão de Diárias`.
 
@@ -35,7 +35,7 @@ O Mapa Consolidado de Domínios possui atualmente **33 domínios**, incluindo o 
 |---|---|---|
 | Documentação | Artefatos que especificam, modelam ou governam o produto. | Documentação corporativa, arquitetural e de domínios em evolução contínua. |
 | Scaffolding | Estruturas iniciais que preparam o desenvolvimento ou a operação. | Estruturas iniciais de aplicação, infraestrutura, API, banco e CI/CD. |
-| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COMPRAS-001 implementado e em operação controlada; DOM-CUM-001, DOM-IDN-001, DOM-DAD-001, DOM-MET-001 e DOM-GDO-001 implementados com repositórios SQLAlchemy, APIs REST e migrações. DOM-SEG 🟢 (router `/api/v1/seg` com 32 endpoints reativado; 65 testes unitários). DOM-INT 🟢 tecnicamente (persistência, repositórios, Event Bus, idempotência, catálogo de APIs e webhooks, retry/DLQ, catálogo e seed de conectores oficiais, migração e testes PostgreSQL). |
+| Implementação real | Funcionalidade executável com regra de negócio, persistência, segurança, testes e evidência de operação. | DOM-COM implementado e em operação controlada; DOM-CUM-001, DOM-IDN-001, DOM-DAD-001, DOM-MET-001 e DOM-GDO-001 implementados com repositórios SQLAlchemy, APIs REST e migrações. DOM-SEG 🟢 (router `/api/v1/seg` com 32 endpoints reativado; 65 testes unitários). DOM-INT 🟢 tecnicamente (persistência, repositórios, Event Bus, idempotência, catálogo de APIs e webhooks, retry/DLQ, catálogo e seed de conectores oficiais, migração e testes PostgreSQL). |
 
 Documentação concluída não equivale a implementação real.
 
@@ -86,7 +86,7 @@ As ondas representam uma estratégia arquitetural e de dependências. Isso não 
 | Estrutura FastAPI e Clean Architecture/DDD | 🟡 Scaffolding criado; implementação real em evolução |
 | Configuração e gestão de ambientes | 🟡 Inicial |
 | PostgreSQL | 🟢 Migrações `20260820_01` a `20260901_01` aplicadas (schemas `core`, `compras`, `idn`, `dad` e `met`) |
-| SQLAlchemy | 🟢 Repositórios SQLAlchemy dos 6 agregados do DOM-COMPRAS-001 implementados e validados contra PostgreSQL (40 testes de integração; routers persistem via `infrastructure/database/models.py`) |
+| SQLAlchemy | 🟢 Repositórios SQLAlchemy dos 6 agregados do DOM-COM implementados e validados contra PostgreSQL (40 testes de integração; routers persistem via `infrastructure/database/models.py`) |
 | Alembic | 🟢 Estrutura configurada; migration aplicada |
 | Migrações | 🟢 Migrações `20260820_01` a `20260901_01` criadas e aplicadas (`core`, `compras`, `idn`, `dad`, `met`; tabelas, constraints, triggers e índices) |
 | CI/CD | 🟡 Pipeline executando lint, migrações (`alembic upgrade head`) e suíte completa contra PostgreSQL em service container |
@@ -117,17 +117,17 @@ A aplicação inicial deverá executar com:
 
 ---
 
-# 4. Onda 1 - DOM-COMPRAS-001
+# 4. Onda 1 - DOM-COM
 
 **Domínio:** Gestão de Compras e Contratações
 
-**Código:** `DOM-COMPRAS-001`
+**Código:** `DOM-COM`
 
 **Status:** 🟡 Em andamento (processos documentais, contratos, integração de formalização, auditoria, OpenAPI, autorização e validações de negócio implementados; persistência real via repositórios SQLAlchemy sobre PostgreSQL implementada e validada (40 testes de integração; 301 testes na suíte); homologação automatizada aprovada (47/47); checklist de prontidão executado (2026-08-29) com resultado NÃO PRONTO para produção e pendências P-001 a P-010 registradas; próxima etapa: implantação em ambiente controlado (item 19))
 
 **Objetivo:** implementar a primeira capacidade operacional ponta a ponta do SIGMUN.
 
-O `DOM-COMPRAS-001` será o domínio-piloto utilizado para validar o padrão de construção dos demais domínios.
+O `DOM-COM` será o domínio-piloto utilizado para validar o padrão de construção dos demais domínios.
 
 ## 4.1 Sequência recomendada
 
@@ -369,7 +369,7 @@ Responsável por:
 
 ### Dependência
 
-A implementação da Onda 2 deverá utilizar os padrões validados pelo `DOM-COMPRAS-001`.
+A implementação da Onda 2 deverá utilizar os padrões validados pelo `DOM-COM`.
 
 ---
 
@@ -708,12 +708,12 @@ Cada domínio deverá ser responsável pelo seu próprio modelo interno.
 
 ## M1 — Primeiro Domínio Executável do SIGMUN
 
-**Domínio:** `DOM-COMPRAS-001`
+**Domínio:** `DOM-COM`
 
 O primeiro marco deverá resultar em um domínio operacional composto por:
 
 ```text
-DOM-COMPRAS-001
+DOM-COM
        │
        ├── Backend
        ├── Banco de Dados
@@ -728,7 +728,7 @@ DOM-COMPRAS-001
 
 14. Marco M2 — Framework Corporativo Reutilizável
 
-Após a implementação inicial do DOM-COMPRAS-001, os componentes reutilizáveis deverão ser consolidados como capacidades corporativas.
+Após a implementação inicial do DOM-COM, os componentes reutilizáveis deverão ser consolidados como capacidades corporativas.
 
 Exemplos:
 
@@ -930,7 +930,7 @@ rastreabilidade;
 qualidade;
 arquitetura sustentável.
 
-O DOM-COMPRAS-001 será o primeiro domínio executável e servirá como referência arquitetural para os demais domínios.
+O DOM-COM será o primeiro domínio executável e servirá como referência arquitetural para os demais domínios.
 
 O DOM-DIA — Gestão de Diárias será tratado como domínio próprio e deverá ser implementado como parte do núcleo administrativo e econômico-financeiro, mantendo integração controlada com Gestão de Pessoas, Orçamento, Contabilidade, Gestão Documental, Identidade, Dados e Integrações.
 

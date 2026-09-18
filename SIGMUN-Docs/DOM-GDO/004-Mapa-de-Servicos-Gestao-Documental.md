@@ -354,7 +354,7 @@ Os serviços classificam-se em:
 | Auditoria | DOM-IDN (Identidade) | Consome `core.trilha_auditoria` |
 | Segurança | DOM-IDN (Identidade) | Consome perfis/permissões |
 | Documentos | DOM-MET (Metadados) | Compartilha modelo de metadados |
-| Processos | DOM-COMPRAS | Vincula `processo_documental` |
+| Processos | DOM-COM | Vincula `processo_documental` |
 | Consulta Pública | DOM-CUM (Cadastro) | Valida acesso por pessoa |
 | Segurança (LGPD) | DOM-DAD (Dados) | Alinha políticas de tratamento |
 

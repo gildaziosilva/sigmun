@@ -219,7 +219,7 @@ Toda integração relevante deverá permitir identificar:
 
 ---
 
-## 4.4 Domínio de Compras e Contratações (DOM-COMPRAS)
+## 4.4 Domínio de Compras e Contratações (DOM-COM)
 
 **Natureza:** Provisão e Consumo
 
@@ -362,8 +362,8 @@ Toda integração relevante deverá permitir identificar:
 | `idn.usuario.atualizado` | DOM-IDN | Usuário atualizado | Atualizar cache |
 | `cum.unidade.atualizada` | DOM-CUM | Unidade atualizada | Atualizar cache |
 | `met.taxonomia.atualizada` | DOM-MET | Taxonomia atualizada | Atualizar cache |
-| `compras.processo.criado` | DOM-COMPRAS | Processo criado | Disponibilizar vínculo |
-| `compras.processo.encerrado` | DOM-COMPRAS | Processo encerrado | Atualizar documentos |
+| `compras.processo.criado` | DOM-COM | Processo criado | Disponibilizar vínculo |
+| `compras.processo.encerrado` | DOM-COM | Processo encerrado | Atualizar documentos |
 
 ---
 

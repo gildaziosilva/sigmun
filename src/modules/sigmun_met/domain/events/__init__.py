@@ -14,7 +14,7 @@ class DomainEvent:
     aggregate_id: str = ""
 
 
-# Alias PT-BR espelhado no padrão de eventos do DOM-COMPRAS-001.
+# Alias PT-BR espelhado no padrão de eventos do DOM-COM.
 EventoMetadados = DomainEvent
 
 

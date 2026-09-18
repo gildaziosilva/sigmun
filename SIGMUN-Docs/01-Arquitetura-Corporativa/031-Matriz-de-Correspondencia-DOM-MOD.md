@@ -4,469 +4,267 @@
 **Classificação da Informação:** Pública
 **Documento:** Matriz de Correspondência entre Domínios e Módulos
 **Código:** 031
-**Versão:** 1.0
-**Status:** Vigente
-**Última atualização:** 2026-09-16
+**Versão:** 1.2
+**Status:** Revisão
+**Última atualização:** 2026-09-17
 **Responsável:** Equipe SIGMUN
+**Domínio:** Arquitetura Corporativa
+**Documento(s) Relacionado(s):**
+- [Padrão corporativo](../00-Governanca/000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md)
+- [Hierarquia documental](../00-Governanca/000C-HIERARQUIA-DOCUMENTAL-v1.0.md)
+- [Mapa de domínios](../02-Modelo-de-Negocio/Mapa-de-Dominios.md)
+- [Arquitetura de software](004-Arquitetura-de-Software.md)
+- [Diagnóstico histórico de 2026-09-16](../DIAGNOSTICO-ESTADO-SISTEMA.md)
+
+| Campo | Conteúdo |
+| --- | --- |
+| Projeto | SIGMUN |
+| Proprietário | Arquitetura Corporativa |
+| Responsável | Equipe SIGMUN |
+| Versão | 1.2 |
+| Status | Revisão |
+| Classificação | Pública |
+| Data de Criação | 16/09/2026 |
+| Última Revisão | 17/09/2026 |
+| Próxima Revisão | Na próxima alteração DOM ↔ módulo ou validação desta revisão |
+| Aprovado por | Canonicalização autorizada no ADR-0006; aprovação integral da matriz não registrada |
+
+> Esta revisão distingue fatos observados de propostas arquiteturais. Não registra aprovação de identificadores `MOD-*`, homologação funcional ou prontidão para produção.
 
 ---
 
 ## 1. Objetivo
 
-Este documento estabelece a correspondência formal entre os **Domínios Corporativos (`DOM-*`)** e os **Módulos de Aplicação (`sigmun_*`)** do SIGMUN, estabelecendo também a identidade modular proposta no padrão **`MOD-*`**.
-
-A matriz tem como objetivo:
-
-- registrar a relação entre domínio de negócio e módulo de aplicação;
-- distinguir módulos efetivamente implementados de estruturas apenas preparadas;
-- registrar evidências técnicas utilizadas para estabelecer a correspondência;
-- separar ownership de dependências e referências documentais;
-- fornecer uma base confiável para a futura organização documental `DOM → MOD → Capacidades → Artefatos técnicos`;
-- apoiar a indexação documental e a recuperação de conhecimento pelo SIGMUN-AI/RAG;
-- evitar a criação de módulos documentais sem correspondência técnica verificável.
-
----
+Registrar a correspondência observada entre domínios corporativos (`DOM-*`) e módulos de aplicação (`sigmun_*`), distinguindo evidência técnica, proposta documental e pendência de decisão. Os identificadores `MOD-*` são propostas, não renomeações de pacotes nem decisões de aprovação.
 
 ## 2. Princípios
 
-A matriz observa os seguintes princípios arquiteturais:
-
-> **Um domínio representa uma unidade de negócio/documentação corporativa.**
-
-> **Um módulo representa uma unidade modular implementável da aplicação, alinhada ao conceito de Bounded Context.**
-
-> **Uma referência a outro domínio não caracteriza, por si só, ownership.**
-
-> **Uma dependência técnica não altera a propriedade funcional do módulo.**
-
-> **A existência de um diretório de módulo não significa que o módulo esteja implementado.**
-
-Consequentemente, a correspondência DOM ↔ MOD deve ser estabelecida por evidências técnicas e não apenas por similaridade nominal.
-
----
+- Domínio organiza responsabilidades, conceitos, capacidades e requisitos de negócio.
+- Módulo é uma unidade implementável da aplicação, organizada como Bounded Context.
+- A presença de um diretório não comprova implementação.
+- Referência textual, adoção de padrão e dependência técnica são relações diferentes.
+- Uma dependência não transfere a responsabilidade funcional (ownership).
+- A correspondência principal não implica exclusividade nem cobertura integral do domínio. Relações adicionais exigem evidências próprias.
+- A hierarquia DOM → MOD é uma relação de navegação; não substitui a hierarquia normativa corporativa nem exige mover arquivos existentes.
 
 ## 3. Definições
 
-### 3.1 DOM — Domínio Corporativo
+### 3.1 Domínio corporativo
 
-`DOM-*` identifica uma unidade de negócio, conhecimento ou responsabilidade corporativa documentada pelo SIGMUN.
+Unidade de conhecimento ou responsabilidade documentada. Um domínio pode existir sem módulo implementado.
 
-O domínio organiza:
+### 3.2 Módulo de aplicação
 
-- processos de negócio;
-- conceitos;
-- regras;
-- requisitos;
-- capacidades;
-- documentos;
-- responsabilidades;
-- integrações;
-- conhecimento corporativo.
-
----
-
-### 3.2 MOD — Módulo de Aplicação
-
-`MOD-*` representa a identidade arquitetural do módulo de aplicação correspondente a um domínio.
-
-No código-fonte, o módulo é representado atualmente por um diretório:
+Unidade técnica atualmente localizada em:
 
 ```text
 src/modules/sigmun_<modulo>
+```
 
-A documentação MOD-* representa a unidade modular correspondente, mas sua existência documental não implica que o módulo esteja implementado.
-
----
+O nome técnico existente é a identidade estável usada neste inventário. A proposta de um código `MOD-*` não significa implementação ou aprovação arquitetural.
 
 ### 3.3 Ownership
 
-Ownership significa que o módulo é responsável pela implementação funcional principal das capacidades pertencentes ao domínio.
-
-A evidência de ownership pode incluir:
-
-casos de uso;
-entidades;
-value objects;
-serviços de domínio;
-repositórios;
-modelos de persistência;
-routers;
-schemas;
-migrations;
-registro no src/main.py;
-APIs próprias;
-documentação técnica explicitamente associada ao domínio.
-3.4 Dependência
-
-Dependência ocorre quando um módulo utiliza conceitos, serviços, mecanismos ou infraestrutura associados a outro domínio.
-
-Exemplo:
-
-sigmun_int
-    ↓
-utiliza mecanismos associados à segurança
-    ↓
-DOM-SEG
-
-Isso não transforma sigmun_int em módulo proprietário de DOM-SEG.
-
-3.5 Referência documental
-
-Uma referência documental ou histórica ocorre quando um módulo, documento ou artefato menciona outro domínio por razões de:
-
-histórico;
-migração;
-documentação;
-compatibilidade;
-contexto;
-relacionamento funcional;
-evolução arquitetural.
-
-A referência não deve ser interpretada automaticamente como ownership.
-
-4. Evidências utilizadas
-
-A matriz foi estabelecida a partir da inspeção do repositório SIGMUN, considerando principalmente:
-
-src/main.py
-src/README.md
-src/modules/*
-src/sigmun.egg-info/PKG-INFO
-alembic/versions/*
-
-Também foram considerados:
-
-routers registrados;
-APIs;
-casos de uso;
-entidades;
-value objects;
-eventos;
-repositórios;
-modelos de banco;
-tabelas SQLAlchemy;
-migrations;
-referências explícitas a DOM-*.
-5. Matriz principal DOM ↔ MOD
-5.1 Módulos implementados
-DOM	Módulo de aplicação	MOD proposto	Status técnico	Evidências principais
-DOM-COMPRAS-001	sigmun_compras	MOD-COMPRAS	Implementado	Casos de uso, entidades, repositórios, APIs, modelos de persistência, migrations e integração em src/main.py
-DOM-CUM	sigmun_cadastro	MOD-CUM	Implementado	Casos de uso, entidades, VOs, repositórios, modelos de persistência, APIs, migration e integração em src/main.py
-DOM-DAD	sigmun_dad	MOD-DAD	Implementado	Casos de uso, modelos de dados, APIs, persistência, migration e integração em src/main.py
-DOM-GDO	sigmun_gdo	MOD-GDO	Implementado	Casos de uso, entidades, persistência, APIs, migrations e integração em src/main.py
-DOM-IDN	sigmun_idn	MOD-IDN	Implementado	Casos de uso, entidade usuário, VOs, persistência, APIs, migration e integração em src/main.py
-DOM-INT	sigmun_int	MOD-INT	Implementado	Casos de uso de integração, APIs, modelos, persistência, migration e integração em src/main.py
-DOM-MET	sigmun_met	MOD-MET	Implementado	Casos de uso, modelos, APIs, persistência, migration e integração em src/main.py
-DOM-SEG	sigmun_seg	MOD-SEG	Implementado	Casos de uso, modelos de segurança, APIs, persistência, migrations e integração em src/main.py
-5.2 Módulos estruturalmente preparados
-
-Os módulos abaixo possuem estrutura arquitetural em src/modules/, mas a inspeção realizada não encontrou implementação funcional correspondente.
-
-DOM	Módulo de aplicação	MOD proposto	Status técnico	Evidência
-DOM-ASS	sigmun_assistencia_social	MOD-ASS	Preparado	Estrutura Clean Architecture presente; sem casos de uso, entidades, APIs, modelos ou migrations funcionais
-DOM-EDU	sigmun_educacao	MOD-EDU	Preparado	Estrutura Clean Architecture presente; sem casos de uso, entidades, APIs, modelos ou migrations funcionais
-DOM-FRO	sigmun_frotas	MOD-FRO	Preparado	Estrutura Clean Architecture presente; sem casos de uso, entidades, APIs, modelos ou migrations funcionais
-DOM-OBR	sigmun_obras	MOD-OBR	Preparado	Estrutura Clean Architecture presente; sem casos de uso, entidades, APIs, modelos ou migrations funcionais
-DOM-OUV	sigmun_ouvidoria	MOD-OUV	Preparado	Estrutura Clean Architecture presente; sem casos de uso, entidades, APIs, modelos ou migrations funcionais
-DOM-PLA	sigmun_planejamento	MOD-PLA	Preparado	Estrutura Clean Architecture presente; sem casos de uso, entidades, APIs, modelos ou migrations funcionais
-DOM-SAU	sigmun_saude	MOD-SAU	Preparado	Estrutura Clean Architecture presente; sem casos de uso, entidades, APIs, modelos ou migrations funcionais
-DOM-TRI	sigmun_tributos	MOD-TRI	Preparado	Estrutura Clean Architecture presente; sem casos de uso, entidades, APIs, modelos ou migrations funcionais
-5.3 Módulos ainda não determinados
-
-Os módulos abaixo existem estruturalmente no código-fonte, porém a investigação realizada ainda não fornece evidências suficientes para estabelecer uma correspondência técnica definitiva com um DOM-*.
-
-Módulo de aplicação	MOD potencial	Status da correspondência
-sigmun_administracao	MOD-ADMINISTRAÇÃO	Não determinado
-sigmun_agricultura	MOD-AGRICULTURA	Não determinado
-sigmun_almoxarifado	MOD-ALMOXARIFADO	Não determinado
-sigmun_contabilidade	MOD-CONTABILIDADE	Não determinado
-sigmun_controladoria	MOD-CONTROLADORIA	Não determinado
-sigmun_financas	MOD-FINANÇAS	Não determinado
-sigmun_gabinete	MOD-GABINETE	Não determinado
-sigmun_licitacoes	MOD-LICITAÇÕES	Não determinado
-sigmun_patrimonio	MOD-PATRIMÔNIO	Não determinado
-sigmun_procuradoria	MOD-PROCURADORIA	Não determinado
-sigmun_rh	MOD-RH	Não determinado
-sigmun_transparencia	MOD-TRANSPARÊNCIA	Não determinado
+Responsabilidade funcional principal sustentada por casos de uso, entidades, APIs e persistência coerentes com o domínio. A correspondência confirmada nesta matriz limita-se ao escopo encontrado no código.
+
+### 3.4 Dependência e referência
+
+Dependência pressupõe utilização demonstrável de uma interface, serviço, contrato ou mecanismo. Comentários que mencionam outro domínio podem descrever somente um padrão reutilizado ou uma integração futura. Não devem ser convertidos automaticamente em dependências implementadas.
+
+## 4. Evidências e limites da verificação
 
-A ausência de correspondência determinada não significa que o módulo não tenha futuro correspondente. Significa apenas que a evidência técnica atualmente levantada não é suficiente para formalizar essa relação.
+Inspeção estática em **17/09/2026**, sobre a base Git `51c82dc`, com as alterações documentais desta revisão ainda não commitadas:
 
-6. Resumo da situação atual
+- [Registro da aplicação](../../src/main.py): 14 chamadas `include_router`, provenientes de 8 módulos.
+- [Módulos de aplicação](../../src/modules/): 28 diretórios `sigmun_*`.
+- [Migrações](../../alembic/versions/): arquivos de persistência correspondentes aos módulos com código.
+- [Testes unitários](../../tests/unit/) e [testes de integração](../../tests/integration/): artefatos disponíveis; presença não equivale a execução ou aprovação.
+- [Mapa de domínios](../02-Modelo-de-Negocio/Mapa-de-Dominios.md) e documentos dos domínios: referência de negócio, com ressalvas de nomenclatura registradas abaixo.
 
-A situação identificada no repositório é:
+Nos 20 módulos classificados como preparados foram encontrados 13 arquivos Python por módulo, sem instruções de implementação além de docstrings ou `pass` na análise AST. Nenhum deles possui router registrado no ponto de entrada inspecionado. Isso não declara ausência de toda capacidade relacionada em outros módulos ou no núcleo compartilhado.
 
-Categoria	Quantidade
-Módulos tecnicamente implementados	8
-Módulos estruturalmente preparados	8
-Módulos ainda não determinados	12
-Total de módulos analisados	28
+Esta revisão **não executou testes funcionais, migrações ou homologação**. Não certifica completude de requisitos, segurança, operação ou prontidão para produção. O diagnóstico de 16/09/2026 é uma fotografia histórica, não substitui esta checagem. O README do código é auxiliar e seu catálogo está incompleto; metadados de empacotamento não são usados como prova de implementação.
 
-Dos 28 módulos existentes em src/modules/:
+## 5. Matriz principal DOM ↔ módulo
 
-8  → implementação confirmada
-8  → estrutura preparada
-12 → correspondência ainda não determinada
-7. Correspondência confirmada
+### 5.1 Correspondências sustentadas por implementação
 
-A relação atualmente confirmada é:
+“Implementação identificada” significa código, persistência e APIs registradas, não entrega integral do domínio. Os códigos MOD continuam propostos.
 
-DOM-COMPRAS-001
-└── MOD-COMPRAS
-    └── src/modules/sigmun_compras
+| Domínio documentado | Módulo de aplicação | MOD proposto | Maturidade técnica | Correspondência |
+| --- | --- | --- | --- | --- |
+| [DOM-COM](../DOM-COMPRAS-001/) | [sigmun_compras](../../src/modules/sigmun_compras/) | `MOD-COMPRAS` | Implementação identificada | Confirmada no escopo observado |
+| [DOM-CUM](../DOM-CUM/) | [sigmun_cadastro](../../src/modules/sigmun_cadastro/) | `MOD-CUM` | Implementação identificada | Confirmada no escopo observado |
+| [DOM-DAD](../DOM-DAD/) | [sigmun_dad](../../src/modules/sigmun_dad/) | `MOD-DAD` | Implementação identificada | Confirmada no escopo observado |
+| [DOM-GDO](../DOM-GDO/) | [sigmun_gdo](../../src/modules/sigmun_gdo/) | `MOD-GDO` | Implementação identificada | Confirmada no escopo observado |
+| [DOM-IDN](../DOM-IDN/) | [sigmun_idn](../../src/modules/sigmun_idn/) | `MOD-IDN` | Implementação identificada | Confirmada no escopo observado |
+| [DOM-INT](../DOM-INT/) | [sigmun_int](../../src/modules/sigmun_int/) | `MOD-INT` | Implementação identificada | Confirmada no escopo observado |
+| [DOM-MET](../DOM-MET/) | [sigmun_met](../../src/modules/sigmun_met/) | `MOD-MET` | Implementação identificada | Confirmada no escopo observado |
+| [DOM-SEG](../DOM-SEG/) | [sigmun_seg](../../src/modules/sigmun_seg/) | `MOD-SEG` | Implementação identificada | Confirmada no escopo observado |
 
-DOM-CUM
-└── MOD-CUM
-    └── src/modules/sigmun_cadastro
+### 5.2 Correspondências candidatas preservadas da versão 1.0
 
-DOM-DAD
-└── MOD-DAD
-    └── src/modules/sigmun_dad
+As oito associações abaixo permanecem **candidatas**, não ownership tecnicamente confirmado. Foram propostas na versão 1.0; o scaffolding vazio não permite validá-las por comportamento funcional. A afinidade nominal não basta para promovê-las a confirmadas.
 
-DOM-GDO
-└── MOD-GDO
-    └── src/modules/sigmun_gdo
+| Domínio candidato | Módulo de aplicação | MOD proposto | Maturidade técnica | Correspondência |
+| --- | --- | --- | --- | --- |
+| [DOM-ASS](../DOM-ASS/) | [sigmun_assistencia_social](../../src/modules/sigmun_assistencia_social/) | `MOD-ASS` | Preparado | Candidata; validar escopo |
+| [DOM-EDU](../DOM-EDU/) | [sigmun_educacao](../../src/modules/sigmun_educacao/) | `MOD-EDU` | Preparado | Candidata; validar escopo |
+| [DOM-FRO](../DOM-FRO/) | [sigmun_frotas](../../src/modules/sigmun_frotas/) | `MOD-FRO` | Preparado | Candidata; validar escopo |
+| [DOM-OBR](../DOM-OBR/) | [sigmun_obras](../../src/modules/sigmun_obras/) | `MOD-OBR` | Preparado | Candidata; validar escopo |
+| [DOM-OUV](../DOM-OUV/) | [sigmun_ouvidoria](../../src/modules/sigmun_ouvidoria/) | `MOD-OUV` | Preparado | Candidata; validar escopo |
+| [DOM-PLA](../DOM-PLA/) | [sigmun_planejamento](../../src/modules/sigmun_planejamento/) | `MOD-PLA` | Preparado | Candidata; validar escopo |
+| [DOM-SAU](../DOM-SAU/) | [sigmun_saude](../../src/modules/sigmun_saude/) | `MOD-SAU` | Preparado | Candidata; validar escopo |
+| [DOM-TRI](../DOM-TRI/) | [sigmun_tributos](../../src/modules/sigmun_tributos/) | `MOD-TRI` | Preparado | Candidata; validar escopo |
 
-DOM-IDN
-└── MOD-IDN
-    └── src/modules/sigmun_idn
+### 5.3 Estruturas sem correspondência determinada
 
-DOM-INT
-└── MOD-INT
-    └── src/modules/sigmun_int
+Os rótulos MOD potenciais da versão 1.0 não são adotados como identidades oficiais. Não se infere automaticamente DOM-CON para Contabilidade, DOM-PAT para Patrimônio ou DOM-PES para RH: essas associações exigem validação de fronteiras, como as demais candidatas.
 
-DOM-MET
-└── MOD-MET
-    └── src/modules/sigmun_met
+| Módulo de aplicação | Maturidade técnica | Correspondência DOM | Identidade MOD |
+| --- | --- | --- | --- |
+| [sigmun_administracao](../../src/modules/sigmun_administracao/) | Preparado | Não determinada | Não definida |
+| [sigmun_agricultura](../../src/modules/sigmun_agricultura/) | Preparado | Não determinada | Não definida |
+| [sigmun_almoxarifado](../../src/modules/sigmun_almoxarifado/) | Preparado | Não determinada | Não definida |
+| [sigmun_contabilidade](../../src/modules/sigmun_contabilidade/) | Preparado | Não determinada | Não definida |
+| [sigmun_controladoria](../../src/modules/sigmun_controladoria/) | Preparado | Não determinada | Não definida |
+| [sigmun_financas](../../src/modules/sigmun_financas/) | Preparado | Não determinada | Não definida |
+| [sigmun_gabinete](../../src/modules/sigmun_gabinete/) | Preparado | Não determinada | Não definida |
+| [sigmun_licitacoes](../../src/modules/sigmun_licitacoes/) | Preparado | Não determinada | Não definida |
+| [sigmun_patrimonio](../../src/modules/sigmun_patrimonio/) | Preparado | Não determinada | Não definida |
+| [sigmun_procuradoria](../../src/modules/sigmun_procuradoria/) | Preparado | Não determinada | Não definida |
+| [sigmun_rh](../../src/modules/sigmun_rh/) | Preparado | Não determinada | Não definida |
+| [sigmun_transparencia](../../src/modules/sigmun_transparencia/) | Preparado | Não determinada | Não definida |
 
-DOM-SEG
-└── MOD-SEG
-    └── src/modules/sigmun_seg
-8. Dependências e referências que não representam ownership
+## 6. Resumo em dois eixos independentes
 
-A investigação identificou referências entre módulos e domínios que devem ser preservadas sem alterar a correspondência principal.
+| Maturidade técnica | Quantidade |
+| --- | --- |
+| Implementação identificada e APIs registradas | 8 |
+| Preparado, sem implementação Python identificada | 20 |
+| Total | 28 |
 
-8.1 Integração e segurança
+| Correspondência DOM ↔ módulo | Quantidade |
+| --- | --- |
+| Confirmada no escopo observado | 8 |
+| Candidata, preservada da versão 1.0 | 8 |
+| Não determinada | 12 |
+| Total | 28 |
 
-sigmun_int possui referências relacionadas a DOM-SEG.
+Há **33 diretórios de domínio**. A matriz de módulos não é um catálogo completo dos domínios: 17 diretórios não aparecem como correspondência confirmada ou candidata nas seções 5.1 e 5.2. Isso não autoriza criar módulos fictícios ou concluir ausência de capacidades compartilhadas.
 
-A relação deve ser interpretada como:
+## 7. Evidências específicas das correspondências confirmadas
 
-MOD-INT
-   │
-   └── depende de mecanismos associados a
-       MOD-SEG
+As APIs abaixo importam casos de uso e repositórios do respectivo módulo. O registro efetivo deve ser conferido em `src/main.py`, não apenas na existência do arquivo de API.
 
-e não como:
+| Domínio | API / evidência funcional | Persistência |
+| --- | --- | --- |
+| DOM-COM | [Compras, UC-COMPRAS-022 e RN-COMPRAS-025 a 029](../../src/modules/sigmun_compras/presentation/api/compras_router.py) | [Migração inicial de Compras](../../alembic/versions/20260820_01_core_compras.py) |
+| DOM-CUM | [Pessoas, identificação DOM-CUM e regras RN-CUM](../../src/modules/sigmun_cadastro/presentation/api/pessoas_router.py) | [Endereços, documentos e contatos](../../alembic/versions/20260831_02_cum_enderecos_documentos_contatos.py) |
+| DOM-DAD | [API Dados Corporativos](../../src/modules/sigmun_dad/presentation/api/__init__.py) | [Ativos, catálogo e linhagem](../../alembic/versions/20260831_04_dad_ativos_catalogo_linhagem.py) |
+| DOM-GDO | [API Gestão Documental](../../src/modules/sigmun_gdo/presentation/api/__init__.py) | [Documentos, tramitações e processos](../../alembic/versions/20260901_02_gdo_documentos_tramitacoes_processos.py) |
+| DOM-IDN | [API Identidade e Acesso](../../src/modules/sigmun_idn/presentation/api/__init__.py) | [Usuários, roles e sessões](../../alembic/versions/20260831_03_idn_usuarios_roles_sessoes.py) |
+| DOM-INT | [API Integração](../../src/modules/sigmun_int/presentation/api/__init__.py) | [Schema de integração](../../alembic/versions/20260916_01_dom_int_schema.py) |
+| DOM-MET | [API Metadados Corporativos](../../src/modules/sigmun_met/presentation/api/__init__.py) | [Metadados, classificações e taxonomias](../../alembic/versions/20260901_01_met_metadados_classificacoes_taxonomias.py) |
+| DOM-SEG | [API Segurança da Informação](../../src/modules/sigmun_seg/presentation/api/__init__.py) | [Modelos de segurança](../../alembic/versions/20260901_04_dom_seg_models.py) e [correção do schema](../../alembic/versions/20260901_05_dom_seg_schema_correction.py) |
 
-DOM-SEG
-└── MOD-INT
-8.2 Cadastro e identidade
+As migrações são exemplos verificáveis, não uma lista exaustiva nem prova de aplicação ao banco em execução.
 
-sigmun_cadastro possui referências relacionadas a DOM-IDN.
+## 8. Relações que não comprovam ownership ou dependência implementada
 
-A relação deve ser interpretada como dependência ou integração com identidade e acesso:
+### 8.1 Integração e segurança: adoção de padrão
 
-MOD-CUM
-   │
-   └── utiliza/referencia capacidades de
-       MOD-IDN
+Os [modelos de Integração](../../src/modules/sigmun_int/infrastructure/database/models.py), linhas 11–13 na base inspecionada, dizem “Segue o padrão do DOM-SEG”. Isso descreve convenções de persistência, não consumo comprovado do módulo `sigmun_seg`. A análise de imports Python do módulo não encontrou importação direta de outro `src.modules.sigmun_*`.
 
-A propriedade principal permanece:
+Não afirmar `MOD-INT → depende de MOD-SEG` a partir desses comentários. Dependências indiretas, via núcleo, infraestrutura ou contratos externos exigem investigação específica.
 
-DOM-CUM → MOD-CUM
-DOM-IDN → MOD-IDN
-8.3 Referências a DOM-COMPRAS-001
+### 8.2 Cadastro e identidade: integração futura/provisória
 
-Foram encontradas referências a DOM-COMPRAS-001 em artefatos de outros módulos, incluindo:
+Os routers de [Pessoas](../../src/modules/sigmun_cadastro/presentation/api/pessoas_router.py) e [Unidades](../../src/modules/sigmun_cadastro/presentation/api/unidades_router.py) descrevem `X-Usuario-Id` como provisório “até o DOM-IDN”. Não comprovam integração concluída com `sigmun_idn`. A análise de imports Python também não encontrou importação direta de outro módulo de negócio.
 
-sigmun_cadastro
-sigmun_dad
-sigmun_gdo
-sigmun_idn
-sigmun_met
+A correspondência principal observada continua sendo DOM-CUM ↔ `sigmun_cadastro`; não se atribui a ele ownership de Identidade e Acesso.
 
-Essas ocorrências não devem ser automaticamente classificadas como ownership.
+### 8.3 Referências a Compras: padrões e histórico
 
-A correspondência principal permanece:
+Comentários em Cadastro, Dados, Gestão Documental, Identidade e Metadados mencionam DOM-COM como padrão ou contexto, após normalização conforme ADR-0006. Exemplo: [exceções de Metadados](../../src/modules/sigmun_met/domain/exceptions.py) descrevem um “espelho DOM-COM”. Cada ocorrência deve ser interpretada em seu contexto, não convertida em ownership.
 
-DOM-COMPRAS-001 → MOD-COMPRAS
+Compras contém artefatos de processo documental, enquanto Gestão Documental possui módulo próprio. Essa coexistência não prova duplicação indevida nem transferência integral de responsabilidade: a fronteira entre o recorte de Compras e o serviço documental corporativo permanece um ponto de rastreabilidade a aprofundar.
 
-As demais ocorrências devem ser tratadas conforme seu contexto individual como:
+## 9. Divergências documentais preexistentes
 
-dependência;
-integração;
-referência documental;
-contexto histórico;
-ou relacionamento funcional.
-9. Critérios para criação futura de um MOD
+### 9.1 Identificação de Compras — decisão aplicada
 
-A existência de um diretório src/modules/sigmun_* não é suficiente para declarar um módulo como implementado.
+Conforme [ADR-0006](../00-Governanca/ADR/ADR-0006-Compras-canonicalizacao.md), **DOM-COM é o identificador corporativo vigente de Compras e Contratações**, alinhado ao [Mapa de Domínios](../02-Modelo-de-Negocio/Mapa-de-Dominios.md).
 
-Um módulo poderá ser classificado como Implementado quando houver evidências técnicas suficientes, incluindo, conforme aplicável:
+- DOM-COMPRAS: identificação documental histórica, substituída nas referências correntes.
+- DOM-COMPRAS-001: identificação histórica do piloto e localização física/documental preservada por compatibilidade.
+- O [diretório documental](../DOM-COMPRAS-001/index.md), os destinos de evidências e os códigos documentais legados não são renomeados.
+- O módulo técnico permanece `sigmun_compras`; RN-COMPRAS-*, UC-COMPRAS-* e ENT-COMPRAS-* permanecem inalterados.
 
-casos de uso;
-entidades;
-regras de domínio;
-repositórios;
-persistência;
-APIs;
-schemas;
-migrations;
-testes;
-registro na aplicação;
-documentação técnica;
-correspondência inequívoca com o domínio corporativo.
+A decisão foi aprovada pelo solicitante desta alteração; não se presume aprovação institucional adicional. Esta normalização não altera ownership, maturidade, fronteiras funcionais ou a situação proposta de MOD-COMPRAS. A auditoria anterior permanece como registro histórico.
 
-A classificação não exige que todos os itens estejam completos para sempre. Ela exige evidência suficiente de que existe uma implementação funcional e integrada.
+### 9.2 Hierarquia e identidade documental
 
-10. Estados de maturidade modular
+O padrão 000A e a hierarquia 000C apresentam escalas de níveis distintas. Esta matriz não resolve sua precedência nem substitui os dois documentos. A organização por índices é navegação, não mudança de autoridade normativa.
 
-A matriz adota os seguintes estados:
+Há numeração divergente entre nomes de arquivos e títulos corporativos (por exemplo, a arquitetura de software tem arquivo 004 e título 008). Os links desta matriz apontam para os **arquivos existentes**, sem inferir renumeração oficial.
 
-10.1 Não determinado
+## 10. Critérios de classificação
 
-Existe um módulo ou referência potencial, mas não há evidência suficiente para estabelecer a correspondência DOM ↔ MOD.
+### 10.1 Eixo técnico
 
-10.2 Preparado
+- **Preparado:** scaffolding existente, sem implementação identificada na inspeção.
+- **Em implementação:** comportamento parcial identificado, ainda sem evidências suficientes de integração ao ponto de entrada aplicável.
+- **Implementação identificada:** código funcional reconhecível, persistência e APIs integradas ao ponto de entrada, no escopo observado. Substitui o rótulo ambíguo “Implementado” da versão 1.0; não certifica completude nem execução bem-sucedida.
+- **Consolidado:** requer critérios formalizados e evidências de testes, homologação, observabilidade e operação. Nenhum módulo é certificado neste estado por esta revisão.
 
-A estrutura modular foi criada, mas não há implementação funcional suficiente.
+### 10.2 Eixo da correspondência
 
-10.3 Em implementação
+- **Confirmada no escopo observado:** identificação documental e responsabilidade funcional corroboradas pelo código.
+- **Candidata:** associação proposta ainda sem evidência funcional suficiente.
+- **Não determinada:** sem associação formalizada nesta matriz.
 
-Existe implementação funcional parcial, porém o módulo ainda não atingiu o nível necessário para ser considerado consolidado.
+A maturidade documental e a aprovação de códigos MOD são independentes desses dois eixos.
 
-10.4 Implementado
+## 11. Organização documental
 
-Existe implementação funcional identificável, persistência e/ou APIs quando aplicáveis, integração arquitetural e evidências suficientes de ownership.
+Manter os documentos corporativos nos diretórios atuais. Organizar índices de módulos sob `05-Modulos/sigmun_<modulo>/index.md`, usando a identidade técnica existente. Isso evita criar identidades MOD oficiais por inferência.
 
-10.5 Consolidado
+Um índice de domínio deve listar seus documentos e apontar para módulos confirmados ou candidatos com rótulos explícitos. Um índice de módulo deve informar correspondência, maturidade, evidências, limites e retorno ao catálogo. Domínio sem associação registrada não deve receber módulo fictício.
 
-Estado futuro destinado a módulos que, além de implementados, possuam documentação, testes, integração, observabilidade, segurança e demais critérios de maturidade estabelecidos pelo SIGMUN.
+## 12. SIGMUN-AI e RAG
 
-11. Relação com a documentação dos DOM
+A navegação pode relacionar domínio, módulo, capacidade, caso de uso e evidência. O consumidor deve preservar os qualificadores “candidato”, “não determinado”, “proposto” e “implementação identificada”. A indexação não é prova de integração RAG implementada nem deve promover relações hipotéticas a fatos.
 
-A partir desta matriz, a estrutura documental poderá evoluir para:
+## 13. Governança
 
-DOM
-│
-├── identidade e responsabilidade do domínio
-├── processos
-├── capacidades
-├── requisitos
-├── regras de negócio
-│
-└── MOD
-    │
-    ├── arquitetura
-    ├── casos de uso
-    ├── entidades
-    ├── APIs
-    ├── persistência
-    ├── integrações
-    ├── segurança
-    ├── testes
-    └── evidências
+Atualizar a matriz quando houver novo módulo, mudança de responsabilidade, API, persistência, fronteira de contexto ou documentação corporativa relevante. Registrar data, base técnica, evidências e histórico. Aprovações devem ser registradas pela instância responsável; não presumidas pela presença do documento no repositório.
 
-A matriz deste documento é a referência para estabelecer essa relação.
+## 14. Regras para os índices
 
-12. Relação com o SIGMUN-AI e RAG
+- Verificar o conteúdo e o registro na aplicação, não somente nomes de diretórios.
+- Usar esta matriz revisada como referência de correspondência, preservando suas ressalvas.
+- Permitir índices de inventário para os 20 módulos preparados, sem declará-los implementados.
+- Não atribuir código MOD oficial aos 12 módulos sem correspondência determinada.
+- Verificar destinos locais e cobertura dos documentos; distinguir link válido de conteúdo validado.
+- Identificar templates e documentos em elaboração quando observados, sem mudar aprovações em massa.
 
-A matriz também funciona como camada semântica para recuperação de conhecimento.
+## 15. Estado das decisões
 
-Uma consulta relacionada a um domínio poderá ser resolvida pela cadeia:
+Confirmados por inspeção: 28 estruturas modulares, 8 com implementação identificada e 14 routers registrados. Preservadas como candidatas: 8 associações da versão 1.0. Sem correspondência determinada: 12 estruturas. Aprovação dos códigos MOD e alinhamento da hierarquia corporativa continuam pendentes. A canonicalização de Compras foi decidida no ADR-0006 e aplicada nesta revisão.
 
-DOM
- ↓
-MOD
- ↓
-Capacidade
- ↓
-Caso de uso
- ↓
-Artefato técnico
- ↓
-Evidência
+## 16. Próximas verificações
 
-Exemplo:
+- Manter a identidade DOM-COM e a compatibilidade física do piloto conforme ADR-0006; acompanhar a auditoria de regressão.
+- Validar as fronteiras dos módulos preparados e as associações candidatas.
+- Ampliar o cruzamento requisito → caso de uso → implementação → teste.
+- Executar testes e homologação em ambiente apropriado antes de atestar completude funcional.
+- Manter os índices alinhados às mudanças desta matriz, sem alterar o roadmap como se a indexação fosse entrega de capacidades de negócio.
 
-DOM-SEG
-   ↓
-MOD-SEG
-   ↓
-capacidades de segurança
-   ↓
-casos de uso
-   ↓
-API / persistência / testes
+## 17. Histórico de alterações
 
-Isso permite que o SIGMUN-AI diferencie:
-
-domínio corporativo;
-módulo de aplicação;
-capacidade;
-dependência;
-referência documental;
-implementação real.
-
-Essa distinção reduz o risco de o sistema inferir ownership apenas pela ocorrência textual de um código DOM-*.
-
-13. Governança da matriz
-
-A matriz deve ser atualizada quando ocorrer qualquer mudança relevante na relação entre domínio e módulo, incluindo:
-
-criação de módulo;
-implementação de módulo;
-mudança de ownership;
-criação de nova API;
-criação de nova migration;
-reorganização arquitetural;
-decomposição ou consolidação de módulos;
-alteração da fronteira de um Bounded Context;
-mudança relevante na documentação corporativa.
-
-Alterações devem ser acompanhadas de evidência técnica ou documental correspondente.
-
-14. Regra para criação de índices DOM/MOD
-
-Nenhum index.md de módulo deve ser criado com base apenas no nome de um diretório.
-
-A geração dos índices deverá utilizar esta matriz como uma das fontes de verdade.
-
-O processo deverá distinguir:
-
-DOM existente
-MOD confirmado
-MOD preparado
-MOD não determinado
-dependências
-referências
-
-A geração de documentação não deve transformar automaticamente uma estrutura de código vazia em módulo implementado.
-
-15. Estado da decisão arquitetural
-
-A investigação realizada até 2026-09-16 permite estabelecer formalmente:
-
-Os oito módulos atualmente integrados à aplicação constituem as correspondências DOM ↔ MOD tecnicamente confirmadas do SIGMUN.
-
-Os oito módulos candidatos adicionais possuem estrutura arquitetural preparada, mas não possuem implementação funcional suficiente para serem classificados como módulos implementados.
-
-Os doze módulos restantes permanecem sem correspondência técnica determinada até que novas evidências sejam levantadas.
-
-Referências entre domínios e módulos não devem ser interpretadas como alteração de ownership sem evidência específica.
-
-16. Próximos passos
-
-Após a aprovação desta matriz, os próximos passos arquiteturais são:
-
-validar este documento;
-registrar a matriz no roadmap;
-criar a estrutura documental MOD-* apenas para os módulos confirmados, quando apropriado;
-definir o padrão documental de um MOD-*;
-relacionar capacidades e casos de uso aos módulos;
-projetar os index.md dos DOM;
-projetar os index.md dos MOD;
-validar a hierarquia para uso pelo SIGMUN-AI/RAG.
-17. Histórico de alterações
-Versão	Data	Alteração	Responsável
-1.0	2026-09-16	Criação da matriz formal DOM ↔ MOD com base na análise do repositório	Equipe SIGMUN
+| Versão | Data | Alteração | Responsável |
+| --- | --- | --- | --- |
+| 1.0 | 2026-09-16 | Criação da matriz formal DOM ↔ MOD com base na análise do repositório | Equipe SIGMUN |
+| 1.1 | 2026-09-17 | Correção Markdown; eixos independentes; evidências locais; revisão de dependências inferidas; divergências de nomenclatura e regras de indexação. Em revisão, sem aprovação presumida | Equipe SIGMUN |
+| 1.2 | 2026-09-17 | Aplicação do ADR-0006: DOM-COM vigente; histórico e localização física preservados; demais pendências mantidas | Gildazio, por autorização do solicitante |

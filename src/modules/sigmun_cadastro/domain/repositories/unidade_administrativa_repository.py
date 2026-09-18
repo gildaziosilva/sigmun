@@ -1,6 +1,6 @@
 """Contrato do repositório de Unidades Administrativas (DOM-CUM).
 
-Padrão validado no DOM-COMPRAS-001.
+Padrão validado no DOM-COM.
 """
 
 from __future__ import annotations

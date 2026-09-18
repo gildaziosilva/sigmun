@@ -252,7 +252,7 @@ Capacidade de gerar informações gerenciais para a gestão documental.
 | GDO-F09 Auditoria | DOM-IDN (Identidade) | Consome `core.trilha_auditoria` |
 | GDO-F10 Segurança | DOM-IDN (Identidade) | Consome perfis/permissões |
 | GDO-F01 Gestão de Documentos | DOM-MET (Metadados) | Compartilha modelo de metadados |
-| GDO-F02 Processos | DOM-COMPRAS | Vincula `processo_documental` |
+| GDO-F02 Processos | DOM-COM | Vincula `processo_documental` |
 | GDO-F03 Consulta Pública | DOM-CUM (Cadastro) | Valida acesso por pessoa |
 | GDO-F10 LGPD | DOM-DAD (Dados) | Alinha políticas de tratamento |
 

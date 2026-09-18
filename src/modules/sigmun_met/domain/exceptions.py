@@ -2,7 +2,7 @@
 
 
 class MetadadosDomainError(Exception):
-    """Base das exceções de negócio do domínio Metadados (espelho DOM-COMPRAS-001)."""
+    """Base das exceções de negócio do domínio Metadados (espelho DOM-COM)."""
 
 
 class MetadadoNaoEncontradoError(MetadadosDomainError):

@@ -1,7 +1,7 @@
 """Contrato do repositório de Pessoas (DOM-CUM).
 
 O domínio define a interface; a infraestrutura (SQLAlchemy) implementa.
-Padrão validado no DOM-COMPRAS-001 (FornecedorRepository).
+Padrão validado no DOM-COM (FornecedorRepository).
 """
 
 from __future__ import annotations
