@@ -10,7 +10,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, Float, Text, func
+from sqlalchemy import JSON, DateTime, Float, ForeignKey, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -29,8 +29,8 @@ class AtivoDadoModel(DadBase):
     nome: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     descricao: Mapped[str | None] = mapped_column(Text)
     tipo: Mapped[str] = mapped_column(Text, nullable=False, default="tabela")
-    status: Mapped[str] = mapped_column(Text, nullable=False, default="PENDENTE")
-    qualidade: Mapped[str] = mapped_column(Text, nullable=False, default="MEDIO")
+    status: Mapped[str] = mapped_column(Text, nullable=False, default="pendente")
+    qualidade: Mapped[str] = mapped_column(Text, nullable=False, default="medio")
     dono_id: Mapped[str | None] = mapped_column(Text)
     steward_id: Mapped[str | None] = mapped_column(Text)
     schema_origem: Mapped[str | None] = mapped_column(Text)
@@ -90,8 +90,16 @@ class LinhagemDadoModel(DadBase):
     __table_args__ = {"schema": "dad"}
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    ativo_origem_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
-    ativo_destino_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    ativo_origem_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("dad.ativos_dados.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
+    ativo_destino_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("dad.ativos_dados.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     tipo_transformacao: Mapped[str | None] = mapped_column(Text)
     descricao: Mapped[str | None] = mapped_column(Text)
     regras: Mapped[str | None] = mapped_column(Text)
@@ -144,8 +152,12 @@ class QualidadeDadoModel(DadBase):
     __table_args__ = {"schema": "dad"}
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    ativo_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
-    nivel: Mapped[str] = mapped_column(Text, nullable=False, default="MEDIO")
+    ativo_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("dad.ativos_dados.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
+    nivel: Mapped[str] = mapped_column(Text, nullable=False, default="medio")
     score: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     criterios: Mapped[str] = mapped_column(Text, nullable=False, default="")
     observacao: Mapped[str | None] = mapped_column(Text)
