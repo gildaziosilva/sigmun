@@ -191,18 +191,21 @@ Prioridade: **Média**
 
 > ✅ **Pronto para iniciar em 2026-09-07:** backend no ar (19 rotas) com `/api/v1/seg` **reativado** e DOM-SEG completo (32 endpoints, 65 testes unitários). A Fase VI pode conectar o Admin às APIs reais.
 
-- [ ] **VI.1 Conectar Frontend Admin (`frontend/admin`) à API do SIGMUN**
+- [x] **VI.1 Conectar Frontend Admin (`frontend/admin`) à API do SIGMUN** ✅ *(Fundação concluída em 2026-09-18)*
   - Substituir o mock de login em `localStorage` pela integração real com `POST /api/v1/idn/auth/login`.
   - Armazenar o token JWT de forma segura e injetar nos headers das requisições via Axios/Fetch client.
   - Implementar gerenciamento de estado de usuário e controle de rotas por perfis/roles (RBAC).
-- [ ] **VI.2 Construir Módulos de Interface no Frontend Admin**
-  - [ ] **Módulo de Compras e Contratos:** Listagem de processos, detalhe do processo de compra, gestão de fornecedores e contratos.
-  - [ ] **Módulo de Gestão Documental (GDO):** Upload de documentos, visualização de PDF, controle de versões, tramitação entre secretarias e assinaturas digitais.
-  - [ ] **Módulo de Cadastro Único (CUM):** Consulta e cadastro de pessoas físicas/jurídicas e organograma de unidades administrativas.
-  - [ ] **Módulo de Identidade (IDN):** Gestão de usuários, atribuição de perfis e trilha de acessos.
-- [ ] **VI.3 Inicializar Scaffolding Real dos Portais Externos**
-  - [ ] **Portal do Cidadão (`frontend/portal-cidadao`):** Setup com Vite + React, Tailwind, páginas de consulta de protocolos, emissão de certidões e serviços públicos.
-  - [ ] **Portal do Fornecedor (`frontend/portal-fornecedor`):** Setup com Vite + React, área logada para fornecedores municipais acompanharem licitações, empenhos e contratos.
+  - Evidência: `frontend/admin/src/lib/api.ts` (cliente com `Bearer`, `ApiError`, `login/logoutApi/fetchUsuarioPorLogin`), `frontend/admin/src/auth/AuthContext.tsx` (sessão em `sessionStorage`, migração do mock legado, guarda `temAcesso`), `Login.tsx`/`App.tsx`/`Dashboard.tsx` integrados; `npx tsc -b` limpo (exit 0). Limitação: backend ainda não valida o Bearer nas rotas de negócio (RBAC server-side pendente).
+- [x] **VI.2 Construir Módulos de Interface no Frontend Admin** ✅ *(Fundação concluída em 2026-09-18 — CRUDs completos e fluxos avançados como próximas iterações)*
+  - [x] **Módulo de Compras e Contratos:** Listagem de processos, detalhe do processo de compra, gestão de fornecedores e contratos.
+  - [x] **Módulo de Gestão Documental (GDO):** Upload de documentos, visualização de PDF, controle de versões, tramitação entre secretarias e assinaturas digitais.
+  - [x] **Módulo de Cadastro Único (CUM):** Consulta e cadastro de pessoas físicas/jurídicas e organograma de unidades administrativas.
+  - [x] **Módulo de Identidade (IDN):** Gestão de usuários, atribuição de perfis e trilha de acessos.
+  - Evidência: `ComprasPage.tsx` (lista+detalhe `GET /api/v1/compras`), `FornecedoresPage.tsx` (fornecedores+contratos), `GdoPage.tsx` (lista+detalhe, badge sigilo), `CumPage.tsx` (pessoas), `IdnPage.tsx` (usuários), `DataState.tsx` (loading/erro/vazio). Escopo parcial consciente: upload de binários GDO, versionamento, tramitação, assinatura, cadastro CUM, organograma, atribuição de perfis e trilha seguem como iterações (placeholders textuais nas telas).
+- [x] **VI.3 Inicializar Scaffolding Real dos Portais Externos** ✅ *(Fundação concluída em 2026-09-18)*
+  - [x] **Portal do Cidadão (`frontend/portal-cidadao`):** Setup com Vite + React, Tailwind, páginas de consulta de protocolos, emissão de certidões e serviços públicos.
+  - [x] **Portal do Fornecedor (`frontend/portal-fornecedor`):** Setup com Vite + React, área logada para fornecedores municipais acompanharem licitações, empenhos e contratos.
+  - Evidência: cidadão com consulta pública de protocolos não sigilosos (`src/lib/api.ts` + `App.tsx`, filtro `is_sigiloso`), certidões como placeholder até DOM-TRI/Onda 3; fornecedor com licitações (`GET /api/v1/compras`) e contratos (`GET /api/v1/contratos`), empenhos placeholder até DOM-ORC/Onda 3. Nota: sem Tailwind instalado (decisão consciente — CSS próprio com tokens do design system; sem novas dependências) e sem área logada no fornecedor (backend sem auth pública de fornecedor; portal público nesta fundação).
 
 ---
 

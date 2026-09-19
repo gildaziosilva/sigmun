@@ -3,9 +3,9 @@
 Aplicação frontend com área logada para fornecedores municipais de Camacan-BA
 acompanharem licitações, empenhos e contratos.
 
-> **Status:** scaffolding inicial. O desenvolvimento real está planejado na
-> Fase VI do `TODO.md` (tarefa VI.3 — "Inicializar Scaffolding Real dos
-> Portais Externos").
+> **Status Fase VI (2026-09-18):** fundação implementada — acompanhamento público
+> de licitações (GET /api/v1/compras) e contratos (GET /api/v1/contratos);
+> empenhos como placeholder até DOM-ORC/Onda 3. Tipos validados via tsc.
 
 ## Stack
 
@@ -18,7 +18,7 @@ acompanharem licitações, empenhos e contratos.
 ```bash
 npm install
 npm run dev      # desenvolvimento (proxy /api e /health para localhost:8000)
-npm run build    # build de produção (dist/)
+npx tsc -b       # checagem de tipos (usa o tsc do admin se este pacote sem node_modules)
 npm run lint     # oxlint
 ```
 

@@ -1,38 +1,43 @@
-import { useEffect, useState } from 'react'
-import type { FormEvent } from 'react'
-import { fetchHealth, type HealthStatus } from '../lib/api'
+import { useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
+import { useAuth } from '../auth/AuthContext';
+import { fetchHealth, type HealthStatus } from '../lib/api';
 
-interface LoginProps {
-  onEntrar: (nome: string, email: string) => void
-}
-
-function Login({ onEntrar }: LoginProps) {
-  const [nome, setNome] = useState('')
-  const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
-
-  const [saude, setSaude] = useState<HealthStatus | null>(null)
-  const [saudeErro, setSaudeErro] = useState('')
+function Login() {
+  const { entrar, erro } = useAuth();
+  const [login, setLogin] = useState('');
+  const [senha, setSenha] = useState('');
+  const [localErro, setLocalErro] = useState('');
+  const [carregando, setCarregando] = useState(false);
+  const [saude, setSaude] = useState<HealthStatus | null>(null);
+  const [saudeErro, setSaudeErro] = useState('');
 
   useEffect(() => {
     fetchHealth()
       .then(setSaude)
       .catch((err: unknown) => {
-        setSaudeErro(err instanceof Error ? err.message : 'API indisponível')
-      })
-  }, [])
+        setSaudeErro(err instanceof Error ? err.message : 'API indisponível');
+      });
+  }, []);
 
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    if (!nome.trim() || !email.trim() || !senha.trim()) {
-      setErro('Preencha todos os campos para entrar.')
-      return
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (!login.trim() || !senha.trim()) {
+      setLocalErro('Preencha login e senha para entrar.');
+      return;
     }
-    setErro('')
-    // TODO: integrar com POST /api/v1/auth/login quando o endpoint existir.
-    onEntrar(nome.trim(), email.trim())
+    setLocalErro('');
+    setCarregando(true);
+    try {
+      await entrar(login, senha);
+    } catch {
+      /* erro já exposto via contexto */
+    } finally {
+      setCarregando(false);
+    }
   }
+
+  const mensagem = localErro || erro;
 
   return (
     <div className="login-page">
@@ -52,27 +57,15 @@ function Login({ onEntrar }: LoginProps) {
         <form className="form" onSubmit={handleSubmit} noValidate>
           <h2>Painel administrativo</h2>
 
-          <label htmlFor="nome">
-            Nome
+          <label htmlFor="login">
+            Login
             <input
-              id="nome"
+              id="login"
               type="text"
-              autoComplete="name"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              placeholder="Nome do servidor"
-            />
-          </label>
-
-          <label htmlFor="email">
-            E-mail
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="servidor@camacan.ba.gov.br"
+              autoComplete="username"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+              placeholder="matricula ou usuário"
             />
           </label>
 
@@ -88,23 +81,24 @@ function Login({ onEntrar }: LoginProps) {
             />
           </label>
 
-          {erro && (
+          {mensagem && (
             <p className="alert alert--error" role="alert">
-              {erro}
+              {mensagem}
             </p>
           )}
 
-          <button type="submit" className="button button--primary">
-            Entrar
+          <button type="submit" className="button button--primary" disabled={carregando}>
+            {carregando ? 'Entrando…' : 'Entrar'}
           </button>
+          <p className="form-hint">Autenticação via POST /api/v1/idn/auth/login.</p>
         </form>
 
         <footer className="login-status">
           <span className="status-dot" aria-hidden="true" />
           {saude ? (
             <p>
-              API conectada — <strong>{saude.service}</strong> (v
-              {saude.version})
+              API conectada — <strong>{saude.service}</strong> (v{saude.version})
+              {saude.database ? ` · banco ${saude.database}` : ''}
             </p>
           ) : (
             <p>{saudeErro || 'Verificando conexão com a API…'}</p>
@@ -112,7 +106,7 @@ function Login({ onEntrar }: LoginProps) {
         </footer>
       </main>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

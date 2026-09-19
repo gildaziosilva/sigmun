@@ -1,41 +1,47 @@
-import { useEffect, useState } from 'react'
-import { fetchHealth, type HealthStatus } from '../lib/api'
+import { useEffect, useState } from 'react';
+import { temAcesso, useAuth } from '../auth/AuthContext';
+import { fetchHealth, type HealthStatus } from '../lib/api';
+import ComprasPage from './compras/ComprasPage';
+import FornecedoresPage from './compras/FornecedoresPage';
+import CumPage from './cum/CumPage';
+import GdoPage from './gdo/GdoPage';
+import IdnPage from './idn/IdnPage';
 
-interface Session {
-  nome: string
-  email: string
-  loginAt: string
-}
+const NAV_ITEMS = [
+  { id: 'painel', rotulo: 'Painel' },
+  { id: 'compras', rotulo: 'Compras' },
+  { id: 'fornecedores', rotulo: 'Fornecedores' },
+  { id: 'gdo', rotulo: 'Documentos' },
+  { id: 'cum', rotulo: 'Cadastro Único' },
+  { id: 'usuarios', rotulo: 'Usuários' },
+] as const;
 
-interface DashboardProps {
-  session: Session
-  onSair: () => void
-}
+type Rota = (typeof NAV_ITEMS)[number]['id'];
 
-const NAV_ITEMS = ['Painel', 'Módulos', 'Administração'] as const
-
-/** Módulos de negócio do SIGMUN (placeholders até serem implementados). */
-const MODULOS = [
-  'Compras e Contratações',
-  'Tributos',
-  'Orçamento',
-  'Patrimônio',
-  'Saúde',
-  'Educação',
-]
-
-function Dashboard({ session, onSair }: DashboardProps) {
-  const [aba, setAba] = useState<(typeof NAV_ITEMS)[number]>('Painel')
-  const [saude, setSaude] = useState<HealthStatus | null>(null)
-  const [saudeErro, setSaudeErro] = useState('')
+function Dashboard() {
+  const { session, perfil, sair } = useAuth();
+  const [aba, setAba] = useState<Rota>('painel');
+  const [saude, setSaude] = useState<HealthStatus | null>(null);
+  const [saudeErro, setSaudeErro] = useState('');
 
   useEffect(() => {
     fetchHealth()
       .then(setSaude)
       .catch((err: unknown) => {
-        setSaudeErro(err instanceof Error ? err.message : 'API indisponível')
-      })
-  }, [])
+        setSaudeErro(err instanceof Error ? err.message : 'API indisponível');
+      });
+  }, []);
+
+  const nome = session?.usuario?.nome ?? session?.login ?? 'Servidor(a)';
+  const email = session?.usuario?.email ?? '';
+  const iniciais = nome
+    .split(' ')
+    .slice(0, 2)
+    .map((p) => p.charAt(0))
+    .join('')
+    .toUpperCase();
+
+  const rotaPermitida: Rota = temAcesso(perfil, aba) ? aba : 'painel';
 
   return (
     <div className="app-shell">
@@ -51,24 +57,27 @@ function Dashboard({ session, onSair }: DashboardProps) {
         </div>
 
         <nav className="sidebar-nav" aria-label="Navegação principal">
-          {NAV_ITEMS.map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={item === aba ? 'active' : ''}
-              aria-current={item === aba ? 'page' : undefined}
-              onClick={() => setAba(item)}
-            >
-              {item}
-            </button>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            if (!temAcesso(perfil, item.id)) return null;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={item.id === rotaPermitida ? 'active' : ''}
+                aria-current={item.id === rotaPermitida ? 'page' : undefined}
+                onClick={() => setAba(item.id)}
+              >
+                {item.rotulo}
+              </button>
+            );
+          })}
         </nav>
 
-        <button
-          type="button"
-          className="button button--ghost button--sair"
-          onClick={onSair}
-        >
+        <div className="sidebar-user">
+          <small>{perfil === 'admin' ? 'Administrador' : 'Servidor'}</small>
+        </div>
+
+        <button type="button" className="button button--ghost button--sair" onClick={sair}>
           Sair
         </button>
       </aside>
@@ -76,70 +85,65 @@ function Dashboard({ session, onSair }: DashboardProps) {
       <div className="content">
         <header className="topbar">
           <div>
-            <h1 className="topbar-title">{aba}</h1>
-            <p className="topbar-subtitle">Bem-vindo(a), {session.nome}</p>
+            <h1 className="topbar-title">{NAV_ITEMS.find((n) => n.id === rotaPermitida)?.rotulo}</h1>
+            <p className="topbar-subtitle">Bem-vindo(a), {nome}</p>
           </div>
-          <span className="topbar-user" title={session.email}>
-            {session.nome
-              .split(' ')
-              .slice(0, 2)
-              .map((p) => p.charAt(0))
-              .join('')
-              .toUpperCase()}
+          <span className="topbar-user" title={email || nome}>
+            {iniciais}
           </span>
         </header>
 
         <main className="main">
-          {aba === 'Painel' && (
+          {rotaPermitida === 'painel' && (
             <section>
               <h2 className="section-title">Status do sistema</h2>
-              <div
-                className={`card status-card ${
-                  saude ? 'status-card--ok' : 'status-card--error'
-                }`}
-              >
+              <div className={`card status-card ${saude ? 'status-card--ok' : 'status-card--error'}`}>
                 <span className="status-dot" aria-hidden="true" />
                 {saude ? (
                   <p>
-                    Backend <strong>{saude.service}</strong> está{' '}
-                    <strong>{saude.status}</strong> (versão {saude.version}).
+                    Backend <strong>{saude.service}</strong> está <strong>{saude.status}</strong>{' '}
+                    (versão {saude.version}
+                    {saude.database ? `, banco ${saude.database}` : ''}).
                   </p>
                 ) : (
                   <p>{saudeErro || 'Verificando API…'}</p>
                 )}
               </div>
-            </section>
-          )}
-
-          {aba === 'Módulos' && (
-            <section>
-              <h2 className="section-title">Módulos</h2>
               <div className="card-grid">
-                {MODULOS.map((modulo) => (
-                  <article key={modulo} className="card card--modulo">
-                    <h3>{modulo}</h3>
-                    <p>Em construção — em breve.</p>
-                  </article>
-                ))}
+                <article className="card card--modulo">
+                  <h3>Compras</h3>
+                  <p>Processos, fornecedores e contratos.</p>
+                  <button type="button" className="link" onClick={() => setAba('compras')}>
+                    Abrir módulo
+                  </button>
+                </article>
+                <article className="card card--modulo">
+                  <h3>Documentos</h3>
+                  <p>Gestão documental (GDO).</p>
+                  <button type="button" className="link" onClick={() => setAba('gdo')}>
+                    Abrir módulo
+                  </button>
+                </article>
+                <article className="card card--modulo">
+                  <h3>Cadastro Único</h3>
+                  <p>Pessoas físicas e jurídicas.</p>
+                  <button type="button" className="link" onClick={() => setAba('cum')}>
+                    Abrir módulo
+                  </button>
+                </article>
               </div>
             </section>
           )}
 
-          {aba === 'Administração' && (
-            <section>
-              <h2 className="section-title">Administração</h2>
-              <div className="card">
-                <p>
-                  Gestão de usuários, perfis e permissões sera implementada em
-                  breve.
-                </p>
-              </div>
-            </section>
-          )}
+          {rotaPermitida === 'compras' && <ComprasPage />}
+          {rotaPermitida === 'fornecedores' && <FornecedoresPage />}
+          {rotaPermitida === 'gdo' && <GdoPage />}
+          {rotaPermitida === 'cum' && <CumPage />}
+          {rotaPermitida === 'usuarios' && <IdnPage />}
         </main>
       </div>
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
