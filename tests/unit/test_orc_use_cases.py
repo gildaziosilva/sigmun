@@ -38,6 +38,10 @@ from src.modules.sigmun_orc.domain.entities.ldo import LDO, StatusLDO
 from src.modules.sigmun_orc.domain.entities.loa import LOA, StatusLOA
 from src.modules.sigmun_orc.domain.entities.ppa import PPA, StatusPPA
 from src.modules.sigmun_orc.domain.entities.reserva import ReservaSaldo
+from src.modules.sigmun_orc.domain.exceptions import (
+    DotacaoSemSaldoError,
+    RegraNegocioError,
+)
 
 
 def _ppa(status=StatusPPA.ELABORACAO) -> PPA:
@@ -96,7 +100,7 @@ class TestPlanejamento:
     def test_ppa_quadrienio_invalido(self) -> None:
         """Quadriênio diferente de 4 anos gera erro."""
         ppas = MagicMock(spec=RepositorioPPA)
-        with pytest.raises(Exception):
+        with pytest.raises(RegraNegocioError):
             CriarPPAUseCase(ppas).execute(CriarPPAInput(2026, 2027))
 
 
@@ -130,7 +134,7 @@ class TestDotacao:
         dots = MagicMock(spec=RepositorioDotacao)
         dots.get_by_id = MagicMock(return_value=dot)
         res_repo = MagicMock(spec=RepositorioReserva)
-        with pytest.raises(Exception):
+        with pytest.raises(DotacaoSemSaldoError):
             ReservarSaldoUseCase(res_repo, dots).execute(
                 ReservarSaldoInput(dotacao_id="dot-1", valor=5000.0))
 

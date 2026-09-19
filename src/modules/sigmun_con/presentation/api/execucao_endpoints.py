@@ -27,6 +27,7 @@ from src.modules.sigmun_con.presentation.schemas.con_schemas import (
     PagamentoCreateRequest,
     PagamentoResponse,
 )
+from src.modules.sigmun_orc.application.interfaces import RepositorioDotacao
 from src.modules.sigmun_orc.domain.exceptions import DomOrcDomainError
 
 from .base import (
@@ -50,7 +51,7 @@ def _to_empenho(emp) -> EmpenhoResponse:  # type: ignore[no-untyped-def]
 @router.post("/empenhos", status_code=201)
 def emitir_empenho(payload: EmpenhoCreateRequest,
                    emps: Annotated[RepositorioEmpenho, Depends(get_empenho_repo)],
-                   dots=Depends(get_dotacao_repo_con)):  # type: ignore[no-untyped-def]
+                   dots: Annotated[RepositorioDotacao, Depends(get_dotacao_repo_con)]):
     """Emite empenho com baixa no saldo da dotação."""
     dot = dots.get_by_id(payload.dotacao_id)
     if dot is None:
@@ -65,7 +66,7 @@ def emitir_empenho(payload: EmpenhoCreateRequest,
                                autor_id=payload.created_by), dot)
         dots.save(dot)
     except (DomConDomainError, DomOrcDomainError) as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_empenho(emp)
 
 
@@ -78,7 +79,7 @@ def liquidar(empenho_id: str, payload: EmpenhoValorRequest,
         liq = LiquidarEmpenhoUseCase(emps, liqs).execute(
             empenho_id, payload.valor, payload.documento)
     except DomConDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return LiquidacaoResponse(id=liq.id, empenho_id=liq.empenho_id, valor=liq.valor,
                               status=liq.status.value, created_at=liq.created_at)
 
@@ -86,7 +87,7 @@ def liquidar(empenho_id: str, payload: EmpenhoValorRequest,
 @router.post("/empenhos/{empenho_id}/anular")
 def anular_empenho(empenho_id: str, payload: EmpenhoValorRequest,
                    emps: Annotated[RepositorioEmpenho, Depends(get_empenho_repo)],
-                   dots=Depends(get_dotacao_repo_con)):  # type: ignore[no-untyped-def]
+                   dots: Annotated[RepositorioDotacao, Depends(get_dotacao_repo_con)]):
     """Anula parcial/total do empenho (devolve saldo)."""
     emp = emps.get_by_id(empenho_id)
     if emp is None:
@@ -100,7 +101,7 @@ def anular_empenho(empenho_id: str, payload: EmpenhoValorRequest,
         emp2 = AnularEmpenhoUseCase(emps).execute(empenho_id, payload.valor, dot)
         dots.save(dot)
     except (DomConDomainError, DomOrcDomainError) as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_empenho(emp2)
 
 
@@ -115,7 +116,7 @@ def pagar(payload: PagamentoCreateRequest,
             payload.liquidacao_id, payload.valor, payload.conta_bancaria,
             payload.created_by)
     except DomConDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return PagamentoResponse(id=pag.id, liquidacao_id=pag.liquidacao_id,
                              empenho_id=pag.empenho_id, valor=pag.valor,
                              status=pag.status.value, created_at=pag.created_at)

@@ -6,9 +6,9 @@ from .dotacao import (
     Dotacao,
     StatusDotacao,
 )
-from .ldo import ESTADOS_TERMINAIS_LDO, TRANSICOES_LDO, LDO, StatusLDO
-from .loa import ESTADOS_TERMINAIS_LOA, TRANSICOES_LOA, LOA, StatusLOA
-from .ppa import ESTADOS_TERMINAIS_PPA, TRANSICOES_PPA, PPA, StatusPPA
+from .ldo import ESTADOS_TERMINAIS_LDO, LDO, TRANSICOES_LDO, StatusLDO
+from .loa import ESTADOS_TERMINAIS_LOA, LOA, TRANSICOES_LOA, StatusLOA
+from .ppa import ESTADOS_TERMINAIS_PPA, PPA, TRANSICOES_PPA, StatusPPA
 from .reserva import (
     ESTADOS_TERMINAIS_RESERVA,
     TRANSICOES_RESERVA,

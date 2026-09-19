@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import uuid
 
-from sqlalchemy import Boolean, Column, DateTime, Float, Integer, Text
-from sqlalchemy import func
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 
 from .models import Base

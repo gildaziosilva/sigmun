@@ -22,6 +22,7 @@ from src.modules.sigmun_con.application.use_cases_contabil import (
 )
 from src.modules.sigmun_con.domain.entities.conta import ContaContabil
 from src.modules.sigmun_con.domain.entities.lancamento import StatusLancamento
+from src.modules.sigmun_con.domain.exceptions import LancamentoDesequilibradoError
 
 
 def _conta(codigo: str) -> ContaContabil:
@@ -50,7 +51,7 @@ class TestContabil:
         contas = MagicMock(spec=RepositorioContaContabil)
         contas.get_by_id = MagicMock(side_effect=lambda cid: _conta(cid))
         lancs = MagicMock(spec=RepositorioLancamento)
-        with pytest.raises(Exception):
+        with pytest.raises(LancamentoDesequilibradoError):
             LancarContabilUseCase(lancs, contas).execute(
                 LancarInput(exercicio=2026, historico="X",
                             partidas=[PartidaInput(conta_id="a", codigo_conta="a",

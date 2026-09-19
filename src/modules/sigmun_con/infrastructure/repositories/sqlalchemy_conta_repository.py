@@ -2,20 +2,13 @@
 
 from __future__ import annotations
 
-import json
 import uuid
 
 from sqlalchemy.orm import Session
 
-from ...application.interfaces import RepositorioContaContabil, RepositorioLancamento
+from ...application.interfaces import RepositorioContaContabil
 from ...domain.entities.conta import ContaContabil
-from ...domain.entities.lancamento import (
-    LancamentoContabil,
-    Partida,
-    StatusLancamento,
-    TipoPartida,
-)
-from ..database.models_contabil import ContaContabilModel, LancamentoModel
+from ..database.models_contabil import ContaContabilModel
 
 
 class SQLAlchemyContaRepository(RepositorioContaContabil):

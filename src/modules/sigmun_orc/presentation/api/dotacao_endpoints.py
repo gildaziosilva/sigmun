@@ -57,7 +57,7 @@ def criar_dotacao(payload: DotacaoCreateRequest,
                               fonte_recursos=payload.fonte_recursos,
                               autor_id=payload.created_by))
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_dotacao(dot)
 
 
@@ -68,7 +68,7 @@ def suplementar(dotacao_id: str, payload: DotacaoValorRequest,
     try:
         dot = SuplementarDotacaoUseCase(repo).execute(dotacao_id, payload.valor)
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_dotacao(dot)
 
 
@@ -79,7 +79,7 @@ def anular(dotacao_id: str, payload: DotacaoValorRequest,
     try:
         dot = AnularDotacaoUseCase(repo).execute(dotacao_id, payload.valor)
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_dotacao(dot)
 
 
@@ -105,7 +105,7 @@ def reservar(payload: ReservaCreateRequest,
                                finalidade=payload.finalidade, numero=payload.numero,
                                autor_id=payload.created_by))
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return ReservaResponse(id=r.id, dotacao_id=r.dotacao_id, valor=r.valor,
                            status=r.status.value, created_at=r.created_at)
 
@@ -118,7 +118,7 @@ def cancelar_reserva(reserva_id: str,
     try:
         r = CancelarReservaUseCase(res, dots).execute(reserva_id)
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return ReservaResponse(id=r.id, dotacao_id=r.dotacao_id, valor=r.valor,
                            status=r.status.value, created_at=r.created_at)
 

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from . import interfaces as ports
 from ..domain.entities.conta import ContaContabil
 from ..domain.entities.lancamento import (
     ConciliacaoContabil,
@@ -12,6 +11,7 @@ from ..domain.entities.lancamento import (
     Partida,
     TipoPartida,
 )
+from . import interfaces as ports
 
 
 @dataclass

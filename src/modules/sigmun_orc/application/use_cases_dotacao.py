@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from . import interfaces as ports
 from ..domain.entities.dotacao import Dotacao
 from ..domain.entities.reserva import ReservaSaldo
+from . import interfaces as ports
 
 
 @dataclass
@@ -33,8 +33,8 @@ class CriarDotacaoUseCase:
 
     def execute(self, dto: CriarDotacaoInput) -> Dotacao:
         """Executa a criação."""
-        from ..domain.exceptions import RegraNegocioError
         from ..domain.entities.loa import StatusLOA
+        from ..domain.exceptions import RegraNegocioError
 
         if not dto.codigo:
             raise RegraNegocioError("Código da dotação é obrigatório (RN-ORC-030)")

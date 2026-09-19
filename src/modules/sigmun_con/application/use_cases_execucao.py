@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from . import interfaces as ports
 from ..domain.entities.empenho import Empenho, TipoEmpenho
 from ..domain.entities.liquidacao import Liquidacao
 from ..domain.entities.pagamento import Pagamento
+from . import interfaces as ports
 
 
 @dataclass

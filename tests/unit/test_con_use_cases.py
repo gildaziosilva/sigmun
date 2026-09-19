@@ -24,6 +24,7 @@ from src.modules.sigmun_con.domain.entities.liquidacao import (
     StatusLiquidacao,
 )
 from src.modules.sigmun_orc.domain.entities.dotacao import Dotacao
+from src.modules.sigmun_orc.domain.exceptions import DotacaoSemSaldoError
 
 
 def _dotacao() -> Dotacao:
@@ -67,7 +68,7 @@ class TestExecucao:
         dot = _dotacao()
         emps = MagicMock(spec=RepositorioEmpenho)
         emps.get_by_numero_exercicio = MagicMock(return_value=None)
-        with pytest.raises(Exception):
+        with pytest.raises(DotacaoSemSaldoError):
             EmitirEmpenhoUseCase(emps).execute(
                 EmitirEmpenhoInput(exercicio=2026, numero="X", valor=5000.0), dot)
 

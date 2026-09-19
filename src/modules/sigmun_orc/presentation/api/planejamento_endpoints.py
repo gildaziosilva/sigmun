@@ -48,7 +48,7 @@ def criar_ppa(payload: PPACreateRequest,
                           descricao=payload.descricao,
                           autor_id=payload.created_by))
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return PPAResponse(id=ppa.id, ano_inicial=ppa.ano_inicial,
                        ano_final=ppa.ano_final, descricao=ppa.descricao,
                        status=ppa.status.value, created_at=ppa.created_at)
@@ -60,7 +60,7 @@ def publicar_ppa(ppa_id: str, repo: Annotated[RepositorioPPA, Depends(get_ppa_re
     try:
         ppa = PublicarPPAUseCase(repo).execute(ppa_id)
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return PPAResponse(id=ppa.id, ano_inicial=ppa.ano_inicial,
                        ano_final=ppa.ano_final, descricao=ppa.descricao,
                        status=ppa.status.value, created_at=ppa.created_at)
@@ -79,7 +79,7 @@ def criar_ldo(payload: LDOCreateRequest,
                           meta_despesa=payload.meta_despesa,
                           autor_id=payload.created_by))
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return LDOResponse(id=ldo.id, exercicio=ldo.exercicio, ppa_id=ldo.ppa_id,
                        descricao=ldo.descricao, status=ldo.status.value,
                        created_at=ldo.created_at)
@@ -91,7 +91,7 @@ def sancionar_ldo(ldo_id: str, repo: Annotated[RepositorioLDO, Depends(get_ldo_r
     try:
         ldo = SancionarLDOUseCase(repo).execute(ldo_id, sancionar=True)
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return LDOResponse(id=ldo.id, exercicio=ldo.exercicio, ppa_id=ldo.ppa_id,
                        descricao=ldo.descricao, status=ldo.status.value,
                        created_at=ldo.created_at)
@@ -108,7 +108,7 @@ def criar_loa(payload: LOACreateRequest,
                           descricao=payload.descricao, receita=payload.receita,
                           despesa=payload.despesa, autor_id=payload.created_by))
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return LOAResponse(id=loa.id, exercicio=loa.exercicio, ldo_id=loa.ldo_id,
                        descricao=loa.descricao, status=loa.status.value,
                        created_at=loa.created_at)
@@ -120,7 +120,7 @@ def publicar_loa(loa_id: str, repo: Annotated[RepositorioLOA, Depends(get_loa_re
     try:
         loa = PublicarLOAUseCase(repo).execute(loa_id, publicar=True)
     except DomOrcDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return LOAResponse(id=loa.id, exercicio=loa.exercicio, ldo_id=loa.ldo_id,
                        descricao=loa.descricao, status=loa.status.value,
                        created_at=loa.created_at)

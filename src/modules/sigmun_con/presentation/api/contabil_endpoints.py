@@ -50,7 +50,7 @@ def criar_conta(payload: ContaCreateRequest,
                             natureza=payload.natureza,
                             autor_id=payload.created_by))
     except DomConDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return ContaResponse(id=conta.id, codigo=conta.codigo, nome=conta.nome,
                          tipo=conta.tipo, created_at=conta.created_at)
 
@@ -70,7 +70,7 @@ def lancar(payload: LancamentoCreateRequest,
                         origem=payload.origem, origem_id=payload.origem_id,
                         autor_id=payload.created_by))
     except DomConDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return LancamentoResponse(id=lanc.id, exercicio=lanc.exercicio,
                               historico=lanc.historico,
                               total_debito=lanc.total_debito,
@@ -91,7 +91,7 @@ def conciliar(payload: ConciliacaoCreateRequest,
                            autor_id=payload.created_by),
             payload.justificativa)
     except DomConDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return ConciliacaoResponse(id=conc.id, conta_id=conc.conta_id,
                                competencia_ano=conc.competencia_ano,
                                competencia_mes=conc.competencia_mes,

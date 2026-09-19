@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from . import interfaces as ports
 from ..domain.entities.ldo import LDO, StatusLDO
-from ..domain.entities.loa import LOA, StatusLOA
+from ..domain.entities.loa import LOA
 from ..domain.entities.ppa import PPA, StatusPPA
+from . import interfaces as ports
 
 
 @dataclass
