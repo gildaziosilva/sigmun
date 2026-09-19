@@ -28,13 +28,13 @@ def upgrade() -> None:
         Column("salario_base", Float, nullable=False, server_default="0"),
         Column("carga_horaria_semanal", Integer, nullable=False,
                server_default="40"),
-        Column("ativo", Boolean, nullable=False, server_default=func.true()),
+        Column("ativo", Boolean, nullable=False, server_default="true"),
         Column("created_at", DateTime(timezone=True), nullable=False,
                server_default=func.now()),
         Column("updated_at", DateTime(timezone=True)),
         Column("created_by", Text),
         Column("is_deleted", Boolean, nullable=False,
-               server_default=func.false()),
+               server_default="false"),
         schema="rh",
     )
     op.create_table(
@@ -57,7 +57,7 @@ def upgrade() -> None:
         Column("created_by", Text),
         Column("updated_by", Text),
         Column("is_deleted", Boolean, nullable=False,
-               server_default=func.false()),
+               server_default="false"),
         schema="rh",
     )
     op.create_table(
@@ -68,14 +68,14 @@ def upgrade() -> None:
         Column("cargo_id", Text),
         Column("data_inicio", Date),
         Column("data_fim", Date),
-        Column("vigente", Boolean, nullable=False, server_default=func.true()),
+        Column("vigente", Boolean, nullable=False, server_default="true"),
         Column("motivo", Text),
         Column("created_at", DateTime(timezone=True), nullable=False,
                server_default=func.now()),
         Column("updated_at", DateTime(timezone=True)),
         Column("created_by", Text),
         Column("is_deleted", Boolean, nullable=False,
-               server_default=func.false()),
+               server_default="false"),
         schema="rh",
     )
 

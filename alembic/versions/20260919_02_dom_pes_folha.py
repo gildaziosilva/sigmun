@@ -38,7 +38,7 @@ def upgrade() -> None:
         Column("created_by", Text),
         Column("updated_by", Text),
         Column("is_deleted", Boolean, nullable=False,
-               server_default=func.false()),
+               server_default="false"),
         schema="rh",
     )
     op.create_table(
@@ -60,7 +60,7 @@ def upgrade() -> None:
         Column("updated_at", DateTime(timezone=True)),
         Column("created_by", Text),
         Column("is_deleted", Boolean, nullable=False,
-               server_default=func.false()),
+               server_default="false"),
         schema="rh",
     )
     op.create_table(
@@ -74,13 +74,13 @@ def upgrade() -> None:
         Column("minutos_atraso", Integer, nullable=False, server_default="0"),
         Column("justificativa", Text),
         Column("desconto_folha", Boolean, nullable=False,
-               server_default=func.false()),
+               server_default="false"),
         Column("created_at", DateTime(timezone=True), nullable=False,
                server_default=func.now()),
         Column("updated_at", DateTime(timezone=True)),
         Column("created_by", Text),
         Column("is_deleted", Boolean, nullable=False,
-               server_default=func.false()),
+               server_default="false"),
         schema="rh",
     )
 

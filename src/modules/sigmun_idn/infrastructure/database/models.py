@@ -29,7 +29,7 @@ class UsuarioModel(IdnBase):
     login: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     email: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     nome: Mapped[str] = mapped_column(Text, nullable=False)
-    status: Mapped[str] = mapped_column(Text, nullable=False, default="PENDENTE")
+    status: Mapped[str] = mapped_column(Text, nullable=False, default="pendente")
     senha_hash: Mapped[str] = mapped_column(Text, nullable=False)
     unidades_ids: Mapped[str] = mapped_column(Text, nullable=False, default="")
     roles_ids: Mapped[str] = mapped_column(Text, nullable=False, default="")
