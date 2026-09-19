@@ -225,10 +225,11 @@ Prioridade: **Média**
 
 Prioridade: **Planejada / Próxima Onda** (Conforme ROADMAP §6)
 
-- [ ] **VIII.1 `DOM-DIA` — Gestão de Diárias (Prioridade Especial)**
+- [x] **VIII.1 `DOM-DIA` — Gestão de Diárias (Prioridade Especial)** ✅ *(Concluído em 2026-09-19)*
   - Tratar como domínio autônomo com máquina de estados completa (solicitação → autorização → cálculo → concessão → prestação de contas → aprovação/glosa/restituição).
   - Criar artefatos em `SIGMUN-Docs/DOM-DIA/` e módulo `src/modules/sigmun_dia/`.
   - Integrar com `DOM-PES` (dados do servidor), `DOM-ORC` (dotação) e `DOM-GDO` (anexos de viagem).
+  - Evidência: máquina de estados `SOLICITADA → AUTORIZADA → CALCULADA → CONCEDIDA → EM_PRESTACAO → PAGA → APROVADA/GLOSA → RESTITUIDA` (+ `CANCELADA`) em `src/modules/sigmun_dia/domain/entities/__init__.py` (`TRANSICOES_VALIDAS`/`ESTADOS_TERMINAIS`); 19 use cases (`Solicitar/Autorizar/Calcular/Conceder/IniciarPrestacao/Pagar/Cancelar/ConfirmarConcessao/ReverterParaPagamento`, viagem `Criar/Atualizar/Tramitar/Visitar`, prestação `Criar/Aprovar/Glosar/Restituir`); 20 endpoints `/api/v1/dia/*` registrados em `src/main.py`; integração via `servidor_id` (DOM-PES), `dota_id` (DOM-ORC) e `documento_id` (DOM-GDO); migração `alembic/versions/20260918_01_dom_dia_models.py` (cadeia `20260916_01 → 20260918_01`); validações: `tests/unit/test_dia_use_cases.py` = 10 passed, `tests/unit` = 510 passed, `test_openapi.py` = 4 passed, `ruff --select E9,F821` limpo.
 - [ ] **VIII.2 `DOM-PES` — Gestão de Pessoas (RH e Folha)**
   - Migrar scaffolding de `sigmun_rh` para implementação DDD: servidores, cargos, lotações, folha de pagamento, férias e frequência.
 - [ ] **VIII.3 `DOM-ORC` e `DOM-CON` — Orçamento e Contabilidade Pública**

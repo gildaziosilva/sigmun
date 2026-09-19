@@ -56,6 +56,9 @@ from src.modules.sigmun_met.presentation.api import (
 from src.modules.sigmun_seg.presentation.api import (
     router as seg_router,
 )
+from src.modules.sigmun_dia.presentation.api import (
+    router as dia_router,
+)
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
 from src.shared.middleware.correlation_id_middleware import CorrelationIDMiddleware
@@ -153,6 +156,13 @@ app = FastAPI(
                 "webhooks e barramento de eventos (DOM-INT)."
             ),
         },
+        {
+            "name": "Gestão de Diárias, Viagens e Deslocamentos",
+            "description": (
+                "Diárias oficiais, viagens, deslocamentos e prestação de contas "
+                "(DOM-DIA)."
+            ),
+        },
     ],
 )
 
@@ -224,6 +234,7 @@ app.include_router(dad_router)
 app.include_router(met_router)
 app.include_router(gdo_router)
 app.include_router(int_router)
+app.include_router(dia_router)
 
 
 @app.get("/health")
