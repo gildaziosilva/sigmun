@@ -191,6 +191,8 @@ button {
   padding: 2rem 1.75rem 1.5rem;
   background: var(--cor-superficie);
   border-radius: 1rem;
+  box-shadow: var(--sombra);
+}
 /* ----- Shell (dashboard) ----- */
 
 .app-shell {
@@ -505,8 +507,6 @@ button {
   .main {
     padding: 1rem;
   }
-}
-  box-shadow: var(--sombra);
 }
 
 .login-header {
