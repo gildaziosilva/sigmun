@@ -1,8 +1,23 @@
-"""Tarefas assíncronas compartilhadas do SIGMUN (Celery).
+"""Tarefas assíncronas compartilhadas do SIGMUN (Celery — Fase VII).
 
-Pacote de scaffolding: as tarefas serão implementadas na Fase VII do
-`TODO.md` (Processamento Assíncrono e Mensageria — Celery & Redis).
-O pacote precisa existir porque `src.shared.config.celery_app` o declara
-em `include`, e o Celery falha no startup caso o módulo não seja
-importável.
+Reexporta as tasks registradas em `src.shared.tasks.tasks` para que
+`celery -A src.shared.config.celery_app worker` as descubra via `include`.
 """
+
+from .expurgo import (
+    ResultadoExpurgo,
+    coletar_candidatos_expurgo,
+    expurgar_arquivos,
+    resolver_caminho_seguro,
+)
+from .tasks import despachar_outbox_gdo, expurgar_arquivos_gdo, healthcheck
+
+__all__ = [
+    "healthcheck",
+    "despachar_outbox_gdo",
+    "expurgar_arquivos_gdo",
+    "ResultadoExpurgo",
+    "coletar_candidatos_expurgo",
+    "expurgar_arquivos",
+    "resolver_caminho_seguro",
+]

@@ -210,14 +210,21 @@ Prioridade: **Média**
 
 Prioridade: **Média**
 
-- [ ] **VII.1 Criar o pacote `src/shared/tasks/`**
-  - Criar `src/shared/tasks/__init__.py`.
-  - Implementar task periódica de healthcheck do worker.
-  - Implementar dispatcher assíncrono para processar registros pendentes de `gdo.eventos_outbox` e publicar no Redis Pub/Sub.
-  - Implementar task assíncrona para expurgo de arquivos físicos com descarte autorizado após cumprimento da temporalidade.
-- [ ] **VII.2 Validar Celery Worker e Celery Beat no Docker Compose**
-  - Iniciar containers `worker` e `beat` e validar logs de subida sem erros de importação.
-  - Configurar monitoramento de filas via Celery Flower (opcional para dev).
+- [x] **VII.1 Criar o pacote `src/shared/tasks/`** ✅ *(Concluído em 2026-09-18)*
+  - `src/shared/tasks/__init__.py` — reexporta as tasks (healthcheck, despachar_outbox_gdo, expurgar_arquivos_gdo) e utilitários (ResultadoExpurgo, etc.).
+  - `src/shared/tasks/tasks.py` — tasks Celery: `sigmun.healthcheck` (sonda), `sigmun.gdo.despachar_outbox` (consome `gdo.eventos_outbox` pendentes → Redis Pub/Sub, canal = tópico), `sigmun.gdo.expurgar_arquivos` (expurgo físico pós-carência).
+  - `src/shared/tasks/expurgo.py` — serviço de expurgo: `resolver_caminho_seguro` (anti path-traversal), `coletar_candidatos_expurgo` (carência + RN-GDO-010/011), `expurgar_arquivos` (remoção atômica, dry-run, idempotente — registro documental preservado p/ auditoria).
+  - Dispatcher Pub/Sub em `sigmun_gdo/infrastructure/messaging/pubsub.py` (`DespachadorPubSub`, envelope JSON, retry/erro com `max_tentativas`).
+  - Settings: `STORAGE_ROOT`, `CELERY_TASK_TIME_LIMIT`, `CELERY_TASK_SOFT_TIME_LIMIT`, `CELERY_RESULT_EXPIRES`, `OUTBOX_DISPATCH_BATCH`, `OUTBOX_MAX_TENTATIVAS` (+ `.env`, `.env.example`).
+  - Evidência: tasks registradas `sigmun.healthcheck|sigmun.gdo.despachar_outbox|sigmun.gdo.expurgar_arquivos`; Beat agendando `healthcheck-5min`, `gdo-outbox-1min`, `gdo-expurgo-diario-02h`; filas `celery`, `gdo.outbox`, `gdo.expurgo`. Suíte unitária `tests/unit/test_fase_vii_tasks.py` e `test_fase_vii_expurgo.py` = **16 testes passando**; `tests/unit` completo = **500 passed**.
+
+- [x] **VII.2 Validar Celery Worker e Celery Beat no Docker Compose** ✅ *(Concluído em 2026-09-18)*
+  - `worker` sobe sem erros de importação; consumer das filas `celery,gdo.outbox,gdo.expurgo` (`--concurrency=4`); log: `celery@… ready` + `[tasks] sigmun.gdo.despachar_outbox / sigmun.gdo.expurgar_arquivos / sigmun.healthcheck`.
+  - `beat` sobe e agenda: `healthcheck-5min`, `gdo-outbox-1min` (60s), `gdo-expurgo-diario-02h` (crontab 02:00) — validado via `celery_app.conf.beat_schedule`.
+  - Task `healthcheck` validada de ponta a ponta (broker real): `state: SUCCESS res: {'status': 'ok', 'worker': 'celery@91cb925686f9', 'service': 'SIGMUN', ...}`.
+  - `flower` (monitoramento de filas) adicionado ao `docker-compose.yml` (porta `:5555`, perfil `monitoring`) + dependência `flower>=2.0.0` em `requirements.txt`.
+  - Volume `./storage:/app/storage` mapeado no `worker` para o diretório raiz do expurgo.
+  - Evidência: `docker compose --profile monitoring config --services` inclui `flower`; logs `sigmun-worker` e `sigmun-beat` sem tracebacks; ruff/mypy limpos em `src/shared/tasks` (`0 errors`).
 
 ---
 

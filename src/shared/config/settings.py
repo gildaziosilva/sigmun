@@ -57,6 +57,16 @@ class Settings(BaseSettings):
     AWS_REGION: str = "us-east-1"
     AWS_S3_BUCKET: str = "sigmun-documentos"
 
+    # Storage local de anexos/arquivos físicos do DOM-GDO (Fase VII).
+    STORAGE_ROOT: str = "storage/documentos"
+
+    # Celery / mensageria assíncrona (Fase VII — Celery & Redis).
+    CELERY_TASK_TIME_LIMIT: int = 300
+    CELERY_TASK_SOFT_TIME_LIMIT: int = 240
+    CELERY_RESULT_EXPIRES: int = 3600
+    OUTBOX_DISPATCH_BATCH: int = 100
+    OUTBOX_MAX_TENTATIVAS: int = 5
+
     # Logging
     LOG_LEVEL: str = "INFO"
 

@@ -127,7 +127,8 @@ services:
       REDIS_PORT: 6379
     volumes:
       - ./src:/app/src
-    command: celery -A src.shared.config.celery_app worker --loglevel=info
+      - ./storage:/app/storage
+    command: celery -A src.shared.config.celery_app worker --loglevel=info -Q celery,gdo.outbox,gdo.expurgo --concurrency=4
     restart: unless-stopped
     networks:
       - sigmun-network
@@ -156,6 +157,29 @@ services:
       - ./src:/app/src
     command: celery -A src.shared.config.celery_app beat --loglevel=info
     restart: unless-stopped
+    networks:
+      - sigmun-network
+
+  # Celery Flower (Fase VII - monitoramento das filas; perfil monitoring: :5555)
+  flower:
+    build:
+      context: .
+      dockerfile: infra/docker/backend/Dockerfile
+    container_name: sigmun-flower
+    depends_on:
+      - redis
+      - worker
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "5555:5555"
+    command: celery -A src.shared.config.celery_app flower --port=5555
+    restart: unless-stopped
+    profiles:
+      - monitoring
     networks:
       - sigmun-network
 
