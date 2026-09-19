@@ -1,63 +1,28 @@
 # 026 – Modelo de Domínio – Gestão de Pessoas
 
-#### Modelo de Domínio – Gestão de Pessoas
+**Versão:** 2.0 — **Status:** Implementado (2026-09-19)
 
-**Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
+## 1. Agregados implementados (`src/modules/sigmun_rh/`)
 
-**Código:** DOM-PES-026
+| Agregado | Entidade | Regras |
+|---|---|---|
+| Cargos | `Cargo` | RN-PES-001 código único; RN-PES-002 salário-base > 0 |
+| Servidores | `Servidor` + `StatusServidor` + `TipoVinculo` | RN-PES-010 matrícula única; RN-PES-011 CPF único 11 dígitos; RN-PES-012 cargo válido; RN-PES-013 datas admissão/desligamento; transições ATIVO↔AFASTADO→EXONERADO/DEMITIDO |
+| Lotações | `Lotacao` | RN-PES-020 sem sobreposição vigente; RN-PES-021 unidade + início obrigatórios; RN-PES-022 remoção encerra vigência |
+| Folha | `FolhaPagamento` + `StatusFolha` | RN-PES-030 competência única; RN-PES-031 só ABERTA recebe lançamentos; RN-PES-032 fechamento exige lançamentos; RN-PES-033 HOMOLOGADA/PAGA terminal; máquina ABERTA→FECHADA→HOMOLOGADA→PAGA (+CANCELADA/REABERTA) |
+| Férias | `Ferias` + `StatusFerias` | RN-PES-040/041 mín 10 dias, máx 3 parcelas; máquina PLANEJADA→APROVADA→EM_GOZO→CONCLUIDA (+CANCELADA) |
+| Frequência | `Frequencia` + `TipoFrequencia` | RN-PES-050 unicidade servidor/dia; RN-PES-051 atraso > 60min = meio período; RN-PES-052 falta injustificada → desconto em folha |
 
-**Domínio:** Gestão de Pessoas
+## 2. Portas e adaptadores
 
-**Versão:** 1.0
+- Ports: `application/interfaces.py` (`RepositorioCargo/Servidor/Lotacao/Folha/Ferias/Frequencia`).
+- Use cases (22): `use_cases_cargos_servidores.py`, `use_cases_lotacao.py`, `use_cases_folha.py`, `use_cases_ferias.py`, `use_cases_frequencia.py`.
+- Adaptadores SQLAlchemy (schema `rh`): `infrastructure/database/models.py` + `models_folha.py`; repositórios `sqlalchemy_*_repository.py`.
+- API: 19 endpoints `/api/v1/pes/*` (`presentation/api/*_endpoints.py`), registrados em `src/main.py` + tag OpenAPI `Gestão de Pessoas`.
+- Migrações: `20260919_01_dom_pes_models.py` (cargos/servidores/lotações) → `20260919_02_dom_pes_folha.py` (folhas/ferias/frequencias).
 
-**Status:** Em elaboração
+## 3. Integrações
 
-**Classificação da Informação:** Pública
+- Fornece `servidor_id` para DOM-DIA (viagens/diárias) e futuros DOM-ORC/DOM-GDO.
+- Consome `unidade_id` do DOM-CUM (unidades administrativas).
 
-**Documento(s) Relacionado(s):**
-
-* `000-Dominio-Gestao-de-Pessoas.md`
-* `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
-* `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`
-* `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
-* `000D-MODELO-DE-DOCUMENTO.md`
-* `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
-* `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
-
----
-
-# 1. Finalidade
-
-O **Modelo de Domínio – Gestão de Pessoas** (`DOM-PES`) tem como finalidade mapear e definir modelo de domínio do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Gestão de Pessoas** (`DOM-PES`) avance.
-
----
-
-# 2. Escopo e Diretrizes
-
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Gestão de Pessoas**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
-
----
-
-**Documento:** 026-Modelo-de-Dominio-Gestao-de-Pessoas.md
-
-**Última atualização:** 2026-08-20
-
-**Responsável:** Equipe SIGMUN
-
-**Status da revisão:** Em elaboração
