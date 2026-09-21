@@ -59,3 +59,6 @@ node_modules/
 *.temp
 *.swp
 *.swo
+
+# Backups locais do banco — nunca publicar
+backups/

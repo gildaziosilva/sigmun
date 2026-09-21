@@ -79,6 +79,80 @@ export const apiGet = <T>(path: string): Promise<T> => request<T>(path);
 export const apiPost = <T>(path: string, body?: unknown, anonymous = false): Promise<T> =>
   request<T>(path, { method: 'POST', body, anonymous });
 
+
+/* ------------------------------------------------------------------ */
+/* DOM-DIA — Gestão de Diárias, Viagens e Deslocamentos                */
+/* ------------------------------------------------------------------ */
+
+export interface ViagemDia {
+  id: string;
+  servidor_id: string;
+  dota_id: string;
+  motivo: string;
+  cargo_ocupado?: string | null;
+  unidade_origem_id: string;
+  unidade_destino_id: string;
+  data_inicio?: string | null;
+  data_fim?: string | null;
+  destino: string;
+  is_antecipacao: boolean;
+  created_at: string;
+  updated_at?: string | null;
+  created_by?: string | null;
+}
+
+export interface DiariaDia {
+  id: string;
+  viagem_id: string;
+  servidor_id: string;
+  dota_id: string;
+  categoria: string;
+  descricao: string;
+  data_inicio?: string | null;
+  data_fim?: string | null;
+  valor_diaria: number;
+  valor_total: number;
+  status: string;
+  data_solicitacao?: string | null;
+  data_autorizacao?: string | null;
+  data_calculo?: string | null;
+  data_concessao?: string | null;
+  data_inicio_prestacao?: string | null;
+  data_fim_prestacao?: string | null;
+  data_pagamento?: string | null;
+  data_aprovacao?: string | null;
+  data_glosa?: string | null;
+  data_restituicao?: string | null;
+  data_cancelamento?: string | null;
+  motivo_cancelamento?: string | null;
+  motivo_glosa?: string | null;
+  valor_glosado: number;
+  documento_prestacao_id?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+  created_by?: string | null;
+  updated_by?: string | null;
+}
+
+export interface PrestacaoContasDia {
+  id: string;
+  diaria_id: string;
+  servidor_id: string;
+  dota_id: string;
+  data_emissao: string;
+  data_vencimento?: string | null;
+  documento_id: string;
+  valor_previsto: number;
+  valor_apresentado: number;
+  valor_glosado: number;
+  valor_liquido: number;
+  status: string;
+  motivo_glosa?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+  created_by?: string | null;
+}
+
 /* ------------------------------------------------------------------ */
 /* DOM-TRI — Administração Tributária (GET /api/v1/tri/*)              */
 /* ------------------------------------------------------------------ */
@@ -367,6 +441,39 @@ export async function listarPessoas(): Promise<PageEnvelope<Pessoa>> {
 /** Consulta o endpoint /health do backend. */
 export async function fetchHealth(): Promise<HealthStatus> {
   return apiGet<HealthStatus>('/health');
+}
+
+
+/* ------------------------------------------------------------------ */
+/* DOM-DIA — Consultas                                                 */
+/* ------------------------------------------------------------------ */
+
+export async function listarViagensPorServidor(
+  servidorId: string,
+): Promise<ViagemDia[]> {
+  return apiGet<ViagemDia[]>(
+    `/api/v1/dia/viagens/servidor/${encodeURIComponent(servidorId)}`,
+  );
+}
+
+export async function listarDiariasPorServidor(
+  servidorId: string,
+): Promise<DiariaDia[]> {
+  return apiGet<DiariaDia[]>(
+    `/api/v1/dia/diarias/servidor/${encodeURIComponent(servidorId)}`,
+  );
+}
+
+export async function listarDiariasPorStatus(
+  status: string,
+): Promise<DiariaDia[]> {
+  return apiGet<DiariaDia[]>(
+    `/api/v1/dia/diarias/status/${encodeURIComponent(status)}`,
+  );
+}
+
+export async function listarPrestacoesAbertas(): Promise<PrestacaoContasDia[]> {
+  return apiGet<PrestacaoContasDia[]>('/api/v1/dia/prestacoes/abertas');
 }
 
 /* ------------------------------------------------------------------ */
