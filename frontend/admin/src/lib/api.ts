@@ -79,6 +79,166 @@ export const apiGet = <T>(path: string): Promise<T> => request<T>(path);
 export const apiPost = <T>(path: string, body?: unknown, anonymous = false): Promise<T> =>
   request<T>(path, { method: 'POST', body, anonymous });
 
+/* ------------------------------------------------------------------ */
+/* DOM-TRI — Administração Tributária (GET /api/v1/tri/*)              */
+/* ------------------------------------------------------------------ */
+
+export interface ContribuinteTri {
+  id: string;
+  tipo: string;
+  nome: string;
+  cpf_cnpj: string;
+  inscricao_municipal?: string | null;
+  email?: string | null;
+  telefone?: string | null;
+  endereco?: string | null;
+  status: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface ImovelTri {
+  id: string;
+  contribuinte_id: string;
+  inscricao_imobiliaria: string;
+  logradouro?: string | null;
+  numero?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  cep?: string | null;
+  area_terreno: number;
+  area_construida: number;
+  valor_venal: number;
+  aliquota: number;
+  status: string;
+  created_at: string;
+}
+
+export interface LancamentoTri {
+  id: string;
+  contribuinte_id: string;
+  imovel_id?: string | null;
+  tipo_tributo: string;
+  exercicio: number;
+  numero_lancamento: string;
+  descricao?: string | null;
+  base_calculo: number;
+  aliquota: number;
+  valor_tributo: number;
+  juros: number;
+  multa: number;
+  valor_total: number;
+  data_vencimento?: string | null;
+  status: string;
+  data_pagamento?: string | null;
+  created_at: string;
+}
+
+export interface DividaAtivaTri {
+  id: string;
+  lancamento_id: string;
+  numero_inscricao: string;
+  data_inscricao?: string | null;
+  valor_original: number;
+  juros: number;
+  multa: number;
+  valor_atualizado: number;
+  status: string;
+  created_at: string;
+}
+
+export interface CertidaoTri {
+  id: string;
+  contribuinte_id: string;
+  tipo: string;
+  numero: string;
+  data_emissao?: string | null;
+  valido_ate?: string | null;
+  observacao?: string | null;
+  status: string;
+  created_at: string;
+}
+
+/* ------------------------------------------------------------------ */
+/* DOM-PAT — Gestão Patrimonial (GET /api/v1/pat/*)                    */
+/* ------------------------------------------------------------------ */
+
+export interface BemPat {
+  id: string;
+  codigo: string;
+  tipo: string;
+  descricao: string;
+  categoria?: string | null;
+  valor_aquisicao: number;
+  data_aquisicao?: string | null;
+  valor_residual: number;
+  vida_util_anos: number;
+  valor_contabil: number;
+  status: string;
+  localizacao?: string | null;
+  responsavel_id?: string | null;
+  created_at: string;
+}
+
+export interface DepreciacaoPat {
+  id: string;
+  bem_id: string;
+  data?: string | null;
+  valor_depreciado: number;
+  valor_acumulado: number;
+  valor_liquido: number;
+  created_at: string;
+}
+
+/* ------------------------------------------------------------------ */
+/* DOM-FRO — Gestão de Frota (GET /api/v1/fro/*)                       */
+/* ------------------------------------------------------------------ */
+
+export interface VeiculoFro {
+  id: string;
+  placa: string;
+  chassi?: string | null;
+  renavam?: string | null;
+  marca: string;
+  modelo: string;
+  ano_fabricacao: number;
+  ano_modelo: number;
+  tipo: string;
+  combustivel: string;
+  capacidade: number;
+  odometro_atual: number;
+  status: string;
+  unidade_id?: string | null;
+  created_at: string;
+}
+
+export interface AbastecimentoFro {
+  id: string;
+  veiculo_id: string;
+  data?: string | null;
+  quantidade_litros: number;
+  valor_unitario: number;
+  valor_total: number;
+  odometro: number;
+  posto?: string | null;
+  tipo_combustivel: string;
+  created_at: string;
+}
+
+export interface ManutencaoFro {
+  id: string;
+  veiculo_id: string;
+  data_entrada?: string | null;
+  data_saida?: string | null;
+  tipo: string;
+  descricao: string;
+  oficina?: string | null;
+  valor: number;
+  status: string;
+  created_at: string;
+}
+
 export interface HealthStatus {
   status: string;
   service: string;
@@ -207,6 +367,87 @@ export async function listarPessoas(): Promise<PageEnvelope<Pessoa>> {
 /** Consulta o endpoint /health do backend. */
 export async function fetchHealth(): Promise<HealthStatus> {
   return apiGet<HealthStatus>('/health');
+}
+
+/* ------------------------------------------------------------------ */
+/* DOM-TRI — Administração Tributária                                  */
+/* ------------------------------------------------------------------ */
+
+export async function listarContribuintes(): Promise<ContribuinteTri[]> {
+  return apiGet<ContribuinteTri[]>('/api/v1/tri/contribuintes');
+}
+
+export async function obterContribuinte(id: string): Promise<ContribuinteTri> {
+  return apiGet<ContribuinteTri>(`/api/v1/tri/contribuintes/${encodeURIComponent(id)}`);
+}
+
+export async function listarImoveis(): Promise<ImovelTri[]> {
+  return apiGet<ImovelTri[]>('/api/v1/tri/imoveis');
+}
+
+export async function obterImovel(id: string): Promise<ImovelTri> {
+  return apiGet<ImovelTri>(`/api/v1/tri/imoveis/${encodeURIComponent(id)}`);
+}
+
+export async function listarLancamentos(): Promise<LancamentoTri[]> {
+  return apiGet<LancamentoTri[]>('/api/v1/tri/lancamentos');
+}
+
+export async function obterLancamento(id: string): Promise<LancamentoTri> {
+  return apiGet<LancamentoTri>(`/api/v1/tri/lancamentos/${encodeURIComponent(id)}`);
+}
+
+export async function pagarLancamento(id: string, dataPagamento?: string): Promise<LancamentoTri> {
+  return apiPost<LancamentoTri>(
+    `/api/v1/tri/lancamentos/${encodeURIComponent(id)}/pagar`,
+    dataPagamento ? { data_pagamento: dataPagamento } : {},
+  );
+}
+
+export async function listarDividaAtiva(): Promise<DividaAtivaTri[]> {
+  return apiGet<DividaAtivaTri[]>('/api/v1/tri/divida-ativa');
+}
+
+export async function obterCertidao(id: string): Promise<CertidaoTri> {
+  return apiGet<CertidaoTri>(`/api/v1/tri/certidoes/${encodeURIComponent(id)}`);
+}
+
+/* ------------------------------------------------------------------ */
+/* DOM-PAT — Gestão Patrimonial                                        */
+/* ------------------------------------------------------------------ */
+
+export async function listarBens(): Promise<BemPat[]> {
+  return apiGet<BemPat[]>('/api/v1/pat/bens');
+}
+
+export async function obterBem(id: string): Promise<BemPat> {
+  return apiGet<BemPat>(`/api/v1/pat/bens/${encodeURIComponent(id)}`);
+}
+
+export async function listarDepreciacoes(bemId: string): Promise<DepreciacaoPat[]> {
+  return apiGet<DepreciacaoPat[]>(
+    `/api/v1/pat/bens/${encodeURIComponent(bemId)}/depreciacoes`,
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* DOM-FRO — Gestão de Frota                                           */
+/* ------------------------------------------------------------------ */
+
+export async function listarVeiculos(): Promise<VeiculoFro[]> {
+  return apiGet<VeiculoFro[]>('/api/v1/fro/veiculos');
+}
+
+export async function obterVeiculo(id: string): Promise<VeiculoFro> {
+  return apiGet<VeiculoFro>(`/api/v1/fro/veiculos/${encodeURIComponent(id)}`);
+}
+
+export async function listarAbastecimentos(): Promise<AbastecimentoFro[]> {
+  return apiGet<AbastecimentoFro[]>('/api/v1/fro/abastecimentos');
+}
+
+export async function listarManutencoes(): Promise<ManutencaoFro[]> {
+  return apiGet<ManutencaoFro[]>('/api/v1/fro/manutencoes');
 }
 
 

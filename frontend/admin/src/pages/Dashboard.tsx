@@ -6,6 +6,9 @@ import FornecedoresPage from './compras/FornecedoresPage';
 import CumPage from './cum/CumPage';
 import GdoPage from './gdo/GdoPage';
 import IdnPage from './idn/IdnPage';
+import TriPage from './tri/TriPage';
+import PatPage from './pat/PatPage';
+import FroPage from './fro/FroPage';
 
 const NAV_ITEMS = [
   { id: 'painel', rotulo: 'Painel' },
@@ -13,6 +16,9 @@ const NAV_ITEMS = [
   { id: 'fornecedores', rotulo: 'Fornecedores' },
   { id: 'gdo', rotulo: 'Documentos' },
   { id: 'cum', rotulo: 'Cadastro Único' },
+  { id: 'tri', rotulo: 'Tributos' },
+  { id: 'pat', rotulo: 'Patrimônio' },
+  { id: 'fro', rotulo: 'Frota' },
   { id: 'usuarios', rotulo: 'Usuários' },
 ] as const;
 
@@ -131,6 +137,27 @@ function Dashboard() {
                     Abrir módulo
                   </button>
                 </article>
+                <article className="card card--modulo">
+                  <h3>Tributos</h3>
+                  <p>Lançamentos tributários e dívida ativa.</p>
+                  <button type="button" className="link" onClick={() => setAba('tri')}>
+                    Abrir módulo
+                  </button>
+                </article>
+                <article className="card card--modulo">
+                  <h3>Patrimônio</h3>
+                  <p>Bens, tombamento e depreciação.</p>
+                  <button type="button" className="link" onClick={() => setAba('pat')}>
+                    Abrir módulo
+                  </button>
+                </article>
+                <article className="card card--modulo">
+                  <h3>Frota</h3>
+                  <p>Veículos, abastecimentos e manutenções.</p>
+                  <button type="button" className="link" onClick={() => setAba('fro')}>
+                    Abrir módulo
+                  </button>
+                </article>
               </div>
             </section>
           )}
@@ -139,6 +166,9 @@ function Dashboard() {
           {rotaPermitida === 'fornecedores' && <FornecedoresPage />}
           {rotaPermitida === 'gdo' && <GdoPage />}
           {rotaPermitida === 'cum' && <CumPage />}
+          {rotaPermitida === 'tri' && <TriPage />}
+          {rotaPermitida === 'pat' && <PatPage />}
+          {rotaPermitida === 'fro' && <FroPage />}
           {rotaPermitida === 'usuarios' && <IdnPage />}
         </main>
       </div>

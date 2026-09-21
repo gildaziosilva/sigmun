@@ -60,6 +60,15 @@ from src.modules.sigmun_dia.presentation.api import (
     router as dia_router,
 )
 from src.modules.sigmun_rh.presentation.api import routers as pes_routers
+from src.modules.sigmun_tributos.presentation.api import (
+    routers as tri_routers,
+)
+from src.modules.sigmun_patrimonio.presentation.api import (
+    routers as pat_routers,
+)
+from src.modules.sigmun_frotas.presentation.api import (
+    routers as fro_routers,
+)
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
 from src.shared.middleware.correlation_id_middleware import CorrelationIDMiddleware
@@ -171,6 +180,26 @@ app = FastAPI(
                 "férias e frequência (DOM-PES)."
             ),
         },
+        {
+            "name": "Administracao Tributaria",
+            "description": (
+                "IPTU, ISSQN, ITBI, taxas municipais, certidões, "
+                "contribuintes e dívida ativa (DOM-TRI)."
+            ),
+        },
+        {
+            "name": "Gestao Patrimonial",
+            "description": (
+                "Bens móveis/imóveis, tombamento, depreciação e "
+                "transferências (DOM-PAT)."
+            ),
+        },
+        {
+            "name": "Gestao de Frota",
+            "description": (
+                "Veículos, abastecimento, manutenções e rotas (DOM-FRO)."
+            ),
+        },
     ],
 )
 
@@ -245,6 +274,12 @@ app.include_router(int_router)
 app.include_router(dia_router)
 for _pes_router in pes_routers:
     app.include_router(_pes_router)
+for _tri_router in tri_routers:
+    app.include_router(_tri_router)
+for _pat_router in pat_routers:
+    app.include_router(_pat_router)
+for _fro_router in fro_routers:
+    app.include_router(_fro_router)
 
 
 @app.get("/health")

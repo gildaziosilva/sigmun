@@ -196,12 +196,15 @@ Prioridade: **Média**
   - Armazenar o token JWT de forma segura e injetar nos headers das requisições via Axios/Fetch client.
   - Implementar gerenciamento de estado de usuário e controle de rotas por perfis/roles (RBAC).
   - Evidência: `frontend/admin/src/lib/api.ts` (cliente com `Bearer`, `ApiError`, `login/logoutApi/fetchUsuarioPorLogin`), `frontend/admin/src/auth/AuthContext.tsx` (sessão em `sessionStorage`, migração do mock legado, guarda `temAcesso`), `Login.tsx`/`App.tsx`/`Dashboard.tsx` integrados; `npx tsc -b` limpo (exit 0). Limitação: backend ainda não valida o Bearer nas rotas de negócio (RBAC server-side pendente).
-- [x] **VI.2 Construir Módulos de Interface no Frontend Admin** ✅ *(Fundação concluída em 2026-09-18 — CRUDs completos e fluxos avançados como próximas iterações)*
+- [x] **VI.2 Construir Módulos de Interface no Frontend Admin** ✅ *(Fundação concluída em 2026-09-18 — CRUDs completos e fluxos avançados como próximas iterações; **TRI/PAT/FRO conectados em 2026-09-21**)*
   - [x] **Módulo de Compras e Contratos:** Listagem de processos, detalhe do processo de compra, gestão de fornecedores e contratos.
   - [x] **Módulo de Gestão Documental (GDO):** Upload de documentos, visualização de PDF, controle de versões, tramitação entre secretarias e assinaturas digitais.
   - [x] **Módulo de Cadastro Único (CUM):** Consulta e cadastro de pessoas físicas/jurídicas e organograma de unidades administrativas.
   - [x] **Módulo de Identidade (IDN):** Gestão de usuários, atribuição de perfis e trilha de acessos.
-  - Evidência: `ComprasPage.tsx` (lista+detalhe `GET /api/v1/compras`), `FornecedoresPage.tsx` (fornecedores+contratos), `GdoPage.tsx` (lista+detalhe, badge sigilo), `CumPage.tsx` (pessoas), `IdnPage.tsx` (usuários), `DataState.tsx` (loading/erro/vazio). Escopo parcial consciente: upload de binários GDO, versionamento, tramitação, assinatura, cadastro CUM, organograma, atribuição de perfis e trilha seguem como iterações (placeholders textuais nas telas).
+  - [x] **Módulo de Tributos (TRI):** Lançamentos (`GET /api/v1/tri/lancamentos`), dívida ativa (`GET /api/v1/tri/divida-ativa`) e consulta de contribuinte/imóvel por ID.
+  - [x] **Módulo de Patrimônio (PAT):** Bens tombados (`GET /api/v1/pat/bens`) com depreciações por bem (`GET /api/v1/pat/bens/:id/depreciacoes`).
+  - [x] **Módulo de Frota (FRO):** Veículos (`GET /api/v1/fro/veiculos`), abastecimentos e manutenções.
+  - Evidência: `ComprasPage.tsx` (lista+detalhe `GET /api/v1/compras`), `FornecedoresPage.tsx` (fornecedores+contratos), `GdoPage.tsx` (lista+detalhe, badge sigilo), `CumPage.tsx` (pessoas), `IdnPage.tsx` (usuários), `TriPage.tsx`, `PatPage.tsx`, `FroPage.tsx`, `DataState.tsx` (loading/erro/vazio). Escopo parcial consciente: upload de binários GDO, versionamento, tramitação, assinatura, cadastro CUM, organograma, atribuição de perfis, trilha, cadastros TRI/PAT/FRO (POST), ações de ciclo TRI/PAT/FRO (pagar/baixar/depreciar/transferir/concluir) e módulo de Diárias (DIA) seguem como iterações (placeholders textuais nas telas).
 - [x] **VI.3 Inicializar Scaffolding Real dos Portais Externos** ✅ *(Fundação concluída em 2026-09-18)*
   - [x] **Portal do Cidadão (`frontend/portal-cidadao`):** Setup com Vite + React, Tailwind, páginas de consulta de protocolos, emissão de certidões e serviços públicos.
   - [x] **Portal do Fornecedor (`frontend/portal-fornecedor`):** Setup com Vite + React, área logada para fornecedores municipais acompanharem licitações, empenhos e contratos.
@@ -243,12 +246,16 @@ Prioridade: **Planejada / Próxima Onda** (Conforme ROADMAP §6)
 - [x] **VIII.2 `DOM-PES` — Gestão de Pessoas (RH e Folha)** ✅ *(Concluído em 2026-09-19)*
   - Migrar scaffolding de `sigmun_rh` para implementação DDD: servidores, cargos, lotações, folha de pagamento, férias e frequência.
   - Evidência: 6 agregados (`Cargo/Servidor/Lotacao/FolhaPagamento/Ferias/Frequencia`) em `src/modules/sigmun_rh/domain/entities/` (máquinas `ABERTA→FECHADA→HOMOLOGADA→PAGA` e `PLANEJADA→APROVADA→EM_GOZO→CONCLUIDA`); 22 use cases (cargo `Criar`, servidor `Admitir/Afastar/Reativar/Desligar`, lotação `Lotar/Remover`, folha `Abrir/Consolidar/Fechar/Reabrir/Homologar/Pagar`, férias `Planejar/Aprovar/IniciarGozo/Concluir`, frequência `Registrar/Justificar`); 19 endpoints `/api/v1/pes/*` registrados em `src/main.py`; migrações `alembic/versions/20260919_01_dom_pes_models.py` + `20260919_02_dom_pes_folha.py` (cadeia `20260918_01 → 20260919_01 → 20260919_02`, schema `rh`); validações: `test_pes_*` = 11 passed, `tests/unit` = 521 passed, `test_openapi.py` = 4 passed, `ruff --select E9,F821` limpo.
-- [ ] **VIII.3 `DOM-ORC` e `DOM-CON` — Orçamento e Contabilidade Pública**
+- [x] **VIII.3 `DOM-ORC` e `DOM-CON` — Orçamento e Contabilidade Pública**
   - PPA, LDO, LOA, dotações orçamentárias, reservas de saldo, empenho, liquidação, pagamento, plano de contas (PCASP) e conciliação contábil.
-- [ ] **VIII.4 `DOM-TRI` — Administração Tributária**
+- [x] **VIII.4 `DOM-TRI` — Administração Tributária**
   - IPTU, ISSQN, ITBI, taxas municipais, certidões negativas, cadastro de contribuintes e dívida ativa.
-- [ ] **VIII.5 `DOM-PAT` e `DOM-FRO` — Gestão Patrimonial e Frotas**
+  - Módulo `src/modules/sigmun_tributos` (DDD, schema `trib`): entidades Contribuinte, Imóvel (IPTU), Lançamento (IPTU/ISSQN/ITBI/Taxa), Inscrição de Dívida Ativa e Certidão; 9 use cases (cadastrar contribuinte/imóvel, lançar tributo, pagar, inscrever/baixar dívida ativa, emitir certidão); 13 endpoints `/api/v1/tri/*`; migração `alembic/versions/20260920_01_dom_tri_models.py`; validações: `test_tri_use_cases.py` = 14 passed, suíte `tests/unit` + `test_openapi` = 550 passed, `ruff --select E9,F821,F401` limpo.
+- [x] **VIII.5 `DOM-PAT` e `DOM-FRO` — Gestão Patrimonial e Frotas** ✅ *(Concluído em 2026-09-21)*
   - Bens móveis/imóveis, tombamento, depreciação, transferências, controle de veículos, abastecimento, manutenções e rotas.
+  - Módulo `src/modules/sigmun_patrimonio` (DDD, schema `pat`): entidades Bem (tombamento automática `PAT-YYYY-000001`), Depreciação (mensal linear, valor contábil) e Transferência (`PENDENTE→CONCLUIDA`); 5 use cases (cadastrar/depreciar/baixar bem, dropar transferência, listar); 7 endpoints `/api/v1/pat/*`; migração `alembic/versions/20260920_02_dom_pat_models.py`.
+  - Módulo `src/modules/sigmun_frotas` (DDD, schema `fro`): entidades Veículo (placa única; estados `ATIVO→MANUTENCAO→BAIXADO`), Abastecimento (total = qtd × unit; odômetro), Manutenção (aberta→concluída; reativa veículo) e Rota (distância = km_fim − km_início; atualiza odômetro); 10 use cases (cadastrar/baixar veículo, abastecer, abrir/concluir manutenção, registrar/concluir rota + listagens); 11 endpoints `/api/v1/fro/*`; migração `alembic/versions/20260920_03_dom_fro_models.py`.
+  - Validações: `test_pat_use_cases.py` = 7 passed, `test_fro_use_cases.py` = 6 passed, suíte `tests/` = 787 passed, `ruff --select E9,F821,F401` limpo.
 
 ---
 

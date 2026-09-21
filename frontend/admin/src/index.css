@@ -310,6 +310,47 @@ button {
   box-shadow: var(--sombra);
 }
 
+.card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Linha de consulta (input + botões) nas páginas TRI/PAT/FRO. */
+.consulta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.75rem 0;
+}
+
+.consulta-row input {
+  flex: 1 1 14rem;
+  min-width: 12rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  color: inherit;
+  background: var(--cor-superficie);
+}
+
+.consulta-row input:focus {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 1px;
+  border-color: var(--cor-primaria);
+}
+
+/* Bloco de JSON exibido na consulta de cadastro (TRI). */
+.bloco-json {
+  white-space: pre-wrap;
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+}
+
 .status-card {
   display: flex;
   align-items: center;
