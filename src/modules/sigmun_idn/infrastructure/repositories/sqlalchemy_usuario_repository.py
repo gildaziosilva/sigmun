@@ -14,12 +14,15 @@ import builtins
 import logging
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from src.modules.sigmun_idn.application.interfaces import UsuarioRepositoryInterface
 from src.modules.sigmun_idn.domain.entities import Usuario, UsuarioStatus
-from src.modules.sigmun_idn.infrastructure.database.models import UsuarioModel
+from src.modules.sigmun_idn.infrastructure.database.models import (
+    UsuarioModel,
+    UsuarioRoleModel,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +39,10 @@ def _format_uuid_list(values: list[str]) -> str:
     return ",".join(values)
 
 
-def _to_entity(model: UsuarioModel) -> Usuario:
+def _to_entity(
+    model: UsuarioModel,
+    roles_ids: list[str],
+) -> Usuario:
     """Converte um registro ORM em entidade de domínio."""
     return Usuario(
         id=str(model.id),
@@ -46,7 +52,7 @@ def _to_entity(model: UsuarioModel) -> Usuario:
         status=UsuarioStatus(model.status),
         senha_hash=model.senha_hash,
         unidades_ids=_parse_uuid_list(model.unidades_ids),
-        roles_ids=_parse_uuid_list(model.roles_ids),
+        roles_ids=roles_ids,
         created_at=model.created_at,
         updated_at=model.updated_at,
         last_login=model.last_login,
@@ -60,11 +66,28 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
     def __init__(self, session: Session) -> None:
         self._session = session
 
+    def _buscar_role_ids(self, usuario_id: UUID) -> list[str]:
+        """Busca as roles do usuário pela relação N:N normalizada."""
+        role_ids = self._session.scalars(
+            select(UsuarioRoleModel.role_id).where(
+                UsuarioRoleModel.usuario_id == usuario_id
+            )
+        ).all()
+
+        return [str(role_id) for role_id in role_ids]
+
+    def _to_entity(self, model: UsuarioModel) -> Usuario:
+        """Converte o modelo persistido usando as relações normalizadas."""
+        return _to_entity(
+            model,
+            roles_ids=self._buscar_role_ids(model.id),
+        )
+
     def get_by_id(self, usuario_id: str) -> Usuario | None:
         model = self._session.get(UsuarioModel, UUID(usuario_id))
         if model is None or model.deleted_at is not None:
             return None
-        return _to_entity(model)
+        return self._to_entity(model)
 
     def get_by_login(self, login: str) -> Usuario | None:
         stmt = select(UsuarioModel).where(
@@ -72,7 +95,7 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
             UsuarioModel.deleted_at.is_(None),
         )
         model = self._session.scalars(stmt).first()
-        return _to_entity(model) if model else None
+        return self._to_entity(model) if model else None
 
     def get_by_email(self, email: str) -> Usuario | None:
         stmt = select(UsuarioModel).where(
@@ -80,7 +103,7 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
             UsuarioModel.deleted_at.is_(None),
         )
         model = self._session.scalars(stmt).first()
-        return _to_entity(model) if model else None
+        return self._to_entity(model) if model else None
 
     def list_all(
         self,
@@ -101,7 +124,7 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
         # Pagination
         stmt = stmt.offset(page * page_size).limit(page_size)
         models = self._session.scalars(stmt).all()
-        return [_to_entity(m) for m in models], total
+        return [self._to_entity(m) for m in models], total
 
     def save(self, usuario: Usuario) -> Usuario:
         model = self._session.get(UsuarioModel, UUID(usuario.id))
@@ -114,7 +137,6 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
                 status=usuario.status.value,
                 senha_hash=usuario.senha_hash,
                 unidades_ids=_format_uuid_list(usuario.unidades_ids),
-                roles_ids=_format_uuid_list(usuario.roles_ids),
                 last_login=usuario.last_login,
                 created_at=usuario.created_at,
                 created_by=None,
@@ -130,14 +152,50 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
             model.status = usuario.status.value
             model.senha_hash = usuario.senha_hash
             model.unidades_ids = _format_uuid_list(usuario.unidades_ids)
-            model.roles_ids = _format_uuid_list(usuario.roles_ids)
             model.last_login = usuario.last_login
             model.updated_at = usuario.updated_at  # type: ignore[assignment]
             model.deleted_at = None
             logger.info("Usuário atualizado: %s", usuario.id)
         self._session.flush()
+
+        # Sincroniza a relação N:N usuário ↔ role.
+        #
+        # ``usuario_roles`` é a representação normalizada e a fonte
+        # física oficial da associação usuário ↔ role.
+        usuario_uuid = UUID(usuario.id)
+        roles_desejadas = {UUID(role_id) for role_id in usuario.roles_ids}
+
+        roles_atuais = set(
+            self._session.scalars(
+                select(UsuarioRoleModel.role_id).where(
+                    UsuarioRoleModel.usuario_id == usuario_uuid
+                )
+            ).all()
+        )
+
+        roles_remover = roles_atuais - roles_desejadas
+        roles_adicionar = roles_desejadas - roles_atuais
+
+        if roles_remover:
+            self._session.execute(
+                delete(UsuarioRoleModel).where(
+                    UsuarioRoleModel.usuario_id == usuario_uuid,
+                    UsuarioRoleModel.role_id.in_(roles_remover),
+                )
+            )
+
+        for role_id in roles_adicionar:
+            self._session.add(
+                UsuarioRoleModel(
+                    usuario_id=usuario_uuid,
+                    role_id=role_id,
+                    created_by=None,
+                )
+            )
+
+        self._session.flush()
         self._session.refresh(model)
-        return _to_entity(model)
+        return self._to_entity(model)
 
     def delete(self, usuario_id: str) -> bool:
         """Soft-delete: preserva histórico."""

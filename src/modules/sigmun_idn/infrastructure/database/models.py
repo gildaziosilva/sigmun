@@ -32,7 +32,6 @@ class UsuarioModel(IdnBase):
     status: Mapped[str] = mapped_column(Text, nullable=False, default="pendente")
     senha_hash: Mapped[str] = mapped_column(Text, nullable=False)
     unidades_ids: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    roles_ids: Mapped[str] = mapped_column(Text, nullable=False, default="")
     last_login: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Colunas de auditoria
