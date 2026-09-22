@@ -23,7 +23,7 @@ def _to_entity(model: PermissaoModel) -> Permissao:
         codigo=model.codigo,
         nome=model.nome,
         descricao=model.descricao or "",
-        escopo=PermissaoEscopo(model.escopo),
+        escopo=PermissaoEscopo(model.escopo.lower()),
         modulo=model.modulo,
         created_at=model.created_at,
         updated_at=model.updated_at,
@@ -73,7 +73,7 @@ class SqlAlchemyPermissaoRepository(PermissaoRepositoryInterface):
                 codigo=permissao.codigo,
                 nome=permissao.nome,
                 descricao=permissao.descricao,
-                escopo=permissao.escopo.value,
+                escopo=permissao.escopo.value.upper(),
                 modulo=permissao.modulo,
                 created_at=permissao.created_at,
             )
@@ -83,7 +83,7 @@ class SqlAlchemyPermissaoRepository(PermissaoRepositoryInterface):
             model.codigo = permissao.codigo
             model.nome = permissao.nome
             model.descricao = permissao.descricao
-            model.escopo = permissao.escopo.value
+            model.escopo = permissao.escopo.value.upper()
             model.modulo = permissao.modulo
             model.updated_at = permissao.updated_at  # type: ignore[assignment]
             model.deleted_at = None

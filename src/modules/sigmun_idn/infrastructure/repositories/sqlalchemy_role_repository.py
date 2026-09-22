@@ -148,7 +148,7 @@ class SqlAlchemyRoleRepository(RoleRepositoryInterface):
                     codigo=perm_model.codigo,
                     nome=perm_model.nome,
                     descricao=perm_model.descricao or "",
-                    escopo=PermissaoEscopo(perm_model.escopo),
+                    escopo=PermissaoEscopo(perm_model.escopo.lower()),
                     modulo=perm_model.modulo,
                     created_at=perm_model.created_at,
                     is_deleted=perm_model.deleted_at is not None,
