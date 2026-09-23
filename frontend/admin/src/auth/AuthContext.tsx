@@ -46,9 +46,14 @@ function readStoredSession(): Session | null {
   }
 }
 
+/** UUIDs das roles que conferem perfil admin (seed RBAC DOM-IDN — `idn.roles`). */
+const ADMIN_ROLE_IDS = new Set([
+  'de0a377a-e81f-4a36-b689-6a1d29ed4a52', // ROLE_DEMO_COMPRAS_GESTOR
+]);
+
 function isAdmin(usuario: Usuario | null): boolean {
   if (!usuario) return false;
-  return usuario.roles_ids.some((r) => /admin|gestor|gdo|compras/i.test(r));
+  return usuario.roles_ids.some((r) => ADMIN_ROLE_IDS.has(r) || /admin|gestor|gdo|compras/i.test(r));
 }
 
 /** Compatibilidade: sessões legadas (mock localStorage nome/email). */

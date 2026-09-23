@@ -7,6 +7,12 @@
  *   ou define-se `VITE_API_URL`.
  * - Auth real (VI.1): `POST /api/v1/idn/auth/login` retorna token opaco;
  *   guardado em `sessionStorage` e injetado como `Bearer` nas chamadas.
+ * - IDN (VI.2 — Esta iteração): operações de usuário,
+ *   `POST /api/v1/idn/usuarios` (criar),
+ *   `GET /api/v1/idn/usuarios` e `GET /api/v1/idn/usuarios/{id}` (listar e buscar),
+ *   `POST .../usuarios/{id}/ativar|desativar|bloquear` (ciclo de vida).
+ *   Não há endpoints HTTP de Role/Permissão, portanto o frontend não expõe
+ *   criação/edição/attribuição de role/permissão.
  */
 
 export const API_BASE_URL: string =
@@ -387,7 +393,39 @@ export interface Pessoa {
   unidade_id?: string | null;
 }
 
-/** Autentica (POST /api/v1/idn/auth/login). Chamada anônima. */
+/* ------------------------------------------------------------------ */
+/* DOM-IDN — Identidade e Acesso                                       */
+/* ------------------------------------------------------------------ */
+
+export interface UsuarioCreatePayload {
+  login: string;
+  email: string;
+  nome: string;
+  senha: string;
+  unidades_ids?: string[];
+  roles_ids?: string[];
+}
+
+export async function criarUsuario(payload: UsuarioCreatePayload): Promise<Usuario> {
+  return apiPost<Usuario>('/api/v1/idn/usuarios', payload);
+}
+
+export async function obterUsuario(id: string): Promise<Usuario> {
+  return apiGet<Usuario>(`/api/v1/idn/usuarios/${encodeURIComponent(id)}`);
+}
+
+export async function ativarUsuario(id: string): Promise<Usuario> {
+  return apiPost<Usuario>(`/api/v1/idn/usuarios/${encodeURIComponent(id)}/ativar`);
+}
+
+export async function desativarUsuario(id: string): Promise<Usuario> {
+  return apiPost<Usuario>(`/api/v1/idn/usuarios/${encodeURIComponent(id)}/desativar`);
+}
+
+export async function bloquearUsuario(id: string): Promise<Usuario> {
+  return apiPost<Usuario>(`/api/v1/idn/usuarios/${encodeURIComponent(id)}/bloquear`);
+}
+
 export async function login(login: string, senha: string): Promise<LoginResponse> {
   return apiPost<LoginResponse>('/api/v1/idn/auth/login', { login, senha }, true);
 }
