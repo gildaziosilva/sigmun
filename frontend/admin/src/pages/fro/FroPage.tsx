@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   listarAbastecimentos,
   listarManutencoes,
   listarVeiculos,
+  obterVeiculo,
   type AbastecimentoFro,
   type ManutencaoFro,
   type VeiculoFro,
@@ -17,6 +18,25 @@ export default function FroPage() {
   const [veiculos, recarregarVeiculos] = useApiData(() => listarVeiculos());
   const [abastecimentos, recarregarAbastecimentos] = useApiData(() => listarAbastecimentos());
   const [manutencoes, recarregarManutencoes] = useApiData(() => listarManutencoes());
+  const [veiculoId, setVeiculoId] = useState('');
+  const [veiculoDetalhe, setVeiculoDetalhe] = useState<VeiculoFro | null>(null);
+  const [veiculoErro, setVeiculoErro] = useState('');
+
+  async function consultarVeiculo() {
+    const id = veiculoId.trim();
+    if (!id) {
+      setVeiculoErro('Informe o ID do veículo.');
+      setVeiculoDetalhe(null);
+      return;
+    }
+    setVeiculoErro('');
+    try {
+      setVeiculoDetalhe(await obterVeiculo(id));
+    } catch (err) {
+      setVeiculoDetalhe(null);
+      setVeiculoErro(err instanceof Error ? err.message : 'Falha ao consultar veículo.');
+    }
+  }
 
   useEffect(() => {
     recarregarVeiculos();
@@ -42,9 +62,56 @@ export default function FroPage() {
         </button>
       </div>
       <p className="muted">
-        Veículos, abastecimentos e manutenções via GET /api/v1/fro/…. Rotas e ações de ciclo
-        (baixar/concluir) evoluem na próxima iteração.
+        Veículos, abastecimentos e manutenções via GET /api/v1/fro/…. Detalhe avulso via
+        GET /api/v1/fro/veiculos/:id. Rotas e ações de ciclo (baixar/concluir) evoluem na
+        próxima iteração.
       </p>
+
+      <article className="card">
+        <h3>Veículo por ID</h3>
+        <div className="consulta-row">
+          <input
+            value={veiculoId}
+            onChange={(e) => setVeiculoId(e.target.value)}
+            placeholder="ID do veículo"
+            aria-label="ID do veículo"
+          />
+          <button type="button" className="button" onClick={consultarVeiculo}>
+            Consultar
+          </button>
+        </div>
+        {veiculoErro && (
+          <p className="alert alert--error" role="alert">
+            {veiculoErro}
+          </p>
+        )}
+        {veiculoDetalhe && (
+          <dl className="detail-list">
+            <div>
+              <dt>Placa</dt>
+              <dd className="mono">{veiculoDetalhe.placa}</dd>
+            </div>
+            <div>
+              <dt>Marca/Modelo</dt>
+              <dd>
+                {veiculoDetalhe.marca} {veiculoDetalhe.modelo}
+              </dd>
+            </div>
+            <div>
+              <dt>Tipo</dt>
+              <dd>{veiculoDetalhe.tipo}</dd>
+            </div>
+            <div>
+              <dt>Odômetro</dt>
+              <dd>{veiculoDetalhe.odometro_atual.toLocaleString('pt-BR')} km</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd>{veiculoDetalhe.status}</dd>
+            </div>
+          </dl>
+        )}
+      </article>
 
       <article className="card">
         <h3>Veículos</h3>
