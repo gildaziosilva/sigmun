@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { listarBens, listarDepreciacoes, type BemPat, type DepreciacaoPat } from '../../lib/api';
+import {
+  listarBens,
+  listarDepreciacoes,
+  obterBem,
+  type BemPat,
+  type DepreciacaoPat,
+} from '../../lib/api';
 import { TabelaEstado, useApiData } from '../../components/DataState';
 
 function formatarMoeda(valor: number): string {
@@ -9,9 +15,28 @@ function formatarMoeda(valor: number): string {
 export default function PatPage() {
   const [bens, recarregar] = useApiData(() => listarBens());
   const [bemSelecionado, setBemSelecionado] = useState<string | null>(null);
+  const [bemDetalhe, setBemDetalhe] = useState<BemPat | null>(null);
+  const [bemId, setBemId] = useState('');
+  const [bemErro, setBemErro] = useState('');
   const [depreciacoes, setDepreciacoes] = useState<DepreciacaoPat[]>([]);
   const [depErro, setDepErro] = useState('');
   const [depCarregando, setDepCarregando] = useState(false);
+
+  async function consultarBem() {
+    const id = bemId.trim();
+    if (!id) {
+      setBemErro('Informe o ID do bem.');
+      setBemDetalhe(null);
+      return;
+    }
+    setBemErro('');
+    try {
+      setBemDetalhe(await obterBem(id));
+    } catch (err) {
+      setBemDetalhe(null);
+      setBemErro(err instanceof Error ? err.message : 'Falha ao consultar bem.');
+    }
+  }
 
   useEffect(() => {
     recarregar();
@@ -42,8 +67,51 @@ export default function PatPage() {
       </div>
       <p className="muted">
         Bens móveis/imóveis com tombamento via GET /api/v1/pat/bens. Depreciações por bem via
-        GET /api/v1/pat/bens/:id/depreciacoes.
+        GET /api/v1/pat/bens/:id/depreciacoes. Detalhe avulso via GET /api/v1/pat/bens/:id.
       </p>
+      <article className="card">
+        <h3>Bem por ID</h3>
+        <div className="consulta-row">
+          <input
+            value={bemId}
+            onChange={(e) => setBemId(e.target.value)}
+            placeholder="ID do bem"
+            aria-label="ID do bem"
+          />
+          <button type="button" className="button" onClick={consultarBem}>
+            Consultar
+          </button>
+        </div>
+        {bemErro && (
+          <p className="alert alert--error" role="alert">
+            {bemErro}
+          </p>
+        )}
+        {bemDetalhe && (
+          <dl className="detail-list">
+            <div>
+              <dt>Código</dt>
+              <dd className="mono">{bemDetalhe.codigo}</dd>
+            </div>
+            <div>
+              <dt>Descrição</dt>
+              <dd>{bemDetalhe.descricao}</dd>
+            </div>
+            <div>
+              <dt>Tipo</dt>
+              <dd>{bemDetalhe.tipo}</dd>
+            </div>
+            <div>
+              <dt>Valor contábil</dt>
+              <dd>{formatarMoeda(bemDetalhe.valor_contabil)}</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd>{bemDetalhe.status}</dd>
+            </div>
+          </dl>
+        )}
+      </article>
       <TabelaEstado loading={bens.loading} erro={bens.erro} vazio={!bens.data || bens.data.length === 0}>
         <div className="table-wrap">
           <table className="table">
