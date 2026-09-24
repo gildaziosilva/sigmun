@@ -267,7 +267,9 @@ Prioridade: **Futura** (Conforme ROADMAP §7 e §8)
   - `DOM-SAU` (Saúde) ✅ *(Concluído em 2026-09-23)*: Prontuário eletrônico do cidadão, agendamento SUS, regulação, farmácia básica.
     - Módulo `src/modules/sigmun_saude` (DDD, schema `sau`): entidades Paciente (CNS único 15 dígitos), Atendimento (prontuário cronológico), Agendamento (`AGENDADO→CONFIRMADO→REALIZADO/FALTA`, cancelável), Regulacao (`SOLICITADA→AUTORIZADA→AGENDADA`/`NEGADA`), Medicamento (estoque + mínimo, `abaixo_do_minimo`) e Dispensacao (baixa atômica com `EstoqueInsuficienteError`); 12 use cases; 18 endpoints `/api/v1/sau/*` registrados em `src/main.py`; repositórios SQLAlchemy; migração `alembic/versions/20260923_01_dom_sau_models.py`.
     - Validações: `test_sau_use_cases.py` = 10 passed, suíte `tests/unit` = 585 passed, `ruff --select E9,F821,F401` limpo, router `/api/v1/sau/pacientes` verificado.
-  - `DOM-EDU` (Educação): Matrícula escolar, diário de classe digital, transporte escolar, merenda.
+  - `DOM-EDU` (Educação) ✅ *(Concluído em 2026-09-24)*: Matrícula escolar, diário de classe digital, transporte escolar, merenda.
+    - Módulo `src/modules/sigmun_educacao` (DDD, schema `edu`): entidades Aluno (CPF único), Matricula (`ATIVA→TRANSFERIDA/CANCELADA/CONCLUIDA`), LancamentoDiario (presença + nota 0–10), RotaTransporte (`ATIVA/INATIVA`) e PassagemTransporte, ItemMerenda (estoque + mínimo) e DistribuicaoMerenda (baixa com `EstoqueInsuficienteError`); 22 endpoints `/api/v1/edu/*` registrados em `src/main.py`; repositórios SQLAlchemy; migração `alembic/versions/20260924_01_dom_edu_models.py` (head, aplicada).
+    - Validações: `test_edu_use_cases.py` = 17 passed, suíte `tests/unit` = 602 passed, `ruff --select E9,F821` limpo, OpenAPI com 15 paths `/api/v1/edu/*` verificado.
   - `DOM-ASS` (Assistência Social): CadÚnico local, benefícios eventuais, CRAS/CREAS.
   - `DOM-MAM` (Meio Ambiente): Licenciamento ambiental, fiscalização, áreas protegidas.
 - [ ] **IX.2 Domínios Territoriais (Onda 4)**

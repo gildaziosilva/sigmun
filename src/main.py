@@ -72,6 +72,9 @@ from src.modules.sigmun_frotas.presentation.api import (
 from src.modules.sigmun_saude.presentation.api import (
     routers as sau_routers,
 )
+from src.modules.sigmun_educacao.presentation.api import (
+    routers as edu_routers,
+)
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
 from src.shared.middleware.correlation_id_middleware import CorrelationIDMiddleware
@@ -210,6 +213,13 @@ app = FastAPI(
                 "farmácia básica (DOM-SAU)."
             ),
         },
+        {
+            "name": "Educacao Municipal",
+            "description": (
+                "Matrícula escolar, diário de classe digital, transporte "
+                "escolar e merenda (DOM-EDU)."
+            ),
+        },
     ],
 )
 
@@ -292,6 +302,8 @@ for _fro_router in fro_routers:
     app.include_router(_fro_router)
 for _sau_router in sau_routers:
     app.include_router(_sau_router)
+for _edu_router in edu_routers:
+    app.include_router(_edu_router)
 
 
 @app.get("/health")
