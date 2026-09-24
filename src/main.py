@@ -69,6 +69,9 @@ from src.modules.sigmun_patrimonio.presentation.api import (
 from src.modules.sigmun_frotas.presentation.api import (
     routers as fro_routers,
 )
+from src.modules.sigmun_saude.presentation.api import (
+    routers as sau_routers,
+)
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
 from src.shared.middleware.correlation_id_middleware import CorrelationIDMiddleware
@@ -200,6 +203,13 @@ app = FastAPI(
                 "Veículos, abastecimento, manutenções e rotas (DOM-FRO)."
             ),
         },
+        {
+            "name": "Saude Municipal",
+            "description": (
+                "Pacientes, prontuário, agendamento SUS, regulação e "
+                "farmácia básica (DOM-SAU)."
+            ),
+        },
     ],
 )
 
@@ -280,6 +290,8 @@ for _pat_router in pat_routers:
     app.include_router(_pat_router)
 for _fro_router in fro_routers:
     app.include_router(_fro_router)
+for _sau_router in sau_routers:
+    app.include_router(_sau_router)
 
 
 @app.get("/health")

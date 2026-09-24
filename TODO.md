@@ -1,8 +1,8 @@
 # TODO — Master Backlog e Plano de Tarefas do SIGMUN
 
 > **Projeto:** SIGMUN — Sistema Integrado de Gestão Municipal (Camacan-BA)  
-> **Status Geral do Projeto:** 🟡 Em Desenvolvimento (Onda 1 Concluída, Onda 2 em Finalização)  
-> **Última Atualização:** 2026-09-16
+> **Status Geral do Projeto:** 🟢 Em Desenvolvimento (Ondas 1-3 Concluídas, Onda 4 em Execução — DOM-SAU entregue)
+> **Última Atualização:** 2026-09-23
 > **Referência Arquitetural:** `SIGMUN-Docs/ROADMAP.md` e `SIGMUN-Docs/Plano-de-Trabalho.md`
 
 Este documento consolida todas as tarefas técnicas, funcionais, documentais e operacionais necessárias para estabilizar o estado atual do projeto, concluir as ondas em andamento e guiar as próximas fases de implementação.
@@ -263,8 +263,10 @@ Prioridade: **Planejada / Próxima Onda** (Conforme ROADMAP §6)
 
 Prioridade: **Futura** (Conforme ROADMAP §7 e §8)
 
-- [ ] **IX.1 Domínios Finalísticos (Onda 4)**
-  - `DOM-SAU` (Saúde): Prontuário eletrônico do cidadão, agendamento SUS, regulação, farmácia básica.
+- [x] **IX.1 Domínios Finalísticos (Onda 4)**
+  - `DOM-SAU` (Saúde) ✅ *(Concluído em 2026-09-23)*: Prontuário eletrônico do cidadão, agendamento SUS, regulação, farmácia básica.
+    - Módulo `src/modules/sigmun_saude` (DDD, schema `sau`): entidades Paciente (CNS único 15 dígitos), Atendimento (prontuário cronológico), Agendamento (`AGENDADO→CONFIRMADO→REALIZADO/FALTA`, cancelável), Regulacao (`SOLICITADA→AUTORIZADA→AGENDADA`/`NEGADA`), Medicamento (estoque + mínimo, `abaixo_do_minimo`) e Dispensacao (baixa atômica com `EstoqueInsuficienteError`); 12 use cases; 18 endpoints `/api/v1/sau/*` registrados em `src/main.py`; repositórios SQLAlchemy; migração `alembic/versions/20260923_01_dom_sau_models.py`.
+    - Validações: `test_sau_use_cases.py` = 10 passed, suíte `tests/unit` = 585 passed, `ruff --select E9,F821,F401` limpo, router `/api/v1/sau/pacientes` verificado.
   - `DOM-EDU` (Educação): Matrícula escolar, diário de classe digital, transporte escolar, merenda.
   - `DOM-ASS` (Assistência Social): CadÚnico local, benefícios eventuais, CRAS/CREAS.
   - `DOM-MAM` (Meio Ambiente): Licenciamento ambiental, fiscalização, áreas protegidas.

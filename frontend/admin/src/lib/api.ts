@@ -326,6 +326,133 @@ export interface HealthStatus {
   database?: string;
 }
 
+/* ------------------------------------------------------------------ */
+/* DOM-SAU — Saúde Municipal (GET/POST /api/v1/sau/*)                   */
+/* ------------------------------------------------------------------ */
+
+export interface PacienteSau {
+  id: string;
+  nome: string;
+  cns: string;
+  cpf?: string | null;
+  data_nascimento?: string | null;
+  sexo: string;
+  nome_mae?: string | null;
+  telefone?: string | null;
+  endereco?: string | null;
+  ubs_referencia?: string | null;
+  status: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface PacienteSauCreate {
+  nome: string;
+  cns: string;
+  cpf?: string;
+  data_nascimento?: string;
+  sexo?: string;
+  nome_mae?: string;
+  telefone?: string;
+  endereco?: string;
+  ubs_referencia?: string;
+}
+
+export interface AtendimentoSau {
+  id: string;
+  paciente_id: string;
+  data?: string | null;
+  tipo: string;
+  profissional: string;
+  estabelecimento: string;
+  queixa?: string | null;
+  conduta?: string | null;
+  cid10?: string | null;
+  created_at: string;
+}
+
+export interface AtendimentoSauCreate {
+  paciente_id: string;
+  profissional: string;
+  estabelecimento: string;
+  tipo?: string;
+  data?: string;
+  queixa?: string;
+  conduta?: string;
+  cid10?: string;
+}
+
+export interface AgendamentoSau {
+  id: string;
+  paciente_id: string;
+  especialidade: string;
+  data?: string | null;
+  hora?: string | null;
+  estabelecimento?: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface AgendamentoSauCreate {
+  paciente_id: string;
+  especialidade: string;
+  data?: string;
+  hora?: string;
+  estabelecimento?: string;
+}
+
+export interface RegulacaoSau {
+  id: string;
+  paciente_id: string;
+  procedimento: string;
+  prioridade: string;
+  solicitante?: string | null;
+  data_solicitacao?: string | null;
+  status: string;
+  justificativa?: string | null;
+  created_at: string;
+}
+
+export interface RegulacaoSauCreate {
+  paciente_id: string;
+  procedimento: string;
+  prioridade?: string;
+  solicitante?: string;
+}
+
+export interface MedicamentoSau {
+  id: string;
+  nome: string;
+  apresentacao?: string | null;
+  estoque: number;
+  estoque_minimo: number;
+  created_at: string;
+}
+
+export interface MedicamentoSauCreate {
+  nome: string;
+  apresentacao?: string;
+  estoque?: number;
+  estoque_minimo?: number;
+}
+
+export interface DispensacaoSau {
+  id: string;
+  paciente_id: string;
+  medicamento_id: string;
+  quantidade: number;
+  data?: string | null;
+  receita?: string | null;
+  created_at: string;
+}
+
+export interface DispensacaoSauCreate {
+  paciente_id: string;
+  medicamento_id: string;
+  quantidade: number;
+  receita?: string;
+}
+
 export interface LoginResponse {
   token: string;
   mensagem: string;
@@ -593,6 +720,87 @@ export async function listarAbastecimentos(): Promise<AbastecimentoFro[]> {
 
 export async function listarManutencoes(): Promise<ManutencaoFro[]> {
   return apiGet<ManutencaoFro[]>('/api/v1/fro/manutencoes');
+}
+
+/* ------------------------------------------------------------------ */
+/* DOM-SAU — Saúde Municipal                                           */
+/* ------------------------------------------------------------------ */
+
+export async function listarPacientesSau(): Promise<PacienteSau[]> {
+  return apiGet<PacienteSau[]>('/api/v1/sau/pacientes');
+}
+
+export async function obterPacienteSau(id: string): Promise<PacienteSau> {
+  return apiGet<PacienteSau>(`/api/v1/sau/pacientes/${encodeURIComponent(id)}`);
+}
+
+export async function criarPacienteSau(payload: PacienteSauCreate): Promise<PacienteSau> {
+  return apiPost<PacienteSau>('/api/v1/sau/pacientes', payload);
+}
+
+export async function obterProntuarioSau(pacienteId: string): Promise<AtendimentoSau[]> {
+  return apiGet<AtendimentoSau[]>(`/api/v1/sau/pacientes/${encodeURIComponent(pacienteId)}/prontuario`);
+}
+
+export async function registrarAtendimentoSau(payload: AtendimentoSauCreate): Promise<AtendimentoSau> {
+  return apiPost<AtendimentoSau>('/api/v1/sau/atendimentos', payload);
+}
+
+export async function listarAgendamentosSau(): Promise<AgendamentoSau[]> {
+  return apiGet<AgendamentoSau[]>('/api/v1/sau/agendamentos');
+}
+
+export async function agendarConsultaSau(payload: AgendamentoSauCreate): Promise<AgendamentoSau> {
+  return apiPost<AgendamentoSau>('/api/v1/sau/agendamentos', payload);
+}
+
+export async function confirmarAgendamentoSau(id: string): Promise<AgendamentoSau> {
+  return apiPost<AgendamentoSau>(`/api/v1/sau/agendamentos/${encodeURIComponent(id)}/confirmar`, {});
+}
+
+export async function cancelarAgendamentoSau(id: string, motivo?: string): Promise<AgendamentoSau> {
+  const qs = motivo ? `?motivo=${encodeURIComponent(motivo)}` : '';
+  return apiPost<AgendamentoSau>(`/api/v1/sau/agendamentos/${encodeURIComponent(id)}/cancelar${qs}`, {});
+}
+
+export async function realizarAgendamentoSau(id: string): Promise<AgendamentoSau> {
+  return apiPost<AgendamentoSau>(`/api/v1/sau/agendamentos/${encodeURIComponent(id)}/realizar`, {});
+}
+
+export async function listarRegulacoesSau(): Promise<RegulacaoSau[]> {
+  return apiGet<RegulacaoSau[]>('/api/v1/sau/regulacoes');
+}
+
+export async function solicitarRegulacaoSau(payload: RegulacaoSauCreate): Promise<RegulacaoSau> {
+  return apiPost<RegulacaoSau>('/api/v1/sau/regulacoes', payload);
+}
+
+export async function autorizarRegulacaoSau(id: string): Promise<RegulacaoSau> {
+  return apiPost<RegulacaoSau>(`/api/v1/sau/regulacoes/${encodeURIComponent(id)}/autorizar`, {});
+}
+
+export async function negarRegulacaoSau(id: string, justificativa?: string): Promise<RegulacaoSau> {
+  const qs = justificativa ? `?justificativa=${encodeURIComponent(justificativa)}` : '';
+  return apiPost<RegulacaoSau>(`/api/v1/sau/regulacoes/${encodeURIComponent(id)}/negar${qs}`, {});
+}
+
+export async function listarMedicamentosSau(): Promise<MedicamentoSau[]> {
+  return apiGet<MedicamentoSau[]>('/api/v1/sau/medicamentos');
+}
+
+export async function criarMedicamentoSau(payload: MedicamentoSauCreate): Promise<MedicamentoSau> {
+  return apiPost<MedicamentoSau>('/api/v1/sau/medicamentos', payload);
+}
+
+export async function reporEstoqueSau(id: string, quantidade: number): Promise<MedicamentoSau> {
+  return apiPost<MedicamentoSau>(
+    `/api/v1/sau/medicamentos/${encodeURIComponent(id)}/repor?quantidade=${encodeURIComponent(String(quantidade))}`,
+    {},
+  );
+}
+
+export async function dispensarMedicamentoSau(payload: DispensacaoSauCreate): Promise<DispensacaoSau> {
+  return apiPost<DispensacaoSau>('/api/v1/sau/dispensacoes', payload);
 }
 
 

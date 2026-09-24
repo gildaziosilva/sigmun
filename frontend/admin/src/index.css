@@ -614,3 +614,343 @@ button {
 .login-status .status-dot {
   background: var(--cor-sucesso);
 }
+
+/* ----- DOM-SAU: Saúde Municipal -------------------------------------- */
+
+.sau-shell {
+  gap: 1.25rem;
+}
+
+.sau-page-head {
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
+.sau-page-head .section-title {
+  margin: 0.15rem 0 0.35rem;
+  color: var(--cor-texto);
+  font-size: 1.35rem;
+}
+
+.sau-eyebrow {
+  color: #1670a3;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sau-tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding: 0.25rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.75rem;
+  background: #e9edf5;
+}
+
+.sau-tab {
+  flex: 1 0 auto;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--cor-texto-suave);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.sau-tab:hover {
+  color: var(--cor-primaria);
+}
+
+.sau-tab--active {
+  background: var(--cor-superficie);
+  color: var(--cor-primaria);
+  box-shadow: var(--sombra);
+}
+
+.sau-tab:focus-visible,
+.sau-tabs button:focus-visible {
+  outline: 2px solid #1670a3;
+  outline-offset: 1px;
+}
+
+.sau-feedback {
+  padding: 0.75rem 1rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.sau-feedback--ok {
+  border-color: #a7d7c0;
+  background: #edf8f2;
+  color: var(--cor-sucesso);
+}
+
+.sau-feedback--error {
+  border-color: #efb4b0;
+  background: #fff3f2;
+  color: var(--cor-erro);
+}
+
+.sau-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.sau-card {
+  min-width: 0;
+}
+
+.sau-card--full {
+  grid-column: 1 / -1;
+}
+
+.sau-card-title {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.sau-card-title > div:first-child {
+  flex: 1 1 16rem;
+}
+
+.sau-card-title .sau-field {
+  flex: 0 1 14rem;
+}
+
+.sau-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.sau-form > label {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  color: var(--cor-texto-suave);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.sau-form input,
+.sau-form select,
+.sau-form textarea,
+.sau-card-title input,
+.sau-card-title select {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.45rem;
+  background: #fff;
+  color: var(--cor-texto);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.sau-form textarea {
+  resize: vertical;
+}
+
+.sau-form input:focus,
+.sau-form select:focus,
+.sau-form textarea:focus,
+.sau-card-title input:focus,
+.sau-card-title select:focus {
+  border-color: #1670a3;
+  outline: 2px solid rgb(22 112 163 / 0.16);
+}
+
+.sau-form small {
+  font-weight: 400;
+  color: var(--cor-texto-suave);
+}
+
+.sau-form > .button,
+.sau-form > .actions {
+  grid-column: 1 / -1;
+  align-self: end;
+}
+
+.sau-form .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sau-form .actions button {
+  flex: 0 0 auto;
+}
+
+.sau-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.sau-metric {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: var(--sombra);
+}
+
+.sau-metric > span {
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sau-metric strong {
+  color: var(--cor-primaria);
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+
+.sau-metric small {
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+}
+
+.sau-metric--alert {
+  border-color: #efb4b0;
+  background: #fff8f7;
+}
+
+.sau-metric--alert strong {
+  color: var(--cor-erro);
+}
+
+.sau-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.sau-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sau-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.sau-list li:last-child {
+  border-bottom: 0;
+}
+
+.sau-list li > div {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.sau-list small {
+  color: var(--cor-texto-suave);
+}
+
+.sau-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #edf0f5;
+  color: #485368;
+  font-size: 0.6875rem;
+  font-weight: 750;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.sau-status--ok {
+  background: #e4f4eb;
+  color: #126843;
+}
+
+.sau-status--warning {
+  background: #fff3d4;
+  color: #7a4b00;
+}
+
+.sau-status--danger {
+  background: #fde7e5;
+  color: #a02922;
+}
+
+.sau-filter {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.45rem;
+  background: #fff;
+  color: inherit;
+}
+
+.sau-danger-link {
+  color: var(--cor-erro);
+}
+
+.button:disabled,
+.link:disabled,
+.sau-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 64rem) {
+  .sau-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 48rem) {
+  .sau-grid,
+  .sau-form,
+  .sau-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sau-card--full {
+    grid-column: auto;
+  }
+
+  .sau-form > .button,
+  .sau-form > .actions {
+    grid-column: auto;
+  }
+
+  .sau-card-title {
+    align-items: stretch;
+  }
+
+  .sau-card-title .sau-field,
+  .sau-card-title .button {
+    flex: 1 1 100%;
+  }
+}

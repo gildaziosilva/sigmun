@@ -9,6 +9,7 @@ import IdnPage from './idn/IdnPage';
 import TriPage from './tri/TriPage';
 import PatPage from './pat/PatPage';
 import FroPage from './fro/FroPage';
+import SauPage from './sau/SauPage';
 
 const NAV_ITEMS = [
   { id: 'painel', rotulo: 'Painel' },
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { id: 'tri', rotulo: 'Tributos' },
   { id: 'pat', rotulo: 'Patrimônio' },
   { id: 'fro', rotulo: 'Frota' },
+  { id: 'sau', rotulo: 'Saúde' },
   { id: 'usuarios', rotulo: 'Usuários' },
 ] as const;
 
@@ -158,6 +160,13 @@ function Dashboard() {
                     Abrir módulo
                   </button>
                 </article>
+                <article className="card card--modulo">
+                  <h3>Saúde</h3>
+                  <p>Prontuário, agenda SUS, regulação e farmácia.</p>
+                  <button type="button" className="link" onClick={() => setAba('sau')}>
+                    Abrir módulo
+                  </button>
+                </article>
               </div>
             </section>
           )}
@@ -169,6 +178,7 @@ function Dashboard() {
           {rotaPermitida === 'tri' && <TriPage />}
           {rotaPermitida === 'pat' && <PatPage />}
           {rotaPermitida === 'fro' && <FroPage />}
+          {rotaPermitida === 'sau' && <SauPage />}
           {rotaPermitida === 'usuarios' && <IdnPage />}
         </main>
       </div>
