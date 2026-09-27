@@ -15,7 +15,7 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
@@ -49,6 +49,7 @@ from src.modules.sigmun_cadastro.presentation.schemas.unidade_schemas import (
     UnidadeListResponse,
     UnidadeResponse,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
 
 logger = logging.getLogger(__name__)
 
@@ -68,18 +69,6 @@ def get_unidade_repository(
     return SqlAlchemyUnidadeAdministrativaRepository(session)
 
 
-def _usuario_id_header(
-    x_usuario_id: Annotated[
-        UUID | None,
-        Header(
-            alias="X-Usuario-Id",
-            description="Identificador do usuário autenticado (provisório até DOM-IDN).",
-        ),
-    ] = None,
-) -> UUID | None:
-    return x_usuario_id
-
-
 # -- Endpoints ------------------------------------------------------------------
 
 
@@ -96,12 +85,12 @@ def _usuario_id_header(
 def registrar_unidade(
     payload: UnidadeCreateRequest,
     repository: Annotated[UnidadeAdministrativaRepository, Depends(get_unidade_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> UnidadeAdministrativa:
     """Registra uma unidade administrativa (RN-CUM-008/009)."""
     command = CriarUnidadeCommand(
         nome=payload.nome,
-        usuario_id=usuario_id,
+        usuario_id=usuario.usuario_id if usuario else None,
         unidade_pai_id=payload.unidade_pai_id,
         sigla=payload.sigla,
         codigo_ibge=payload.codigo_ibge,
@@ -133,3 +122,6 @@ def listar_unidades(
     total = len(repository.list(include_deleted=include_deleted))
     items = [UnidadeResponse.model_validate(u) for u in unidades]
     return UnidadeListResponse(total=total, page=page, page_size=page_size, items=items)
+
+
+__all__ = ["router", "get_unidade_repository"]

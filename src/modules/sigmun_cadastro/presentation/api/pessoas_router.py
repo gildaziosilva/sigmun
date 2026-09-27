@@ -16,7 +16,7 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
@@ -93,6 +93,7 @@ from src.modules.sigmun_cadastro.presentation.schemas.pessoa_schemas import (
     PessoaListResponse,
     PessoaResponse,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
 
 logger = logging.getLogger(__name__)
 
@@ -107,18 +108,6 @@ def get_pessoa_repository(
 ) -> PessoaRepository:
     """Fornece o repositório concreto por requisição."""
     return SqlAlchemyPessoaRepository(session)
-
-
-def _usuario_id_header(
-    x_usuario_id: Annotated[
-        UUID | None,
-        Header(
-            alias="X-Usuario-Id",
-            description="Identificador do usuário autenticado (provisório até DOM-IDN).",
-        ),
-    ] = None,
-) -> UUID | None:
-    return x_usuario_id
 
 
 # -- Endpoints ------------------------------------------------------------------
@@ -137,13 +126,13 @@ def _usuario_id_header(
 def registrar_pessoa(
     payload: PessoaCreateRequest,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Pessoa:
     """Registra uma pessoa com endereços/documentos/contatos (RN-CUM-001 a 006)."""
     command = CriarPessoaCommand(
         tipo=payload.tipo,
         categoria=payload.categoria,
-        usuario_id=usuario_id,
+        usuario_id=usuario.usuario_id if usuario else None,
         unidade_id=payload.unidade_id,
         nome=payload.nome,
         data_nascimento=payload.data_nascimento,
@@ -271,7 +260,7 @@ def atualizar_dados_fisicos(
     pessoa_id: UUID,
     payload: PessoaFisicaUpdateRequest,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Pessoa:
     """Atualização parcial dos dados físicos (somente tipo FISICA)."""
     if not payload.model_fields_set:
@@ -284,7 +273,7 @@ def atualizar_dados_fisicos(
         return use_case.execute(
             AtualizarPessoaFisicaCommand(
                 pessoa_id=pessoa_id,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
                 **payload.model_dump(),
             )
         )
@@ -309,7 +298,7 @@ def atualizar_dados_juridicos(
     pessoa_id: UUID,
     payload: PessoaJuridicaUpdateRequest,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Pessoa:
     """Atualização parcial dos dados jurídicos (somente tipo JURIDICA)."""
     if not payload.model_fields_set:
@@ -322,7 +311,7 @@ def atualizar_dados_juridicos(
         return use_case.execute(
             AtualizarPessoaJuridicaCommand(
                 pessoa_id=pessoa_id,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
                 **payload.model_dump(),
             )
         )
@@ -344,7 +333,7 @@ def alterar_categoria(
     pessoa_id: UUID,
     payload: CategoriaUpdateRequest,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Pessoa:
     """Altera a categoria (CIDADAO/SERVIDOR/FORNECEDOR/AGENTE_EXTERNO)."""
     use_case = AlterarCategoriaPessoaUseCase(repository)
@@ -353,7 +342,7 @@ def alterar_categoria(
             AlterarCategoriaPessoaCommand(
                 pessoa_id=pessoa_id,
                 categoria=payload.categoria,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
             )
         )
     except PessoaNaoEncontradoError as exc:
@@ -371,17 +360,12 @@ def alterar_categoria(
 def excluir_pessoa(
     pessoa_id: UUID,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
 ) -> Pessoa:
     """Exclusão lógica da pessoa e de seus filhos (RN-CUM-007)."""
-    if usuario_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Header X-Usuario-Id é obrigatório para exclusão.",
-        )
     use_case = ExcluirPessoaUseCase(repository)
     try:
-        return use_case.execute(ExcluirPessoaCommand(pessoa_id=pessoa_id, usuario_id=usuario_id))
+        return use_case.execute(ExcluirPessoaCommand(pessoa_id=pessoa_id, usuario_id=usuario.usuario_id))
     except PessoaNaoEncontradoError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 
@@ -403,7 +387,7 @@ def adicionar_endereco(
     pessoa_id: UUID,
     payload: EnderecoPayload,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Pessoa:
     """Adiciona endereço ao agregado; principal substitui a anterior (RN-CUM-005)."""
     use_case = AdicionarEnderecoUseCase(repository)
@@ -411,7 +395,7 @@ def adicionar_endereco(
         return use_case.execute(
             AdicionarEnderecoCommand(
                 pessoa_id=pessoa_id,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
                 **payload.model_dump(),
             )
         )
@@ -438,7 +422,7 @@ def adicionar_documento(
     pessoa_id: UUID,
     payload: DocumentoPayload,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Pessoa:
     """Adiciona documento com validação de CPF/CNPJ (RN-CUM-002/003/004/006)."""
     use_case = AdicionarDocumentoUseCase(repository)
@@ -446,7 +430,7 @@ def adicionar_documento(
         return use_case.execute(
             AdicionarDocumentoCommand(
                 pessoa_id=pessoa_id,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
                 **payload.model_dump(),
             )
         )
@@ -472,7 +456,7 @@ def adicionar_contato(
     pessoa_id: UUID,
     payload: ContatoPayload,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Pessoa:
     """Adiciona contato (TEL/EMAIL/REDES/WHATSAPP) ao agregado (RN-CUM-006)."""
     use_case = AdicionarContatoUseCase(repository)
@@ -480,7 +464,7 @@ def adicionar_contato(
         return use_case.execute(
             AdicionarContatoCommand(
                 pessoa_id=pessoa_id,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
                 **payload.model_dump(),
             )
         )
