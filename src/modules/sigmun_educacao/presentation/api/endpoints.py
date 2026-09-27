@@ -225,3 +225,54 @@ def listar_distribuicoes(repo: Annotated[RepositorioDistribuicaoMerenda, Depends
         return [_to_distribuicao(d) for d in repo.list_by_matricula(matricula_id)]
     return [_to_distribuicao(d) for d in repo.list_all(page=page, page_size=page_size)]
 
+
+@router.get("/transporte/rotas/{rota_id}")
+def obter_rota(rota_id: str, repo: Annotated[RepositorioRotaTransporte, Depends(get_rota_repo)]):
+    r = repo.get_by_id(rota_id)
+    if r is None:
+        raise HTTPException(status_code=404, detail="Rota não encontrada")
+    return _to_rota(r)
+
+
+@router.get("/merenda/itens/{item_id}")
+def obter_item_merenda(item_id: str, repo: Annotated[RepositorioItemMerenda, Depends(get_item_merenda_repo)]):
+    i = repo.get_by_id(item_id)
+    if i is None:
+        raise HTTPException(status_code=404, detail="Item de merenda não encontrado")
+    return _to_item(i)
+
+
+@router.patch("/alunos/{aluno_id}")
+def atualizar_aluno(aluno_id: str, payload: dict, repo: Annotated[RepositorioAluno, Depends(get_aluno_repo)]):
+    from ...domain.exceptions import AlunoNaoEncontradoError, RegraNegocioError
+    a = repo.get_by_id(aluno_id)
+    if a is None:
+        raise HTTPException(status_code=404, detail="Aluno não encontrado")
+    # Atualiza apenas campos permitidos
+    if "nome" in payload:
+        a.nome = payload["nome"]
+    if "cpf" in payload:
+        a.cpf = payload["cpf"]
+    if "data_nascimento" in payload:
+        a.data_nascimento = payload["data_nascimento"]
+    if "sexo" in payload:
+        from ...domain.entities.aluno import Sexo
+        a.sexo = Sexo(payload["sexo"])
+    if "nome_mae" in payload:
+        a.nome_mae = payload["nome_mae"]
+    if "telefone" in payload:
+        a.telefone = payload["telefone"]
+    if "endereco" in payload:
+        a.endereco = payload["endereco"]
+    if "status" in payload:
+        from ...domain.entities.aluno import StatusAluno
+        a.status = StatusAluno(payload["status"])
+    try:
+        a.validar()
+    except RegraNegocioError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+    from datetime import datetime
+    a.updated_at = datetime.utcnow()
+    repo.save(a)
+    return _to_aluno(a)
+
