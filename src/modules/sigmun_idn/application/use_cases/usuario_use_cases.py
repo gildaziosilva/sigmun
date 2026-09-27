@@ -140,6 +140,41 @@ class BuscarUsuarioUseCase:
         return usuario
 
 
+class ListarUsuariosUseCase:
+    """Caso de uso para listar usuários com paginação."""
+
+    def __init__(self, usuario_repo: UsuarioRepositoryInterface) -> None:
+        self._repo = usuario_repo
+
+    def execute(
+        self,
+        page: int = 0,
+        page_size: int = 50,
+        status: str | None = None,
+    ) -> "ListarUsuariosResultado":
+        """Lista usuários com paginação."""
+        usuarios, total = self._repo.list_all(page=page, page_size=page_size, status=status)
+        return ListarUsuariosResultado(
+            total=total,
+            page=page,
+            page_size=page_size,
+            items=usuarios,
+        )
+
+
+from dataclasses import dataclass
+
+
+@dataclass
+class ListarUsuariosResultado:
+    """Resultado da listagem paginada de usuários."""
+
+    total: int
+    page: int
+    page_size: int
+    items: list[Usuario]
+
+
 class AutenticarUsuarioUseCase:
     """Caso de uso para autenticar um usuário."""
 
@@ -206,11 +241,10 @@ class LogoutUseCase:
 
 
 # ---------------------------------------------------------------------------
-# Aliases PT-BR espelhados no DOM-COM (Registrar/Consultar/Listar).
+# Aliases PT-BR espelhados no DOM-COM (Registrar/Consultar).
 # ---------------------------------------------------------------------------
 RegistrarUsuarioUseCase = CriarUsuarioUseCase
 ConsultarUsuarioUseCase = BuscarUsuarioUseCase
-ListarUsuariosUseCase = BuscarUsuarioUseCase
 
 
 __all__ = [

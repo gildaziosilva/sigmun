@@ -48,7 +48,16 @@ class LoginRequest(BaseModel):
     senha: str = Field(...)
 
 
-# -- Schemas de resposta --------------------------------------------------------
+# -- Novos payloads para JWT (Fase 1) ------------------------------------------
+
+
+class RefreshRequest(BaseModel):
+    """Payload para renovação de access token via refresh token."""
+
+    refresh_token: str = Field(..., description="Refresh token obtido no login")
+
+
+# -- Schemas de resposta -------------------------------------------------------
 
 
 class PermissaoResponse(BaseModel):
@@ -105,10 +114,37 @@ class UsuarioListResponse(BaseModel):
 
 
 class LoginResponse(BaseModel):
-    """Resposta de autenticação bem-sucedida."""
+    """Resposta de autenticação bem-sucedida (compatível com legacy).
 
+    Campos legacy:
+        token: str          # access token (JWT) ou session token (legacy)
+        mensagem: str
+
+    Campos novos (JWT):
+        access_token: str   # JWT access token (stateless)
+        refresh_token: str  # JWT refresh token (rotation)
+        token_type: str     # "bearer"
+        expires_in: int     # lifetime do access token em segundos
+    """
+
+    # Legacy (mantido para compatibilidade)
     token: str
     mensagem: str
+
+    # JWT (novos campos opcionais para não quebrar clientes legacy)
+    access_token: str | None = None
+    refresh_token: str | None = None
+    token_type: str | None = None
+    expires_in: int | None = None
+
+
+class TokenResponse(BaseModel):
+    """Resposta padronizada OAuth2/OIDC para tokens JWT."""
+
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
 
 
 class LogoutResponse(BaseModel):
@@ -135,11 +171,13 @@ __all__ = [
     "RoleCreateRequest",
     "PermissaoCreateRequest",
     "LoginRequest",
+    "RefreshRequest",
     "PermissaoResponse",
     "RoleResponse",
     "UsuarioResponse",
     "UsuarioListResponse",
     "LoginResponse",
+    "TokenResponse",
     "LogoutResponse",
     "UsuarioStatusUpdateRequest",
     "ErrorResponse",
