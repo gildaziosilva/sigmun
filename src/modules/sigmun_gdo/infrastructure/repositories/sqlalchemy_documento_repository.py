@@ -31,8 +31,10 @@ class SQLAlchemyDocumentoRepository(RepositorioDocumento):
             model_existente.data_encerramento = documento.data_encerramento
             model_existente.data_eliminacao = documento.data_eliminacao
             model_existente.unidade_autor_id = documento.unidade_autor_id
-            model_existente.unidade_arquivo_id = documento.unidade_arquivo_id
-            model_existente.processo_id = documento.processo_id
+            model_existente.unidade_arquivo_id = (
+                documento.unidade_arquivo_id or None
+            )
+            model_existente.processo_id = documento.processo_id or None
             model_existente.status = documento.status.value
             model_existente.is_sigiloso = documento.is_sigiloso
             model_existente.conteudo_ref = documento.conteudo_ref
@@ -54,8 +56,8 @@ class SQLAlchemyDocumentoRepository(RepositorioDocumento):
                 data_encerramento=documento.data_encerramento,
                 data_eliminacao=documento.data_eliminacao,
                 unidade_autor_id=documento.unidade_autor_id,
-                unidade_arquivo_id=documento.unidade_arquivo_id,
-                processo_id=documento.processo_id,
+                unidade_arquivo_id=documento.unidade_arquivo_id or None,
+                processo_id=documento.processo_id or None,
                 status=documento.status.value,
                 is_sigiloso=documento.is_sigiloso,
                 conteudo_ref=documento.conteudo_ref,
@@ -141,8 +143,12 @@ class SQLAlchemyDocumentoRepository(RepositorioDocumento):
             data_encerramento=model.data_encerramento,
             data_eliminacao=model.data_eliminacao,
             unidade_autor_id=model.unidade_autor_id,
-            unidade_arquivo_id=model.unidade_arquivo_id or "",
-            processo_id=model.processo_id or "",
+            unidade_arquivo_id=str(model.unidade_arquivo_id)
+            if model.unidade_arquivo_id
+            else "",
+            processo_id=str(model.processo_id)
+            if model.processo_id
+            else "",
             status=StatusDocumento(model.status),
             is_sigiloso=model.is_sigiloso,
             conteudo_ref=model.conteudo_ref or "",

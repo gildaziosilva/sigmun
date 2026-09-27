@@ -100,12 +100,15 @@ class FakeTipoDocumentalRepository(_FakeBase, RepositorioTipoDocumental):
 
     def get_by_codigo(self, codigo):
         return (
-            next((t for t in self._data.values() if t.is_ativo), None)
+            next((t for t in self._data.values() if t.codigo == codigo and t.is_ativo), None)
             if self._data
             else type(
                 "Tipo", (), {"id": "default", "codigo": codigo, "nome": "Default", "is_ativo": True}
             )()
         )
+
+    def get_by_id(self, id: str):
+        return self._data.get(id)
 
     def find_ativos(self):
         return [t for t in self._data.values() if t.is_ativo]
@@ -123,6 +126,10 @@ class TestCriarDocumentoUseCase:
     def test_cria_documento_com_sucesso(self):
         repo = FakeDocumentoRepository()
         repo_tipo = FakeTipoDocumentalRepository()
+        # Add a tipo document to the fake repository
+        from src.modules.sigmun_gdo.domain.entities import TipoDocumental
+        tipo = TipoDocumental(id="tipo-001", codigo="TD-TEST", nome="Teste", is_ativo=True)
+        repo_tipo.save(tipo)
         uc = CriarDocumentoUseCase(repo, repo_tipo)
         dto = CriarDocumentoInputDTO(
             codigo="DOC-001",
@@ -168,6 +175,9 @@ class TestCriarDocumentoUseCase:
     def test_hash_invalido_levanta_erro(self):
         repo = FakeDocumentoRepository()
         repo_tipo = FakeTipoDocumentalRepository()
+        from src.modules.sigmun_gdo.domain.entities import TipoDocumental
+        tipo = TipoDocumental(id="t1", codigo="TD-TEST", nome="Teste", is_ativo=True)
+        repo_tipo.save(tipo)
         uc = CriarDocumentoUseCase(repo, repo_tipo)
         dto = CriarDocumentoInputDTO(
             codigo="DOC-002",
@@ -186,6 +196,9 @@ class TestCriarDocumentoUseCase:
     def test_documento_com_conteudo_ref(self):
         repo = FakeDocumentoRepository()
         repo_tipo = FakeTipoDocumentalRepository()
+        from src.modules.sigmun_gdo.domain.entities import TipoDocumental
+        tipo = TipoDocumental(id="t1", codigo="TD-TEST", nome="Teste", is_ativo=True)
+        repo_tipo.save(tipo)
         uc = CriarDocumentoUseCase(repo, repo_tipo)
         dto = CriarDocumentoInputDTO(
             codigo="DOC-003",
@@ -205,6 +218,9 @@ class TestCriarDocumentoUseCase:
     def test_documento_sem_processo(self):
         repo = FakeDocumentoRepository()
         repo_tipo = FakeTipoDocumentalRepository()
+        from src.modules.sigmun_gdo.domain.entities import TipoDocumental
+        tipo = TipoDocumental(id="t1", codigo="TD-TEST", nome="Teste", is_ativo=True)
+        repo_tipo.save(tipo)
         uc = CriarDocumentoUseCase(repo, repo_tipo)
         dto = CriarDocumentoInputDTO(
             codigo="DOC-004",

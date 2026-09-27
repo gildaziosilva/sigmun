@@ -88,16 +88,16 @@ class Documento:
     data_encerramento: datetime | None = None
     data_eliminacao: datetime | None = None
     unidade_autor_id: str = ""
-    unidade_arquivo_id: str = ""
-    processo_id: str = ""
+    unidade_arquivo_id: str | None = None
+    processo_id: str | None = None
     status: StatusDocumento = StatusDocumento.RASCUNHO
     is_sigiloso: bool = False
     conteudo_ref: str = ""
     hash_integridade: str = ""
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: datetime | None = None
-    created_by: str = ""
-    updated_by: str = ""
+    created_by: str | None = None
+    updated_by: str | None = None
     is_deleted: bool = False
 
     @property

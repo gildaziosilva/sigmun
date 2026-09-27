@@ -56,21 +56,33 @@ def client() -> TestClient:
         yield test_client
 
 
-@pytest.fixture(autouse=True)
-def _tipo_documento_para_eventos():
-    """Garante um tipo documental ativo para os testes de eventos."""
+@pytest.fixture()
+def tipo_documento_para_eventos(_isolamento_eventos) -> str:
+    """Garante um tipo documental ativo e retorna seu UUID."""
     from src.modules.sigmun_gdo.infrastructure.database.models import TipoDocumentalModel
 
     with SessionLocal() as session:
-        tipo = session.query(TipoDocumentalModel).filter_by(codigo="TD-OFICIO").first()
+        tipo = (
+            session.query(TipoDocumentalModel)
+            .filter_by(codigo="TD-OFICIO")
+            .first()
+        )
+
         if not tipo:
-            session.add(
-                TipoDocumentalModel(
-                    codigo="TD-OFICIO", nome="Ofício", descricao="Documento de teste", is_ativo=True
-                )
+            tipo = TipoDocumentalModel(
+                codigo="TD-OFICIO",
+                nome="Ofício",
+                descricao="Documento de teste",
+                is_ativo=True,
             )
+            session.add(tipo)
             session.commit()
-    yield
+
+        elif not tipo.is_ativo:
+            tipo.is_ativo = True
+            session.commit()
+
+        return str(tipo.id)
 
 
 @pytest.fixture()
@@ -83,12 +95,12 @@ def db():
         session.close()
 
 
-def _payload(**overrides) -> dict:
+def _payload(tipo_documental_id: str, **overrides) -> dict:
     dados = {
         "codigo": f"DOC-{uuid.uuid4().hex[:10].upper()}",
         "numero": "0001",
         "ano": 2026,
-        "tipo_documental_id": "TD-OFICIO",
+        "tipo_documental_id": tipo_documental_id,
         "titulo": "Ofício para teste de eventos",
         "descricao": "Documento criado para validar a outbox",
         "unidade_autor_id": "UNIDADE-01",
@@ -109,8 +121,13 @@ def _eventos_da_sessao(db, topico: str | None = None) -> list[EventoOutboxModel]
 # =============================================================================
 
 
-def test_criar_documento_publica_evento_criado(client: TestClient, db):
-    criado = client.post("/api/v1/gdo/documentos", json=_payload()).json()
+def test_criar_documento_publica_evento_criado(client: TestClient, db, tipo_documento_para_eventos: str):
+    resposta = client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documento_para_eventos),
+    )
+    assert resposta.status_code == 201, resposta.text
+    criado = resposta.json()
 
     eventos = _eventos_da_sessao(db, TopicosGDO.DOCUMENTO_CRIADO)
 
@@ -126,7 +143,7 @@ def test_criar_documento_publica_evento_criado(client: TestClient, db):
     assert evento.payload["status"] == criado["status"]
 
 
-def test_criar_documento_com_processo_publica_dois_eventos(client: TestClient, db):
+def test_criar_documento_com_processo_publica_dois_eventos(client: TestClient, db, tipo_documento_para_eventos: str):
     """Documento vinculado a processo publica `criado` e `vinculado_processo`."""
     from sqlalchemy import text as sql_text
 
@@ -144,7 +161,7 @@ def test_criar_documento_com_processo_publica_dois_eventos(client: TestClient, d
         processo_id = str(row.scalar_one())
         session.commit()
 
-    client.post("/api/v1/gdo/documentos", json=_payload(processo_id=processo_id))
+    client.post("/api/v1/gdo/documentos", json=_payload(tipo_documento_para_eventos, processo_id=processo_id))
 
     topicos = [e.topico for e in _eventos_da_sessao(db)]
 
@@ -157,8 +174,13 @@ def test_criar_documento_com_processo_publica_dois_eventos(client: TestClient, d
     assert vinculado.payload["processo_id"] == processo_id
 
 
-def test_tramitar_publica_evento_tramitado(client: TestClient, db):
-    criado = client.post("/api/v1/gdo/documentos", json=_payload()).json()
+def test_tramitar_publica_evento_tramitado(client: TestClient, db, tipo_documento_para_eventos: str):
+    resposta = client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documento_para_eventos),
+    )
+    assert resposta.status_code == 201, resposta.text
+    criado = resposta.json()
     client.post(
         f"/api/v1/gdo/documentos/{criado['id']}/tramitar",
         json={
@@ -177,12 +199,19 @@ def test_tramitar_publica_evento_tramitado(client: TestClient, db):
     assert eventos[0].payload["unidade_destino_id"] == "UNIDADE-02"
 
 
-def test_arquivar_publica_evento_arquivado(client: TestClient, db):
-    criado = client.post("/api/v1/gdo/documentos", json=_payload()).json()
+def test_arquivar_publica_evento_arquivado(client: TestClient, db, tipo_documento_para_eventos: str):
+    resposta = client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documento_para_eventos),
+    )
+    assert resposta.status_code == 201, resposta.text
+    criado = resposta.json()
+    unidade_arquivo_id = str(uuid.uuid4())
+
     resposta = client.post(
         f"/api/v1/gdo/documentos/{criado['id']}/arquivar",
         json={
-            "unidade_arquivo_id": "ARQ-01",
+            "unidade_arquivo_id": unidade_arquivo_id,
             "autor_id": "USER-10",
             "observacao": "Arquivamento inicial",
         },
@@ -196,8 +225,13 @@ def test_arquivar_publica_evento_arquivado(client: TestClient, db):
     assert eventos[0].payload["status"] == "arquivado"
 
 
-def test_assinar_publica_evento_assinado(client: TestClient, db):
-    criado = client.post("/api/v1/gdo/documentos", json=_payload()).json()
+def test_assinar_publica_evento_assinado(client: TestClient, db, tipo_documento_para_eventos: str):
+    resposta = client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documento_para_eventos),
+    )
+    assert resposta.status_code == 201, resposta.text
+    criado = resposta.json()
     resposta = client.post(
         f"/api/v1/gdo/documentos/{criado['id']}/assinar",
         json={
@@ -216,9 +250,14 @@ def test_assinar_publica_evento_assinado(client: TestClient, db):
     assert eventos[0].payload["signatario_id"] == "USER-42"
 
 
-def test_destinacao_eliminacao_publica_evento_eliminado(client: TestClient, db):
+def test_destinacao_eliminacao_publica_evento_eliminado(client: TestClient, db, tipo_documento_para_eventos: str):
     """RN-GDO-011: eliminação homologada publica `gdo.documento.eliminado`."""
-    criado = client.post("/api/v1/gdo/documentos", json=_payload()).json()
+    resposta = client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documento_para_eventos),
+    )
+    assert resposta.status_code == 201, resposta.text
+    criado = resposta.json()
     resposta = client.post(
         f"/api/v1/gdo/documentos/{criado['id']}/destinacao",
         json={
@@ -242,9 +281,14 @@ def test_destinacao_eliminacao_publica_evento_eliminado(client: TestClient, db):
 # =============================================================================
 
 
-def test_despachar_publica_eventos_no_redis(client: TestClient, db):
+def test_despachar_publica_eventos_no_redis(client: TestClient, db, tipo_documento_para_eventos: str):
     """Eventos pendentes são publicados no stream do tópico e marcados."""
-    criado = client.post("/api/v1/gdo/documentos", json=_payload()).json()
+    resposta = client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documento_para_eventos),
+    )
+    assert resposta.status_code == 201, resposta.text
+    criado = resposta.json()
 
     resultado = despachar_eventos_pendentes(db)
 

@@ -39,6 +39,17 @@ class SQLAlchemyTipoDocumentalRepository(RepositorioTipoDocumental):
         models = self._session.query(TipoDocumentalModel).order_by(TipoDocumentalModel.codigo).all()
         return [self._to_entity(m) for m in models]
 
+    def get_by_id(self, id: str) -> TipoDocumental | None:
+        import uuid
+        try:
+            uuid_obj = uuid.UUID(id)
+        except ValueError:
+            return None
+        model = self._session.get(TipoDocumentalModel, uuid_obj)
+        if not model or not model.is_ativo:
+            return None
+        return self._to_entity(model)
+
     def save(self, tipo: TipoDocumental) -> TipoDocumental:
         existente = (
             self._session.query(TipoDocumentalModel)

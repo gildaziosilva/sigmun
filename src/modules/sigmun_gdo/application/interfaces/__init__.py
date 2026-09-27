@@ -176,6 +176,10 @@ class RepositorioTipoDocumental(ABC):
         pass
 
     @abstractmethod
+    def get_by_id(self, id: str) -> Optional["TipoDocumental"]:
+        pass
+
+    @abstractmethod
     def find_ativos(self) -> list["TipoDocumental"]:
         pass
 

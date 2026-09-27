@@ -74,7 +74,7 @@ class CriarDocumentoUseCase:
             )
 
         # Validação: tipo documental deve existir e estar ativo
-        tipo_documental = self._repo_tipo.get_by_codigo(dto.tipo_documental_id)
+        tipo_documental = self._repo_tipo.get_by_id(dto.tipo_documental_id)
         if not tipo_documental:
             raise TipoDocumentalInvalidoError(
                 f"Tipo documental '{dto.tipo_documental_id}' não encontrado ou inativo"
@@ -87,17 +87,17 @@ class CriarDocumentoUseCase:
                 "Hash de integridade inválido. Deve ser SHA-256 (64 hex chars)"
             )
 
-        # Criar entidade
+        # Criar entidade - usa o UUID do tipo_documental encontrado
         documento = Documento(
             codigo=dto.codigo,
             numero=dto.numero,
             ano=dto.ano,
-            tipo_documental_id=dto.tipo_documental_id,
+            tipo_documental_id=tipo_documental.id,
             titulo=dto.titulo,
             descricao=dto.descricao,
             unidade_autor_id=dto.unidade_autor_id,
-            unidade_arquivo_id=dto.unidade_arquivo_id or "",
-            processo_id=dto.processo_id or "",
+            unidade_arquivo_id=dto.unidade_arquivo_id,
+            processo_id=dto.processo_id,
             status=StatusDocumento.ATIVO,
             is_sigiloso=dto.is_sigiloso,
             conteudo_ref=dto.conteudo_ref,

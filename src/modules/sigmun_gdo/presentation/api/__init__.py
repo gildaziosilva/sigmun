@@ -267,12 +267,12 @@ def criar_documento(
             titulo=payload.titulo,
             descricao=payload.descricao or "",
             unidade_autor_id=payload.unidade_autor_id,
-            unidade_arquivo_id=payload.unidade_arquivo_id or "",
-            processo_id=payload.processo_id or "",
+            unidade_arquivo_id=payload.unidade_arquivo_id,
+            processo_id=payload.processo_id,
             is_sigiloso=payload.is_sigiloso,
             conteudo_ref=payload.conteudo_ref or "",
             hash_integridade=payload.hash_integridade or "",
-            created_by="",
+            created_by=None,
         )
         result = use_case.execute(dto)
         # Recarrega a entidade persistida para montar a resposta completa

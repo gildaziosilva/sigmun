@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, Integer, Text, func
+from sqlalchemy import JSON, DateTime, Integer, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -20,9 +20,12 @@ class DocumentoModel(GdoBase):
     """Modelo ORM da tabela `gdo.documentos`."""
 
     __tablename__ = "documentos"
-    __table_args__ = {"schema": "gdo"}
+    __table_args__ = (
+        UniqueConstraint("codigo", "ano", name="uq_documentos_codigo_ano"),
+        {"schema": "gdo"},
+    )
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    codigo: Mapped[str] = mapped_column(Text, nullable=False)
     numero: Mapped[str] = mapped_column(Text, nullable=False)
     ano: Mapped[int] = mapped_column(Integer, nullable=False)
     tipo_documental_id: Mapped[str] = mapped_column(Text, nullable=False)
@@ -34,8 +37,12 @@ class DocumentoModel(GdoBase):
     data_encerramento: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     data_eliminacao: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     unidade_autor_id: Mapped[str] = mapped_column(Text, nullable=False)
-    unidade_arquivo_id: Mapped[str | None] = mapped_column(Text)
-    processo_id: Mapped[str | None] = mapped_column(Text)
+    unidade_arquivo_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True)
+    )
+    processo_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True)
+    )
     status: Mapped[str] = mapped_column(Text, nullable=False, default="rascunho")
     is_sigiloso: Mapped[bool] = mapped_column(nullable=False, default=False)
     conteudo_ref: Mapped[str | None] = mapped_column(Text)
