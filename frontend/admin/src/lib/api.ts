@@ -508,9 +508,210 @@ export interface DocumentoGDO {
   ano: number;
   tipo_documental_id: string;
   titulo: string;
+  descricao?: string | null;
+  data_criacao?: string | null;
+  data_recebimento?: string | null;
+  data_arquivamento?: string | null;
+  data_encerramento?: string | null;
+  data_eliminacao?: string | null;
   unidade_autor_id: string;
+  unidade_arquivo_id?: string | null;
+  processo_id?: string | null;
   status: string;
   is_sigiloso: boolean;
+  conteudo_ref?: string | null;
+  hash_integridade?: string | null;
+  created_at: string;
+  created_by?: string | null;
+  updated_at?: string | null;
+  updated_by?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+}
+
+export interface DocumentoCreateRequest {
+  codigo: string;
+  numero: string;
+  ano: number;
+  tipo_documental_id: string;
+  titulo: string;
+  descricao?: string;
+  unidade_autor_id: string;
+  unidade_arquivo_id?: string;
+  processo_id?: string;
+  is_sigiloso?: boolean;
+  conteudo_ref?: string;
+  hash_integridade?: string;
+}
+
+export interface DocumentoUpdateRequest {
+  titulo?: string;
+  descricao?: string;
+  unidade_arquivo_id?: string;
+  processo_id?: string;
+  status?: string;
+  is_sigiloso?: boolean;
+  conteudo_ref?: string;
+  hash_integridade?: string;
+}
+
+export interface TramitacaoGDO {
+  id: string;
+  documento_id: string;
+  unidade_origem_id: string;
+  unidade_destino_id: string;
+  tipo: string;
+  data_envio?: string | null;
+  data_recebimento?: string | null;
+  data_devolucao?: string | null;
+  motivo?: string | null;
+  observacao?: string | null;
+  created_at: string;
+  created_by?: string | null;
+}
+
+export interface TramitacaoCreateRequest {
+  unidade_origem_id: string;
+  unidade_destino_id: string;
+  tipo: 'envio' | 'recebimento' | 'devolucao';
+  motivo?: string;
+  observacao?: string;
+}
+
+export interface VersaoDocumentoGDO {
+  id: string;
+  documento_id: string;
+  numero_versao: number;
+  conteudo_ref?: string | null;
+  hash_integridade?: string | null;
+  data_versao: string;
+  created_by?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+}
+
+export interface VersaoCreateRequest {
+  documento_id: string;
+  numero_versao: number;
+  conteudo_ref?: string;
+  hash_integridade?: string;
+}
+
+export interface ArquivamentoGDO {
+  id: string;
+  documento_id: string;
+  unidade_arquivo_id: string;
+  autor_id: string;
+  observacao?: string | null;
+  data_arquivamento: string;
+  created_at: string;
+}
+
+export interface ArquivamentoCreateRequest {
+  unidade_arquivo_id: string;
+  autor_id: string;
+  observacao?: string;
+}
+
+export interface AssinaturaGDO {
+  id: string;
+  documento_id: string;
+  signatario_id: string;
+  data_assinatura: string;
+  hash_assinatura: string;
+  certificado_id?: string | null;
+  is_valida: boolean;
+  is_revogada: boolean;
+  created_at: string;
+}
+
+export interface AssinaturaCreateRequest {
+  signatario_id: string;
+  conteudo: string;
+  autor_id: string;
+  certificado_id?: string;
+}
+
+export interface TipoDocumentalGDO {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao?: string | null;
+  is_ativo: boolean;
+  created_at: string;
+  created_by?: string | null;
+  updated_at?: string | null;
+  updated_by?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+}
+
+export interface TipoDocumentalCreateRequest {
+  codigo: string;
+  nome: string;
+  descricao?: string;
+}
+
+export interface ClassificacaoDocumentalGDO {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao?: string | null;
+  nivel: number;
+  classificacao_pai_id?: string | null;
+  prazo_retencao: number;
+  unidade_destino_id?: string | null;
+  created_at: string;
+  created_by?: string | null;
+  updated_at?: string | null;
+  updated_by?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+  is_active: boolean;
+}
+
+export interface ClassificacaoCreateRequest {
+  codigo: string;
+  nome: string;
+  descricao?: string;
+  nivel?: number;
+  classificacao_pai_id?: string;
+  prazo_retencao?: number;
+  unidade_destino_id?: string;
+}
+
+export interface ProcessoDocumentoGDO {
+  id: string;
+  numero: string;
+  ano: number;
+  tipo_processo_id: string;
+  titulo: string;
+  descricao?: string | null;
+  unidade_autor_id: string;
+  data_abertura: string;
+  data_encerramento?: string | null;
+  status: string;
+  created_at: string;
+  is_active: boolean;
+}
+
+export interface TabelaTemporalidadeGDO {
+  id: string;
+  codigo: string;
+  nome: string;
+  prazo_tempo: number;
+  unidade_tempo: string;
+  evento_fim: string;
+  tipo_destinacao: string;
+  is_ativo: boolean;
+  created_at: string;
+}
+
+export interface DestinacaoRequest {
+  tipo_destinacao: 'eliminacao' | 'guarda_permanente';
+  autor_id: string;
+  autoridade_homologadora_id?: string;
+  justificativa?: string;
 }
 
 export interface Pessoa {
@@ -597,6 +798,78 @@ export async function listarDocumentos(): Promise<PageEnvelope<DocumentoGDO>> {
 
 export async function obterDocumento(id: string): Promise<DocumentoGDO> {
   return apiGet<DocumentoGDO>(`/api/v1/gdo/documentos/${encodeURIComponent(id)}`);
+}
+
+export async function criarDocumento(payload: DocumentoCreateRequest): Promise<DocumentoGDO> {
+  return apiPost<DocumentoGDO>('/api/v1/gdo/documentos', payload);
+}
+
+export async function listarDocumentosPorProcesso(processoId: string): Promise<DocumentoGDO[]> {
+  return apiGet<DocumentoGDO[]>(`/api/v1/gdo/documentos/processo/${encodeURIComponent(processoId)}`);
+}
+
+export async function tramitarDocumento(documentoId: string, payload: TramitacaoCreateRequest): Promise<TramitacaoGDO> {
+  return apiPost<TramitacaoGDO>(`/api/v1/gdo/documentos/${encodeURIComponent(documentoId)}/tramitar`, payload);
+}
+
+export async function listarTramitacoes(documentoId: string): Promise<TramitacaoGDO[]> {
+  return apiGet<TramitacaoGDO[]>(`/api/v1/gdo/documentos/${encodeURIComponent(documentoId)}/tramitacoes`);
+}
+
+export async function listarVersoes(documentoId: string): Promise<VersaoDocumentoGDO[]> {
+  return apiGet<VersaoDocumentoGDO[]>(`/api/v1/gdo/documentos/${encodeURIComponent(documentoId)}/versoes`);
+}
+
+export async function criarVersao(payload: VersaoCreateRequest): Promise<VersaoDocumentoGDO> {
+  return apiPost<VersaoDocumentoGDO>('/api/v1/gdo/versoes', payload);
+}
+
+export async function arquivarDocumento(documentoId: string, payload: ArquivamentoCreateRequest): Promise<ArquivamentoGDO> {
+  return apiPost<ArquivamentoGDO>(`/api/v1/gdo/documentos/${encodeURIComponent(documentoId)}/arquivar`, payload);
+}
+
+export async function assinarDocumento(documentoId: string, payload: AssinaturaCreateRequest): Promise<AssinaturaGDO> {
+  return apiPost<AssinaturaGDO>(`/api/v1/gdo/documentos/${encodeURIComponent(documentoId)}/assinar`, payload);
+}
+
+export async function listarAssinaturas(documentoId: string): Promise<AssinaturaGDO[]> {
+  return apiGet<AssinaturaGDO[]>(`/api/v1/gdo/documentos/${encodeURIComponent(documentoId)}/assinaturas`);
+}
+
+export async function aplicarDestinacao(documentoId: string, payload: DestinacaoRequest): Promise<DocumentoGDO> {
+  return apiPost<DocumentoGDO>(`/api/v1/gdo/documentos/${encodeURIComponent(documentoId)}/destinacao`, payload);
+}
+
+export async function listarTiposDocumentais(): Promise<TipoDocumentalGDO[]> {
+  return apiGet<TipoDocumentalGDO[]>('/api/v1/gdo/tipos-documentais');
+}
+
+export async function criarTipoDocumental(payload: TipoDocumentalCreateRequest): Promise<TipoDocumentalGDO> {
+  return apiPost<TipoDocumentalGDO>('/api/v1/gdo/tipos-documentais', payload);
+}
+
+export async function ativarTipoDocumental(id: string): Promise<void> {
+  return apiPost<void>(`/api/v1/gdo/tipos-documentais/${encodeURIComponent(id)}/ativar`, {});
+}
+
+export async function inativarTipoDocumental(id: string): Promise<void> {
+  return apiPost<void>(`/api/v1/gdo/tipos-documentais/${encodeURIComponent(id)}/inativar`, {});
+}
+
+export async function listarClassificacoes(): Promise<PageEnvelope<ClassificacaoDocumentalGDO>> {
+  return apiGet<PageEnvelope<ClassificacaoDocumentalGDO>>('/api/v1/gdo/classificacoes?page=0&page_size=50');
+}
+
+export async function obterClassificacao(id: string): Promise<ClassificacaoDocumentalGDO> {
+  return apiGet<ClassificacaoDocumentalGDO>(`/api/v1/gdo/classificacoes/${encodeURIComponent(id)}`);
+}
+
+export async function obterProcesso(processoId: string): Promise<ProcessoDocumentoGDO> {
+  return apiGet<ProcessoDocumentoGDO>(`/api/v1/gdo/processos/${encodeURIComponent(processoId)}`);
+}
+
+export async function obterTemporalidade(codigo: string): Promise<TabelaTemporalidadeGDO> {
+  return apiGet<TabelaTemporalidadeGDO>(`/api/v1/gdo/temporalidades/${encodeURIComponent(codigo)}`);
 }
 
 export async function listarPessoas(): Promise<PageEnvelope<Pessoa>> {
