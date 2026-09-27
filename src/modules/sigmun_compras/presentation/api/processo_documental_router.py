@@ -14,7 +14,7 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
@@ -59,6 +59,7 @@ from src.modules.sigmun_compras.presentation.schemas.processo_documental_schemas
     ProcessoDocumentalResponse,
     ProcessoDocumentalUpdateRequest,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
 
 logger = logging.getLogger(__name__)
 
@@ -74,18 +75,6 @@ def get_processo_documental_repository(
     )
 
     return SqlAlchemyProcessoDocumentalRepository(session)
-
-
-def _usuario_id_header(
-    x_usuario_id: Annotated[
-        UUID | None,
-        Header(
-            alias="X-Usuario-Id",
-            description="Identificador do usuário autenticado (provisório até DOM-IDN).",
-        ),
-    ] = None,
-) -> UUID | None:
-    return x_usuario_id
 
 
 # -- Endpoints ----------------------------------------------------------------
@@ -106,7 +95,7 @@ def criar_processo(
     repository: Annotated[
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> ProcessoDocumental:
     use_case = RegistrarProcessoDocumentalUseCase(repository)
     try:
@@ -117,7 +106,7 @@ def criar_processo(
                 ano=payload.ano,
                 assunto=payload.assunto,
                 descricao=payload.descricao,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
             )
         )
     except UnidadeNaoEncontradaError as exc:
@@ -201,7 +190,7 @@ def atualizar_processo(
     repository: Annotated[
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> ProcessoDocumental:
     use_case = AtualizarProcessoDocumentalUseCase(repository)
     try:
@@ -212,7 +201,7 @@ def atualizar_processo(
                 ano=payload.ano,
                 assunto=payload.assunto,
                 descricao=payload.descricao,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
             )
         )
     except ProcessoDocumentalNaoEncontradoError as exc:
@@ -234,18 +223,12 @@ def excluir_processo(
     repository: Annotated[
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
 ) -> ProcessoDocumental:
-    if usuario_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Header X-Usuario-Id é obrigatório para exclusão.",
-        )
-
     use_case = ExcluirProcessoDocumentalUseCase(repository)
     try:
         return use_case.execute(
-            ExcluirProcessoDocumentalCommand(processo_id=processo_id, usuario_id=usuario_id)
+            ExcluirProcessoDocumentalCommand(processo_id=processo_id, usuario_id=usuario.usuario_id)
         )
     except ProcessoDocumentalNaoEncontradoError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc

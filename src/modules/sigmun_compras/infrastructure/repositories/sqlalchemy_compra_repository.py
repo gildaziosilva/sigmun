@@ -162,7 +162,7 @@ class SqlAlchemyCompraRepository(CompraRepository):
         return self._session.scalars(stmt).first() is not None
 
     def exists_unidade(self, unidade_id: UUID) -> bool:
-        from src.modules.sigmun_compras.infrastructure.database.models import (
+        from src.modules.sigmun_cadastro.infrastructure.database.models import (
             UnidadeAdministrativaModel,
         )
 

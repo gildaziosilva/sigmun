@@ -98,11 +98,7 @@ from src.modules.sigmun_compras.presentation.schemas.contrato_schemas import (
     ContratoUpdateRequest,
     FormalizarContratacaoRequest,
 )
-from src.shared.security import (
-    UsuarioContexto,
-    exigir_autenticacao,
-    extrair_usuario_id_header,
-)
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +166,7 @@ def criar_contrato(
     payload: ContratoCreateRequest,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
-    usuario_id: Annotated[UUID | None, Depends(extrair_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Contrato:
     use_case = RegistrarContratoUseCase(repository)
     try:
@@ -186,7 +182,7 @@ def criar_contrato(
                 objeto=payload.objeto,
                 licitacao_master_id=payload.licitacao_master_id,
                 situacao=payload.situacao or SituacaoContrato.EM_ELABORACAO,
-                usuario_id=usuario_id,
+                usuario_id=str(usuario.usuario_id) if usuario else None,
             )
         )
     except (
@@ -208,7 +204,7 @@ def criar_contrato(
         recurso_tipo="Contrato",
         recurso_id=contrato.id,
         chave_negocio=contrato.numero,
-        ator_id=usuario_id,
+        ator_id=usuario.usuario_id if usuario else None,
         detalhes={"situacao_inicial": contrato.situacao.value},
     )
     return contrato
@@ -235,7 +231,7 @@ def criar_contrato(
 def formalizar_contratacao(
     compra_id: Annotated[UUID, Query(description="Compra (processo) a formalizar")],
     payload: FormalizarContratacaoRequest,
-    usuario: Annotated[UsuarioContexto, Depends(exigir_autenticacao)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
     contratos_repo: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     compras_repo: Annotated[CompraRepository, Depends(get_compra_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
@@ -251,7 +247,7 @@ def formalizar_contratacao(
                 valor=payload.valor,
                 objeto=payload.objeto,
                 data_assinatura=payload.data_assinatura,
-                usuario_id=usuario.usuario_id,
+                usuario_id=str(usuario.usuario_id),
             )
         )
     except CompraNaoEncontradaError as exc:
@@ -276,7 +272,7 @@ def formalizar_contratacao(
         recurso_id=contrato.id,
         chave_negocio=contrato.numero,
         ator_id=usuario.usuario_id,
-        ator_perfil=",".join(usuario.papeis) or None,
+        ator_perfil=",".join(usuario.roles) or None,
         detalhes={
             "compra_id": str(compra_id),
             "assinado": payload.data_assinatura is not None,
@@ -366,7 +362,7 @@ def atualizar_contrato(
     payload: ContratoUpdateRequest,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
-    usuario_id: Annotated[UUID | None, Depends(extrair_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Contrato:
     use_case = AtualizarContratoUseCase(repository)
     try:
@@ -378,7 +374,7 @@ def atualizar_contrato(
                 data_fim=payload.data_fim,
                 valor=payload.valor,
                 objeto=payload.objeto,
-                usuario_id=usuario_id,
+                usuario_id=str(usuario.usuario_id) if usuario else None,
             )
         )
     except ContratoNaoEncontradoError as exc:
@@ -401,7 +397,7 @@ def atualizar_contrato(
         recurso_tipo="Contrato",
         recurso_id=contrato.id,
         chave_negocio=contrato.numero,
-        ator_id=usuario_id,
+        ator_id=usuario.usuario_id if usuario else None,
         detalhes={"campos": campos_alterados},
     )
     return contrato
@@ -426,7 +422,7 @@ def alterar_situacao(
     payload: ContratoSituacaoRequest,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
-    usuario_id: Annotated[UUID | None, Depends(extrair_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Contrato:
     use_case = AlterarSituacaoContratoUseCase(repository)
     try:
@@ -434,7 +430,7 @@ def alterar_situacao(
             AlterarSituacaoContratoCommand(
                 contrato_id=contrato_id,
                 nova_situacao=payload.situacao,
-                usuario_id=usuario_id,
+                usuario_id=str(usuario.usuario_id) if usuario else None,
             )
         )
     except ContratoNaoEncontradoError as exc:
@@ -457,7 +453,7 @@ def alterar_situacao(
         recurso_tipo="Contrato",
         recurso_id=contrato.id,
         chave_negocio=contrato.numero,
-        ator_id=usuario_id,
+        ator_id=usuario.usuario_id if usuario else None,
         detalhes={"situacao_nova": payload.situacao.value},
     )
     return contrato
@@ -473,18 +469,12 @@ def excluir_contrato(
     contrato_id: UUID,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
-    usuario_id: Annotated[UUID | None, Depends(extrair_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
 ) -> Contrato:
-    if usuario_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Header X-Usuario-Id é obrigatório para exclusão.",
-        )
-
     use_case = ExcluirContratoUseCase(repository)
     try:
         contrato = use_case.execute(
-            ExcluirContratoCommand(contrato_id=contrato_id, usuario_id=usuario_id)
+            ExcluirContratoCommand(contrato_id=contrato_id, usuario_id=str(usuario.usuario_id))
         )
     except ContratoNaoEncontradoError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
@@ -497,7 +487,7 @@ def excluir_contrato(
         recurso_tipo="Contrato",
         recurso_id=contrato.id,
         chave_negocio=contrato.numero,
-        ator_id=usuario_id,
+        ator_id=usuario.usuario_id,
     )
     return contrato
 

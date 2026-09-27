@@ -207,12 +207,12 @@ def test_delete_exclui_logicamente(client: TestClient, repository):
     assert consulta.status_code == 404
 
 
-def test_delete_sem_usuario_retorna_400(client: TestClient, repository):
+def test_delete_sem_usuario_retorna_401(client: TestClient, repository):
     criada = client.post("/api/v1/compras", json=_payload(repository)).json()
 
     response = client.delete(f"/api/v1/compras/{criada['id']}")
 
-    assert response.status_code == 400
+    assert response.status_code == 401
 
 
 def test_delete_inexistente_retorna_404(client: TestClient):

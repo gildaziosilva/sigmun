@@ -133,7 +133,7 @@ class SqlAlchemyProcessoDocumentalRepository(ProcessoDocumentalRepository):
         logger.info("Processo documental marcado como excluído: %s", processo_id)
 
     def exists_unidade(self, unidade_id: UUID) -> bool:
-        from src.modules.sigmun_compras.infrastructure.database.models import (
+        from src.modules.sigmun_cadastro.infrastructure.database.models import (
             UnidadeAdministrativaModel,
         )
 

@@ -172,11 +172,11 @@ def test_delete_remove_item_logicamente(client: TestClient, repository):
     assert lista.json()["total"] == 0
 
 
-def test_delete_sem_usuario_retorna_400(client: TestClient, repository):
+def test_delete_sem_usuario_retorna_401(client: TestClient, repository):
     compra_id = uuid4()
     repository.add_compra(compra_id)
     criado = client.post(f"/api/v1/compras/{compra_id}/itens", json=_payload()).json()
 
     response = client.delete(f"/api/v1/itens-compras/{criado['id']}")
 
-    assert response.status_code == 400
+    assert response.status_code == 401

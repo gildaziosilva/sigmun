@@ -40,14 +40,14 @@ from src.modules.sigmun_compras.presentation.schemas.auditoria_schemas import (
     EventoAuditoriaResponse,
     TrilhaAuditoriaListResponse,
 )
-from src.shared.security import UsuarioContexto, exigir_papeis
+from src.shared.security.jwt import JWTUsuarioContexto, require_roles_hybrid
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/auditoria", tags=["Compras - Auditoria"])
 
 # 017-Modelo-de-Auditoria, seção 40: perfis com acesso à trilha.
-_exigir_leitor_auditoria = exigir_papeis(
+_exigir_leitor_auditoria = require_roles_hybrid(
     "auditor",
     "controladoria",
     "administrador_seguranca",
@@ -80,7 +80,7 @@ def get_trilha_auditoria_repository(
     },
 )
 def consultar_auditoria(
-    leitor: Annotated[UsuarioContexto, Depends(_exigir_leitor_auditoria)],
+    leitor: Annotated[JWTUsuarioContexto, Depends(_exigir_leitor_auditoria)],
     repository: Annotated[TrilhaAuditoriaRepository, Depends(get_trilha_auditoria_repository)],
     data_inicio: Annotated[datetime | None, Query(description="Início do período")] = None,
     data_fim: Annotated[datetime | None, Query(description="Fim do período")] = None,
@@ -134,7 +134,7 @@ def consultar_auditoria(
         operacao="consultarAuditoria",
         recurso_tipo="TrilhaAuditoria",
         ator_id=leitor.usuario_id,
-        ator_perfil=",".join(leitor.papeis) or None,
+        ator_perfil=",".join(leitor.roles) or None,
         detalhes={
             "filtros": {
                 "categoria": categoria_filtro.value if categoria_filtro else None,

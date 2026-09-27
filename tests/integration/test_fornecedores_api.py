@@ -168,12 +168,12 @@ def test_delete_inativa_fornecedor(client: TestClient, repository):
     assert consulta.status_code == 404
 
 
-def test_delete_sem_usuario_retorna_400(client: TestClient, repository):
+def test_delete_sem_usuario_retorna_401(client: TestClient, repository):
     criado = _semente(repository)
 
     response = client.delete(f"/api/v1/fornecedores/{criado.id}")
 
-    assert response.status_code == 400
+    assert response.status_code == 401
 
 
 def test_delete_inexistente_retorna_404(client: TestClient):

@@ -15,7 +15,7 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -68,6 +68,7 @@ from src.modules.sigmun_compras.presentation.schemas.fornecedor_schemas import (
     FornecedorResponse,
     FornecedorUpdateRequest,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
 
 logger = logging.getLogger(__name__)
 
@@ -84,18 +85,6 @@ def get_fornecedor_repository(
     return SqlAlchemyFornecedorRepository(session)
 
 
-def _usuario_id_header(
-    x_usuario_id: Annotated[
-        UUID | None,
-        Header(
-            alias="X-Usuario-Id",
-            description="Identificador do usuário autenticado (provisório até DOM-IDN).",
-        ),
-    ] = None,
-) -> UUID | None:
-    return x_usuario_id
-
-
 # -- Endpoints ----------------------------------------------------------------
 
 
@@ -109,7 +98,7 @@ def _usuario_id_header(
 def criar_fornecedor(
     payload: FornecedorCreateRequest,
     repository: Annotated[FornecedorRepository, Depends(get_fornecedor_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Fornecedor:
     """Cadastra um fornecedor (UC-COMPRAS-019)."""
     use_case = RegistrarFornecedorUseCase(repository)
@@ -118,7 +107,7 @@ def criar_fornecedor(
             CriarFornecedorCommand(
                 pessoa_juridica_id=payload.pessoa_juridica_id,
                 situacao_cadastro=payload.situacao_cadastro,
-                usuario_id=usuario_id,
+                usuario_id=str(usuario.usuario_id) if usuario else None,
             )
         )
     except FornecedorJaCadastradoError as exc:
@@ -211,7 +200,7 @@ def atualizar_fornecedor(
     fornecedor_id: UUID,
     payload: FornecedorUpdateRequest,
     repository: Annotated[FornecedorRepository, Depends(get_fornecedor_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
 ) -> Fornecedor:
     """Atualiza situação cadastral e/ou macro categoria (RN-COMPRAS-033)."""
     if payload.situacao_cadastro is None and payload.macro_categoria is None:
@@ -226,7 +215,7 @@ def atualizar_fornecedor(
             AtualizarFornecedorCommand(
                 fornecedor_id=fornecedor_id,
                 situacao_cadastro=payload.situacao_cadastro,
-                usuario_id=usuario_id,
+                usuario_id=usuario.usuario_id if usuario else None,
             )
         )
     except FornecedorNaoEncontradoError as exc:
@@ -250,19 +239,13 @@ def atualizar_fornecedor(
 def inativar_fornecedor(
     fornecedor_id: UUID,
     repository: Annotated[FornecedorRepository, Depends(get_fornecedor_repository)],
-    usuario_id: Annotated[UUID | None, Depends(_usuario_id_header)] = None,
+    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
 ) -> Fornecedor:
     """Inativa um fornecedor preservando histórico (UC-COMPRAS-021)."""
-    if usuario_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Header X-Usuario-Id é obrigatório para inativação.",
-        )
-
     use_case = InativarFornecedorUseCase(repository)
     try:
         return use_case.execute(
-            InativarFornecedorCommand(fornecedor_id=fornecedor_id, usuario_id=usuario_id)
+            InativarFornecedorCommand(fornecedor_id=fornecedor_id, usuario_id=usuario.usuario_id)
         )
     except FornecedorNaoEncontradoError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
