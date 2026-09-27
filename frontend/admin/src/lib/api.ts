@@ -804,3 +804,315 @@ export async function dispensarMedicamentoSau(payload: DispensacaoSauCreate): Pr
 }
 
 
+/* ------------------------------------------------------------------ */
+/* DOM-EDU — Educação Municipal                                        */
+/* ------------------------------------------------------------------ */
+
+// Aluno
+export interface AlunoEdu {
+  id: string;
+  nome: string;
+  cpf: string | null;
+  data_nascimento: string | null;
+  sexo: string;
+  nome_mae: string | null;
+  telefone: string | null;
+  endereco: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export interface AlunoCreateRequest {
+  nome: string;
+  cpf?: string;
+  data_nascimento?: string;
+  sexo?: 'masculino' | 'feminino' | 'ignorado';
+  nome_mae?: string;
+  telefone?: string;
+  endereco?: string;
+  created_by: string;
+}
+
+export interface AlunoUpdateRequest {
+  nome?: string;
+  cpf?: string;
+  data_nascimento?: string;
+  sexo?: 'masculino' | 'feminino' | 'ignorado';
+  nome_mae?: string;
+  telefone?: string;
+  endereco?: string;
+  created_by: string;
+}
+
+export async function listarAlunos(): Promise<AlunoEdu[]> {
+  return apiGet<AlunoEdu[]>('/api/v1/edu/alunos');
+}
+
+export async function obterAluno(id: string): Promise<AlunoEdu> {
+  return apiGet<AlunoEdu>(`/api/v1/edu/alunos/${encodeURIComponent(id)}`);
+}
+
+export async function criarAluno(payload: AlunoCreateRequest): Promise<AlunoEdu> {
+  return apiPost<AlunoEdu>('/api/v1/edu/alunos', payload);
+}
+
+export async function atualizarAluno(id: string, payload: AlunoUpdateRequest): Promise<AlunoEdu> {
+  return apiPost<AlunoEdu>(`/api/v1/edu/alunos/${encodeURIComponent(id)}`, payload, false);
+}
+
+export async function inativarAluno(id: string, created_by: string): Promise<AlunoEdu> {
+  return apiPost<AlunoEdu>(`/api/v1/edu/alunos/${encodeURIComponent(id)}/inativar`, { created_by });
+}
+
+export async function ativarAluno(id: string, created_by: string): Promise<AlunoEdu> {
+  return apiPost<AlunoEdu>(`/api/v1/edu/alunos/${encodeURIComponent(id)}/ativar`, { created_by });
+}
+
+
+// Matrícula
+export interface MatriculaEdu {
+  id: string;
+  aluno_id: string;
+  escola: string;
+  serie: string;
+  turno: string;
+  ano_letivo: number;
+  data_matricula: string | null;
+  status: string;
+  escola_destino: string | null;
+  motivo: string | null;
+  created_at: string;
+}
+
+export interface MatriculaCreateRequest {
+  aluno_id: string;
+  escola: string;
+  serie: string;
+  turno: 'manha' | 'tarde' | 'noite';
+  ano_letivo: number;
+  created_by: string;
+}
+
+export interface MatriculaTransferRequest {
+  escola_destino: string;
+  motivo?: string;
+  created_by: string;
+}
+
+export interface MatriculaCancelRequest {
+  motivo?: string;
+  created_by: string;
+}
+
+export async function listarMatriculas(): Promise<MatriculaEdu[]> {
+  return apiGet<MatriculaEdu[]>('/api/v1/edu/matriculas');
+}
+
+export async function obterMatricula(id: string): Promise<MatriculaEdu> {
+  return apiGet<MatriculaEdu>(`/api/v1/edu/matriculas/${encodeURIComponent(id)}`);
+}
+
+export async function criarMatricula(payload: MatriculaCreateRequest): Promise<MatriculaEdu> {
+  return apiPost<MatriculaEdu>('/api/v1/edu/matriculas', payload);
+}
+
+export async function transferirMatricula(id: string, payload: MatriculaTransferRequest): Promise<MatriculaEdu> {
+  return apiPost<MatriculaEdu>(`/api/v1/edu/matriculas/${encodeURIComponent(id)}/transferir`, payload);
+}
+
+export async function cancelarMatricula(id: string, payload: MatriculaCancelRequest): Promise<MatriculaEdu> {
+  return apiPost<MatriculaEdu>(`/api/v1/edu/matriculas/${encodeURIComponent(id)}/cancelar`, payload);
+}
+
+export async function concluirMatricula(id: string, created_by: string): Promise<MatriculaEdu> {
+  return apiPost<MatriculaEdu>(`/api/v1/edu/matriculas/${encodeURIComponent(id)}/concluir`, { created_by });
+}
+
+
+// Diário de Classe
+export interface LancamentoDiarioEdu {
+  id: string;
+  matricula_id: string;
+  data: string | null;
+  presente: boolean;
+  nota: number | null;
+  observacao: string | null;
+  created_at: string;
+}
+
+export interface LancamentoDiarioCreateRequest {
+  matricula_id: string;
+  data?: string;
+  presente: boolean;
+  nota?: number;
+  observacao?: string;
+  created_by: string;
+}
+
+export async function listarLancamentosDiario(): Promise<LancamentoDiarioEdu[]> {
+  return apiGet<LancamentoDiarioEdu[]>('/api/v1/edu/diario/lancamentos');
+}
+
+export async function listarLancamentosPorMatricula(matricula_id: string): Promise<LancamentoDiarioEdu[]> {
+  return apiGet<LancamentoDiarioEdu[]>(`/api/v1/edu/diario/lancamentos?matricula_id=${encodeURIComponent(matricula_id)}`);
+}
+
+export async function criarLancamentoDiario(payload: LancamentoDiarioCreateRequest): Promise<LancamentoDiarioEdu> {
+  return apiPost<LancamentoDiarioEdu>('/api/v1/edu/diario/lancamentos', payload);
+}
+
+
+// Transporte Escolar
+export interface RotaTransporteEdu {
+  id: string;
+  identificacao: string;
+  veiculo: string | null;
+  motorista: string;
+  vagas: number;
+  turno: string;
+  status: string;
+  created_at: string;
+}
+
+export interface RotaTransporteCreateRequest {
+  identificacao: string;
+  motorista: string;
+  veiculo?: string;
+  vagas: number;
+  turno?: 'manha' | 'tarde' | 'noite';
+  created_by: string;
+}
+
+export interface RotaTransporteUpdateRequest {
+  identificacao?: string;
+  veiculo?: string;
+  motorista?: string;
+  vagas?: number;
+  turno?: 'manha' | 'tarde' | 'noite';
+  created_by: string;
+}
+
+export interface PassagemTransporteEdu {
+  id: string;
+  rota_id: string;
+  matricula_id: string;
+  data: string | null;
+  created_at: string;
+}
+
+export interface PassagemTransporteCreateRequest {
+  rota_id: string;
+  matricula_id: string;
+  data?: string;
+  created_by: string;
+}
+
+export async function listarRotasTransporte(): Promise<RotaTransporteEdu[]> {
+  return apiGet<RotaTransporteEdu[]>('/api/v1/edu/transporte/rotas');
+}
+
+export async function obterRotaTransporte(id: string): Promise<RotaTransporteEdu> {
+  return apiGet<RotaTransporteEdu>(`/api/v1/edu/transporte/rotas/${encodeURIComponent(id)}`);
+}
+
+export async function criarRotaTransporte(payload: RotaTransporteCreateRequest): Promise<RotaTransporteEdu> {
+  return apiPost<RotaTransporteEdu>('/api/v1/edu/transporte/rotas', payload);
+}
+
+export async function atualizarRotaTransporte(id: string, payload: RotaTransporteUpdateRequest): Promise<RotaTransporteEdu> {
+  return apiPost<RotaTransporteEdu>(`/api/v1/edu/transporte/rotas/${encodeURIComponent(id)}`, payload, false);
+}
+
+export async function inativarRotaTransporte(id: string, created_by: string): Promise<RotaTransporteEdu> {
+  return apiPost<RotaTransporteEdu>(`/api/v1/edu/transporte/rotas/${encodeURIComponent(id)}/inativar`, { created_by });
+}
+
+export async function ativarRotaTransporte(id: string, created_by: string): Promise<RotaTransporteEdu> {
+  return apiPost<RotaTransporteEdu>(`/api/v1/edu/transporte/rotas/${encodeURIComponent(id)}/ativar`, { created_by });
+}
+
+export async function listarPassagensTransporte(rota_id?: string): Promise<PassagemTransporteEdu[]> {
+  const qs = rota_id ? `?rota_id=${encodeURIComponent(rota_id)}` : '';
+  return apiGet<PassagemTransporteEdu[]>(`/api/v1/edu/transporte/passagens${qs}`);
+}
+
+export async function registrarPassagemTransporte(payload: PassagemTransporteCreateRequest): Promise<PassagemTransporteEdu> {
+  return apiPost<PassagemTransporteEdu>('/api/v1/edu/transporte/passagens', payload);
+}
+
+
+// Merenda Escolar
+export interface ItemMerendaEdu {
+  id: string;
+  nome: string;
+  tipo: string;
+  estoque: number;
+  estoque_minimo: number;
+  created_at: string;
+}
+
+export interface ItemMerendaCreateRequest {
+  nome: string;
+  tipo?: string;
+  estoque?: number;
+  estoque_minimo?: number;
+  created_by: string;
+}
+
+export interface ItemMerendaUpdateRequest {
+  nome?: string;
+  tipo?: string;
+  estoque_minimo?: number;
+  created_by: string;
+}
+
+export interface DistribuicaoMerendaEdu {
+  id: string;
+  matricula_id: string;
+  item_id: string;
+  quantidade: number;
+  data: string | null;
+  refeicao: string;
+  created_at: string;
+}
+
+export interface DistribuicaoMerendaCreateRequest {
+  matricula_id: string;
+  item_id: string;
+  quantidade: number;
+  refeicao?: 'almoco' | 'lanche' | 'jantar';
+  data?: string;
+  created_by: string;
+}
+
+export async function listarItensMerenda(): Promise<ItemMerendaEdu[]> {
+  return apiGet<ItemMerendaEdu[]>('/api/v1/edu/merenda/itens');
+}
+
+export async function obterItemMerenda(id: string): Promise<ItemMerendaEdu> {
+  return apiGet<ItemMerendaEdu>(`/api/v1/edu/merenda/itens/${encodeURIComponent(id)}`);
+}
+
+export async function criarItemMerenda(payload: ItemMerendaCreateRequest): Promise<ItemMerendaEdu> {
+  return apiPost<ItemMerendaEdu>('/api/v1/edu/merenda/itens', payload);
+}
+
+export async function atualizarItemMerenda(id: string, payload: ItemMerendaUpdateRequest): Promise<ItemMerendaEdu> {
+  return apiPost<ItemMerendaEdu>(`/api/v1/edu/merenda/itens/${encodeURIComponent(id)}`, payload, false);
+}
+
+export async function reporEstoqueMerenda(id: string, quantidade: number): Promise<ItemMerendaEdu> {
+  return apiPost<ItemMerendaEdu>(`/api/v1/edu/merenda/itens/${encodeURIComponent(id)}/repor?quantidade=${encodeURIComponent(String(quantidade))}`, {});
+}
+
+export async function listarDistribuicoesMerenda(matricula_id?: string): Promise<DistribuicaoMerendaEdu[]> {
+  const qs = matricula_id ? `?matricula_id=${encodeURIComponent(matricula_id)}` : '';
+  return apiGet<DistribuicaoMerendaEdu[]>(`/api/v1/edu/merenda/distribuicoes${qs}`);
+}
+
+export async function distribuirMerenda(payload: DistribuicaoMerendaCreateRequest): Promise<DistribuicaoMerendaEdu> {
+  return apiPost<DistribuicaoMerendaEdu>('/api/v1/edu/merenda/distribuicoes', payload);
+}
+
+
