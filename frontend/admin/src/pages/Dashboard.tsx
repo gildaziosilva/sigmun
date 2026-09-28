@@ -11,6 +11,7 @@ import PatPage from './pat/PatPage';
 import FroPage from './fro/FroPage';
 import SauPage from './sau/SauPage';
 import EduPage from './edu/EduPage';
+import AssPage from './ass/AssPage';
 
 const NAV_ITEMS = [
   { id: 'painel', rotulo: 'Painel' },
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { id: 'fro', rotulo: 'Frota' },
   { id: 'sau', rotulo: 'Saúde' },
   { id: 'edu', rotulo: 'Educação' },
+  { id: 'ass', rotulo: 'Assistência Social' },
   { id: 'usuarios', rotulo: 'Usuários' },
 ] as const;
 
@@ -176,6 +178,13 @@ function Dashboard() {
                     Abrir módulo
                   </button>
                 </article>
+                <article className="card card--modulo">
+                  <h3>Assistência Social</h3>
+                  <p>CadÚnico local, benefícios eventuais e CRAS/CREAS.</p>
+                  <button type="button" className="link" onClick={() => setAba('ass')}>
+                    Abrir módulo
+                  </button>
+                </article>
               </div>
             </section>
           )}
@@ -189,6 +198,7 @@ function Dashboard() {
           {rotaPermitida === 'fro' && <FroPage />}
           {rotaPermitida === 'sau' && <SauPage />}
           {rotaPermitida === 'edu' && <EduPage />}
+          {rotaPermitida === 'ass' && <AssPage />}
           {rotaPermitida === 'usuarios' && <IdnPage />}
         </main>
       </div>

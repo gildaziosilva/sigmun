@@ -75,6 +75,9 @@ from src.modules.sigmun_saude.presentation.api import (
 from src.modules.sigmun_educacao.presentation.api import (
     routers as edu_routers,
 )
+from src.modules.sigmun_assistencia_social.presentation.api import (
+    routers as ass_routers,
+)
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
 from src.shared.middleware.correlation_id_middleware import CorrelationIDMiddleware
@@ -220,6 +223,12 @@ app = FastAPI(
                 "escolar e merenda (DOM-EDU)."
             ),
         },
+        {
+            "name": "Assistência Social",
+            "description": (
+                "CadÚnico local, benefícios eventuais, CRAS/CREAS (DOM-ASS)."
+            ),
+        },
     ],
 )
 
@@ -304,6 +313,8 @@ for _sau_router in sau_routers:
     app.include_router(_sau_router)
 for _edu_router in edu_routers:
     app.include_router(_edu_router)
+for _ass_router in ass_routers:
+    app.include_router(_ass_router)
 
 
 @app.get("/health")

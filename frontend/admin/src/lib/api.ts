@@ -84,6 +84,10 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 export const apiGet = <T>(path: string): Promise<T> => request<T>(path);
 export const apiPost = <T>(path: string, body?: unknown, anonymous = false): Promise<T> =>
   request<T>(path, { method: 'POST', body, anonymous });
+export const apiPatch = <T>(path: string, body?: unknown): Promise<T> =>
+  request<T>(path, { method: 'PATCH', body });
+export const apiDelete = <T>(path: string): Promise<T> =>
+  request<T>(path, { method: 'DELETE' });
 
 
 /* ------------------------------------------------------------------ */
@@ -1388,4 +1392,296 @@ export async function distribuirMerenda(payload: DistribuicaoMerendaCreateReques
   return apiPost<DistribuicaoMerendaEdu>('/api/v1/edu/merenda/distribuicoes', payload);
 }
 
+/* ------------------------------------------------------------------ */
+/* DOM-ASS — Assistência Social                                        */
+/* ------------------------------------------------------------------ */
+
+export interface FamiliaAss {
+  id: string;
+  nis: string;
+  responsavel_nome: string;
+  responsavel_cpf?: string | null;
+  endereco?: string | null;
+  telefone?: string | null;
+  renda_per_capita: number;
+  quantidade_pessoas: number;
+  status: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface FamiliaAssCreate {
+  nis: string;
+  responsavel_nome: string;
+  responsavel_cpf?: string;
+  endereco?: string;
+  telefone?: string;
+  renda_per_capita?: number;
+  quantidade_pessoas?: number;
+}
+
+export interface PessoaAss {
+  id: string;
+  familia_id: string;
+  nome: string;
+  cpf: string;
+  data_nascimento?: string | null;
+  sexo: string;
+  nome_mae?: string | null;
+  parentesco?: string | null;
+  escolaridade?: string | null;
+  ocupacao?: string | null;
+  renda: number;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface PessoaAssCreate {
+  familia_id: string;
+  nome: string;
+  cpf: string;
+  data_nascimento?: string;
+  sexo?: string;
+  nome_mae?: string;
+  parentesco?: string;
+  escolaridade?: string;
+  ocupacao?: string;
+  renda?: number;
+}
+
+export interface UnidadeAss {
+  id: string;
+  codigo: string;
+  nome: string;
+  tipo: string;
+  endereco?: string | null;
+  telefone?: string | null;
+  email?: string | null;
+  responsavel?: string | null;
+  status: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface UnidadeAssCreate {
+  codigo: string;
+  nome: string;
+  tipo?: string;
+  endereco?: string;
+  telefone?: string;
+  email?: string;
+  responsavel?: string;
+}
+
+export interface BeneficioAss {
+  id: string;
+  familia_id: string;
+  tipo: string;
+  descricao?: string | null;
+  valor: number;
+  quantidade: number;
+  data_solicitacao: string;
+  data_aprovacao?: string | null;
+  data_entrega?: string | null;
+  status: string;
+  unidade_id?: string | null;
+  observacao?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface BeneficioAssCreate {
+  familia_id: string;
+  tipo?: string;
+  descricao?: string;
+  valor?: number;
+  quantidade?: number;
+  unidade_id?: string;
+  observacao?: string;
+}
+
+export interface AtendimentoAss {
+  id: string;
+  pessoa_id: string;
+  unidade_id: string;
+  tipo: string;
+  data?: string | null;
+  descricao?: string | null;
+  encaminhamento?: string | null;
+  profissional: string;
+  created_at: string;
+}
+
+export interface AtendimentoAssCreate {
+  pessoa_id: string;
+  unidade_id: string;
+  tipo?: string;
+  data?: string;
+  descricao?: string;
+  encaminhamento?: string;
+  profissional: string;
+}
+
+export async function listarFamiliasAss(): Promise<FamiliaAss[]> {
+  return apiGet<FamiliaAss[]>('/api/v1/ass/familias');
+}
+
+export async function obterFamiliaAss(id: string): Promise<FamiliaAss> {
+  return apiGet<FamiliaAss>(`/api/v1/ass/familias/${encodeURIComponent(id)}`);
+}
+
+export async function obterFamiliaAssPorNis(nis: string): Promise<FamiliaAss> {
+  return apiGet<FamiliaAss>(`/api/v1/ass/familias/nis/${encodeURIComponent(nis)}`);
+}
+
+export async function criarFamiliaAss(payload: FamiliaAssCreate): Promise<FamiliaAss> {
+  return apiPost<FamiliaAss>('/api/v1/ass/familias', payload);
+}
+
+export async function listarPessoasAss(): Promise<PessoaAss[]> {
+  return apiGet<PessoaAss[]>('/api/v1/ass/pessoas');
+}
+
+export async function obterPessoaAss(id: string): Promise<PessoaAss> {
+  return apiGet<PessoaAss>(`/api/v1/ass/pessoas/${encodeURIComponent(id)}`);
+}
+
+export async function obterPessoaAssPorCpf(cpf: string): Promise<PessoaAss> {
+  return apiGet<PessoaAss>(`/api/v1/ass/pessoas/cpf/${encodeURIComponent(cpf)}`);
+}
+
+export async function listarPessoasPorFamiliaAss(familiaId: string): Promise<PessoaAss[]> {
+  return apiGet<PessoaAss[]>(`/api/v1/ass/familias/${encodeURIComponent(familiaId)}/pessoas`);
+}
+
+export async function criarPessoaAss(payload: PessoaAssCreate): Promise<PessoaAss> {
+  return apiPost<PessoaAss>('/api/v1/ass/pessoas', payload);
+}
+
+export async function listarUnidadesAss(): Promise<UnidadeAss[]> {
+  return apiGet<UnidadeAss[]>('/api/v1/ass/unidades');
+}
+
+export async function obterUnidadeAss(id: string): Promise<UnidadeAss> {
+  return apiGet<UnidadeAss>(`/api/v1/ass/unidades/${encodeURIComponent(id)}`);
+}
+
+export async function criarUnidadeAss(payload: UnidadeAssCreate): Promise<UnidadeAss> {
+  return apiPost<UnidadeAss>('/api/v1/ass/unidades', payload);
+}
+
+export async function listarBeneficiosAss(): Promise<BeneficioAss[]> {
+  return apiGet<BeneficioAss[]>('/api/v1/ass/beneficios');
+}
+
+export async function obterBeneficioAss(id: string): Promise<BeneficioAss> {
+  return apiGet<BeneficioAss>(`/api/v1/ass/beneficios/${encodeURIComponent(id)}`);
+}
+
+export async function listarBeneficiosPorFamiliaAss(familiaId: string): Promise<BeneficioAss[]> {
+  return apiGet<BeneficioAss[]>(`/api/v1/ass/familias/${encodeURIComponent(familiaId)}/beneficios`);
+}
+
+export async function solicitarBeneficioAss(payload: BeneficioAssCreate): Promise<BeneficioAss> {
+  return apiPost<BeneficioAss>('/api/v1/ass/beneficios', payload);
+}
+
+export async function aprovarBeneficioAss(id: string): Promise<BeneficioAss> {
+  return apiPost<BeneficioAss>(`/api/v1/ass/beneficios/${encodeURIComponent(id)}/aprovar`, {});
+}
+
+export async function negarBeneficioAss(id: string, justificativa: string): Promise<BeneficioAss> {
+  return apiPost<BeneficioAss>(`/api/v1/ass/beneficios/${encodeURIComponent(id)}/negar?justificativa=${encodeURIComponent(justificativa)}`, {});
+}
+
+export async function entregarBeneficioAss(id: string): Promise<BeneficioAss> {
+  return apiPost<BeneficioAss>(`/api/v1/ass/beneficios/${encodeURIComponent(id)}/entregar`, {});
+}
+
+export async function cancelarBeneficioAss(id: string): Promise<BeneficioAss> {
+  return apiPost<BeneficioAss>(`/api/v1/ass/beneficios/${encodeURIComponent(id)}/cancelar`, {});
+}
+
+export async function listarAtendimentosAss(): Promise<AtendimentoAss[]> {
+  return apiGet<AtendimentoAss[]>('/api/v1/ass/atendimentos');
+}
+
+export async function obterAtendimentoAss(id: string): Promise<AtendimentoAss> {
+  return apiGet<AtendimentoAss>(`/api/v1/ass/atendimentos/${encodeURIComponent(id)}`);
+}
+
+export async function listarAtendimentosPorPessoaAss(pessoaId: string): Promise<AtendimentoAss[]> {
+  return apiGet<AtendimentoAss[]>(`/api/v1/ass/pessoas/${encodeURIComponent(pessoaId)}/atendimentos`);
+}
+
+export async function listarAtendimentosPorUnidadeAss(unidadeId: string): Promise<AtendimentoAss[]> {
+  return apiGet<AtendimentoAss[]>(`/api/v1/ass/unidades/${encodeURIComponent(unidadeId)}/atendimentos`);
+}
+
+export async function registrarAtendimentoAss(payload: AtendimentoAssCreate): Promise<AtendimentoAss> {
+  return apiPost<AtendimentoAss>('/api/v1/ass/atendimentos', payload);
+}
+
+
+
+/* --- Atualizacao e exclusao (acoes das listagens) --- */
+
+export interface FamiliaAssUpdate {
+  nis?: string;
+  responsavel_nome?: string;
+  responsavel_cpf?: string;
+  endereco?: string;
+  telefone?: string;
+  renda_per_capita?: number;
+  quantidade_pessoas?: number;
+  status?: string;
+}
+
+export interface PessoaAssUpdate {
+  familia_id?: string;
+  nome?: string;
+  cpf?: string;
+  data_nascimento?: string;
+  sexo?: string;
+  nome_mae?: string;
+  parentesco?: string;
+  escolaridade?: string;
+  ocupacao?: string;
+  renda?: number;
+}
+
+export interface UnidadeAssUpdate {
+  codigo?: string;
+  nome?: string;
+  tipo?: string;
+  endereco?: string;
+  telefone?: string;
+  email?: string;
+  responsavel?: string;
+  status?: string;
+}
+
+export async function atualizarFamiliaAss(id: string, payload: FamiliaAssUpdate): Promise<FamiliaAss> {
+  return apiPatch<FamiliaAss>(`/api/v1/ass/familias/${encodeURIComponent(id)}`, payload);
+}
+
+export async function excluirFamiliaAss(id: string): Promise<FamiliaAss> {
+  return apiDelete<FamiliaAss>(`/api/v1/ass/familias/${encodeURIComponent(id)}`);
+}
+
+export async function atualizarPessoaAss(id: string, payload: PessoaAssUpdate): Promise<PessoaAss> {
+  return apiPatch<PessoaAss>(`/api/v1/ass/pessoas/${encodeURIComponent(id)}`, payload);
+}
+
+export async function excluirPessoaAss(id: string): Promise<PessoaAss> {
+  return apiDelete<PessoaAss>(`/api/v1/ass/pessoas/${encodeURIComponent(id)}`);
+}
+
+export async function atualizarUnidadeAss(id: string, payload: UnidadeAssUpdate): Promise<UnidadeAss> {
+  return apiPatch<UnidadeAss>(`/api/v1/ass/unidades/${encodeURIComponent(id)}`, payload);
+}
+
+export async function excluirUnidadeAss(id: string): Promise<UnidadeAss> {
+  return apiDelete<UnidadeAss>(`/api/v1/ass/unidades/${encodeURIComponent(id)}`);
+}
 

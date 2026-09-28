@@ -1240,3 +1240,373 @@ button {
     }
   }
 }
+
+/* ==========================================================================
+   DOM-ASS — Assistência Social (CadÚnico, benefícios, CRAS/CREAS)
+   ========================================================================== */
+
+/* ----- Classes utilitárias de formulário (usadas pelas telas ASS) ------- */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.form-grid label {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  color: var(--cor-texto-suave);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.form-grid label span {
+  color: var(--cor-texto);
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.45rem;
+  background: #fff;
+  color: var(--cor-texto);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.form-grid input:focus,
+.form-grid select:focus,
+.form-grid textarea:focus {
+  border-color: var(--cor-primaria);
+  outline: 2px solid rgb(22 112 163 / 0.16);
+}
+
+.form-grid small {
+  font-weight: 400;
+  color: var(--cor-texto-suave);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.form-search {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.form-search label {
+  flex: 1 1 auto;
+}
+
+.form-search input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.45rem;
+  background: #fff;
+  color: var(--cor-texto);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.button--secondary {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+.button--secondary:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+.button--danger {
+  background: #fff3f2;
+  border: 1px solid #efb4b0;
+  color: var(--cor-erro);
+}
+
+.button--danger:hover {
+  background: #fde7e5;
+  border-color: #d98880;
+}
+
+.card.kpi h3 {
+  font-size: 0.8125rem;
+  color: var(--cor-texto-suave);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpi-value {
+  margin-top: 0.35rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--cor-primaria);
+  line-height: 1.1;
+}
+
+/* ----- Estrutura do módulo ---------------------------------------------- */
+
+.ass-shell {
+  gap: 1.25rem;
+}
+
+.ass-page-head {
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
+.ass-page-head .section-title {
+  margin: 0.15rem 0 0.35rem;
+  color: var(--cor-texto);
+  font-size: 1.35rem;
+}
+
+.ass-eyebrow {
+  color: #7a4b00;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ass-feedback {
+  padding: 0.75rem 1rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.ass-feedback--ok {
+  border-color: #a7d7c0;
+  background: #edf8f2;
+  color: var(--cor-sucesso);
+}
+
+.ass-feedback--error {
+  border-color: #efb4b0;
+  background: #fff3f2;
+  color: var(--cor-erro);
+}
+
+/* ----- Abas -------------------------------------------------------------- */
+
+.ass-tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding: 0.25rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.75rem;
+  background: #e9edf5;
+}
+
+.ass-tab {
+  flex: 1 0 auto;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--cor-texto-suave);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.ass-tab:hover {
+  color: var(--cor-primaria);
+}
+
+.ass-tab--active {
+  background: var(--cor-superficie);
+  color: var(--cor-primaria);
+  box-shadow: var(--sombra);
+}
+
+.ass-tab:focus-visible,
+.ass-tabs button:focus-visible {
+  outline: 2px solid #7a4b00;
+  outline-offset: 1px;
+}
+
+/* ----- Grade e cartões --------------------------------------------------- */
+
+.ass-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ass-card {
+  min-width: 0;
+}
+
+.ass-card--full {
+  grid-column: 1 / -1;
+}
+
+.ass-kpis {
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
+/* ----- Formulários -------------------------------------------------------- */
+
+.ass-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.ass-form .form-grid {
+  margin-top: 0.25rem;
+}
+
+/* ----- Listagens ---------------------------------------------------------- */
+
+.ass-lista {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ass-lista-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ass-lista-header h3 {
+  margin: 0;
+}
+
+.ass-search {
+  min-width: 16rem;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.45rem;
+  background: #fff;
+  color: var(--cor-texto);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.ass-search:focus {
+  border-color: var(--cor-primaria);
+  outline: 2px solid rgb(22 112 163 / 0.16);
+}
+
+
+.ass-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.ass-table th,
+.ass-table td {
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.ass-table thead th {
+  background: var(--cor-fundo);
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ass-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ----- Visão geral (recentes) -------------------------------------------- */
+
+.ass-recentes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1rem;
+}
+
+.ass-recentes-card h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+/* ----- Selo de status ----------------------------------------------------- */
+
+.ass-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #edf0f5;
+  color: #485368;
+  font-size: 0.6875rem;
+  font-weight: 750;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.ass-status--ok {
+  background: #e4f4eb;
+  color: #126843;
+}
+
+.ass-status--warning {
+  background: #fff3d4;
+  color: #7a4b00;
+}
+
+.ass-status--danger {
+  background: #fde7e5;
+  color: #a02922;
+}
+
+.ass-status--neutral {
+  background: #edf0f5;
+  color: #485368;
+}
+
+@media (max-width: 48rem) {
+  .form-grid,
+  .ass-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ass-card--full {
+    grid-column: auto;
+  }
+
+  .ass-recentes {
+    grid-template-columns: 1fr;
+  }
+
+  .ass-lista-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ass-search {
+    min-width: 0;
+  }
+}
