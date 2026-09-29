@@ -2,14 +2,16 @@
 
 RN-ASS-001: o NIS da família é único no cadastro municipal.
 RN-ASS-002: o CPF da pessoa é único no cadastro municipal.
-RN-ASS-003: benefícios eventuais têm estoque controlado por tipo.
+RN-ASS-003: o benefício eventual obedece à máquina de estados
+    SOLICITADO -> APROVADO | NEGADO -> ENTREGUE, com CANCELADO disponível
+    enquanto não houver entrega.
 RN-ASS-004: atendimentos são registrados por unidade CRAS/CREAS.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from uuid import uuid4
 
@@ -87,9 +89,7 @@ def _valida_nis(nis: str) -> None:
     from ..exceptions import RegraNegocioError
 
     if not nis or not nis.isdigit() or len(nis) != 11:
-        raise RegraNegocioError(
-            "NIS inválido: informe 11 dígitos numéricos (RN-ASS-001)"
-        )
+        raise RegraNegocioError("NIS inválido: informe 11 dígitos numéricos (RN-ASS-001)")
 
 
 def _valida_cpf(cpf: str) -> None:
@@ -97,9 +97,7 @@ def _valida_cpf(cpf: str) -> None:
     from ..exceptions import RegraNegocioError
 
     if not cpf or not cpf.isdigit() or len(cpf) != 11:
-        raise RegraNegocioError(
-            "CPF inválido: informe 11 dígitos numéricos (RN-ASS-002)"
-        )
+        raise RegraNegocioError("CPF inválido: informe 11 dígitos numéricos (RN-ASS-002)")
 
 
 @dataclass
@@ -228,6 +226,8 @@ class UnidadeAssistencia:
             raise RegraNegocioError("Código da unidade é obrigatório")
         if not self.nome:
             raise RegraNegocioError("Nome da unidade é obrigatório")
+
+
 @dataclass
 class BeneficioEventual:
     """Benefício eventual concedido a família."""
@@ -309,7 +309,7 @@ class AtendimentoSocial:
     pessoa_id: str = ""
     unidade_id: str = ""
     tipo: TipoAtendimento = field(default=TipoAtendimento.ACOLHIMENTO)
-    data: datetime = field(default_factory=datetime.utcnow)
+    data: date = field(default_factory=date.today)
     descricao: str = ""
     encaminhamento: str = ""
     profissional: str = ""

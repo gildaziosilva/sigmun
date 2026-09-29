@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, datetime
 
-from . import interfaces as ports
 from ..domain.entities import (
     AtendimentoSocial,
     BeneficioEventual,
@@ -19,6 +18,7 @@ from ..domain.entities import (
     TipoUnidade,
     UnidadeAssistencia,
 )
+from . import interfaces as ports
 
 
 @dataclass
@@ -89,7 +89,11 @@ class CadastrarPessoaUseCase:
 
     def execute(self, dto: CadastrarPessoaInput) -> PessoaCadUnico:
         """Executa o cadastro."""
-        from ..domain.exceptions import PessoaJaExistenteError, RegraNegocioError, FamiliaNaoEncontradaError
+        from ..domain.exceptions import (
+            FamiliaNaoEncontradaError,
+            PessoaJaExistenteError,
+            RegraNegocioError,
+        )
 
         if not dto.nome or not dto.cpf:
             raise RegraNegocioError("Nome e CPF são obrigatórios (RN-ASS-002)")
@@ -310,7 +314,7 @@ class RegistrarAtendimentoUseCase:
             pessoa_id=dto.pessoa_id,
             unidade_id=dto.unidade_id,
             tipo=TipoAtendimento(dto.tipo),
-            data=dto.data or datetime.utcnow(),
+            data=dto.data or date.today(),
             descricao=dto.descricao,
             encaminhamento=dto.encaminhamento,
             profissional=dto.profissional,
@@ -318,7 +322,6 @@ class RegistrarAtendimentoUseCase:
         )
         atendimento.validar()
         return self._atendimentos.save(atendimento)
-
 
 
 @dataclass
@@ -350,7 +353,11 @@ class AtualizarFamiliaUseCase:
 
     def execute(self, dto: AtualizarFamiliaInput) -> FamiliaCadUnico:
         """Executa a atualização."""
-        from ..domain.exceptions import FamiliaJaExistenteError, FamiliaNaoEncontradaError, RegraNegocioError
+        from ..domain.exceptions import (
+            FamiliaJaExistenteError,
+            FamiliaNaoEncontradaError,
+            RegraNegocioError,
+        )
 
         familia = self._repo.get_by_id(dto.familia_id)
         if familia is None:
@@ -384,9 +391,7 @@ class AtualizarFamiliaUseCase:
             elif dto.status == StatusFamilia.INATIVA.value:
                 familia.inativar()
             else:
-                raise RegraNegocioError(
-                    f"Status inválido para família: {dto.status}"
-                )
+                raise RegraNegocioError(f"Status inválido para família: {dto.status}")
 
         familia.validar()
         familia.updated_at = datetime.utcnow()
@@ -408,7 +413,6 @@ class ExcluirFamiliaUseCase:
             raise FamiliaNaoEncontradaError("Família não encontrada para exclusão")
         familia.excluir()
         return self._repo.save(familia)
-
 
 
 @dataclass
@@ -437,9 +441,7 @@ class AtualizarPessoaUseCase:
     - a pessoa precisa existir e estar vinculada a uma família válida.
     """
 
-    def __init__(
-        self, repo: ports.RepositorioPessoa, familias: ports.RepositorioFamilia
-    ) -> None:
+    def __init__(self, repo: ports.RepositorioPessoa, familias: ports.RepositorioFamilia) -> None:
         self._repo = repo
         self._familias = familias
 
@@ -464,9 +466,7 @@ class AtualizarPessoaUseCase:
 
         if dto.familia_id is not None and dto.familia_id != pessoa.familia_id:
             if self._familias.get_by_id(dto.familia_id) is None:
-                raise FamiliaNaoEncontradaError(
-                    "Família não encontrada para vínculo da pessoa"
-                )
+                raise FamiliaNaoEncontradaError("Família não encontrada para vínculo da pessoa")
             pessoa.familia_id = dto.familia_id
 
         if dto.nome is not None:
@@ -511,7 +511,6 @@ class ExcluirPessoaUseCase:
             raise PessoaNaoEncontradaError("Pessoa não encontrada para exclusão")
         pessoa.excluir()
         return self._repo.save(pessoa)
-
 
 
 @dataclass
@@ -570,9 +569,7 @@ class AtualizarUnidadeUseCase:
             elif dto.status == StatusUnidade.INATIVA.value:
                 unidade.inativar()
             else:
-                raise RegraNegocioError(
-                    f"Status inválido para unidade: {dto.status}"
-                )
+                raise RegraNegocioError(f"Status inválido para unidade: {dto.status}")
 
         unidade.validar()
         unidade.updated_at = datetime.utcnow()

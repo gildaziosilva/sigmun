@@ -22,8 +22,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, timedelta
+from typing import Any
 
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.elements import ColumnElement
 
 from ...application.use_cases import (
     AprovarBeneficioUseCase,
@@ -156,9 +158,39 @@ FAMILIAS_DEMO: tuple[FamiliaSeed, ...] = (
         telefone="(73) 99999-1201",
         renda_per_capita=180.00,
         pessoas=(
-            PessoaSeed("Maria Aparecida Souza", "12345678909", "1978-04-12", "feminino", "Rosa Souza Lima", "responsavel", "ensino fundamental", "domestica", 180.00),
-            PessoaSeed("Joao Pedro Souza", "12345678917", "2012-09-30", "masculino", "Maria Aparecida Souza", "filho", "ensino fundamental", "estudante", 0.0),
-            PessoaSeed("Ana Clara Souza", "12345678925", "2016-02-21", "feminino", "Maria Aparecida Souza", "filha", "ensino fundamental", "estudante", 0.0),
+            PessoaSeed(
+                "Maria Aparecida Souza",
+                "12345678909",
+                "1978-04-12",
+                "feminino",
+                "Rosa Souza Lima",
+                "responsavel",
+                "ensino fundamental",
+                "domestica",
+                180.00,
+            ),
+            PessoaSeed(
+                "Joao Pedro Souza",
+                "12345678917",
+                "2012-09-30",
+                "masculino",
+                "Maria Aparecida Souza",
+                "filho",
+                "ensino fundamental",
+                "estudante",
+                0.0,
+            ),
+            PessoaSeed(
+                "Ana Clara Souza",
+                "12345678925",
+                "2016-02-21",
+                "feminino",
+                "Maria Aparecida Souza",
+                "filha",
+                "ensino fundamental",
+                "estudante",
+                0.0,
+            ),
         ),
     ),
     FamiliaSeed(
@@ -169,9 +201,39 @@ FAMILIAS_DEMO: tuple[FamiliaSeed, ...] = (
         telefone="(73) 99999-1202",
         renda_per_capita=220.50,
         pessoas=(
-            PessoaSeed("Jose Carlos Lima", "23456789008", "1972-11-05", "masculino", "Pedro Lima", "responsavel", "ensino medio", "pedreiro", 220.50),
-            PessoaSeed("Rita de Cassia Lima", "23456789016", "1976-07-18", "feminino", "Ana Costa", "conjuge", "ensino fundamental", "costureira", 150.00),
-            PessoaSeed("Lucas Lima", "23456789024", "2004-03-14", "masculino", "Rita de Cassia Lima", "filho", "ensino medio", "estudante", 0.0),
+            PessoaSeed(
+                "Jose Carlos Lima",
+                "23456789008",
+                "1972-11-05",
+                "masculino",
+                "Pedro Lima",
+                "responsavel",
+                "ensino medio",
+                "pedreiro",
+                220.50,
+            ),
+            PessoaSeed(
+                "Rita de Cassia Lima",
+                "23456789016",
+                "1976-07-18",
+                "feminino",
+                "Ana Costa",
+                "conjuge",
+                "ensino fundamental",
+                "costureira",
+                150.00,
+            ),
+            PessoaSeed(
+                "Lucas Lima",
+                "23456789024",
+                "2004-03-14",
+                "masculino",
+                "Rita de Cassia Lima",
+                "filho",
+                "ensino medio",
+                "estudante",
+                0.0,
+            ),
         ),
     ),
     FamiliaSeed(
@@ -182,8 +244,28 @@ FAMILIAS_DEMO: tuple[FamiliaSeed, ...] = (
         telefone="(73) 99999-1203",
         renda_per_capita=120.00,
         pessoas=(
-            PessoaSeed("Ana Paula Ferreira", "34567890007", "1988-06-23", "feminino", "Marta Ferreira", "responsavel", "ensino medio", "comerciante", 120.00),
-            PessoaSeed("Bento Ferreira", "34567890015", "1938-01-09", "masculino", "Joana Ferreira", "pai", "ensino fundamental", "aposentado", 0.0),
+            PessoaSeed(
+                "Ana Paula Ferreira",
+                "34567890007",
+                "1988-06-23",
+                "feminino",
+                "Marta Ferreira",
+                "responsavel",
+                "ensino medio",
+                "comerciante",
+                120.00,
+            ),
+            PessoaSeed(
+                "Bento Ferreira",
+                "34567890015",
+                "1938-01-09",
+                "masculino",
+                "Joana Ferreira",
+                "pai",
+                "ensino fundamental",
+                "aposentado",
+                0.0,
+            ),
         ),
     ),
     FamiliaSeed(
@@ -194,8 +276,28 @@ FAMILIAS_DEMO: tuple[FamiliaSeed, ...] = (
         telefone="(73) 99999-1204",
         renda_per_capita=90.00,
         pessoas=(
-            PessoaSeed("Carlos Eduardo Reis", "45678900006", "1990-09-02", "masculino", "Sandra Reis", "responsavel", "ensino fundamental", "trabalhador rural", 90.00),
-            PessoaSeed("Marina Reis", "45678900014", "1994-12-11", "feminino", "Sandra Reis", "conjuge", "ensino fundamental", "trabalhadora rural", 0.0),
+            PessoaSeed(
+                "Carlos Eduardo Reis",
+                "45678900006",
+                "1990-09-02",
+                "masculino",
+                "Sandra Reis",
+                "responsavel",
+                "ensino fundamental",
+                "trabalhador rural",
+                90.00,
+            ),
+            PessoaSeed(
+                "Marina Reis",
+                "45678900014",
+                "1994-12-11",
+                "feminino",
+                "Sandra Reis",
+                "conjuge",
+                "ensino fundamental",
+                "trabalhadora rural",
+                0.0,
+            ),
         ),
     ),
     FamiliaSeed(
@@ -206,8 +308,28 @@ FAMILIAS_DEMO: tuple[FamiliaSeed, ...] = (
         telefone="(73) 99999-1205",
         renda_per_capita=260.00,
         pessoas=(
-            PessoaSeed("Beatriz Oliveira Rocha", "56789000005", "1984-08-17", "feminino", "Helena Rocha", "responsavel", "ensino superior", "professora", 260.00),
-            PessoaSeed("Felipe Rocha", "56789000013", "2014-05-26", "masculino", "Beatriz Oliveira Rocha", "filho", "ensino fundamental", "estudante", 0.0),
+            PessoaSeed(
+                "Beatriz Oliveira Rocha",
+                "56789000005",
+                "1984-08-17",
+                "feminino",
+                "Helena Rocha",
+                "responsavel",
+                "ensino superior",
+                "professora",
+                260.00,
+            ),
+            PessoaSeed(
+                "Felipe Rocha",
+                "56789000013",
+                "2014-05-26",
+                "masculino",
+                "Beatriz Oliveira Rocha",
+                "filho",
+                "ensino fundamental",
+                "estudante",
+                0.0,
+            ),
         ),
     ),
     FamiliaSeed(
@@ -218,12 +340,31 @@ FAMILIAS_DEMO: tuple[FamiliaSeed, ...] = (
         telefone="(73) 99999-1206",
         renda_per_capita=150.00,
         pessoas=(
-            PessoaSeed("Carlos Alberto Nunes", "67890000004", "1969-10-08", "masculino", "Jose Nunes", "responsavel", "ensino fundamental", "servidor publico", 150.00),
-            PessoaSeed("Elaine Nunes", "67890000012", "1971-02-19", "feminino", "Marcia Souza", "conjuge", "ensino fundamental", "aposentada", 0.0),
+            PessoaSeed(
+                "Carlos Alberto Nunes",
+                "67890000004",
+                "1969-10-08",
+                "masculino",
+                "Jose Nunes",
+                "responsavel",
+                "ensino fundamental",
+                "servidor publico",
+                150.00,
+            ),
+            PessoaSeed(
+                "Elaine Nunes",
+                "67890000012",
+                "1971-02-19",
+                "feminino",
+                "Marcia Souza",
+                "conjuge",
+                "ensino fundamental",
+                "aposentada",
+                0.0,
+            ),
         ),
     ),
 )
-
 
 
 @dataclass(frozen=True)
@@ -243,18 +384,126 @@ class BeneficioSeed:
 # O campo `estado` define a situacao final desejada do beneficio, permitindo
 # gerar a visao geral com filtros de status representativos.
 BENEFICIOS_DEMO: tuple[BeneficioSeed, ...] = (
-    BeneficioSeed("12345678901", "CRAS-01", "alimentacao", "Cesta basica mensal", 150.00, 1, "Familia com 3 pessoas de baixa renda.", "entregue"),
-    BeneficioSeed("12345678901", "CRAS-01", "medicamento", "Medicamento de uso continuo", 85.00, 1, "Idoso com acompanhamento pela unidade de saude.", "aprovado"),
-    BeneficioSeed("12345678902", "CRAS-01", "aluguel", "Auxilio aluguel", 200.00, 1, "Desemprego do responsavel.", "solicitado"),
-    BeneficioSeed("12345678902", "CREAS-01", "alimentacao", "Cesta basica", 150.00, 1, "Adolescente em acompanhamento no CREAS.", "entregue"),
-    BeneficioSeed("12345678903", "CREAS-01", "natalidade", "Kit bebe", 300.00, 1, "Nascimento de bebe ha tres meses.", "negado"),
-    BeneficioSeed("12345678904", "POP-01", "alimentacao", "Cesta basica", 150.00, 1, "Trabalhadores rurais em situacao vulneravel.", "entregue"),
-    BeneficioSeed("12345678905", "CRAS-02", "funeral", "Auxilio funeral", 600.00, 1, "Familia com renda acima do teto e sem BPC.", "negado"),
-    BeneficioSeed("12345678905", "CRAS-02", "medicamento", "Medicamento controlado", 120.00, 1, "Uso continuo conforme laudo medico.", "aprovado"),
-    BeneficioSeed("12345678906", "ABR-01", "alimentacao", "Cesta basica", 150.00, 1, "Familia atendida em abrigo temporario.", "solicitado"),
-    BeneficioSeed("12345678906", "POP-01", "aluguel", "Auxilio aluguel", 200.00, 1, "Desocupacao do responsavel.", "cancelado"),
-    BeneficioSeed("12345678903", "CRAS-01", "calamidade", "Auxilio calamidade", 250.00, 1, "Danos causados por chuva forte na regiao.", "solicitado"),
-    BeneficioSeed("12345678904", "CRAS-02", "outro", "Material de higiene", 80.00, 1, "Requerimento avulso aprovado na escuta inicial.", "aprovado"),
+    BeneficioSeed(
+        "12345678901",
+        "CRAS-01",
+        "alimentacao",
+        "Cesta basica mensal",
+        150.00,
+        1,
+        "Familia com 3 pessoas de baixa renda.",
+        "entregue",
+    ),
+    BeneficioSeed(
+        "12345678901",
+        "CRAS-01",
+        "medicamento",
+        "Medicamento de uso continuo",
+        85.00,
+        1,
+        "Idoso com acompanhamento pela unidade de saude.",
+        "aprovado",
+    ),
+    BeneficioSeed(
+        "12345678902",
+        "CRAS-01",
+        "aluguel",
+        "Auxilio aluguel",
+        200.00,
+        1,
+        "Desemprego do responsavel.",
+        "solicitado",
+    ),
+    BeneficioSeed(
+        "12345678902",
+        "CREAS-01",
+        "alimentacao",
+        "Cesta basica",
+        150.00,
+        1,
+        "Adolescente em acompanhamento no CREAS.",
+        "entregue",
+    ),
+    BeneficioSeed(
+        "12345678903",
+        "CREAS-01",
+        "natalidade",
+        "Kit bebe",
+        300.00,
+        1,
+        "Nascimento de bebe ha tres meses.",
+        "negado",
+    ),
+    BeneficioSeed(
+        "12345678904",
+        "POP-01",
+        "alimentacao",
+        "Cesta basica",
+        150.00,
+        1,
+        "Trabalhadores rurais em situacao vulneravel.",
+        "entregue",
+    ),
+    BeneficioSeed(
+        "12345678905",
+        "CRAS-02",
+        "funeral",
+        "Auxilio funeral",
+        600.00,
+        1,
+        "Familia com renda acima do teto e sem BPC.",
+        "negado",
+    ),
+    BeneficioSeed(
+        "12345678905",
+        "CRAS-02",
+        "medicamento",
+        "Medicamento controlado",
+        120.00,
+        1,
+        "Uso continuo conforme laudo medico.",
+        "aprovado",
+    ),
+    BeneficioSeed(
+        "12345678906",
+        "ABR-01",
+        "alimentacao",
+        "Cesta basica",
+        150.00,
+        1,
+        "Familia atendida em abrigo temporario.",
+        "solicitado",
+    ),
+    BeneficioSeed(
+        "12345678906",
+        "POP-01",
+        "aluguel",
+        "Auxilio aluguel",
+        200.00,
+        1,
+        "Desocupacao do responsavel.",
+        "cancelado",
+    ),
+    BeneficioSeed(
+        "12345678903",
+        "CRAS-01",
+        "calamidade",
+        "Auxilio calamidade",
+        250.00,
+        1,
+        "Danos causados por chuva forte na regiao.",
+        "solicitado",
+    ),
+    BeneficioSeed(
+        "12345678904",
+        "CRAS-02",
+        "outro",
+        "Material de higiene",
+        80.00,
+        1,
+        "Requerimento avulso aprovado na escuta inicial.",
+        "aprovado",
+    ),
 )
 
 
@@ -272,19 +521,97 @@ class AtendimentoSeed:
 
 
 ATENDIMENTOS_DEMO: tuple[AtendimentoSeed, ...] = (
-    AtendimentoSeed("12345678909", "CRAS-01", "acolhimento", "Maria Aparecida Souza - Assistente Social", "Escuta inicial e atualizacao do cadastro.", "", 45),
-    AtendimentoSeed("12345678917", "CRAS-01", "visita_domiciliar", "Maria Aparecida Souza - Assistente Social", "Visita domiciliar para composicao familiar.", "Escola municipal", 30),
-    AtendimentoSeed("23456789008", "CRAS-01", "orientacao", "Jose Carlos Lima - Assistente Social", "Orientacao sobre beneficios eventuais e CadUnico.", "", 25),
-    AtendimentoSeed("23456789024", "CREAS-01", "acolhimento", "Ana Paula Ferreira - Assistente Social", "Acolhimento inicial do adolescente no CREAS.", "Conselho tutelar", 22),
-    AtendimentoSeed("34567890007", "CREAS-01", "encaminhamento", "Ana Paula Ferreira - Assistente Social", "Encaminhamento para acompanhamento do idoso.", "Unidade basica de saude", 18),
-    AtendimentoSeed("45678900006", "POP-01", "acolhimento", "Carlos Eduardo Reis - Assistente Social", "Atendimento no centro popular para inclusao no cadastro.", "", 15),
-    AtendimentoSeed("56789000005", "CRAS-02", "orientacao", "Beatriz Oliveira Rocha - Assistente Social", "Orientacao sobre beneficios eventuais e uso do Cartao Unico.", "", 12),
-    AtendimentoSeed("67890000004", "ABR-01", "acolhimento", "Carlos Alberto Nunes - Assistente Social", "Acolhimento no abrigo municipal.", "CRAS-02", 10),
-    AtendimentoSeed("12345678925", "CRAS-01", "grupo_convivencia", "Maria Aparecida Souza - Assistente Social", "Participacao em grupo de convivencia infantil.", "", 8),
-    AtendimentoSeed("23456789016", "CREAS-01", "orientacao", "Ana Paula Ferreira - Assistente Social", "Orientacao sobre qualificacao profissional.", "SENAC", 6),
+    AtendimentoSeed(
+        "12345678909",
+        "CRAS-01",
+        "acolhimento",
+        "Maria Aparecida Souza - Assistente Social",
+        "Escuta inicial e atualizacao do cadastro.",
+        "",
+        45,
+    ),
+    AtendimentoSeed(
+        "12345678917",
+        "CRAS-01",
+        "visita_domiciliar",
+        "Maria Aparecida Souza - Assistente Social",
+        "Visita domiciliar para composicao familiar.",
+        "Escola municipal",
+        30,
+    ),
+    AtendimentoSeed(
+        "23456789008",
+        "CRAS-01",
+        "orientacao",
+        "Jose Carlos Lima - Assistente Social",
+        "Orientacao sobre beneficios eventuais e CadUnico.",
+        "",
+        25,
+    ),
+    AtendimentoSeed(
+        "23456789024",
+        "CREAS-01",
+        "acolhimento",
+        "Ana Paula Ferreira - Assistente Social",
+        "Acolhimento inicial do adolescente no CREAS.",
+        "Conselho tutelar",
+        22,
+    ),
+    AtendimentoSeed(
+        "34567890007",
+        "CREAS-01",
+        "encaminhamento",
+        "Ana Paula Ferreira - Assistente Social",
+        "Encaminhamento para acompanhamento do idoso.",
+        "Unidade basica de saude",
+        18,
+    ),
+    AtendimentoSeed(
+        "45678900006",
+        "POP-01",
+        "acolhimento",
+        "Carlos Eduardo Reis - Assistente Social",
+        "Atendimento no centro popular para inclusao no cadastro.",
+        "",
+        15,
+    ),
+    AtendimentoSeed(
+        "56789000005",
+        "CRAS-02",
+        "orientacao",
+        "Beatriz Oliveira Rocha - Assistente Social",
+        "Orientacao sobre beneficios eventuais e uso do Cartao Unico.",
+        "",
+        12,
+    ),
+    AtendimentoSeed(
+        "67890000004",
+        "ABR-01",
+        "acolhimento",
+        "Carlos Alberto Nunes - Assistente Social",
+        "Acolhimento no abrigo municipal.",
+        "CRAS-02",
+        10,
+    ),
+    AtendimentoSeed(
+        "12345678925",
+        "CRAS-01",
+        "grupo_convivencia",
+        "Maria Aparecida Souza - Assistente Social",
+        "Participacao em grupo de convivencia infantil.",
+        "",
+        8,
+    ),
+    AtendimentoSeed(
+        "23456789016",
+        "CREAS-01",
+        "orientacao",
+        "Ana Paula Ferreira - Assistente Social",
+        "Orientacao sobre qualificacao profissional.",
+        "SENAC",
+        6,
+    ),
 )
-
-
 
 
 # EXECUCAO DO SEED
@@ -384,7 +711,6 @@ def _criar_familias_e_pessoas(
     return familia_ids, pessoa_ids, familias_criadas, pessoas_criadas
 
 
-
 def _criar_beneficios(
     session: Session,
     familia_ids: dict[str, str],
@@ -395,9 +721,7 @@ def _criar_beneficios(
     unidades_repo = SQLAlchemyUnidadeRepository(session)
     beneficios_repo = SQLAlchemyBeneficioRepository(session)
 
-    use_case_solicitar = SolicitarBeneficioUseCase(
-        beneficios_repo, familias_repo, unidades_repo
-    )
+    use_case_solicitar = SolicitarBeneficioUseCase(beneficios_repo, familias_repo, unidades_repo)
     use_case_aprovar = AprovarBeneficioUseCase(beneficios_repo)
     use_case_negar = NegarBeneficioUseCase(beneficios_repo)
     use_case_entregar = EntregarBeneficioUseCase(beneficios_repo)
@@ -413,8 +737,7 @@ def _criar_beneficios(
 
         # Idempotencia: nao duplica beneficios da mesma familia/tipo.
         ja_existe = any(
-            b.familia_id == familia_id
-            and b.descricao == seed.descricao
+            b.familia_id == familia_id and b.descricao == seed.descricao
             for b in beneficios_repo.list_by_familia(familia_id)
         )
         if ja_existe:
@@ -440,9 +763,7 @@ def _criar_beneficios(
         if seed.estado == "entregue":
             use_case_entregar.execute(beneficio_id)
         elif seed.estado == "negado":
-            use_case_negar.execute(
-                beneficio_id, "Renda acima do teto previsto na norma municipal"
-            )
+            use_case_negar.execute(beneficio_id, "Renda acima do teto previsto na norma municipal")
         elif seed.estado == "cancelado":
             use_case_cancelar.execute(beneficio_id)
 
@@ -461,9 +782,7 @@ def _criar_atendimentos(
     unidades_repo = SQLAlchemyUnidadeRepository(session)
     atendimentos_repo = SQLAlchemyAtendimentoRepository(session)
 
-    use_case = RegistrarAtendimentoUseCase(
-        atendimentos_repo, pessoas_repo, unidades_repo
-    )
+    use_case = RegistrarAtendimentoUseCase(atendimentos_repo, pessoas_repo, unidades_repo)
 
     criados = 0
     hoje = date.today()
@@ -545,7 +864,6 @@ def popular_seed_ass(session: Session) -> dict[str, int]:
     }
 
 
-
 # ============================================================================
 
 
@@ -582,7 +900,7 @@ def limpar_seed_ass(session: Session) -> dict[str, int]:
         .all()
     ]
 
-    def _apagar(model, filtro) -> int:
+    def _apagar(model: type[Any], filtro: ColumnElement[bool] | None) -> int:
         q = session.query(model)
         if filtro is not None:
             q = q.filter(filtro)

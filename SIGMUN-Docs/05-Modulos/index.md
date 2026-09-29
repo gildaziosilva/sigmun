@@ -27,7 +27,7 @@
 
 ## Como interpretar
 
-Este catálogo cobre os 28 diretórios técnicos existentes. São 8 módulos com implementação identificada e 20 preparados. A correspondência é um eixo independente: 8 confirmadas no escopo observado, 8 candidatas e 12 não determinadas. Nenhum código MOD proposto é apresentado como aprovado.
+Este catálogo cobre os 28 diretórios técnicos existentes. São 9 módulos com implementação identificada e 19 preparados. A correspondência é um eixo independente: 8 confirmadas no escopo observado, 9 candidatas e 12 não determinadas. Nenhum código MOD proposto é apresentado como aprovado.
 
 Índices usam o nome técnico `sigmun_*`, sem mover código ou documentos de domínio. O diretório `modelo` é um template, não um 29º módulo.
 
@@ -36,7 +36,7 @@ Este catálogo cobre os 28 diretórios técnicos existentes. São 8 módulos com
 | [sigmun_administracao](sigmun_administracao/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_agricultura](sigmun_agricultura/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_almoxarifado](sigmun_almoxarifado/index.md) | Não determinado | Não definido | Preparado | Não determinada |
-| [sigmun_assistencia_social](sigmun_assistencia_social/index.md) | [DOM-ASS](../DOM-ASS/index.md) | `MOD-ASS` | Preparado | Candidata; validar escopo |
+| [sigmun_assistencia_social](sigmun_assistencia_social/index.md) | [DOM-ASS](../DOM-ASS/index.md) | `MOD-ASS` | Implementação identificada | Candidata; validar escopo |
 | [sigmun_cadastro](sigmun_cadastro/index.md) | [DOM-CUM](../DOM-CUM/index.md) | `MOD-CUM` | Implementação identificada | Confirmada no escopo observado |
 | [sigmun_compras](sigmun_compras/index.md) | [DOM-COM](../DOM-COMPRAS-001/index.md) | `MOD-COMPRAS` | Implementação identificada | Confirmada no escopo observado |
 | [sigmun_contabilidade](sigmun_contabilidade/index.md) | Não determinado | Não definido | Preparado | Não determinada |

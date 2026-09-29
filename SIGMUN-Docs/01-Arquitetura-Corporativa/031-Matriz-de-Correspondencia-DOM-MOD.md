@@ -104,11 +104,13 @@ Esta revisão **não executou testes funcionais, migrações ou homologação**.
 
 ### 5.2 Correspondências candidatas preservadas da versão 1.0
 
-As oito associações abaixo permanecem **candidatas**, não ownership tecnicamente confirmado. Foram propostas na versão 1.0; o scaffolding vazio não permite validá-las por comportamento funcional. A afinidade nominal não basta para promovê-las a confirmadas.
+As oito associações abaixo permanecem **candidatas**, não ownership tecnicamente confirmado. Foram propostas na versão 1.0; na maior parte dos casos o scaffolding vazio não permite validá-las por comportamento funcional. A afinidade nominal não basta para promovê-las a confirmadas.
+
+> **Nota (2026-09-29):** `MOD-ASS` deixou de ser scaffolding — o módulo `sigmun_assistencia_social` foi implementado (commit `33d53da`, auditado em 2026-09-29) e passou a constar como *Implementação identificada*. A **correspondência permanece candidata** porque a auditoria validou a existência e o escopo do módulo, e não o vínculo de ownership com o conjunto de artefatos de `DOM-ASS`, que segue com os documentos `001`–`026` em esboço. A promoção a confirmada exige a conciliação do escopo documental.
 
 | Domínio candidato | Módulo de aplicação | MOD proposto | Maturidade técnica | Correspondência |
 | --- | --- | --- | --- | --- |
-| [DOM-ASS](../DOM-ASS/) | [sigmun_assistencia_social](../../src/modules/sigmun_assistencia_social/) | `MOD-ASS` | Preparado | Candidata; validar escopo |
+| [DOM-ASS](../DOM-ASS/) | [sigmun_assistencia_social](../../src/modules/sigmun_assistencia_social/) | `MOD-ASS` | Implementação identificada | Candidata; validar escopo |
 | [DOM-EDU](../DOM-EDU/) | [sigmun_educacao](../../src/modules/sigmun_educacao/) | `MOD-EDU` | Preparado | Candidata; validar escopo |
 | [DOM-FRO](../DOM-FRO/) | [sigmun_frotas](../../src/modules/sigmun_frotas/) | `MOD-FRO` | Preparado | Candidata; validar escopo |
 | [DOM-OBR](../DOM-OBR/) | [sigmun_obras](../../src/modules/sigmun_obras/) | `MOD-OBR` | Preparado | Candidata; validar escopo |

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import uuid
+from datetime import date
 
 from sqlalchemy.orm import Session
 
@@ -88,20 +89,20 @@ class SQLAlchemyFamiliaRepository(RepositorioFamilia):
         """Busca família pelo NIS."""
         model = (
             self._session.query(FamiliaCadUnicoModel)
-            .filter(FamiliaCadUnicoModel.nis == nis, FamiliaCadUnicoModel.is_deleted == False)
+            .filter(FamiliaCadUnicoModel.nis == nis, FamiliaCadUnicoModel.is_deleted.is_(False))
             .first()
-        )  # noqa: E712
+        )
         return self._to_entity(model) if model else None
 
     def list_all(self, page: int = 1, page_size: int = 20) -> list:
         """Lista famílias paginadas."""
         models = (
             self._session.query(FamiliaCadUnicoModel)
-            .filter(FamiliaCadUnicoModel.is_deleted == False)
+            .filter(FamiliaCadUnicoModel.is_deleted.is_(False))
             .offset((page - 1) * page_size)
             .limit(page_size)
             .all()
-        )  # noqa: E712
+        )
         return [self._to_entity(m) for m in models]
 
     def _to_entity(self, model: FamiliaCadUnicoModel) -> FamiliaCadUnico:
@@ -178,29 +179,32 @@ class SQLAlchemyPessoaRepository(RepositorioPessoa):
         """Busca pessoa pelo CPF."""
         model = (
             self._session.query(PessoaCadUnicoModel)
-            .filter(PessoaCadUnicoModel.cpf == cpf, PessoaCadUnicoModel.is_deleted == False)
+            .filter(PessoaCadUnicoModel.cpf == cpf, PessoaCadUnicoModel.is_deleted.is_(False))
             .first()
-        )  # noqa: E712
+        )
         return self._to_entity(model) if model else None
 
     def list_by_familia(self, familia_id: str) -> list:
         """Lista pessoas da família."""
         models = (
             self._session.query(PessoaCadUnicoModel)
-            .filter(PessoaCadUnicoModel.familia_id == familia_id, PessoaCadUnicoModel.is_deleted == False)
+            .filter(
+                PessoaCadUnicoModel.familia_id == familia_id,
+                PessoaCadUnicoModel.is_deleted.is_(False),
+            )
             .all()
-        )  # noqa: E712
+        )
         return [self._to_entity(m) for m in models]
 
     def list_all(self, page: int = 1, page_size: int = 20) -> list:
         """Lista pessoas paginadas."""
         models = (
             self._session.query(PessoaCadUnicoModel)
-            .filter(PessoaCadUnicoModel.is_deleted == False)
+            .filter(PessoaCadUnicoModel.is_deleted.is_(False))
             .offset((page - 1) * page_size)
             .limit(page_size)
             .all()
-        )  # noqa: E712
+        )
         return [self._to_entity(m) for m in models]
 
     def _to_entity(self, model: PessoaCadUnicoModel) -> PessoaCadUnico:
@@ -275,20 +279,23 @@ class SQLAlchemyUnidadeRepository(RepositorioUnidade):
         """Busca unidade pelo código."""
         model = (
             self._session.query(UnidadeAssistenciaModel)
-            .filter(UnidadeAssistenciaModel.codigo == codigo, UnidadeAssistenciaModel.is_deleted == False)
+            .filter(
+                UnidadeAssistenciaModel.codigo == codigo,
+                UnidadeAssistenciaModel.is_deleted.is_(False),
+            )
             .first()
-        )  # noqa: E712
+        )
         return self._to_entity(model) if model else None
 
     def list_all(self, page: int = 1, page_size: int = 20) -> list:
         """Lista unidades paginadas."""
         models = (
             self._session.query(UnidadeAssistenciaModel)
-            .filter(UnidadeAssistenciaModel.is_deleted == False)
+            .filter(UnidadeAssistenciaModel.is_deleted.is_(False))
             .offset((page - 1) * page_size)
             .limit(page_size)
             .all()
-        )  # noqa: E712
+        )
         return [self._to_entity(m) for m in models]
 
     def _to_entity(self, model: UnidadeAssistenciaModel) -> UnidadeAssistencia:
@@ -323,7 +330,7 @@ class SQLAlchemyBeneficioRepository(RepositorioBeneficio):
             existente.tipo = beneficio.tipo.value
             existente.descricao = beneficio.descricao
             existente.valor = beneficio.valor
-            existente.quantidade = str(beneficio.quantidade)
+            existente.quantidade = beneficio.quantidade
             existente.data_solicitacao = beneficio.data_solicitacao
             existente.data_aprovacao = beneficio.data_aprovacao
             existente.data_entrega = beneficio.data_entrega
@@ -339,7 +346,7 @@ class SQLAlchemyBeneficioRepository(RepositorioBeneficio):
                     tipo=beneficio.tipo.value,
                     descricao=beneficio.descricao,
                     valor=beneficio.valor,
-                    quantidade=str(beneficio.quantidade),
+                    quantidade=beneficio.quantidade,
                     data_solicitacao=beneficio.data_solicitacao,
                     data_aprovacao=beneficio.data_aprovacao,
                     data_entrega=beneficio.data_entrega,
@@ -466,7 +473,7 @@ class SQLAlchemyAtendimentoRepository(RepositorioAtendimento):
             pessoa_id=model.pessoa_id or "",
             unidade_id=model.unidade_id or "",
             tipo=TipoAtendimento(model.tipo or "acolhimento"),
-            data=model.data,
+            data=model.data or date.today(),
             descricao=model.descricao or "",
             encaminhamento=model.encaminhamento or "",
             profissional=model.profissional or "",

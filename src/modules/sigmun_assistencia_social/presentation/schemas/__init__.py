@@ -1,6 +1,9 @@
 """Schemas Pydantic do DOM-ASS - Assistência Social."""
+
 from __future__ import annotations
+
 from datetime import date, datetime
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -89,7 +92,10 @@ class UnidadeResponse(BaseModel):
 
 class BeneficioCreateRequest(BaseModel):
     familia_id: str = Field(..., min_length=1)
-    tipo: str = Field(default="alimentacao", pattern="^(alimentacao|aluguel|medicamento|funeral|natalidade|calamidade|outro)$")
+    tipo: str = Field(
+        default="alimentacao",
+        pattern="^(alimentacao|aluguel|medicamento|funeral|natalidade|calamidade|outro)$",
+    )
     descricao: str = ""
     valor: float = Field(default=0.0, ge=0)
     quantidade: int = Field(default=1, ge=1)
@@ -119,7 +125,10 @@ class BeneficioResponse(BaseModel):
 class AtendimentoCreateRequest(BaseModel):
     pessoa_id: str = Field(..., min_length=1)
     unidade_id: str = Field(..., min_length=1)
-    tipo: str = Field(default="acolhimento", pattern="^(acolhimento|orientacao|encaminhamento|visita_domiciliar|grupo_convivencia|beneficio_eventual|outro)$")
+    tipo: str = Field(
+        default="acolhimento",
+        pattern="^(acolhimento|orientacao|encaminhamento|visita_domiciliar|grupo_convivencia|beneficio_eventual|outro)$",
+    )
     data: date | None = None
     descricao: str = ""
     encaminhamento: str = ""
@@ -182,5 +191,3 @@ class UnidadeUpdateRequest(BaseModel):
     responsavel: str | None = None
     status: str | None = Field(None, pattern="^(ativa|inativa|manutencao)$")
     created_by: str = ""
-
-
