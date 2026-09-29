@@ -8,9 +8,9 @@
 
 **Domínio:** Gestão Territorial
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -20,44 +20,86 @@
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
 * `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
-* `000D-MODELO-DE-DOCUMENTO.md`
-* `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
+* `000C-HIERARQUIA-DOCUMENTAL.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
+* `Modelo-Logico.md`
+* `Modelo-Fisico.md`
+* `Dicionario-de-dados.md`
 
 ---
 
 # 1. Finalidade
 
-O **Plano de Suporte e Operação – Gestão Territorial** (`DOM-TEL`) tem como finalidade mapear e definir plano de suporte e operação do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Gestão Territorial** (`DOM-TEL`) avance.
-
----
-
-# 2. Escopo e Diretrizes
-
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Gestão Territorial**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+Este artefato define a operação e o suporte do domínio de Gestão Territorial após
+a implantação.
 
 ---
 
-# 3. Versionamento
+# 2. Operação Rotineira
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Atividade | Frequência | Responsável |
+| --- | --- | --- |
+| Monitoramento de erros de integração | Diária | Suporte técnico |
+| Conferência da planta de valores vigente | A cada exercício | Comissão de valores |
+| Verificação de desempenho das consultas | Contínua | Suporte técnico |
+| Backup do banco | Conforme política municipal | Infraestrutura |
+
+---
+
+# 3. Níveis de Atendimento
+
+| Nível | Escopo | Prazo-alvo |
+| --- | --- | --- |
+| 1 | Dúvida de uso, sem impacto na operação | 1 dia útil |
+| 2 | Erro em operação, com contorno | 1 dia útil |
+| 3 | Indisponibilidade do serviço | Imediato |
+
+---
+
+# 4. Diagnóstico de Incidentes
+
+| Sintoma | Causa provável | Ação |
+| --- | --- | --- |
+| HTTP 409 em cadastro | Violação de regra de negócio | Ler a mensagem; ela identifica a regra violada |
+| HTTP 404 em referência | Registro inexistente ou excluído | Consultar pelo código cadastral |
+| Valor venal divergente | Planta de valores não aplicada ao exercício | Verificar a planta vigente no DOM-TEL |
+
+---
+
+# 5. Rotinas de Manutenção
+
+* Verificação da integridade do seed e sua limpeza em ambientes não produtivos.
+* Acompanhamento da cadeia de migrações, mantendo cabeça única.
+* Revisão periódica das regras de acesso.
+
+---
+
+# 6. Escalonamento
+
+Incidentes de severidade alta escalam à equipe de arquitetura, com registro no
+Mapa Mestre de Artefatos e na documentação de decisões (ADR).
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-29 | Artefato detailado a partir da implementação verificada do domínio |
 
 ---
 
 **Documento:** 024-Plano-de-Suporte-e-Operacao-Gestao-Territorial.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-29
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_territoriais.py` a partir da
+> implementação em `src/modules/sigmun_territorial`. Alterações no código devem ser
+> refletidas reexecutando o gerador.

@@ -8,9 +8,9 @@
 
 **Domínio:** Gestão Territorial
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -20,44 +20,118 @@
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
 * `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
-* `000D-MODELO-DE-DOCUMENTO.md`
-* `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
+* `000C-HIERARQUIA-DOCUMENTAL.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
+* `Modelo-Logico.md`
+* `Modelo-Fisico.md`
+* `Dicionario-de-dados.md`
 
 ---
 
 # 1. Finalidade
 
-O **Modelo de Domínio – Gestão Territorial** (`DOM-TEL`) tem como finalidade mapear e definir modelo de domínio do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Gestão Territorial** (`DOM-TEL`) avance.
-
----
-
-# 2. Escopo e Diretrizes
-
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Gestão Territorial**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+Este artefato descreve o modelo de domínio de Gestão Territorial: entidades,
+invariantes, estados e as regras que os governam.
 
 ---
 
-# 3. Versionamento
+# 2. Conceitos Centrais
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Entidade | Responsabilidade |
+| --- | |
+| Bairro | Divisão territorial (bairro, distrito, setor ou zona rural). |
+| Logradouro | Logradouro público vinculado a uma divisão territorial. |
+| PlantaGenericaValores | Valores unitários por ano, divisão e ocupação. |
+| Georreferencia | Georreferência de bairro ou logradouro. |
+
+
+---
+
+# 3. Invariantes por Entidade
+
+### Bairro
+
+Divisão territorial (bairro, distrito, setor ou zona rural).
+
+* **Invariantes:** Código único e obrigatório; código e nome preservados.
+* **Estados:** `ativo`, `inativo`
+
+### Logradouro
+
+Logradouro público vinculado a uma divisão territorial.
+
+* **Invariantes:** Código único; vínculo obrigatório com a divisão territorial; numeração final não inferior à inicial.
+* **Estados:** `ativo`, `em_obra`, `inativo`
+
+### PlantaGenericaValores
+
+Valores unitários por ano, divisão e ocupação.
+
+* **Invariantes:** Valores unitários não negativos; alíquota entre 0 e 100; ciclo RASCUNHO → VIGENTE → REVOGADA.
+* **Estados:** `rascunho`, `vigente`, `revogada` (irreversível)
+
+### Georreferencia
+
+Georreferência de bairro ou logradouro.
+
+* **Invariantes:** Vinculada a uma divisão OU a um logradouro; vértices compatíveis; datum suportado.
+* **Estados:** Vigente ou excluída logicamente
+
+---
+
+# 4. Regras e Estados
+
+| Regra | Tipo | Entidades afetadas | Garantia técnica |
+| --- | | --- | | --- | |
+| RN-TEL-001 | Restrição | Bairro | Restrição UNIQUE em `tel.bairros.codigo` e validação em `Bairro.validar()`. |
+| RN-TEL-002 | Restrição | Logradouro | Restrição UNIQUE em `tel.logradouros.codigo` e validação de `bairro_id`. |
+| RN-TEL-003 | Restrição | PlantaGenericaValores | Índice único parcial `uq_tel_planta_vigente` e verificação na ativação. |
+| RN-TEL-004 | Máquina de estados | PlantaGenericaValores | Transições em `PlantaGenericaValores.ativar()` e `.revogar()`. |
+| RN-TEL-005 | Restrição | Georreferencia | Check `ck_tel_geo_referencia` e validação em `Georreferencia.validar()`. |
+| RN-TEL-006 | Restrição | Bairro, Logradouro | Verificação de dependências em `ExcluirBairroUseCase`. |
+
+
+---
+
+# 5. Modelo Conceitual
+
+O domínio se articula em três eixos:
+
+* **Território:** a divisão territorial organiza o território e a malha viária.
+* **Valor:** a planta genérica de valores estabelece os parâmetros que sustentam
+  a apuração.
+* **Fundo de terra:** o cadastro imobiliário registra o lote, sua titularidade,
+  sua construção e sua geometria.
+
+---
+
+# 6. Limites do Modelo
+
+* As referências entre domínios são identificadores opacos, sem FK física.
+* A exclusão é lógica em todos os cadastros, preservando o histórico.
+* Estados terminais, como `DEMOLIDO` e `REVOGADA`, são irreversíveis por regra.
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-29 | Artefato detailado a partir da implementação verificada do domínio |
 
 ---
 
 **Documento:** 026-Modelo-de-Dominio-Gestao-Territorial.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-29
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_territoriais.py` a partir da
+> implementação em `src/modules/sigmun_territorial`. Alterações no código devem ser
+> refletidas reexecutando o gerador.

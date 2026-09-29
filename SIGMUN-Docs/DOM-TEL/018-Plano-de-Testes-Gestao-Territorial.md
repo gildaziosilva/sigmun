@@ -8,9 +8,9 @@
 
 **Domínio:** Gestão Territorial
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -20,44 +20,101 @@
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
 * `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
-* `000D-MODELO-DE-DOCUMENTO.md`
-* `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
+* `000C-HIERARQUIA-DOCUMENTAL.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
+* `Modelo-Logico.md`
+* `Modelo-Fisico.md`
+* `Dicionario-de-dados.md`
 
 ---
 
 # 1. Finalidade
 
-O **Plano de Testes – Gestão Territorial** (`DOM-TEL`) tem como finalidade mapear e definir plano de testes do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Gestão Territorial** (`DOM-TEL`) avance.
-
----
-
-# 2. Escopo e Diretrizes
-
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Gestão Territorial**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+Este artefato define a estratégia de verificação do domínio de Gestão Territorial,
+abrangendo regras de negócio, persistência, contrato de API e integração.
 
 ---
 
-# 3. Versionamento
+# 2. Níveis de Teste
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Nível | Escopo | Técnica | Artefatos |
+| --- | --- | --- | --- |
+| Unitário | Regras e casos de uso | Ports simulados | `tests/unit/` |
+| Integração | Persistência, migração e seeds | PostgreSQL real | `tests/integration/` |
+| Contrato | Compatibilidade da API | OpenAPI publicado | Verificação de paths |
+| End-to-end | Fluxo completo do usuário | Round-trip HTTP | Roteiro de verificação |
+| Estático | Qualidade do código | `ruff` e `mypy` | Módulo de aplicação |
+
+---
+
+# 3. Cobertura de Regras
+
+| Regra | Testes que a exercitam |
+| --- | |
+| RN-TEL-001 | 0 teste(s) |
+| RN-TEL-002 | 0 teste(s) |
+| RN-TEL-003 | 0 teste(s) |
+| RN-TEL-004 | 0 teste(s) |
+| RN-TEL-005 | 0 teste(s) |
+| RN-TEL-006 | 0 teste(s) |
+
+
+---
+
+# 4. Suíte de Testes Unitários
+
+| Arquivo | Classe | Testes |
+| --- | | --- | |
+| `tests/unit/test_tel_bairro_use_cases.py` | TestBairro | 14 |
+| `tests/unit/test_tel_geo_use_cases.py` | TestGeorreferencia | 17 |
+| `tests/unit/test_tel_logradouro_use_cases.py` | TestLogradouro | 12 |
+| `tests/unit/test_tel_planta_use_cases.py` | TestPlantaValores | 19 |
+
+
+**Total de testes de unidade:** 62
+
+> A contagem refere-se a **funções de teste** (`def test_*`). Casos gerados por
+> parametrização (`pytest.mark.parametrize`) são contados uma única vez, embora
+> gerem múltiplas execuções na suíte.
+
+---
+
+# 5. Testes de Integração
+
+* `tests/integration/` verifica a aplicação das migrações, a idempotência do
+  seed DEMO e a limpeza dos dados.
+* As invariantes unique e check são exercitadas contra o banco real.
+
+---
+
+# 6. Critérios de Saída
+
+* Todos os testes unitários e de integração aprovados.
+* `ruff check` e `mypy` sem erros no módulo.
+* `npm run build` do frontend administrativo sem erros.
+* Round-trip E2E das operações de escrita, leitura e transição.
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-29 | Artefato detailado a partir da implementação verificada do domínio |
 
 ---
 
 **Documento:** 018-Plano-de-Testes-Gestao-Territorial.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-29
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_territoriais.py` a partir da
+> implementação em `src/modules/sigmun_territorial`. Alterações no código devem ser
+> refletidas reexecutando o gerador.
