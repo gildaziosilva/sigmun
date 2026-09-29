@@ -8,9 +8,9 @@
 
 **Domínio:** Geoinformação Municipal
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -20,44 +20,106 @@
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
 * `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
-* `000D-MODELO-DE-DOCUMENTO.md`
-* `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
+* `000C-HIERARQUIA-DOCUMENTAL.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
+* `Modelo-Logico.md`
+* `Modelo-Fisico.md`
+* `Dicionario-de-dados.md`
 
 ---
 
 # 1. Finalidade
 
-O **Modelo de Integração – Geoinformação Municipal** (`DOM-GEO`) tem como finalidade mapear e definir modelo de integração do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Geoinformação Municipal** (`DOM-GEO`) avance.
-
----
-
-# 2. Escopo e Diretrizes
-
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Geoinformação Municipal**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+Este artefato define os contratos de integração do domínio de Geoinformação Municipal com
+os demais domínios e com sistemas externos.
 
 ---
 
-# 3. Versionamento
+# 2. Princípios de Integração
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+* **Sem dependência de banco entre domínios:** nenhum schema referencia outro
+  diretamente por chave estrangeira.
+* **Comunicação por contrato:** as trocas ocorrem por API ou evento, conforme o
+  ROADMAP §2.7 e §2.8.
+* **Isolamento por port:** a aplicação expõe interfaces (`Protocol`) que isolam a
+  dependência e permitem implementação HTTP ou local.
+
+---
+
+# 3. Integração Interna
+
+| Origem | Destino | Mecanismo | Contrato |
+| --- | --- | --- | --- |
+| DOM-GEO | DOM-TEL | API REST | `GET /api/v1/tel/plantas-valores/vigente` |
+
+**Sentido:** Consome os valores vigentes para apurar o valor venal.
+
+---
+
+# 4. Detalhamento do Contrato
+
+| Elemento | Definição |
+| --- | --- |
+| Operação | `GET /api/v1/tel/plantas-valores/vigente` |
+| Parâmetros | `ano`, `bairro_id`, `ocupacao` |
+| Resposta | Valores unitários aplicados à avaliação do imóvel |
+| Ausência de dados | Sem planta vigente, a avaliação não é concluída |
+| Regra aplicável | RN-IMO-005 |
+| Consumidores | DOM-TRI, portal do cidadão |
+
+No código, a dependência é isolada pelo port
+`ConsultaPlantaValores` (`application/interfaces.py`), cuja implementação
+inicial é resolvida pelo consumidor da API.
+
+---
+
+# 5. Integração Externa
+
+| Sistema externo | Sentido | Meio |
+| --- | --- | --- |
+| Cartório de registro de imóveis | Entrada de dados registrais | Concessão de dados |
+| Base cartográfica municipal ou do IBGE | Georreferenciamento | Intercâmbio de arquivos georreferenciados |
+
+---
+
+# 6. Contratos Publicados
+
+| Prefixo | Consumidores |
+| --- | |
+| `/api/v1/geo` | DOM-TRI, portal do cidadão |
+
+
+---
+
+# 7. Tratamento de Falha
+
+* Recurso remoto indisponível: a operação dependente é recusada e a transação é
+  revertida, preservando a consistência local.
+* Divergência de referência: o identificador é preservado e a inconsistência é
+  reportada, sem alteração de dados locais.
+* Referência inexistente: resposta `404`, sem efeito colateral.
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-29 | Artefato detailado a partir da implementação verificada do domínio |
 
 ---
 
 **Documento:** 014-Modelo-de-Integracao-Geoinformacao-Municipal.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-29
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_territoriais.py` a partir da
+> implementação em `src/modules/sigmun_geoinformacao`. Alterações no código devem ser
+> refletidas reexecutando o gerador.
