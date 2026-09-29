@@ -12,6 +12,10 @@ import FroPage from './fro/FroPage';
 import SauPage from './sau/SauPage';
 import EduPage from './edu/EduPage';
 import AssPage from './ass/AssPage';
+import TelPage from './territorial/TelPage';
+import ImoPage from './territorial/ImoPage';
+import GeoPage from './geo/GeoPage';
+import ObrasPage from './obras/ObrasPage';
 
 const NAV_ITEMS = [
   { id: 'painel', rotulo: 'Painel' },
@@ -25,6 +29,10 @@ const NAV_ITEMS = [
   { id: 'sau', rotulo: 'Saúde' },
   { id: 'edu', rotulo: 'Educação' },
   { id: 'ass', rotulo: 'Assistência Social' },
+  { id: 'tel', rotulo: 'Território' },
+  { id: 'imo', rotulo: 'Cadastro Imobiliário' },
+  { id: 'geo', rotulo: 'Geoinformação' },
+  { id: 'obras', rotulo: 'Obras' },
   { id: 'usuarios', rotulo: 'Usuários' },
 ] as const;
 
@@ -185,6 +193,20 @@ function Dashboard() {
                     Abrir módulo
                   </button>
                 </article>
+                <article className="card card--modulo">
+                  <h3>Território</h3>
+                  <p>Bairros, logradouros, planta de valores e georreferenciamento (TEL).</p>
+                  <button type="button" className="link" onClick={() => setAba('tel')}>
+                    Abrir módulo
+                  </button>
+                </article>
+                <article className="card card--modulo">
+                  <h3>Cadastro Imobiliário</h3>
+                  <p>Lotes, proprietários, valor venal e geometria dos lotes (IMO).</p>
+                  <button type="button" className="link" onClick={() => setAba('imo')}>
+                    Abrir módulo
+                  </button>
+                </article>
               </div>
             </section>
           )}
@@ -199,6 +221,10 @@ function Dashboard() {
           {rotaPermitida === 'sau' && <SauPage />}
           {rotaPermitida === 'edu' && <EduPage />}
           {rotaPermitida === 'ass' && <AssPage />}
+          {rotaPermitida === 'tel' && <TelPage />}
+          {rotaPermitida === 'imo' && <ImoPage />}
+          {rotaPermitida === 'geo' && <GeoPage />}
+          {rotaPermitida === 'obras' && <ObrasPage />}
           {rotaPermitida === 'usuarios' && <IdnPage />}
         </main>
       </div>

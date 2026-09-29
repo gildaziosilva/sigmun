@@ -1685,3 +1685,1151 @@ export async function excluirUnidadeAss(id: string): Promise<UnidadeAss> {
   return apiDelete<UnidadeAss>(`/api/v1/ass/unidades/${encodeURIComponent(id)}`);
 }
 
+
+
+/* ------------------------------------------------------------------ */
+/* DOM-TEL — Gestão Territorial                                       */
+/* ------------------------------------------------------------------ */
+
+export interface BairroTel {
+  id: string;
+  codigo: string;
+  nome: string;
+  tipo: string;
+  populacao_estimada: number;
+  area_km2: number;
+  situacao: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface BairroTelCreate {
+  codigo: string;
+  nome: string;
+  tipo?: string;
+  populacao_estimada?: number;
+  area_km2?: number;
+}
+
+export interface BairroTelUpdate {
+  codigo?: string;
+  nome?: string;
+  tipo?: string;
+  populacao_estimada?: number;
+  area_km2?: number;
+  situacao?: string;
+}
+
+export interface LogradouroTel {
+  id: string;
+  codigo: string;
+  nome: string;
+  tipo: string;
+  bairro_id: string;
+  cep?: string | null;
+  numero_inicial: number;
+  numero_final: number;
+  situacao: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface LogradouroTelCreate {
+  codigo: string;
+  nome: string;
+  bairro_id: string;
+  tipo?: string;
+  cep?: string;
+  numero_inicial?: number;
+  numero_final?: number;
+}
+
+export interface LogradouroTelUpdate {
+  codigo?: string;
+  nome?: string;
+  tipo?: string;
+  bairro_id?: string;
+  cep?: string;
+  numero_inicial?: number;
+  numero_final?: number;
+  situacao?: string;
+}
+
+export interface PlantaValoresTel {
+  id: string;
+  ano: number;
+  bairro_id: string;
+  ocupacao: string;
+  valor_terreno_m2: number;
+  valor_construcao_m2: number;
+  aliquota_percent: number;
+  situacao: string;
+  legislacao?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface PlantaValoresTelCreate {
+  ano: number;
+  bairro_id: string;
+  ocupacao?: string;
+  valor_terreno_m2?: number;
+  valor_construcao_m2?: number;
+  aliquota_percent?: number;
+  legislacao?: string;
+  ativar?: boolean;
+}
+
+export interface PlantaValoresTelUpdate {
+  ano?: number;
+  valor_terreno_m2?: number;
+  valor_construcao_m2?: number;
+  aliquota_percent?: number;
+  legislacao?: string;
+}
+
+export interface VerticeTel {
+  latitude: number;
+  longitude: number;
+}
+
+export interface GeorreferenciaTel {
+  id: string;
+  bairro_id: string;
+  logradouro_id: string;
+  geometria: string;
+  latitude: number;
+  longitude: number;
+  altitude_m?: number | null;
+  vertices: VerticeTel[];
+  datum: string;
+  precisao_m: number;
+  data_levantamento: string;
+  created_at: string;
+}
+
+export interface GeorreferenciaTelCreate {
+  bairro_id?: string;
+  logradouro_id?: string;
+  geometria?: string;
+  latitude?: number;
+  longitude?: number;
+  altitude_m?: number | null;
+  vertices?: VerticeTel[];
+  datum?: string;
+  precisao_m?: number;
+  data_levantamento?: string;
+}
+
+
+
+/* --- DOM-TEL: bairros ------------------------------------------------- */
+
+export async function listarBairrosTel(): Promise<BairroTel[]> {
+  return apiGet<BairroTel[]>('/api/v1/tel/bairros?page_size=100');
+}
+
+export async function criarBairroTel(payload: BairroTelCreate): Promise<BairroTel> {
+  return apiPost<BairroTel>('/api/v1/tel/bairros', payload);
+}
+
+export async function atualizarBairroTel(id: string, payload: BairroTelUpdate): Promise<BairroTel> {
+  return apiPatch<BairroTel>(`/api/v1/tel/bairros/${encodeURIComponent(id)}`, payload);
+}
+
+export async function excluirBairroTel(id: string): Promise<BairroTel> {
+  return apiDelete<BairroTel>(`/api/v1/tel/bairros/${encodeURIComponent(id)}`);
+}
+
+/** Detalhe de uma divisão territorial pelo identificador opaco (RN-TEL-001). */
+export async function obterBairroTel(id: string): Promise<BairroTel> {
+  return apiGet<BairroTel>(`/api/v1/tel/bairros/${encodeURIComponent(id)}`);
+}
+
+/** Busca de divisão territorial pelo código cadastral (chave natural). */
+export async function obterBairroPorCodigoTel(codigo: string): Promise<BairroTel> {
+  return apiGet<BairroTel>(`/api/v1/tel/bairros/codigo/${encodeURIComponent(codigo)}`);
+}
+
+/** Logradouros vinculados a uma divisão territorial (RN-TEL-002). */
+export async function listarLogradourosDoBairroTel(bairroId: string): Promise<LogradouroTel[]> {
+  return apiGet<LogradouroTel[]>(`/api/v1/tel/bairros/${encodeURIComponent(bairroId)}/logradouros`);
+}
+
+/* --- DOM-TEL: logradouros --------------------------------------------- */
+
+export async function listarLogradourosTel(): Promise<LogradouroTel[]> {
+  return apiGet<LogradouroTel[]>('/api/v1/tel/logradouros?page_size=100');
+}
+
+export async function criarLogradouroTel(payload: LogradouroTelCreate): Promise<LogradouroTel> {
+  return apiPost<LogradouroTel>('/api/v1/tel/logradouros', payload);
+}
+
+export async function atualizarLogradouroTel(
+  id: string,
+  payload: LogradouroTelUpdate,
+): Promise<LogradouroTel> {
+  return apiPatch<LogradouroTel>(`/api/v1/tel/logradouros/${encodeURIComponent(id)}`, payload);
+}
+
+export async function excluirLogradouroTel(id: string): Promise<LogradouroTel> {
+  return apiDelete<LogradouroTel>(`/api/v1/tel/logradouros/${encodeURIComponent(id)}`);
+}
+
+/** Detalhe de um logradouro pelo identificador opaco. */
+export async function obterLogradouroTel(id: string): Promise<LogradouroTel> {
+  return apiGet<LogradouroTel>(`/api/v1/tel/logradouros/${encodeURIComponent(id)}`);
+}
+
+/** Busca de logradouro pelo código cadastral (chave natural). */
+export async function obterLogradouroPorCodigoTel(codigo: string): Promise<LogradouroTel> {
+  return apiGet<LogradouroTel>(`/api/v1/tel/logradouros/codigo/${encodeURIComponent(codigo)}`);
+}
+
+/* --- DOM-TEL: planta genérica de valores ------------------------------ */
+
+export async function listarPlantasValoresTel(): Promise<PlantaValoresTel[]> {
+  return apiGet<PlantaValoresTel[]>('/api/v1/tel/plantas-valores?page_size=100');
+}
+
+export async function criarPlantaValoresTel(
+  payload: PlantaValoresTelCreate,
+): Promise<PlantaValoresTel> {
+  return apiPost<PlantaValoresTel>('/api/v1/tel/plantas-valores', payload);
+}
+
+export async function atualizarPlantaValoresTel(
+  id: string,
+  payload: PlantaValoresTelUpdate,
+): Promise<PlantaValoresTel> {
+  return apiPatch<PlantaValoresTel>(`/api/v1/tel/plantas-valores/${encodeURIComponent(id)}`, payload);
+}
+
+export async function ativarPlantaValoresTel(id: string): Promise<PlantaValoresTel> {
+  return apiPost<PlantaValoresTel>(`/api/v1/tel/plantas-valores/${encodeURIComponent(id)}/ativar`);
+}
+
+export async function revogarPlantaValoresTel(
+  id: string,
+  motivo: string,
+): Promise<PlantaValoresTel> {
+  return apiPost<PlantaValoresTel>(`/api/v1/tel/plantas-valores/${encodeURIComponent(id)}/revogar`, {
+    motivo,
+  });
+}
+
+/** Detalhe de uma planta genérica de valores. */
+export async function obterPlantaValoresTel(id: string): Promise<PlantaValoresTel> {
+  return apiGet<PlantaValoresTel>(`/api/v1/tel/plantas-valores/${encodeURIComponent(id)}`);
+}
+
+/**
+ * Consulta a planta genérica de valores vigente para ano, divisão e ocupação.
+ *
+ * É o ponto de integração com o DOM-IMO: o cadastro imobiliário consome estes
+ * valores unitários para apurar o valor venal (RN-IMO-005). Retorna HTTP 404
+ * quando não há planta vigente para a combinação informada.
+ */
+export async function obterPlantaVigenteTel(
+  ano: number,
+  bairroId: string,
+  ocupacao: string,
+): Promise<PlantaValoresTel> {
+  const parametros = new URLSearchParams({
+    ano: String(ano),
+    bairro_id: bairroId,
+    ocupacao,
+  });
+  return apiGet<PlantaValoresTel>(`/api/v1/tel/plantas-valores/vigente?${parametros.toString()}`);
+}
+
+/* --- DOM-TEL: georreferenciamento ------------------------------------- */
+
+export async function listarGeorreferenciasTel(): Promise<GeorreferenciaTel[]> {
+  return apiGet<GeorreferenciaTel[]>('/api/v1/tel/georreferencias?page_size=100');
+}
+
+export async function registrarGeorreferenciaTel(
+  payload: GeorreferenciaTelCreate,
+): Promise<GeorreferenciaTel> {
+  return apiPost<GeorreferenciaTel>('/api/v1/tel/georreferencias', payload);
+}
+
+export async function excluirGeorreferenciaTel(id: string): Promise<GeorreferenciaTel> {
+  return apiDelete<GeorreferenciaTel>(`/api/v1/tel/georreferencias/${encodeURIComponent(id)}`);
+}
+
+/** Detalhe de uma georreferência. */
+export async function obterGeorreferenciaTel(id: string): Promise<GeorreferenciaTel> {
+  return apiGet<GeorreferenciaTel>(`/api/v1/tel/georreferencias/${encodeURIComponent(id)}`);
+}
+
+/**
+ * Lista as georreferências vinculadas a uma divisão ou a um logradouro.
+ *
+ * A API exige ao menos um dos dois filtros (HTTP 422 caso nenhum seja informado),
+ * refletindo a regra de que a georreferência referencia **um ou outro**, nunca
+ * ambos (RN-TEL-005).
+ */
+export async function listarGeorreferenciasPorReferenciaTel(params: {
+  bairroId?: string;
+  logradouroId?: string;
+}): Promise<GeorreferenciaTel[]> {
+  const consulta = new URLSearchParams();
+  if (params.bairroId) consulta.set('bairro_id', params.bairroId);
+  if (params.logradouroId) consulta.set('logradouro_id', params.logradouroId);
+  return apiGet<GeorreferenciaTel[]>(
+    `/api/v1/tel/georreferencias/referencia?${consulta.toString()}`,
+  );
+}
+
+
+
+/* ------------------------------------------------------------------ */
+/* DOM-IMO — Cadastro Imobiliário                                     */
+/* ------------------------------------------------------------------ */
+
+export interface ImovelImo {
+  id: string;
+  inscricao_imobiliaria: string;
+  logradouro_id: string;
+  bairro_id: string;
+  numero?: string | null;
+  complemento?: string | null;
+  tipo: string;
+  situacao: string;
+  tipo_propriedade: string;
+  area_terreno_m2: number;
+  area_construida_m2: number;
+  ano_construcao?: number | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface ImovelImoCreate {
+  inscricao_imobiliaria: string;
+  logradouro_id: string;
+  bairro_id: string;
+  numero?: string;
+  complemento?: string;
+  tipo?: string;
+  tipo_propriedade?: string;
+  area_terreno_m2?: number;
+  area_construida_m2?: number;
+  ano_construcao?: number | null;
+}
+
+export interface ImovelImoUpdate {
+  numero?: string;
+  complemento?: string;
+  tipo?: string;
+  tipo_propriedade?: string;
+  area_terreno_m2?: number;
+  area_construida_m2?: number;
+  ano_construcao?: number | null;
+}
+
+export interface ProprietarioImo {
+  id: string;
+  imovel_id: string;
+  pessoa_id: string;
+  nome: string;
+  cpf: string;
+  vinculo: string;
+  principal: boolean;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface ProprietarioImoCreate {
+  imovel_id: string;
+  nome: string;
+  cpf: string;
+  pessoa_id?: string;
+  vinculo?: string;
+  principal?: boolean;
+}
+
+export interface AvaliacaoImo {
+  id: string;
+  imovel_id: string;
+  ano: number;
+  valor_terreno_m2_unitario: number;
+  valor_construcao_m2_unitario: number;
+  aliquota_percent: number;
+  area_terreno_m2: number;
+  area_construida_m2: number;
+  valor_terreno: number;
+  valor_construcao: number;
+  valor_venal: number;
+  valor_lancamento: number;
+  situacao: string;
+  data_avaliacao: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface AvaliacaoImoCreate {
+  imovel_id: string;
+  ano: number;
+  valor_terreno_m2_unitario: number;
+  valor_construcao_m2_unitario: number;
+  aliquota_percent?: number;
+  data_avaliacao?: string;
+  concluir?: boolean;
+}
+
+export interface CaracteristicaImo {
+  id: string;
+  imovel_id: string;
+  obra: string;
+  numero_pavimentos: number;
+  ano_renovacao?: number | null;
+  observacao?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface CaracteristicaImoCreate {
+  imovel_id: string;
+  obra?: string;
+  numero_pavimentos?: number;
+  ano_renovacao?: number | null;
+  observacao?: string;
+}
+
+export interface GeometriaImo {
+  id: string;
+  imovel_id: string;
+  geometria: string;
+  latitude: number;
+  longitude: number;
+  vertices: VerticeTel[];
+  datum: string;
+  precisao_m: number;
+  data_levantamento: string;
+  created_at: string;
+}
+
+export interface GeometriaImoCreate {
+  imovel_id: string;
+  geometria?: string;
+  latitude?: number;
+  longitude?: number;
+  vertices?: VerticeTel[];
+  datum?: string;
+  precisao_m?: number;
+  data_levantamento?: string;
+}
+
+
+
+/* --- DOM-IMO: imóveis ------------------------------------------------- */
+
+export async function listarImoveisImo(): Promise<ImovelImo[]> {
+  return apiGet<ImovelImo[]>('/api/v1/imo/imoveis?page_size=100');
+}
+
+export async function criarImovelImo(payload: ImovelImoCreate): Promise<ImovelImo> {
+  return apiPost<ImovelImo>('/api/v1/imo/imoveis', payload);
+}
+
+export async function atualizarImovelImo(id: string, payload: ImovelImoUpdate): Promise<ImovelImo> {
+  return apiPatch<ImovelImo>(`/api/v1/imo/imoveis/${encodeURIComponent(id)}`, payload);
+}
+
+export async function alterarSituacaoImovelImo(id: string, situacao: string): Promise<ImovelImo> {
+  return apiPost<ImovelImo>(`/api/v1/imo/imoveis/${encodeURIComponent(id)}/situacao`, { situacao });
+}
+
+export async function excluirImovelImo(id: string): Promise<ImovelImo> {
+  return apiDelete<ImovelImo>(`/api/v1/imo/imoveis/${encodeURIComponent(id)}`);
+}
+
+/** Detalhe de um imóvel pelo identificador opaco. */
+export async function obterImovelImo(id: string): Promise<ImovelImo> {
+  return apiGet<ImovelImo>(`/api/v1/imo/imoveis/${encodeURIComponent(id)}`);
+}
+
+/** Busca de imóvel pela inscrição imobiliária (chave natural, RN-IMO-001). */
+export async function obterImovelPorInscricaoImo(inscricao: string): Promise<ImovelImo> {
+  return apiGet<ImovelImo>(`/api/v1/imo/imoveis/inscricao/${encodeURIComponent(inscricao)}`);
+}
+
+/** Imóveis vinculados a um logradouro. */
+export async function listarImoveisDoLogradouroImo(logradouroId: string): Promise<ImovelImo[]> {
+  return apiGet<ImovelImo[]>(`/api/v1/imo/imoveis/logradouro/${encodeURIComponent(logradouroId)}`);
+}
+
+/** Imóveis vinculados a uma divisão territorial. */
+export async function listarImoveisDoBairroImo(bairroId: string): Promise<ImovelImo[]> {
+  return apiGet<ImovelImo[]>(`/api/v1/imo/imoveis/bairro/${encodeURIComponent(bairroId)}`);
+}
+
+/** Proprietários de um imóvel específico (drill-down do cadastro). */
+export async function listarProprietariosDoImovelImo(imovelId: string): Promise<ProprietarioImo[]> {
+  return apiGet<ProprietarioImo[]>(`/api/v1/imo/imoveis/${encodeURIComponent(imovelId)}/proprietarios`);
+}
+
+/* --- DOM-IMO: proprietários ------------------------------------------- */
+
+export async function listarProprietariosImo(): Promise<ProprietarioImo[]> {
+  return apiGet<ProprietarioImo[]>('/api/v1/imo/proprietarios?page_size=100');
+}
+
+export async function vincularProprietarioImo(
+  payload: ProprietarioImoCreate,
+): Promise<ProprietarioImo> {
+  return apiPost<ProprietarioImo>('/api/v1/imo/proprietarios', payload);
+}
+
+export async function removerProprietarioImo(id: string): Promise<ProprietarioImo> {
+  return apiDelete<ProprietarioImo>(`/api/v1/imo/proprietarios/${encodeURIComponent(id)}`);
+}
+
+/* --- DOM-IMO: avaliações ---------------------------------------------- */
+
+export async function listarAvaliacoesImo(): Promise<AvaliacaoImo[]> {
+  return apiGet<AvaliacaoImo[]>('/api/v1/imo/avaliacoes?page_size=100');
+}
+
+export async function avaliarImovelImo(payload: AvaliacaoImoCreate): Promise<AvaliacaoImo> {
+  return apiPost<AvaliacaoImo>('/api/v1/imo/avaliacoes', payload);
+}
+
+export async function cancelarAvaliacaoImo(id: string, motivo: string): Promise<AvaliacaoImo> {
+  return apiPost<AvaliacaoImo>(`/api/v1/imo/avaliacoes/${encodeURIComponent(id)}/cancelar`, {
+    motivo,
+  });
+}
+
+/**
+ * Conclui uma avaliação em aberto, fixando o valor venal e o lançamento.
+ *
+ * Transição da máquina de estados de RN-IMO-005: a conclusão é definitiva e um
+ * exercício já concluído não pode ser reavaliado.
+ */
+export async function concluirAvaliacaoImo(id: string): Promise<AvaliacaoImo> {
+  return apiPost<AvaliacaoImo>(`/api/v1/imo/avaliacoes/${encodeURIComponent(id)}/concluir`);
+}
+
+/** Detalhe de uma avaliação. */
+export async function obterAvaliacaoImo(id: string): Promise<AvaliacaoImo> {
+  return apiGet<AvaliacaoImo>(`/api/v1/imo/avaliacoes/${encodeURIComponent(id)}`);
+}
+
+/** Avaliações de um imóvel específico (histórico por exercício). */
+export async function listarAvaliacoesDoImovelImo(imovelId: string): Promise<AvaliacaoImo[]> {
+  return apiGet<AvaliacaoImo[]>(`/api/v1/imo/avaliacoes/imovel/${encodeURIComponent(imovelId)}`);
+}
+
+/* --- DOM-IMO: características ------------------------------------------ */
+
+export async function listarCaracteristicasImo(): Promise<CaracteristicaImo[]> {
+  return apiGet<CaracteristicaImo[]>('/api/v1/imo/caracteristicas?page_size=100');
+}
+
+export async function registrarCaracteristicaImo(
+  payload: CaracteristicaImoCreate,
+): Promise<CaracteristicaImo> {
+  return apiPost<CaracteristicaImo>('/api/v1/imo/caracteristicas', payload);
+}
+
+/** Características construtivas de um imóvel específico. */
+export async function listarCaracteristicasDoImovelImo(imovelId: string): Promise<CaracteristicaImo[]> {
+  return apiGet<CaracteristicaImo[]>(`/api/v1/imo/caracteristicas/imovel/${encodeURIComponent(imovelId)}`);
+}
+
+/* --- DOM-IMO: geometria do lote ---------------------------------------- */
+
+export async function listarGeometriasImo(): Promise<GeometriaImo[]> {
+  return apiGet<GeometriaImo[]>('/api/v1/imo/geometrias?page_size=100');
+}
+
+export async function registrarGeometriaImo(
+  payload: GeometriaImoCreate,
+): Promise<GeometriaImo> {
+  return apiPost<GeometriaImo>('/api/v1/imo/geometrias', payload);
+}
+
+/** Geometria georreferenciada de um imóvel específico (RN-IMO-007). */
+export async function listarGeometriasDoImovelImo(imovelId: string): Promise<GeometriaImo[]> {
+  return apiGet<GeometriaImo[]>(`/api/v1/imo/geometrias/imovel/${encodeURIComponent(imovelId)}`);
+}
+
+
+/* ======================================================================
+ * DOM-GEO — Geoinformação Municipal (mapas SIG)
+ * ====================================================================== */
+
+export interface CamadaGeo {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao?: string | null;
+  tipo: string;
+  formato: string;
+  fonte?: string | null;
+  data_atualizacao: string;
+  datum: string;
+  srid: number;
+  url_servico?: string | null;
+  zoom_minimo: number;
+  zoom_maximo: number;
+  visivel: boolean;
+  situacao: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface CamadaGeoCreate {
+  codigo: string;
+  nome: string;
+  descricao?: string;
+  tipo?: string;
+  formato?: string;
+  fonte?: string;
+  datum?: string;
+  url_servico?: string;
+  srid?: number;
+  zoom_minimo?: number;
+  zoom_maximo?: number;
+  ativar?: boolean;
+}
+
+/** Campos atualizáveis da camada (todos opcionais). */
+export type CamadaGeoUpdate = Partial<Omit<CamadaGeoCreate, 'ativar'>>;
+
+export interface MapaSigGeo {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao?: string | null;
+  tipo: string;
+  situacao: string;
+  datum: string;
+  srid: number;
+  escala_denominador: number;
+  zoom_inicial: number;
+  zoom_minimo: number;
+  zoom_maximo: number;
+  lat_min?: number | null;
+  lon_min?: number | null;
+  lat_max?: number | null;
+  lon_max?: number | null;
+  publicado_em?: string | null;
+  criado_por?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface MapaSigGeoCreate {
+  codigo: string;
+  nome: string;
+  descricao?: string;
+  tipo?: string;
+  escala_denominador?: number;
+  lat_min?: number;
+  lon_min?: number;
+  lat_max?: number;
+  lon_max?: number;
+  datum?: string;
+  srid?: number;
+  zoom_inicial?: number;
+  zoom_minimo?: number;
+  zoom_maximo?: number;
+}
+
+/** Campos atualizáveis do mapa SIG (todos opcionais). */
+export type MapaSigGeoUpdate = Partial<MapaSigGeoCreate>;
+
+export interface MapaCamadaGeo {
+  id: string;
+  mapa_id: string;
+  camada_id: string;
+  ordem: number;
+  opacidade: number;
+  visivel: boolean;
+  rotulo?: string | null;
+  created_at: string;
+}
+
+export interface MapaCamadaGeoCreate {
+  camada_id: string;
+  ordem?: number;
+  opacidade?: number;
+  visivel?: boolean;
+  rotulo?: string;
+}
+
+export interface VerticeGeo {
+  latitude: number;
+  longitude: number;
+}
+
+export interface FeatureGeo {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao?: string | null;
+  camada_id: string;
+  geometria: string;
+  latitude: number;
+  longitude: number;
+  vertices: VerticeGeo[];
+  datum: string;
+  atributos: Record<string, unknown>;
+  criado_por?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface FeatureGeoCreate {
+  codigo: string;
+  nome: string;
+  descricao?: string;
+  camada_id: string;
+  geometria?: string;
+  latitude?: number;
+  longitude?: number;
+  vertices?: VerticeGeo[];
+  datum?: string;
+  atributos?: Record<string, unknown>;
+}
+
+export interface ServicoGeo {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao?: string | null;
+  tipo: string;
+  situacao: string;
+  url?: string | null;
+  camada?: string | null;
+  datum: string;
+  srid: number;
+  zoom_minimo: number;
+  zoom_maximo: number;
+  publico: boolean;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface ServicoGeoCreate {
+  codigo: string;
+  nome: string;
+  descricao?: string;
+  tipo?: string;
+  url?: string;
+  camada?: string;
+  publico?: boolean;
+  datum?: string;
+  srid?: number;
+  zoom_minimo?: number;
+  zoom_maximo?: number;
+}
+
+/** Campos atualizáveis do serviço geoespacial (todos opcionais). */
+export type ServicoGeoUpdate = Partial<ServicoGeoCreate>;
+
+/** Lista as camadas cartograficas cadastradas. */
+export async function listarCamadasGeo(): Promise<CamadaGeo[]> {
+  return apiGet<CamadaGeo[]>('/api/v1/geo/camadas?page_size=100');
+}
+
+/** Cadastra uma camada cartografica (RN-GEO-001). */
+export async function cadastrarCamadaGeo(payload: CamadaGeoCreate): Promise<CamadaGeo> {
+  return apiPost<CamadaGeo>('/api/v1/geo/camadas', payload);
+}
+
+/** Atualiza uma camada cartografica. */
+export async function atualizarCamadaGeo(id: string, payload: CamadaGeoUpdate): Promise<CamadaGeo> {
+  return apiPatch<CamadaGeo>(`/api/v1/geo/camadas/${encodeURIComponent(id)}`, payload);
+}
+
+/** Detalhe de uma camada cartografica. */
+export async function obterCamadaGeo(id: string): Promise<CamadaGeo> {
+  return apiGet<CamadaGeo>(`/api/v1/geo/camadas/${encodeURIComponent(id)}`);
+}
+
+/** Ativa a camada para publicacao (RN-GEO-006). */
+export async function ativarCamadaGeo(id: string): Promise<CamadaGeo> {
+  return apiPost<CamadaGeo>(`/api/v1/geo/camadas/${encodeURIComponent(id)}/ativar`, {});
+}
+
+/** Desativa a camada (RN-GEO-006). */
+export async function desativarCamadaGeo(id: string): Promise<CamadaGeo> {
+  return apiPost<CamadaGeo>(`/api/v1/geo/camadas/${encodeURIComponent(id)}/desativar`, {});
+}
+
+/** Exclui (logicamente) uma camada de mapa. */
+export async function excluirCamadaGeo(id: string): Promise<CamadaGeo> {
+  return apiDelete<CamadaGeo>(`/api/v1/geo/camadas/${encodeURIComponent(id)}`);
+}
+
+/** Lista os mapas SIG cadastrados. */
+export async function listarMapasGeo(): Promise<MapaSigGeo[]> {
+  return apiGet<MapaSigGeo[]>('/api/v1/geo/mapas?page_size=100');
+}
+
+/** Cadastra um mapa SIG (RN-GEO-002). */
+export async function cadastrarMapaGeo(payload: MapaSigGeoCreate): Promise<MapaSigGeo> {
+  return apiPost<MapaSigGeo>('/api/v1/geo/mapas', payload);
+}
+
+/** Atualiza um mapa SIG. */
+export async function atualizarMapaGeo(id: string, payload: MapaSigGeoUpdate): Promise<MapaSigGeo> {
+  return apiPatch<MapaSigGeo>(`/api/v1/geo/mapas/${encodeURIComponent(id)}`, payload);
+}
+
+/** Exclui (logicamente) um mapa SIG. */
+export async function excluirMapaGeo(id: string): Promise<MapaSigGeo> {
+  return apiDelete<MapaSigGeo>(`/api/v1/geo/mapas/${encodeURIComponent(id)}`);
+}
+
+/** Publica o mapa no geoportal (RN-GEO-004). */
+export async function publicarMapaGeo(id: string): Promise<MapaSigGeo> {
+  return apiPost<MapaSigGeo>(`/api/v1/geo/mapas/${encodeURIComponent(id)}/publicar`, {});
+}
+
+/** Arquiva o mapa publicado (RN-GEO-004). */
+export async function arquivarMapaGeo(id: string): Promise<MapaSigGeo> {
+  return apiPost<MapaSigGeo>(`/api/v1/geo/mapas/${encodeURIComponent(id)}/arquivar`, {});
+}
+
+/** Camadas que compoem um mapa (RN-GEO-004). */
+export async function listarComposicaoGeo(mapaId: string): Promise<MapaCamadaGeo[]> {
+  return apiGet<MapaCamadaGeo[]>(`/api/v1/geo/mapas/${encodeURIComponent(mapaId)}/composicao`);
+}
+
+/** Adiciona uma camada a composicao do mapa (RN-GEO-004). */
+export async function comporCamadaGeo(
+  mapaId: string,
+  payload: MapaCamadaGeoCreate,
+): Promise<MapaCamadaGeo> {
+  return apiPost<MapaCamadaGeo>(`/api/v1/geo/mapas/${encodeURIComponent(mapaId)}/composicao`, payload);
+}
+
+/** Remove uma camada da composicao do mapa (RN-GEO-004). */
+export async function removerComposicaoGeo(mapaId: string, vinculoId: string): Promise<MapaCamadaGeo> {
+  return apiDelete<MapaCamadaGeo>(
+    `/api/v1/geo/mapas/${encodeURIComponent(mapaId)}/composicao/${encodeURIComponent(vinculoId)}`,
+  );
+}
+
+/** Lista todos os elementos geoespaciais cadastrados. */
+export async function listarTodasFeaturesGeo(): Promise<FeatureGeo[]> {
+  return apiGet<FeatureGeo[]>('/api/v1/geo/features?page_size=100');
+}
+
+/** Lista os elementos geoespaciais de uma camada (RN-GEO-008). */
+export async function listarFeaturesGeo(camadaId: string): Promise<FeatureGeo[]> {
+  return apiGet<FeatureGeo[]>(`/api/v1/geo/features/camada/${encodeURIComponent(camadaId)}`);
+}
+
+/** Registra um elemento geoespacial (RN-GEO-003). */
+export async function registrarFeatureGeo(payload: FeatureGeoCreate): Promise<FeatureGeo> {
+  return apiPost<FeatureGeo>('/api/v1/geo/features', payload);
+}
+
+/** Exclui (logicamente) um elemento geoespacial. */
+export async function excluirFeatureGeo(id: string): Promise<FeatureGeo> {
+  return apiDelete<FeatureGeo>(`/api/v1/geo/features/${encodeURIComponent(id)}`);
+}
+
+/** Lista os servicos geoespaciais publicados (RN-GEO-007). */
+export async function listarServicosGeo(): Promise<ServicoGeo[]> {
+  return apiGet<ServicoGeo[]>('/api/v1/geo/servicos?page_size=100');
+}
+
+/** Cadastra um servico geoespacial (RN-GEO-007). */
+export async function cadastrarServicoGeo(payload: ServicoGeoCreate): Promise<ServicoGeo> {
+  return apiPost<ServicoGeo>('/api/v1/geo/servicos', payload);
+}
+
+/** Atualiza um servico geoespacial. */
+export async function atualizarServicoGeo(
+  id: string,
+  payload: ServicoGeoUpdate,
+): Promise<ServicoGeo> {
+  return apiPatch<ServicoGeo>(`/api/v1/geo/servicos/${encodeURIComponent(id)}`, payload);
+}
+
+/** Detalhe de um servico geoespacial. */
+export async function obterServicoGeo(id: string): Promise<ServicoGeo> {
+  return apiGet<ServicoGeo>(`/api/v1/geo/servicos/${encodeURIComponent(id)}`);
+}
+
+/** Inativa um servico geoespacial (RN-GEO-007). */
+export async function inativarServicoGeo(id: string): Promise<ServicoGeo> {
+  return apiPost<ServicoGeo>(`/api/v1/geo/servicos/${encodeURIComponent(id)}/inativar`, {});
+}
+
+/** Exclui (logicamente) um servico geoespacial. */
+export async function excluirServicoGeo(id: string): Promise<ServicoGeo> {
+  return apiDelete<ServicoGeo>(`/api/v1/geo/servicos/${encodeURIComponent(id)}`);
+}
+
+/* ======================================================================
+ * DOM-OBR — Obras e Infraestrutura (acompanhamento fisico-financeiro)
+ * ====================================================================== */
+
+export interface Obra {
+  id: string;
+  numero: string;
+  nome: string;
+  descricao?: string | null;
+  tipo: string;
+  situacao: string;
+  tipo_contratacao: string;
+  fonte_recurso: string;
+  valor_orcado: number;
+  valor_contratado: number;
+  valor_mediado: number;
+  valor_pago: number;
+  percentual_fisico: number;
+  percentual_financeiro: number;
+  empresa_contratada?: string | null;
+  numero_contrato?: string | null;
+  responsavel_tecnico?: string | null;
+  endereco?: string | null;
+  bairro?: string | null;
+  data_inicio_prevista?: string | null;
+  data_fim_prevista?: string | null;
+  data_inicio_real?: string | null;
+  data_fim_real?: string | null;
+  observacao?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface ObraCreate {
+  numero: string;
+  nome: string;
+  descricao?: string;
+  tipo?: string;
+  tipo_contratacao?: string;
+  fonte_recurso?: string;
+  valor_orcado?: number;
+  valor_contratado?: number;
+  empresa_contratada?: string;
+  numero_contrato?: string;
+  responsavel_tecnico?: string;
+  endereco?: string;
+  bairro?: string;
+  data_inicio_prevista?: string;
+  data_fim_prevista?: string;
+}
+
+/** Campos atualizáveis da obra (todos opcionais; `numero` é imutável). */
+export type ObraUpdate = Partial<Omit<ObraCreate, 'numero'>>;
+
+export interface MedicaoObra {
+  id: string;
+  obra_id: string;
+  numero: string;
+  tipo: string;
+  situacao: string;
+  data: string;
+  percentual_fisico: number;
+  valor_medido: number;
+  responsavel_tecnico: string;
+  observacao?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface MedicaoObraCreate {
+  obra_id: string;
+  numero: string;
+  tipo?: string;
+  data?: string;
+  percentual_fisico?: number;
+  valor_medido?: number;
+  responsavel_tecnico: string;
+  observacao?: string;
+}
+
+export interface DespesaObra {
+  id: string;
+  obra_id: string;
+  medicao_id?: string | null;
+  descricao: string;
+  tipo: string;
+  valor: number;
+  data: string;
+  documento?: string | null;
+  credor?: string | null;
+  observacao?: string | null;
+  created_at: string;
+}
+
+export interface DespesaObraCreate {
+  obra_id: string;
+  medicao_id?: string;
+  descricao: string;
+  tipo?: string;
+  valor: number;
+  data?: string;
+  credor?: string;
+}
+
+export interface EtapaObra {
+  id: string;
+  obra_id: string;
+  numero: string;
+  descricao: string;
+  tipo: string;
+  situacao: string;
+  percentual_previsto: number;
+  percentual_realizado: number;
+  data_inicio_prevista?: string | null;
+  data_fim_prevista?: string | null;
+  data_conclusao?: string | null;
+  responsavel: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface EtapaObraCreate {
+  obra_id: string;
+  numero: string;
+  descricao: string;
+  tipo?: string;
+  percentual_previsto?: number;
+  responsavel: string;
+}
+
+export interface VistoriaObra {
+  id: string;
+  obra_id: string;
+  data: string;
+  tipo: string;
+  parecer: string;
+  percentual_fisico_verificado: number;
+  fiscal: string;
+  observacao?: string | null;
+  created_at: string;
+}
+
+export interface VistoriaObraCreate {
+  obra_id: string;
+  data?: string;
+  tipo?: string;
+  parecer?: string;
+  percentual_fisico_verificado?: number;
+  fiscal: string;
+  observacao?: string;
+}
+
+/** Visao consolidada do acompanhamento fisico-financeiro da obra. */
+export interface ObraDetalhe {
+  obra: Obra;
+  medicoes: MedicaoObra[];
+  despesas: DespesaObra[];
+  etapas: EtapaObra[];
+  vistorias: VistoriaObra[];
+}
+
+/** Lista as obras publicas cadastradas. */
+export async function listarObras(): Promise<Obra[]> {
+  return apiGet<Obra[]>('/api/v1/obr/obras?page_size=100');
+}
+
+/** Cadastra uma obra publica (RN-OBR-001). */
+export async function cadastrarObra(payload: ObraCreate): Promise<Obra> {
+  return apiPost<Obra>('/api/v1/obr/obras', payload);
+}
+
+/** Atualiza os dados cadastrais de uma obra não concluída. */
+export async function atualizarObra(id: string, payload: ObraUpdate): Promise<Obra> {
+  return apiPatch<Obra>(`/api/v1/obr/obras/${encodeURIComponent(id)}`, payload);
+}
+
+/** Acompanhamento fisico-financeiro consolidado da obra. */
+export async function obterAcompanhamentoObra(id: string): Promise<ObraDetalhe> {
+  return apiGet<ObraDetalhe>(`/api/v1/obr/obras/${encodeURIComponent(id)}/acompanhamento`);
+}
+
+/** Inicia a execucao fisica da obra (RN-OBR-002). */
+export async function iniciarExecucaoObra(id: string, motivo?: string): Promise<Obra> {
+  return apiPost<Obra>(`/api/v1/obr/obras/${encodeURIComponent(id)}/iniciar-execucao`, {
+    motivo: motivo ?? '',
+  });
+}
+
+/** Suspende a execucao da obra (RN-OBR-002). */
+export async function suspenderObra(id: string, motivo: string): Promise<Obra> {
+  return apiPost<Obra>(`/api/v1/obr/obras/${encodeURIComponent(id)}/suspender`, { motivo });
+}
+
+/** Conclui a obra, exigindo 100% do avanco fisico (RN-OBR-005). */
+export async function concluirObra(id: string, motivo?: string): Promise<Obra> {
+  return apiPost<Obra>(`/api/v1/obr/obras/${encodeURIComponent(id)}/concluir`, {
+    motivo: motivo ?? '',
+  });
+}
+
+/** Cancela a obra (RN-OBR-002). */
+export async function cancelarObra(id: string, motivo: string): Promise<Obra> {
+  return apiPost<Obra>(`/api/v1/obr/obras/${encodeURIComponent(id)}/cancelar`, { motivo });
+}
+
+/** Exclui (logicamente) uma obra sem dependencias financeiras. */
+export async function excluirObra(id: string): Promise<Obra> {
+  return apiDelete<Obra>(`/api/v1/obr/obras/${encodeURIComponent(id)}`);
+}
+
+/** Registra uma medicao fisico-financeira (RN-OBR-005). */
+export async function registrarMedicaoObra(payload: MedicaoObraCreate): Promise<MedicaoObra> {
+  return apiPost<MedicaoObra>('/api/v1/obr/medicoes', payload);
+}
+
+/** Confere e aprova a medicao, recompondo o avanco da obra (RN-OBR-005). */
+export async function aprovarMedicaoObra(id: string): Promise<MedicaoObra> {
+  return apiPost<MedicaoObra>(`/api/v1/obr/medicoes/${encodeURIComponent(id)}/aprovar`, {});
+}
+
+/** Glosa uma medicao, com justificativa obrigatoria (RN-OBR-005). */
+export async function glosarMedicaoObra(id: string, motivo: string): Promise<MedicaoObra> {
+  return apiPost<MedicaoObra>(`/api/v1/obr/medicoes/${encodeURIComponent(id)}/glosar`, { motivo });
+}
+
+/** Cancela uma medicao ainda nao aprovada (RN-OBR-005). */
+export async function cancelarMedicaoObra(id: string, motivo = ''): Promise<MedicaoObra> {
+  return apiPost<MedicaoObra>(`/api/v1/obr/medicoes/${encodeURIComponent(id)}/cancelar`, { motivo });
+}
+
+/** Registra uma despesa financeira da obra (RN-OBR-006). */
+export async function registrarDespesaObra(payload: DespesaObraCreate): Promise<DespesaObra> {
+  return apiPost<DespesaObra>('/api/v1/obr/despesas', payload);
+}
+
+/** Exclui (logicamente) uma despesa da obra. */
+export async function excluirDespesaObra(id: string): Promise<DespesaObra> {
+  return apiDelete<DespesaObra>(`/api/v1/obr/despesas/${encodeURIComponent(id)}`);
+}
+
+/** Cadastra uma etapa de execucao da obra (RN-OBR-007). */
+export async function cadastrarEtapaObra(payload: EtapaObraCreate): Promise<EtapaObra> {
+  return apiPost<EtapaObra>('/api/v1/obr/etapas', payload);
+}
+
+/** Atualiza o avanco fisico de uma etapa (RN-OBR-007). */
+export async function atualizarEtapaObra(
+  id: string,
+  payload: { percentual_realizado?: number; situacao?: string },
+): Promise<EtapaObra> {
+  return apiPatch<EtapaObra>(`/api/v1/obr/etapas/${encodeURIComponent(id)}`, payload);
+}
+
+/** Conclui uma etapa, exigindo 100% do previsto (RN-OBR-007). */
+export async function concluirEtapaObra(id: string): Promise<EtapaObra> {
+  return apiPost<EtapaObra>(`/api/v1/obr/etapas/${encodeURIComponent(id)}/concluir`, {});
+}
+
+/** Registra uma vistoria fiscalizadora da obra (RN-OBR-008). */
+export async function registrarVistoriaObra(payload: VistoriaObraCreate): Promise<VistoriaObra> {
+  return apiPost<VistoriaObra>('/api/v1/obr/vistorias', payload);
+}

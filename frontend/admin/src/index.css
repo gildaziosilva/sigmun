@@ -1587,6 +1587,327 @@ button {
   color: #485368;
 }
 
+/* ----- Módulos territoriais (DOM-TEL / DOM-IMO) ---------------------- */
+/* Prefixo `terr-` compartilhado por ambos os módulos territoriais, que    */
+/* pertencem à mesma área funcional e compartilham a mesma linguagem visual. */
+
+.terr-shell {
+  gap: 1.25rem;
+}
+
+.terr-page-head {
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
+.terr-page-head .section-title {
+  margin: 0.15rem 0 0.35rem;
+  color: var(--cor-texto);
+  font-size: 1.35rem;
+}
+
+.terr-eyebrow {
+  color: #1f5d4c;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.terr-feedback {
+  padding: 0.75rem 1rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.terr-feedback--ok {
+  border-color: #a7d7c0;
+  background: #edf8f2;
+  color: var(--cor-sucesso);
+}
+
+.terr-feedback--error {
+  border-color: #efb4b0;
+  background: #fff3f2;
+  color: var(--cor-erro);
+}
+
+/* ----- Abas -------------------------------------------------------------- */
+
+.terr-tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding: 0.25rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.75rem;
+  background: #e6f0ec;
+}
+
+.terr-tab {
+  flex: 1 0 auto;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--cor-texto-suave);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.terr-tab:hover {
+  color: #1f5d4c;
+}
+
+.terr-tab--active {
+  background: var(--cor-superficie);
+  color: #1f5d4c;
+  box-shadow: var(--sombra);
+}
+
+.terr-tab:focus-visible,
+.terr-tabs button:focus-visible {
+  outline: 2px solid #1f5d4c;
+  outline-offset: 1px;
+}
+
+/* ----- Grade e cartões --------------------------------------------------- */
+
+.terr-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.terr-card {
+  min-width: 0;
+}
+
+.terr-card--full {
+  grid-column: 1 / -1;
+}
+
+.terr-kpis {
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
+/* ----- Formulários -------------------------------------------------------- */
+
+.terr-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.terr-lista {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.terr-lista-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.terr-lista-header h3 {
+  margin: 0;
+}
+
+.terr-search {
+  min-width: 14rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.5rem;
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.terr-search:focus {
+  outline: 2px solid #1f5d4c;
+  outline-offset: 1px;
+}
+
+/* Resultado de uma consulta pontual: destaca o retorno da busca. */
+.terr-resultado {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--cor-borda);
+  border-left: 3px solid #1f5d4c;
+  border-radius: 0.5rem;
+  background: var(--cor-superficie, #f8faf9);
+}
+
+.terr-resultado h4 {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.9375rem;
+}
+
+/* Grade de rótulo/valor usada nas fichas e no retorno das consultas. */
+.terr-detalhes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem 1.25rem;
+  margin: 0;
+}
+
+.terr-detalhes dt {
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave, #5b6672);
+}
+
+.terr-detalhes dd {
+  margin: 0.125rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+/* Ficha completa do imóvel, aberta a partir da lista de imóveis. */
+.terr-detalhe-imovel {
+  border-left: 3px solid #1f5d4c;
+}
+
+.terr-consultas .card > .muted {
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 720px) {
+  .terr-detalhes {
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  }
+}
+
+.terr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.terr-table th,
+.terr-table td {
+  padding: 0.55rem 0.5rem;
+  border-bottom: 1px solid var(--cor-borda);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.terr-table thead th {
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.terr-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.terr-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.terr-recentes {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.terr-recentes-card h3 {
+  margin-top: 0;
+}
+
+/* ----- Selos de status ---------------------------------------------------- */
+
+.terr-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #edf0f5;
+  color: #485368;
+  font-size: 0.6875rem;
+  font-weight: 750;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.terr-status--ok {
+  background: #e4f4eb;
+  color: #126843;
+}
+
+.terr-status--warning {
+  background: #fff3d4;
+  color: #7a4b00;
+}
+
+.terr-status--danger {
+  background: #fde7e5;
+  color: #a02922;
+}
+
+.terr-status--info {
+  background: #e3eefb;
+  color: #1d4e89;
+}
+
+.terr-status--neutral {
+  background: #edf0f5;
+  color: #485368;
+}
+
+/* ----- Grade de vértices (georreferenciamento) --------------------------- */
+
+.terr-vertices {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.terr-vertex-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+@media (max-width: 48rem) {
+  .terr-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .terr-card--full {
+    grid-column: auto;
+  }
+
+  .terr-recentes {
+    grid-template-columns: 1fr;
+  }
+
+  .terr-lista-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .terr-search {
+    min-width: 0;
+  }
+
+  .terr-vertex-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 48rem) {
   .form-grid,
   .ass-grid {
@@ -1607,6 +1928,532 @@ button {
   }
 
   .ass-search {
+    min-width: 0;
+  }
+}
+
+/* ==========================================================================
+ * DOM-GEO — Geoinformação Municipal
+ * ========================================================================== */
+
+.geo-shell {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.geo-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.geo-page-head .section-title {
+  margin: 0.15rem 0 0.25rem;
+}
+
+.geo-eyebrow {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.geo-feedback {
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.geo-feedback--ok {
+  background: #e4f4eb;
+  color: #126843;
+}
+
+.geo-feedback--error {
+  background: #fde7e5;
+  color: #a02922;
+}
+
+.geo-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  border-bottom: 1px solid var(--cor-borda);
+  padding-bottom: 0.35rem;
+}
+
+.geo-tab {
+  padding: 0.45rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.geo-tab:hover {
+  background: #eef1f6;
+  color: var(--cor-texto);
+}
+
+.geo-tab--active {
+  background: #1d4e89;
+  color: #ffffff;
+}
+
+.geo-tab:focus-visible,
+.geo-tabs button:focus-visible {
+  outline: 2px solid #1d4e89;
+  outline-offset: 2px;
+}
+
+.geo-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.geo-kpi-valor {
+  margin: 0.15rem 0;
+  font-size: 1.35rem;
+  font-weight: 750;
+}
+
+.geo-form,
+.geo-lista {
+  display: grid;
+  gap: 1rem;
+}
+
+.geo-lista-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.geo-lista-header h3 {
+  margin: 0;
+}
+
+.geo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.geo-table th,
+.geo-table td {
+  padding: 0.55rem 0.5rem;
+  border-bottom: 1px solid var(--cor-borda);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.geo-table thead th {
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.geo-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.geo-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.geo-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.geo-lista-situacao,
+.obras-lista-situacao {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.geo-lista-situacao li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.geo-lista-situacao li:last-child {
+  border-bottom: 0;
+}
+
+.geo-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #edf0f5;
+  color: #485368;
+  font-size: 0.6875rem;
+  font-weight: 750;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.geo-status--ok {
+  background: #e4f4eb;
+  color: #126843;
+}
+
+.geo-status--warning {
+  background: #fff3d4;
+  color: #7a4b00;
+}
+
+.geo-status--danger {
+  background: #fde7e5;
+  color: #a02922;
+}
+
+.geo-status--info {
+  background: #e3eefb;
+  color: #1d4e89;
+}
+
+.geo-status--neutral {
+  background: #edf0f5;
+  color: #485368;
+}
+
+.geo-vertices {
+  display: grid;
+  gap: 0.5rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.geo-vertices legend {
+  padding: 0 0.35rem;
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.geo-vertex-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+/* ==========================================================================
+ * DOM-OBR — Obras e Infraestrutura
+ * ========================================================================== */
+
+.obras-shell {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.obras-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.obras-page-head .section-title {
+  margin: 0.15rem 0 0.25rem;
+}
+
+.obras-eyebrow {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.obras-feedback {
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.obras-feedback--ok {
+  background: #e4f4eb;
+  color: #126843;
+}
+
+.obras-feedback--error {
+  background: #fde7e5;
+  color: #a02922;
+}
+
+.obras-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  border-bottom: 1px solid var(--cor-borda);
+  padding-bottom: 0.35rem;
+}
+
+.obras-tab {
+  padding: 0.45rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.obras-tab:hover {
+  background: #eef1f6;
+  color: var(--cor-texto);
+}
+
+.obras-tab--active {
+  background: #1d4e89;
+  color: #ffffff;
+}
+
+.obras-tab:focus-visible,
+.obras-tabs button:focus-visible {
+  outline: 2px solid #1d4e89;
+  outline-offset: 2px;
+}
+
+.obras-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.obras-kpi-valor {
+  margin: 0.15rem 0;
+  font-size: 1.35rem;
+  font-weight: 750;
+}
+
+.obras-contexto {
+  display: grid;
+  gap: 1rem;
+}
+
+.obras-seletor {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 32rem;
+}
+
+.obras-seletor span,
+.obras-motivo span {
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.obras-motivo {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 32rem;
+}
+
+.obras-form,
+.obras-lista {
+  display: grid;
+  gap: 1rem;
+}
+
+.obras-lista-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.obras-lista-header h3 {
+  margin: 0;
+}
+
+.obras-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.obras-table th,
+.obras-table td {
+  padding: 0.55rem 0.5rem;
+  border-bottom: 1px solid var(--cor-borda);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.obras-table thead th {
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.obras-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.obras-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.obras-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.obras-lista-situacao li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.obras-lista-situacao li:last-child {
+  border-bottom: 0;
+}
+
+.obras-avanco {
+  color: var(--cor-texto-suave);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.obras-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #edf0f5;
+  color: #485368;
+  font-size: 0.6875rem;
+  font-weight: 750;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.obras-status--ok {
+  background: #e4f4eb;
+  color: #126843;
+}
+
+.obras-status--warning {
+  background: #fff3d4;
+  color: #7a4b00;
+}
+
+.obras-status--danger {
+  background: #fde7e5;
+  color: #a02922;
+}
+
+.obras-status--info {
+  background: #e3eefb;
+  color: #1d4e89;
+}
+
+.obras-status--neutral {
+  background: #edf0f5;
+  color: #485368;
+}
+
+@media (max-width: 48rem) {
+  .geo-kpis,
+  .obras-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .geo-lista-header,
+  .obras-lista-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .geo-vertex-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ----- Linhas em edicao e blocos auxiliares (DOM-GEO / DOM-OBR) -------- */
+
+.geo-linha--editando,
+.obras-linha--editando {
+  background: #eef4fb;
+}
+
+.geo-filtro {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.geo-filtro label {
+  min-width: 14rem;
+}
+
+.geo-composicao {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.geo-composicao h4 {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 48rem) {
+  .geo-filtro {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .geo-filtro label {
     min-width: 0;
   }
 }
