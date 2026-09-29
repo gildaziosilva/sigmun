@@ -14,11 +14,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from src.core.infrastructure.database.session import engine
+from src.modules.sigmun_assistencia_social.presentation.api import (
+    routers as ass_routers,
+)
 from src.modules.sigmun_cadastro.presentation.api.pessoas_router import (
     router as pessoas_router,
 )
 from src.modules.sigmun_cadastro.presentation.api.unidades_router import (
     router as unidades_router,
+)
+from src.modules.sigmun_cadastro_imobiliario.presentation.api import (
+    routers as imo_routers,
 )
 from src.modules.sigmun_compras.presentation.api.auditoria_router import (
     router as auditoria_router,
@@ -41,8 +47,20 @@ from src.modules.sigmun_compras.presentation.api.processo_documental_router impo
 from src.modules.sigmun_dad.presentation.api import (
     router as dad_router,
 )
+from src.modules.sigmun_dia.presentation.api import (
+    router as dia_router,
+)
+from src.modules.sigmun_educacao.presentation.api import (
+    routers as edu_routers,
+)
+from src.modules.sigmun_frotas.presentation.api import (
+    routers as fro_routers,
+)
 from src.modules.sigmun_gdo.presentation.api import (
     router as gdo_router,
+)
+from src.modules.sigmun_geoinformacao.presentation.api import (
+    routers as geo_routers,
 )
 from src.modules.sigmun_idn.presentation.api import (
     router as idn_router,
@@ -53,30 +71,24 @@ from src.modules.sigmun_int.presentation.api import (
 from src.modules.sigmun_met.presentation.api import (
     router as met_router,
 )
-from src.modules.sigmun_seg.presentation.api import (
-    router as seg_router,
-)
-from src.modules.sigmun_dia.presentation.api import (
-    router as dia_router,
-)
-from src.modules.sigmun_rh.presentation.api import routers as pes_routers
-from src.modules.sigmun_tributos.presentation.api import (
-    routers as tri_routers,
+from src.modules.sigmun_obras.presentation.api import (
+    routers as obr_routers,
 )
 from src.modules.sigmun_patrimonio.presentation.api import (
     routers as pat_routers,
 )
-from src.modules.sigmun_frotas.presentation.api import (
-    routers as fro_routers,
-)
+from src.modules.sigmun_rh.presentation.api import routers as pes_routers
 from src.modules.sigmun_saude.presentation.api import (
     routers as sau_routers,
 )
-from src.modules.sigmun_educacao.presentation.api import (
-    routers as edu_routers,
+from src.modules.sigmun_seg.presentation.api import (
+    router as seg_router,
 )
-from src.modules.sigmun_assistencia_social.presentation.api import (
-    routers as ass_routers,
+from src.modules.sigmun_territorial.presentation.api import (
+    routers as tel_routers,
+)
+from src.modules.sigmun_tributos.presentation.api import (
+    routers as tri_routers,
 )
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
@@ -229,6 +241,20 @@ app = FastAPI(
                 "CadÚnico local, benefícios eventuais, CRAS/CREAS (DOM-ASS)."
             ),
         },
+        {
+            "name": "Geoinformação Municipal",
+            "description": (
+                "Camadas cartográficas, mapas SIG, composição de camadas, "
+                "elementos geoespaciais e serviços publicados (DOM-GEO)."
+            ),
+        },
+        {
+            "name": "Obras e Infraestrutura",
+            "description": (
+                "Obras públicas com acompanhamento físico-financeiro: medições, "
+                "despesas, etapas e vistorias (DOM-OBR)."
+            ),
+        },
     ],
 )
 
@@ -315,6 +341,14 @@ for _edu_router in edu_routers:
     app.include_router(_edu_router)
 for _ass_router in ass_routers:
     app.include_router(_ass_router)
+for _tel_router in tel_routers:
+    app.include_router(_tel_router)
+for _imo_router in imo_routers:
+    app.include_router(_imo_router)
+for _geo_router in geo_routers:
+    app.include_router(_geo_router)
+for _obr_router in obr_routers:
+    app.include_router(_obr_router)
 
 
 @app.get("/health")
