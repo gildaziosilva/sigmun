@@ -1,0 +1,100 @@
+```plantuml
+@startuml
+title DOM-ATE — Máquina de Estados da Senha de Atendimento
+
+hide empty description
+
+legend
+SIGMUN
+DOM-ATE — Atendimento Presencial e Online
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+[*] --> Emitida : emissão da senha
+
+Emitida --> NaFila : entrada na fila
+Emitida --> Cancelada : cancelamento
+
+NaFila --> Chamada : chamada pelo guichê
+NaFila --> Cancelada : cancelamento autorizado
+
+Chamada --> EmAtendimento : cidadão identificado
+Chamada --> Rechamada : ausência
+
+Rechamada --> EmAtendimento : cidadão retorna
+Rechamada --> Ausente : tentativa > max_rechamadas
+
+EmAtendimento --> Concluida : atendimento resolvido
+EmAtendimento --> Encaminhada : necessita outro serviço
+EmAtendimento --> Cancelada : cancelamento excepcional
+
+Encaminhada --> [*]
+Concluida --> [*]
+Ausente --> [*]
+Cancelada --> [*]
+
+state Emitida
+state NaFila
+state Chamada
+state Rechamada
+state EmAtendimento
+state Concluida
+state Encaminhada
+state Ausente
+state Cancelada
+
+note right of NaFila
+A ordenação da fila considera:
+
+- prioridade efetiva da senha
+- regras do serviço
+- ordem de chegada
+- critérios excepcionais
+end note
+
+note right of Chamada
+A chamada identifica:
+
+- senha
+- guichê
+- unidade
+- data e hora
+- operador responsável
+- tentativa
+
+Cada chamada incrementa a
+tentativa da senha.
+end note
+
+note right of Rechamada
+A tentativa é o número
+sequencial da chamada da
+mesma senha:
+
+Senha 001
+  tentativa 1
+  tentativa 2
+  tentativa 3
+
+O limite é a regra
+parametrizável da unidade
+(max_rechamadas).
+
+Quando tentativa > max_rechamadas,
+a senha transiciona para Ausente.
+
+A rechamada não exige entidade
+própria: é o valor da tentativa
+na chamada.
+end note
+
+note bottom of EmAtendimento
+Durante o atendimento podem ocorrer
+registros, documentos, encaminhamentos
+e integração com domínios especializados.
+end note
+
+@enduml
+```

@@ -1,0 +1,182 @@
+```plantuml
+@startuml
+title DOM-ATE — Modelo de Domínio
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+legend
+SIGMUN
+DOM-ATE — Atendimento Presencial e Online
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+class UnidadeAtendimento {
+  +id: UUID
+  +codigo: string
+  +nome: string
+  +ativo: boolean
+  +max_rechamadas: int
+}
+
+class Guiche {
+  +id: UUID
+  +numero: string
+  +descricao: string
+  +ativo: boolean
+}
+
+class CanalAtendimento {
+  +id: UUID
+  +codigo: string
+  +nome: string
+  +tipo: string
+  +ativo: boolean
+}
+
+class ServicoAtendimento {
+  +id: UUID
+  +codigo: string
+  +nome: string
+  +prioridade: int
+  +ativo: boolean
+}
+
+class FilaAtendimento {
+  +id: UUID
+  +unidade: UUID
+  +servico: UUID
+  +data: date
+  +status: string
+}
+
+class Triagem {
+  +id: UUID
+  +servico: UUID
+  +data_hora: datetime
+  +classificacao: string
+  +prioridade: int
+  +observacao: string
+}
+
+class Senha {
+  +id: UUID
+  +fila: UUID
+  +servico: UUID
+  +triagem: UUID
+  +numero: string
+  +data_hora_emissao: datetime
+  +prioridade: int
+  +status: string
+}
+
+class Chamada {
+  +id: UUID
+  +senha: UUID
+  +guiche: UUID
+  +unidade: UUID
+  +operador: string
+  +data_hora: datetime
+  +ordem: int
+  +tentativa: int
+  +resultado: string
+}
+
+class Atendimento {
+  +id: UUID
+  +chamada: UUID
+  +canal: UUID
+  +inicio: datetime
+  +fim: datetime
+  +status: string
+  +descricao: string
+}
+
+class Encaminhamento {
+  +id: UUID
+  +atendimento: UUID
+  +data_hora: datetime
+  +destino: string
+  +motivo: string
+  +status: string
+}
+
+class AvaliacaoAtendimento {
+  +id: UUID
+  +atendimento: UUID
+  +nota: int
+  +comentario: string
+  +data_hora: datetime
+}
+
+UnidadeAtendimento "1" -- "0..*" Guiche
+UnidadeAtendimento "1" -- "0..*" FilaAtendimento
+
+CanalAtendimento "1" -- "0..*" Atendimento
+
+ServicoAtendimento "1" -- "0..*" FilaAtendimento
+ServicoAtendimento "1" -- "0..*" Triagem
+ServicoAtendimento "1" -- "0..*" Senha
+
+FilaAtendimento "1" -- "0..*" Senha
+Triagem "1" -- "0..1" Senha
+
+Senha "1" -- "0..*" Chamada
+Guiche "1" -- "0..*" Chamada
+UnidadeAtendimento "1" -- "0..*" Chamada
+
+Chamada "1" -- "0..1" Atendimento
+
+Atendimento "1" -- "0..*" Encaminhamento
+Atendimento "1" -- "0..1" AvaliacaoAtendimento
+
+note as N1
+A identificação do cidadão/usuário deve referenciar
+os domínios de identidade e cadastro aplicáveis,
+sem duplicar dados cadastrais no DOM-ATE.
+end note
+
+N1 .. Atendimento
+
+note right of Triagem
+Uma triagem pode não gerar
+senha: o atendimento direto,
+sem fila, é um caminho válido.
+
+A referência que expressa o
+vínculo fica em Senha.triagem,
+e não em Triagem.
+end note
+
+note right of Senha
+A senha representa a posição
+do cidadão na fila de atendimento.
+
+A prioridade é a prioridade
+efetiva de ordenação, copiada
+da triagem no momento da
+emissão.
+end note
+
+note right of Chamada
+A tentativa é o número
+sequencial da chamada da
+mesma senha. O estado
+Rechamada não exige entidade
+própria.
+end note
+
+note right of Atendimento
+O atendimento registra a execução
+efetiva do serviço solicitado.
+
+O DOM-ATE controla o processo,
+mas não substitui o domínio
+especializado responsável pelo serviço.
+end note
+
+@enduml
+```

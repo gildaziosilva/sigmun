@@ -1,0 +1,114 @@
+```plantuml
+@startuml
+title DOM-ATE — Integrações
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+legend
+SIGMUN
+DOM-ATE — Atendimento Presencial e Online
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "Canais de Atendimento" {
+  component "Balcão / Recepção" as Balcao
+  component "Portal do Cidadão" as Portal
+  component "Painel de Senhas" as Painel
+}
+
+package "DOM-ATE" {
+  component "API DOM-ATE" as API
+  component "Triagem" as Triagem
+  component "Gestão de Senhas\ne Filas" as Fila
+  component "Atendimento" as Atendimento
+  component "Encaminhamento" as Encaminhamento
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "Auditoria" as AUD
+  component "Notificações" as NOT
+}
+
+package "Domínios Especializados" {
+  component "DOM-SAU\nSaúde" as SAU
+  component "DOM-EDU\nEducação" as EDU
+  component "DOM-SEG\nSegurança" as SEG
+  component "DOM-ASS\nAssistência Social" as ASS
+  component "DOM-GEO\nGeoinformação" as GEO
+  component "DOM-OBR\nObras" as OBR
+  component "Outros\nDomínios" as OUTROS
+}
+
+database "PostgreSQL\nschema ate" as DB
+
+Balcao --> API : solicitação presencial
+Portal --> API : solicitação online
+
+API --> IDN : autenticação /\nautorização
+
+API --> Triagem : iniciar triagem
+Triagem --> Fila : classificar e inserir\nna fila
+
+Fila --> Painel : chamada de senha
+Fila --> Atendimento : disponibilizar atendimento
+
+Atendimento --> Encaminhamento : encaminhar serviço
+
+Encaminhamento --> SAU : demanda especializada
+Encaminhamento --> EDU : demanda especializada
+Encaminhamento --> SEG : demanda especializada
+Encaminhamento --> ASS : demanda especializada
+Encaminhamento --> GEO : demanda especializada
+Encaminhamento --> OBR : demanda especializada
+Encaminhamento --> OUTROS : demanda especializada
+
+API --> GDO : documentos e anexos
+Atendimento --> GDO : registros documentais
+
+API --> AUD : eventos
+Triagem --> AUD : eventos
+Fila --> AUD : eventos
+Atendimento --> AUD : eventos
+Encaminhamento --> AUD : eventos
+
+Fila --> NOT : chamadas e avisos
+Atendimento --> NOT : notificações
+
+API --> DB
+Triagem --> DB
+Fila --> DB
+Atendimento --> DB
+Encaminhamento --> DB
+
+note right of API
+O DOM-ATE centraliza a orquestração
+do ciclo de atendimento.
+
+Não deve duplicar a responsabilidade
+funcional dos domínios especializados.
+end note
+
+note bottom of Encaminhamento
+O encaminhamento transfere a demanda
+para o domínio responsável pelo serviço,
+mantendo no DOM-ATE o histórico do
+processo de atendimento.
+end note
+
+note bottom of DB
+Persistência operacional do domínio.
+
+As entidades cadastrais pertencentes
+a outros domínios devem ser referenciadas
+por seus identificadores, evitando
+duplicação cadastral.
+end note
+
+@enduml
+```
+

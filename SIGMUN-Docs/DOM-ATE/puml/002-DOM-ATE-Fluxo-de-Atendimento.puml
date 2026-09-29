@@ -1,0 +1,94 @@
+```plantuml
+@startuml
+title DOM-ATE — Fluxo de Atendimento Presencial e Online
+
+legend
+SIGMUN
+DOM-ATE — Atendimento Presencial e Online
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+if (Canal de entrada?) then (Presencial)
+  :Recepção / balcão;
+  :Identificar cidadão;
+  :Informar serviço solicitado;
+else (Online)
+  :Acessar canal online;
+  :Autenticar ou identificar cidadão;
+  :Selecionar serviço;
+endif
+
+:Registrar solicitação de atendimento;
+
+:Executar triagem;
+:Classificar serviço;
+:Determinar prioridade;
+
+if (Atendimento requer fila?) then (Sim)
+  :Emitir senha;
+  :Inserir senha na fila;
+  :Aguardar chamada;
+
+  :Selecionar próxima senha
+  conforme regras da fila;
+  :Exibir / anunciar senha;
+
+  if (Cidadão presente?) then (Sim)
+    :Abrir atendimento;
+  else (Não)
+    :Registrar ausência;
+    :Incrementar tentativa da chamada;
+    :Executar regra de rechamada;
+
+    if (tentativa > max_rechamadas?) then (Sim)
+      :Registrar ausência definitiva;
+      :Encerrar chamada;
+      stop
+    else (Não)
+      :Rechamar;
+    endif
+
+    if (Cidadão retornou?) then (Sim)
+      :Abrir atendimento;
+    else (Não)
+      :Registrar ausência definitiva;
+      :Encerrar chamada;
+      stop
+    endif
+  endif
+
+else (Não)
+  :Encaminhar diretamente
+  para atendimento;
+endif
+
+:Executar atendimento;
+
+if (Necessita encaminhamento?) then (Sim)
+  :Registrar motivo;
+  :Selecionar destino;
+  :Registrar encaminhamento;
+  :Encaminhar para unidade / serviço;
+else (Não)
+  :Concluir atendimento;
+endif
+
+:Registrar resultado do atendimento;
+
+if (Avaliação disponível?) then (Sim)
+  :Solicitar avaliação;
+  :Registrar avaliação;
+else (Não)
+endif
+
+:Registrar evento de auditoria;
+
+stop
+
+@enduml
+```
+

@@ -1,0 +1,79 @@
+```plantuml
+@startuml
+title DOM-ATE — Visão Arquitetural
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+legend
+SIGMUN
+DOM-ATE — Atendimento Presencial e Online
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "Canais de Atendimento" {
+  component "Balcão / Recepção" as Balcao
+  component "Portal / Atendimento Online" as Online
+  component "Painel de Senhas" as Painel
+}
+
+package "DOM-ATE" {
+  component "API de Atendimento" as API
+  component "Triagem" as Triagem
+  component "Gestão de Senhas" as Senhas
+  component "Fila de Atendimento" as Fila
+  component "Gestão de Guichês" as Guiches
+  component "Registro de Atendimento" as Registro
+  component "Encaminhamento" as Encaminhamento
+  component "Avaliação do Atendimento" as Avaliacao
+}
+
+package "Infraestrutura SIGMUN" {
+  database "PostgreSQL\nschema ate" as DB
+  component "Auditoria" as Auditoria
+  component "Autenticação / Autorização" as IDN
+  component "Notificações" as Notificacao
+}
+
+Balcao --> API : solicita atendimento
+Online --> API : solicita atendimento
+API --> Triagem
+Triagem --> Senhas : classifica prioridade
+Senhas --> Fila : insere senha
+Fila --> Guiches : disponibiliza próxima
+Guiches --> Painel : chama senha
+Guiches --> Registro : inicia atendimento
+Registro --> Encaminhamento : conclui ou encaminha
+Registro --> Avaliacao
+
+API --> IDN
+API --> Auditoria
+API --> Notificacao
+
+API --> DB
+Triagem --> DB
+Senhas --> DB
+Fila --> DB
+Registro --> DB
+Encaminhamento --> DB
+Avaliacao --> DB
+
+note right of Triagem
+Triagem identifica:
+- serviço solicitado
+- canal de atendimento
+- prioridade
+- necessidade de encaminhamento
+end note
+
+note bottom of Fila
+A fila deve respeitar as regras
+de prioridade e ordem de chegada
+definidas para cada serviço.
+end note
+
+@enduml
+```
+

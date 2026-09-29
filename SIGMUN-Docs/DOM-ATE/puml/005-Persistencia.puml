@@ -1,0 +1,287 @@
+```plantuml
+@startuml
+title DOM-ATE — Persistência
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+legend
+SIGMUN
+DOM-ATE — Atendimento Presencial e Online
+Persistência do Domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "PostgreSQL — schema ate" {
+
+  entity "unidades_atendimento" as unidades {
+    * id : UUID <<PK>>
+    --
+    codigo : TEXT
+    nome : TEXT
+    ativo : BOOLEAN
+    max_rechamadas : INTEGER
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "guiches" as guiches {
+    * id : UUID <<PK>>
+    --
+    unidade_id : TEXT
+    numero : TEXT
+    descricao : TEXT
+    ativo : BOOLEAN
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "canais_atendimento" as canais {
+    * id : UUID <<PK>>
+    --
+    codigo : TEXT
+    nome : TEXT
+    tipo : TEXT
+    ativo : BOOLEAN
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "servicos_atendimento" as servicos {
+    * id : UUID <<PK>>
+    --
+    codigo : TEXT
+    nome : TEXT
+    prioridade : INTEGER
+    ativo : BOOLEAN
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "filas_atendimento" as filas {
+    * id : UUID <<PK>>
+    --
+    unidade_id : TEXT
+    servico_id : TEXT
+    data : DATE
+    status : TEXT
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "triagens" as triagens {
+    * id : UUID <<PK>>
+    --
+    servico_id : TEXT
+    data_hora : TIMESTAMPTZ
+    classificacao : TEXT
+    prioridade : INTEGER
+    observacao : TEXT
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "senhas" as senhas {
+    * id : UUID <<PK>>
+    --
+    fila_id : TEXT
+    servico_id : TEXT
+    triagem_id : TEXT
+    numero : TEXT
+    data_hora_emissao : TIMESTAMPTZ
+    prioridade : INTEGER
+    status : TEXT
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "chamadas" as chamadas {
+    * id : UUID <<PK>>
+    --
+    senha_id : TEXT
+    guiche_id : TEXT
+    unidade_id : TEXT
+    operador : TEXT
+    data_hora : TIMESTAMPTZ
+    ordem : INTEGER
+    tentativa : INTEGER
+    resultado : TEXT
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "atendimentos" as atendimentos {
+    * id : UUID <<PK>>
+    --
+    chamada_id : TEXT
+    canal_id : TEXT
+    inicio : TIMESTAMPTZ
+    fim : TIMESTAMPTZ
+    status : TEXT
+    descricao : TEXT
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "encaminhamentos" as encaminhamentos {
+    * id : UUID <<PK>>
+    --
+    atendimento_id : TEXT
+    data_hora : TIMESTAMPTZ
+    destino : TEXT
+    motivo : TEXT
+    status : TEXT
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+
+  entity "avaliacoes_atendimento" as avaliacoes {
+    * id : UUID <<PK>>
+    --
+    atendimento_id : TEXT
+    nota : INTEGER
+    comentario : TEXT
+    data_hora : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN
+  }
+}
+
+unidades ||--o{ guiches : possui
+unidades ||--o{ filas : disponibiliza
+
+servicos ||--o{ filas : atende
+servicos ||--o{ senhas : classifica
+servicos ||--o{ triagens : orienta
+
+filas ||--o{ senhas : contém
+
+senhas ||--o{ chamadas : recebe
+guiches ||--o{ chamadas : executa
+unidades ||--o{ chamadas : atende
+
+chamadas ||--o| atendimentos : origina
+canais ||--o{ atendimentos : utiliza
+
+atendimentos ||--o{ encaminhamentos : gera
+atendimentos ||--o| avaliacoes : recebe
+
+triagens ||--o| senhas : determina
+
+note right of senhas
+A senha representa a posição
+operacional do cidadão na fila.
+
+O status deve refletir o ciclo
+de vida definido no modelo
+de estados do DOM-ATE.
+
+A referência da triagem fica
+aqui: triagem_id. Não existe
+senha_id em triagens.
+end note
+
+note right of triagens
+A triagem pode não gerar senha.
+Quando não há fila, o atendimento
+segue direto.
+
+prioridade = prioridade atribuída
+pela triagem.
+end note
+
+note right of chamadas
+tentativa = número sequencial
+da chamada da mesma senha.
+
+A rechamada não tem entidade
+própria: é o valor da tentativa.
+
+unidade_id e operador identificam
+a unidade e o responsável pela
+chamada.
+end note
+
+note right of atendimentos
+O atendimento pode ser:
+
+- presencial
+- online
+
+A identificação do cidadão não
+deve ser duplicada nesta tabela.
+Referências externas devem usar
+os identificadores dos domínios
+responsáveis pelos cadastros.
+end note
+
+note bottom of encaminhamentos
+O destino pode representar outro
+domínio, unidade, serviço ou fluxo
+especializado.
+
+A responsabilidade funcional do
+serviço encaminhado permanece
+no domínio de destino.
+end note
+
+note bottom of unidades
+Fronteira organizacional do
+atendimento presencial.
+
+Uma unidade pode possuir
+múltiplos guichês e filas.
+
+max_rechamadas é o limite
+parametrizável de rechamadas.
+end note
+
+note as NCHECK
+|<b>Restrições CHECK aprovadas</b>|
+|
+| senhas.prioridade >= 1 |
+| triagens.prioridade >= 1 |
+| servicos.prioridade >= 1 |
+| chamadas.tentativa >= 1 |
+| unidades.max_rechamadas >= 0 |
+| atendimentos.fim >= atendimentos.inicio |
+|
+| <b>Unicidades não impostas</b>|
+|
+| UNIQUE (unidade_id, numero)|
+| UNIQUE (fila_id, numero)|
+|
+| Pendentes da semântica funcional:|
+| não definir como restrição física|
+| antes de registrar a regra.|
+end note
+
+
+@enduml
+```
