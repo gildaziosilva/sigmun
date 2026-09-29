@@ -108,15 +108,24 @@ As oito associações abaixo permanecem **candidatas**, não ownership tecnicame
 
 > **Nota (2026-09-29):** `MOD-ASS` deixou de ser scaffolding — o módulo `sigmun_assistencia_social` foi implementado (commit `33d53da`, auditado em 2026-09-29) e passou a constar como *Implementação identificada*. A **correspondência permanece candidata** porque a auditoria validou a existência e o escopo do módulo, e não o vínculo de ownership com o conjunto de artefatos de `DOM-ASS`, que segue com os documentos `001`–`026` em esboço. A promoção a confirmada exige a conciliação do escopo documental.
 
+> **Nota (2026-09-29, atualizada):** `MOD-TEL` e `MOD-IMO` deixaram de ser scaffolding — os módulos `sigmun_territorial` e `sigmun_cadastro_imobiliario` foram implementados na Fase IX.2. A **correspondência foi promovida a confirmada** nesta data: os artefatos `DOM-TEL/001`–`026` e `DOM-IMO/001`–`026` foram detalhados a partir da implementação (OpenAPI, modelos ORM, casos de uso e testes) e podem ser reconferidos por `python scripts/gerar_artefatos_territoriais.py --verificar`. A promoção cobre o **vínculo de ownership e escopo documental**; não atesta prontidão para produção, pois permanecem as pendências de segurança PB-01 a PB-04 registradas no artefato 021 de cada domínio.
+
+> **Nota (2026-09-29, DOM-GEO e DOM-OBR):** `MOD-GEO` e `MOD-OBR` deixaram de ser scaffolding — o módulo `sigmun_geoinformacao` foi criado do zero (Mapas SIG: camadas, mapas, composição, elementos geoespaciais e serviços) e o `sigmun_obras`, antes apenas scaffolding, foi implementado (acompanhamento físico-financeiro de obras públicas). A maturidade passa a *Implementação identificada* e a primeira correspondência de `DOM-GEO` é registrada nesta data.
+>
+> **Nota (2026-09-29, promoção de MOD-GEO e MOD-OBR):** com a conciliação do escopo documental, **as duas correspondências foram promovidas de *candidata* para *confirmada*** nesta data. Os artefatos `DOM-GEO/001`–`026` e `DOM-OBR/001`–`026` foram detalhados a partir da implementação (OpenAPI, modelos ORM, casos de uso e testes) pelo mesmo gerador dos demais domínios territoriais e podem ser reconferidos por `python scripts/gerar_artefatos_territoriais.py --verificar` (104 artefatos no escopo dos quatro domínios, 0 desatualizados). Assim como em `DOM-TEL` e `DOM-IMO`, a promoção cobre o **vínculo de ownership e escopo documental** e **não atesta prontidão para produção**: permanecem as pendências de segurança PB-01 a PB-04 registradas no artefato 021 de cada domínio (rotas de `/api/v1/geo` e `/api/v1/obr` sem autenticação, autorização por papel e autorização de destino; `created_by` não derivado de sessão autenticada). Não há, até esta data, aprovação de código MOD.
+
 | Domínio candidato | Módulo de aplicação | MOD proposto | Maturidade técnica | Correspondência |
 | --- | --- | --- | --- | --- |
 | [DOM-ASS](../DOM-ASS/) | [sigmun_assistencia_social](../../src/modules/sigmun_assistencia_social/) | `MOD-ASS` | Implementação identificada | Candidata; validar escopo |
 | [DOM-EDU](../DOM-EDU/) | [sigmun_educacao](../../src/modules/sigmun_educacao/) | `MOD-EDU` | Preparado | Candidata; validar escopo |
 | [DOM-FRO](../DOM-FRO/) | [sigmun_frotas](../../src/modules/sigmun_frotas/) | `MOD-FRO` | Preparado | Candidata; validar escopo |
-| [DOM-OBR](../DOM-OBR/) | [sigmun_obras](../../src/modules/sigmun_obras/) | `MOD-OBR` | Preparado | Candidata; validar escopo |
+| [DOM-GEO](../DOM-GEO/) | [sigmun_geoinformacao](../../src/modules/sigmun_geoinformacao/) | `MOD-GEO` | Implementada e validada | Confirmada (2026-09-29) |
+| [DOM-IMO](../DOM-IMO/) | [sigmun_cadastro_imobiliario](../../src/modules/sigmun_cadastro_imobiliario/) | `MOD-IMO` | Implementada e validada | Confirmada (2026-09-29) |
+| [DOM-OBR](../DOM-OBR/) | [sigmun_obras](../../src/modules/sigmun_obras/) | `MOD-OBR` | Implementada e validada | Confirmada (2026-09-29) |
 | [DOM-OUV](../DOM-OUV/) | [sigmun_ouvidoria](../../src/modules/sigmun_ouvidoria/) | `MOD-OUV` | Preparado | Candidata; validar escopo |
 | [DOM-PLA](../DOM-PLA/) | [sigmun_planejamento](../../src/modules/sigmun_planejamento/) | `MOD-PLA` | Preparado | Candidata; validar escopo |
 | [DOM-SAU](../DOM-SAU/) | [sigmun_saude](../../src/modules/sigmun_saude/) | `MOD-SAU` | Preparado | Candidata; validar escopo |
+| [DOM-TEL](../DOM-TEL/) | [sigmun_territorial](../../src/modules/sigmun_territorial/) | `MOD-TEL` | Implementada e validada | Confirmada (2026-09-29) |
 | [DOM-TRI](../DOM-TRI/) | [sigmun_tributos](../../src/modules/sigmun_tributos/) | `MOD-TRI` | Preparado | Candidata; validar escopo |
 
 ### 5.3 Estruturas sem correspondência determinada

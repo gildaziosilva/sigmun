@@ -456,7 +456,7 @@ A ordem interna dos domínios poderá ser ajustada por ADR conforme dependência
 
 # 7. Onda 4 - Domínios Finalísticos e Territoriais
 
-**Status:** ⚪ Planejada
+**Status:** 🟡 Em execução (DOM-SAU, DOM-EDU, DOM-ASS, DOM-TEL e DOM-IMO entregues)
 
 **Objetivo:** implementar os processos diretamente relacionados à prestação de serviços públicos e à gestão territorial.
 

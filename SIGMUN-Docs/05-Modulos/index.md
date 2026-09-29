@@ -38,6 +38,7 @@ Este catálogo cobre os 28 diretórios técnicos existentes. São 9 módulos com
 | [sigmun_almoxarifado](sigmun_almoxarifado/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_assistencia_social](sigmun_assistencia_social/index.md) | [DOM-ASS](../DOM-ASS/index.md) | `MOD-ASS` | Implementação identificada | Candidata; validar escopo |
 | [sigmun_cadastro](sigmun_cadastro/index.md) | [DOM-CUM](../DOM-CUM/index.md) | `MOD-CUM` | Implementação identificada | Confirmada no escopo observado |
+| [sigmun_cadastro_imobiliario](sigmun_cadastro_imobiliario/index.md) | [DOM-IMO](../DOM-IMO/index.md) | `MOD-IMO` | Implementação identificada | Candidata; validar escopo |
 | [sigmun_compras](sigmun_compras/index.md) | [DOM-COM](../DOM-COMPRAS-001/index.md) | `MOD-COMPRAS` | Implementação identificada | Confirmada no escopo observado |
 | [sigmun_contabilidade](sigmun_contabilidade/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_controladoria](sigmun_controladoria/index.md) | Não determinado | Não definido | Preparado | Não determinada |
@@ -47,11 +48,12 @@ Este catálogo cobre os 28 diretórios técnicos existentes. São 9 módulos com
 | [sigmun_frotas](sigmun_frotas/index.md) | [DOM-FRO](../DOM-FRO/index.md) | `MOD-FRO` | Preparado | Candidata; validar escopo |
 | [sigmun_gabinete](sigmun_gabinete/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_gdo](sigmun_gdo/index.md) | [DOM-GDO](../DOM-GDO/index.md) | `MOD-GDO` | Implementação identificada | Confirmada no escopo observado |
+| [sigmun_geoinformacao](sigmun_geoinformacao/index.md) | [DOM-GEO](../DOM-GEO/index.md) | `MOD-GEO` | Implementação identificada | Candidata; validar escopo |
 | [sigmun_idn](sigmun_idn/index.md) | [DOM-IDN](../DOM-IDN/index.md) | `MOD-IDN` | Implementação identificada | Confirmada no escopo observado |
 | [sigmun_int](sigmun_int/index.md) | [DOM-INT](../DOM-INT/index.md) | `MOD-INT` | Implementação identificada | Confirmada no escopo observado |
 | [sigmun_licitacoes](sigmun_licitacoes/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_met](sigmun_met/index.md) | [DOM-MET](../DOM-MET/index.md) | `MOD-MET` | Implementação identificada | Confirmada no escopo observado |
-| [sigmun_obras](sigmun_obras/index.md) | [DOM-OBR](../DOM-OBR/index.md) | `MOD-OBR` | Preparado | Candidata; validar escopo |
+| [sigmun_obras](sigmun_obras/index.md) | [DOM-OBR](../DOM-OBR/index.md) | `MOD-OBR` | Implementação identificada | Candidata; validar escopo |
 | [sigmun_ouvidoria](sigmun_ouvidoria/index.md) | [DOM-OUV](../DOM-OUV/index.md) | `MOD-OUV` | Preparado | Candidata; validar escopo |
 | [sigmun_patrimonio](sigmun_patrimonio/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_planejamento](sigmun_planejamento/index.md) | [DOM-PLA](../DOM-PLA/index.md) | `MOD-PLA` | Preparado | Candidata; validar escopo |
@@ -59,6 +61,7 @@ Este catálogo cobre os 28 diretórios técnicos existentes. São 9 módulos com
 | [sigmun_rh](sigmun_rh/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_saude](sigmun_saude/index.md) | [DOM-SAU](../DOM-SAU/index.md) | `MOD-SAU` | Preparado | Candidata; validar escopo |
 | [sigmun_seg](sigmun_seg/index.md) | [DOM-SEG](../DOM-SEG/index.md) | `MOD-SEG` | Implementação identificada | Confirmada no escopo observado |
+| [sigmun_territorial](sigmun_territorial/index.md) | [DOM-TEL](../DOM-TEL/index.md) | `MOD-TEL` | Implementação identificada | Candidata; validar escopo |
 | [sigmun_transparencia](sigmun_transparencia/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_tributos](sigmun_tributos/index.md) | [DOM-TRI](../DOM-TRI/index.md) | `MOD-TRI` | Preparado | Candidata; validar escopo |
 
