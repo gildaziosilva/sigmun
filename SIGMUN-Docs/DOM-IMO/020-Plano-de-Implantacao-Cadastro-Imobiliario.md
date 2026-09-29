@@ -8,9 +8,9 @@
 
 **Domínio:** Cadastro Imobiliário
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -20,44 +20,88 @@
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
 * `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
-* `000D-MODELO-DE-DOCUMENTO.md`
-* `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
+* `000C-HIERARQUIA-DOCUMENTAL.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
+* `Modelo-Logico.md`
+* `Modelo-Fisico.md`
+* `Dicionario-de-dados.md`
 
 ---
 
 # 1. Finalidade
 
-O **Plano de Implantação – Cadastro Imobiliário** (`DOM-IMO`) tem como finalidade mapear e definir plano de implantação do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Cadastro Imobiliário** (`DOM-IMO`) avance.
-
----
-
-# 2. Escopo e Diretrizes
-
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Cadastro Imobiliário**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+Este artefato define a sequência de implantação do domínio de Cadastro Imobiliário no
+ambiente municipal, incluindo pré-requisitos, carga inicial e validação.
 
 ---
 
-# 3. Versionamento
+# 2. Pré-requisitos
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Item | Requisito |
+| --- | --- |
+| Banco de dados | PostgreSQL 14 ou superior, schemas separados por domínio |
+| Migrações | Alembic com cabeça única na cadeia do projeto |
+| Identidade | DOM-IDN implantado, para emissão de token |
+| Domínio complementar | DOM-TEL implantado previamente, quando aplicável |
+
+---
+
+# 3. Sequência de Implantação
+
+1. Aplicar a migração `20260929_02_dom_imo_models`, que cria o schema `imo`.
+2. Implantar a aplicação, registrando o router sob o prefixo `/api/v1/imo`.
+3. Carregar o seed DEMO para validação funcional (opcional em produção).
+4. Validar as operações por meio do round-trip E2E.
+5. Habilitar o acesso aos usuários autorizados, conforme o modelo de segurança.
+
+---
+
+# 4. Carga Inicial
+
+| Etapa | Responsabilidade |
+| --- | --- |
+| Carga territorial | Registrar divisões e logradouros vigentes |
+| Carga de valores | Elaborar e ativar a planta de valores do exercício |
+| Carga fundiária | Cadastrar lotes, titularidade e geometrias |
+| Carga de avaliações | Apurar o valor venal do exercício corrente |
+
+---
+
+# 5. Validação Pós-Implantação
+
+* As operações do prefixo `/api/v1/imo` devem responder conforme o contrato.
+* A aplicação do seed DEMO deve ser idempotente.
+* A migração deve ser reversível.
+
+---
+
+# 6. Reversão
+
+* A migração remove o schema e suas tabelas.
+* Os dados de produção devem ser exportados antes de qualquer reversão, dado o
+  caráter cadastral das informações.
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-29 | Artefato detailado a partir da implementação verificada do domínio |
 
 ---
 
 **Documento:** 020-Plano-de-Implantacao-Cadastro-Imobiliario.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-29
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_territoriais.py` a partir da
+> implementação em `src/modules/sigmun_cadastro_imobiliario`. Alterações no código devem ser
+> refletidas reexecutando o gerador.
