@@ -1,0 +1,93 @@
+@startuml
+title SIGMUN — Visão Geral do Sistema
+
+' ============================================================
+' SIGMUN — Sistema Integrado de Gestão Municipal
+' Artefato: Visão Geral do Sistema
+' Classificação da Informação: Pública
+' Status: Vigente
+' Responsável: Equipe SIGMUN
+' ============================================================
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+actor "Cidadão" as Cidadao
+actor "Servidor / Agente Público" as Servidor
+actor "Gestor Municipal" as Gestor
+actor "Fornecedor" as Fornecedor
+actor "Administrador" as Admin
+
+package "SIGMUN — Sistema Integrado de Gestão Municipal" as SIGMUN {
+
+    package "Interfaces" {
+        [Portal do Cidadão] as PortalCidadao
+        [Portal do Fornecedor] as PortalFornecedor
+        [Portal Administrativo] as PortalAdmin
+        [Interfaces de Serviço / API] as API
+    }
+
+    package "Domínios de Negócio" {
+        [DOM-IDN\nIdentidade] as IDN
+        [DOM-SEG\nSegurança] as SEG
+        [DOM-DIA\nDiárias] as DIA
+        [DOM-GDO\nGestão Documental] as GDO
+        [DOM-SAU\nSaúde] as SAU
+        [DOM-EDU\nEducação] as EDU
+        [Outros Domínios] as OUTROS
+    }
+
+    package "Plataforma" {
+        [Aplicação / Casos de Uso] as APP
+        database "PostgreSQL" as PG
+        [Redis] as Redis
+        [Workers / Jobs] as Workers
+        [Eventos / Outbox] as Outbox
+    }
+}
+
+Cidadao --> PortalCidadao
+Servidor --> PortalAdmin
+Gestor --> PortalAdmin
+Fornecedor --> PortalFornecedor
+Admin --> PortalAdmin
+
+PortalCidadao --> API
+PortalFornecedor --> API
+PortalAdmin --> API
+
+API --> APP
+
+APP --> IDN
+APP --> SEG
+APP --> DIA
+APP --> GDO
+APP --> SAU
+APP --> EDU
+APP --> OUTROS
+
+IDN --> PG
+SEG --> PG
+DIA --> PG
+GDO --> PG
+SAU --> PG
+EDU --> PG
+OUTROS --> PG
+
+APP --> Redis
+APP --> Outbox
+Outbox --> Workers
+
+note right of SIGMUN
+Transparência por padrão,
+Segurança por princípio e
+Classificação da Informação
+por política.
+
+Aberto sempre que possível,
+restrito sempre que necessário.
+end note
+
+@enduml
