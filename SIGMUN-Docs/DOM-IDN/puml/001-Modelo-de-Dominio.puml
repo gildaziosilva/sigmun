@@ -1,0 +1,354 @@
+@startuml 001-Modelo-de-Dominio
+' =============================================================================
+' SIGMUN — DOM-IDN
+' Arquivo: 001-Modelo-de-Dominio.puml
+' Classificação da Informação: Pública
+' Responsável: Equipe SIGMUN
+' Status da revisão: Vigente
+'
+' Modelo conceitual do domínio de Identidade.
+' Representa os principais conceitos, responsabilidades e relacionamentos
+' do DOM-IDN sem reproduzir o modelo físico do banco de dados.
+' =============================================================================
+
+title SIGMUN — DOM-IDN — Modelo de Domínio
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam wrapWidth 220
+skinparam maxMessageSize 180
+
+package "DOM-IDN — Identidade" {
+
+    class Usuario {
+        +id
+        +username
+        +nome
+        +email
+        +senha_hash
+        +is_active
+        +criado_em
+        +atualizado_em
+        --
+        Representa a identidade do usuário
+        no SIGMUN.
+    }
+
+    class Role {
+        +id
+        +nome
+        +descricao
+        +is_active
+        --
+        Agrupa capacidades de acesso
+        atribuídas a usuários.
+    }
+
+    class Permissao {
+        +id
+        +codigo
+        +nome
+        +descricao
+        --
+        Representa uma capacidade
+        autorizável do sistema.
+    }
+
+    class UsuarioRole {
+        +usuario_id
+        +role_id
+        +atribuido_em
+        --
+        Associação entre usuário e role.
+    }
+
+    class RolePermissao {
+        +role_id
+        +permissao_id
+        --
+        Associação entre role e permissão.
+    }
+
+    class Sessao {
+        +id
+        +usuario_id
+        +token
+        +criado_em
+        +expires_at
+        +is_active
+        --
+        Representa a sessão autenticada.
+        Conceito associado ao mecanismo
+        stateful legado.
+    }
+
+    class Auditoria {
+        +id
+        +usuario_id
+        +acao
+        +recurso
+        +recurso_id
+        +data_hora
+        +ip
+        +detalhes
+        --
+        Registra eventos relevantes
+        de segurança e identidade.
+    }
+
+    class Credencial {
+        +id
+        +usuario_id
+        +tipo
+        +identificador
+        +status
+        +criado_em
+        +atualizado_em
+        --
+        Representa uma credencial vinculada
+        à identidade do usuário.
+    }
+
+    class ContextoIdentidade {
+        +usuario_id
+        +roles
+        +permissoes
+        +authenticated
+        --
+        Contexto derivado utilizado pelos
+        mecanismos de autorização.
+    }
+}
+
+package "Conceitos de Autorização" {
+
+    enum TipoCredencial {
+        SENHA
+        TOKEN
+        OUTRA
+    }
+
+    enum StatusCredencial {
+        ATIVA
+        REVOGADA
+        EXPIRADA
+    }
+
+    enum StatusSessao {
+        ATIVA
+        ENCERRADA
+        EXPIRADA
+    }
+}
+
+' =============================================================================
+' Identidade
+' =============================================================================
+
+Usuario "1" -- "0..*" UsuarioRole : possui >
+Role "1" -- "0..*" UsuarioRole : atribuída por >
+
+Role "1" -- "0..*" RolePermissao : contém >
+Permissao "1" -- "0..*" RolePermissao : disponibilizada por >
+
+Usuario "1" -- "0..*" Sessao : inicia >
+Usuario "1" -- "0..*" Auditoria : origina >
+Usuario "1" -- "0..*" Credencial : possui >
+
+Credencial ..> TipoCredencial
+Credencial ..> StatusCredencial
+Sessao ..> StatusSessao
+
+' =============================================================================
+' Contexto de segurança
+' =============================================================================
+
+UsuarioRole ..> ContextoIdentidade : compõe
+RolePermissao ..> ContextoIdentidade : compõe
+Usuario --> ContextoIdentidade : gera contexto autenticado
+
+ContextoIdentidade --> Usuario : identidade
+ContextoIdentidade --> Role : roles
+ContextoIdentidade --> Permissao : permissões
+
+' =============================================================================
+' Regras conceituais
+' =============================================================================
+
+note as N1
+Identidade
+  O Usuário é a raiz conceitual da
+  identidade dentro do DOM-IDN.
+end note
+
+note as N2
+Autorização
+  Usuário → Role → Permissão
+  A autorização é derivada das roles
+  atribuídas ao usuário e das permissões
+  associadas a cada role.
+end note
+
+note as N3
+Sessão
+  Sessão representa o mecanismo stateful
+  legado de autenticação.
+  A arquitetura está sendo preparada
+  para utilização de JWT Bearer, sem
+  confundir token JWT com entidade
+  persistida de sessão.
+end note
+
+note as N4
+Auditoria
+  Eventos relacionados à identidade,
+  autenticação, autorização e alterações
+  de segurança devem possuir rastreabilidade.
+end note
+  N1 .. Usuario
+  N2 .. ContextoIdentidade
+  N3 .. Sessao
+  N4 .. Auditoria
+  legend bottom
+  SIGMUN — Sistema Integrado de Gestão Municipal
+  DOM-IDN — Domínio de Identidade
+  Classificação da Informação: Pública
+  Responsável: Equipe SIGMUN
+  Status da revisão: Vigente
+  "Transparência por padrão, Segurança por princípio
+  e Classificação da Informação por política."
+  "Aberto sempre que possível, restrito sempre que necessário."
+  endlegend
+  @enduml
+  O Usuário é a raiz conceitual da
+  identidade dentro do DOM-IDN.
+end note
+
+note as N2
+Autorização
+  Usuário → Role → Permissão
+  A autorização é derivada das roles
+  atribuídas ao usuário e das permissões
+  associadas a cada role.
+  end note
+  note as N3
+  Sessão
+  Sessão representa o mecanismo stateful
+  legado de autenticação.
+  A arquitetura está sendo preparada
+  para utilização de JWT Bearer, sem
+  confundir token JWT com entidade
+  persistida de sessão.
+  end note
+  note as N4
+  Auditoria
+  Eventos relacionados à identidade,
+  autenticação, autorização e alterações
+  de segurança devem possuir rastreabilidade.
+  end note
+  N1 .. Usuario
+  N2 .. ContextoIdentidade
+  N3 .. Sessao
+  N4 .. Auditoria
+  legend bottom
+  SIGMUN — Sistema Integrado de Gestão Municipal
+  DOM-IDN — Domínio de Identidade
+  Classificação da Informação: Pública
+  Responsável: Equipe SIGMUN
+  Status da revisão: Vigente
+  "Transparência por padrão, Segurança por princípio
+  e Classificação da Informação por política."
+  "Aberto sempre que possível, restrito sempre que necessário."
+  endlegend
+  @enduml
+  Usuário → Role → Permissão
+  A autorização é derivada das roles
+  atribuídas ao usuário e das permissões
+  associadas a cada role.
+end note
+
+note as N3
+Sessão
+  Sessão representa o mecanismo stateful
+  legado de autenticação.
+  A arquitetura está sendo preparada
+  para utilização de JWT Bearer, sem
+  confundir token JWT com entidade
+  persistida de sessão.
+  end note
+  note as N4
+  Auditoria
+  Eventos relacionados à identidade,
+  autenticação, autorização e alterações
+  de segurança devem possuir rastreabilidade.
+  end note
+  N1 .. Usuario
+  N2 .. ContextoIdentidade
+  N3 .. Sessao
+  N4 .. Auditoria
+  legend bottom
+  SIGMUN — Sistema Integrado de Gestão Municipal
+  DOM-IDN — Domínio de Identidade
+  Classificação da Informação: Pública
+  Responsável: Equipe SIGMUN
+  Status da revisão: Vigente
+  "Transparência por padrão, Segurança por princípio
+  e Classificação da Informação por política."
+  "Aberto sempre que possível, restrito sempre que necessário."
+  endlegend
+  @enduml
+  Sessão representa o mecanismo stateful
+  legado de autenticação.
+  A arquitetura está sendo preparada
+  para utilização de JWT Bearer, sem
+  confundir token JWT com entidade
+  persistida de sessão.
+end note
+
+note as N4
+Auditoria
+  Eventos relacionados à identidade,
+  autenticação, autorização e alterações
+  de segurança devem possuir rastreabilidade.
+  end note
+  N1 .. Usuario
+  N2 .. ContextoIdentidade
+  N3 .. Sessao
+  N4 .. Auditoria
+  legend bottom
+  SIGMUN — Sistema Integrado de Gestão Municipal
+  DOM-IDN — Domínio de Identidade
+  Classificação da Informação: Pública
+  Responsável: Equipe SIGMUN
+  Status da revisão: Vigente
+  "Transparência por padrão, Segurança por princípio
+  e Classificação da Informação por política."
+  "Aberto sempre que possível, restrito sempre que necessário."
+  endlegend
+  @enduml
+  Eventos relacionados à identidade,
+  autenticação, autorização e alterações
+  de segurança devem possuir rastreabilidade.
+end note
+
+N1 .. Usuario
+N2 .. ContextoIdentidade
+N3 .. Sessao
+N4 .. Auditoria
+
+legend bottom
+SIGMUN — Sistema Integrado de Gestão Municipal
+DOM-IDN — Domínio de Identidade
+
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+
+"Transparência por padrão, Segurança por princípio
+e Classificação da Informação por política."
+
+"Aberto sempre que possível, restrito sempre que necessário."
+endlegend
+
+@enduml
