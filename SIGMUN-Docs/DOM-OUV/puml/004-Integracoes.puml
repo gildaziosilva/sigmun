@@ -1,0 +1,278 @@
+```plantuml id="z4n6qx"
+@startuml
+title DOM-OUV — Integrações
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+legend
+SIGMUN
+DOM-OUV — Ouvidoria Municipal
+Manifestações, Denúncias e LAI
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "Canais Externos e Municipais" {
+
+  component "Ouvidoria\nPresencial" as Presencial
+
+  component "Portal da\nOuvidoria" as Portal
+
+  component "FalaBR /\ne-OUV" as FalaBR
+
+  component "Protocolo\nDigital" as Protocolo
+
+  component "E-mail /\nOutros Canais" as Outros
+}
+
+package "DOM-OUV" {
+
+  component "API DOM-OUV" as API
+
+  component "Recepção de\nManifestações" as Recepcao
+
+  component "Triagem e\nClassificação" as Triagem
+
+  component "Gestão de\nManifestações" as Manifestacoes
+
+  component "Gestão de\nDenúncias" as Denuncias
+
+  component "Gestão de\nPedidos LAI" as LAI
+
+  component "Encaminhamento" as Encaminhamento
+
+  component "Tratamento /\nApuração" as Tratamento
+
+  component "Respostas" as Respostas
+
+  component "Prazos e\nSLA" as Prazos
+
+  component "Recursos LAI" as Recursos
+
+  component "Avaliação" as Avaliacao
+}
+
+package "Serviços Transversais SIGMUN" {
+
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+
+  component "DOM-GDO\nGestão Documental" as GDO
+
+  component "Auditoria" as AUD
+
+  component "Notificações" as NOT
+
+  component "Classificação da\nInformação" as CLASS
+}
+
+package "Administração Municipal" {
+
+  component "Órgãos e\nUnidades" as Unidades
+
+  component "Domínios\nEspecializados" as Dominios
+}
+
+database "PostgreSQL\nschema ouv" as DB
+
+
+' =========================================================
+' CANAIS
+' =========================================================
+
+Presencial --> API : manifestação
+
+Portal --> API : manifestação
+
+FalaBR --> API : manifestação /\npedido LAI
+
+Protocolo --> API : protocolo
+
+Outros --> API : manifestação
+
+
+' =========================================================
+' FLUXO INTERNO
+' =========================================================
+
+API --> Recepcao
+
+Recepcao --> Triagem
+
+Triagem --> Manifestacoes : manifestação geral
+
+Triagem --> Denuncias : denúncia
+
+Triagem --> LAI : pedido LAI
+
+Manifestacoes --> Encaminhamento
+
+Denuncias --> Encaminhamento
+
+LAI --> Encaminhamento
+
+Encaminhamento --> Tratamento
+
+Tratamento --> Respostas
+
+LAI --> Recursos
+
+Recursos --> Respostas
+
+Prazos --> Manifestacoes
+Prazos --> Denuncias
+Prazos --> LAI
+Prazos --> Recursos
+
+Respostas --> Avaliacao
+
+
+' =========================================================
+' SERVIÇOS TRANSVERSAIS
+' =========================================================
+
+API --> IDN : autenticação /\nautorização
+
+API --> AUD : eventos
+
+Recepcao --> AUD : registro
+
+Triagem --> AUD : classificação
+
+Encaminhamento --> AUD : encaminhamento
+
+Tratamento --> AUD : tratamento
+
+Respostas --> AUD : resposta
+
+Recursos --> AUD : recurso
+
+API --> GDO : documentos /\nanexos
+
+Denuncias --> CLASS : classificação de acesso
+
+LAI --> CLASS : restrição de acesso
+
+Respostas --> CLASS : classificação
+
+API --> NOT : notificações
+
+Prazos --> NOT : alertas de prazo
+
+
+' =========================================================
+' ADMINISTRAÇÃO MUNICIPAL
+' =========================================================
+
+Encaminhamento --> Unidades : encaminhamento para órgão/unidade
+
+Tratamento --> Unidades : solicitação de providência
+
+Tratamento --> Dominios : demanda especializada
+
+Manifestacoes --> Dominios : matéria especializada
+
+Denuncias --> Dominios : apuração especializada
+
+LAI --> Dominios : localização da informação
+
+
+' =========================================================
+' PERSISTÊNCIA
+' =========================================================
+
+Recepcao --> DB
+
+Triagem --> DB
+
+Manifestacoes --> DB
+
+Denuncias --> DB
+
+LAI --> DB
+
+Encaminhamento --> DB
+
+Tratamento --> DB
+
+Respostas --> DB
+
+Prazos --> DB
+
+Recursos --> DB
+
+Avaliacao --> DB
+
+
+' =========================================================
+' NOTAS ARQUITETURAIS
+' =========================================================
+
+note right of FalaBR
+Integração externa.
+
+O DOM-OUV deve preservar o
+protocolo e o identificador
+externo quando disponíveis.
+
+A integração não deve tornar
+o FalaBR/e-OUV parte do
+modelo interno do domínio.
+end note
+
+note right of Denuncias
+Denúncias podem exigir:
+
+- proteção de identidade
+- restrição de acesso
+- classificação documental
+- encaminhamento para apuração
+- trilha de auditoria
+end note
+
+note right of LAI
+O fluxo LAI possui regras
+próprias de:
+
+- prazo
+- resposta
+- restrição de acesso
+- recurso
+- histórico processual
+end note
+
+note bottom of GDO
+Documentos, anexos, evidências,
+respostas documentais e peças
+administrativas devem utilizar
+o DOM-GDO quando aplicável.
+
+O DOM-OUV não deve duplicar
+a gestão documental.
+end note
+
+note bottom of AUD
+Eventos relevantes devem gerar
+trilha de auditoria.
+
+A auditoria deve preservar
+quem executou a operação,
+quando ocorreu e qual entidade
+foi afetada.
+end note
+
+note bottom of CLASS
+A classificação da informação
+é especialmente relevante para:
+
+- denúncias
+- identificação do manifestante
+- documentos de apuração
+- pedidos LAI
+- respostas com restrição
+end note
+
+@enduml
+```
+

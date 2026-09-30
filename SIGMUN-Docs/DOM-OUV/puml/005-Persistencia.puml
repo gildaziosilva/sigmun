@@ -1,0 +1,293 @@
+```plantuml id="v8m3kx"
+@startuml
+title DOM-OUV — Persistência
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+legend
+SIGMUN
+DOM-OUV — Ouvidoria Municipal
+Manifestações, Denúncias e LAI
+Persistência do Domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "PostgreSQL — schema ouv" {
+
+  entity "unidades_ouvidoria" as unidades {
+    * id : UUID <<PK>>
+    --
+    codigo : VARCHAR
+    nome : VARCHAR
+    ativo : BOOLEAN
+  }
+
+  entity "canais_ouvidoria" as canais {
+    * id : UUID <<PK>>
+    --
+    codigo : VARCHAR
+    nome : VARCHAR
+    tipo : VARCHAR
+    ativo : BOOLEAN
+  }
+
+  entity "classificacoes_manifestacao" as classificacoes {
+    * id : UUID <<PK>>
+    --
+    codigo : VARCHAR
+    nome : VARCHAR
+    descricao : TEXT
+    ativo : BOOLEAN
+  }
+
+  entity "manifestacoes" as manifestacoes {
+    * id : UUID <<PK>>
+    --
+    unidade_ouvidoria_id : UUID <<FK>>
+    canal_id : UUID <<FK>>
+    classificacao_id : UUID <<FK>>
+    protocolo : VARCHAR
+    data_hora : TIMESTAMP
+    tipo : VARCHAR
+    assunto : VARCHAR
+    descricao : TEXT
+    origem : VARCHAR
+    sigilosa : BOOLEAN
+    status : VARCHAR
+  }
+
+  entity "denuncias" as denuncias {
+    * id : UUID <<PK>>
+    --
+    manifestacao_id : UUID <<FK>>
+    data_hora : TIMESTAMP
+    fato_narrado : TEXT
+    local_fato : VARCHAR
+    envolvidos : TEXT
+    prioridade : INTEGER
+    status_apuracao : VARCHAR
+  }
+
+  entity "pedidos_lai" as pedidos_lai {
+    * id : UUID <<PK>>
+    --
+    manifestacao_id : UUID <<FK>>
+    data_hora : TIMESTAMP
+    informacao_solicitada : TEXT
+    orgao_destino : VARCHAR
+    fundamento_restricao : TEXT
+    status : VARCHAR
+  }
+
+  entity "encaminhamentos_ouvidoria" as encaminhamentos {
+    * id : UUID <<PK>>
+    --
+    manifestacao_id : UUID <<FK>>
+    data_hora : TIMESTAMP
+    orgao_destino : VARCHAR
+    unidade_destino : VARCHAR
+    motivo : TEXT
+    status : VARCHAR
+  }
+
+  entity "prazos_ouvidoria" as prazos {
+    * id : UUID <<PK>>
+    --
+    manifestacao_id : UUID <<FK>>
+    tipo : VARCHAR
+    inicio : TIMESTAMP
+    vencimento : TIMESTAMP
+    prorrogado : BOOLEAN
+    data_prorrogacao : TIMESTAMP
+  }
+
+  entity "tratamentos_manifestacao" as tratamentos {
+    * id : UUID <<PK>>
+    --
+    manifestacao_id : UUID <<FK>>
+    data_hora : TIMESTAMP
+    descricao : TEXT
+    responsavel_ref : UUID
+    resultado : VARCHAR
+  }
+
+  entity "respostas_ouvidoria" as respostas {
+    * id : UUID <<PK>>
+    --
+    manifestacao_id : UUID <<FK>>
+    data_hora : TIMESTAMP
+    tipo : VARCHAR
+    conteudo : TEXT
+    publicavel : BOOLEAN
+  }
+
+  entity "recursos_lai" as recursos {
+    * id : UUID <<PK>>
+    --
+    pedido_lai_id : UUID <<FK>>
+    data_hora : TIMESTAMP
+    instancia : VARCHAR
+    fundamento : TEXT
+    decisao : VARCHAR
+    data_decisao : TIMESTAMP
+  }
+
+  entity "avaliacoes_ouvidoria" as avaliacoes {
+    * id : UUID <<PK>>
+    --
+    manifestacao_id : UUID <<FK>>
+    data_hora : TIMESTAMP
+    nota : INTEGER
+    comentario : TEXT
+  }
+}
+
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+unidades ||--o{ manifestacoes : recebe
+
+canais ||--o{ manifestacoes : origina
+
+classificacoes ||--o{ manifestacoes : classifica
+
+manifestacoes ||--o| denuncias : especializa
+
+manifestacoes ||--o| pedidos_lai : especializa
+
+manifestacoes ||--o{ encaminhamentos : gera
+
+manifestacoes ||--o{ prazos : controla
+
+manifestacoes ||--o{ tratamentos : recebe
+
+manifestacoes ||--o{ respostas : recebe
+
+manifestacoes ||--o| avaliacoes : recebe
+
+pedidos_lai ||--o{ recursos : gera
+
+
+' =========================================================
+' REGRAS DE PERSISTÊNCIA
+' =========================================================
+
+note right of manifestacoes
+Entidade central do DOM-OUV.
+
+O protocolo deve possuir
+identificação única no contexto
+definido pelo domínio.
+
+A identificação do cidadão,
+quando existente, deve referenciar
+cadastros externos ao domínio,
+evitando duplicação cadastral.
+end note
+
+note right of denuncias
+Pode conter dados sensíveis ou
+informações de acesso restrito.
+
+A política de classificação
+da informação deve ser aplicada
+também aos documentos relacionados.
+end note
+
+note right of pedidos_lai
+O pedido LAI permanece vinculado
+à manifestação/protocolo original.
+
+Recursos não devem criar um
+novo pedido independente.
+end note
+
+note right of encaminhamentos
+Cada encaminhamento deve preservar
+o histórico da movimentação.
+
+Não sobrescrever encaminhamentos
+anteriores.
+end note
+
+note right of prazos
+Permite controlar diferentes
+tipos de prazo do processo.
+
+Exemplos:
+- tratamento
+- resposta
+- complementação
+- recurso
+end note
+
+note right of tratamentos
+Representa o histórico operacional
+do tratamento.
+
+Novos eventos devem gerar
+novos registros, evitando
+a perda do histórico anterior.
+end note
+
+note right of respostas
+A resposta pode ser pública,
+parcialmente restrita ou restrita.
+
+A classificação efetiva deve ser
+determinada pelas políticas
+aplicáveis ao conteúdo.
+end note
+
+note right of recursos
+Exclusivo do fluxo LAI.
+
+Cada recurso mantém sua
+vinculação com o pedido original
+e registra a instância responsável.
+end note
+
+note bottom of avaliacoes
+Avaliação do atendimento.
+
+Não altera o histórico da
+manifestação nem substitui
+a resposta administrativa.
+end note
+
+
+' =========================================================
+' INTEGRAÇÕES DE PERSISTÊNCIA
+' =========================================================
+
+note bottom
+Integrações externas à persistência
+principal do DOM-OUV:
+
+DOM-IDN
+  -> identificação, autenticação e autorização
+
+DOM-GDO
+  -> documentos, anexos e peças documentais
+
+Auditoria
+  -> eventos e trilha de rastreabilidade
+
+Classificação da Informação
+  -> regras de acesso e proteção
+
+Domínios especializados
+  -> referências às unidades e matérias
+     sob responsabilidade de cada domínio
+end note
+
+@enduml
+```
+
