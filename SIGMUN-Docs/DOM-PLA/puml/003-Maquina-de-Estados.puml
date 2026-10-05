@@ -1,0 +1,45 @@
+@startuml
+title DOM-PLA — Máquina de Estados
+
+legend
+SIGMUN
+DOM-PLA — Planejamento Governamental
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Planejado : projeto aprovado
+Planejado --> EmExecucao : iniciar execução
+EmExecucao --> Suspenso : suspender execução
+Suspenso --> EmExecucao : retomar execução
+EmExecucao --> Concluido : encerramento formal (RN-PLA-003)
+EmExecucao --> Cancelado : cancelar projeto
+Concluido --> [*]
+Cancelado --> [*]
+state Planejado
+state EmExecucao
+state Suspenso
+state Concluido
+state Cancelado
+
+note right of EmExecucao
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Plano, programas e metas percorrem
+RASCUNHO -> EM_APROVACAO -> APROVADO
+-> EM_EXECUCAO -> CONCLUIDO.
+end note
+
+note bottom of Concluido
+O resultado é convertido em valor de
+indicador para o DOM-IND (RN-PLA-004)
+e em execução orçamentária para o
+DOM-ORC.
+end note
+
+@enduml

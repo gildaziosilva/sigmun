@@ -1,0 +1,44 @@
+@startuml
+title DOM-DEC — Processos
+
+legend
+SIGMUN
+DOM-DEC — Desenvolvimento Econômico
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Propor o programa de desenvolvimento;
+:Aprovar e publicar o programa;
+:Cadastrar o empreendimento;
+:Avaliar a adesão ao programa;
+:Registrar o projeto de investimento;
+:Acompanhar investimento e empregos;
+:Aferir os resultados;
+:Encerrar ou renovar o programa;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de ProgramaDesenvolvimento.
+
+Modelo proposto: capacidades previstas: 5.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-DEC-001
+- RN-DEC-002
+- RN-DEC-003
+- RN-DEC-004
+end note
+
+@enduml

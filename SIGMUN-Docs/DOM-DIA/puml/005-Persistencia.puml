@@ -1,0 +1,161 @@
+@startuml
+title DOM-DIA — Persistência
+
+legend
+SIGMUN
+DOM-DIA — Diárias e Viagens
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema dia" {
+
+  entity "viagens" as Tviagens {
+    id : UUID <<PK>>
+    servidor_id : TEXT <<NN>>
+    dota_id : TEXT <<NN>>
+    motivo : TEXT <<NN>>
+    cargo_ocupado : TEXT <<NN>>
+    unidade_origem_id : TEXT <<NN>>
+    unidade_destino_id : TEXT <<NN>>
+    data_inicio : TIMESTAMPTZ
+    data_fim : TIMESTAMPTZ
+    destino : TEXT <<NN>>
+    is_antecipacao : BOOLEAN <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "diarias" as Tdiarias {
+    id : UUID <<PK>>
+    viagem_id : TEXT <<NN>>
+    servidor_id : TEXT <<NN>>
+    dota_id : TEXT <<NN>>
+    categoria : TEXT <<NN>>
+    descricao : TEXT <<NN>>
+    data_inicio : TIMESTAMPTZ
+    data_fim : TIMESTAMPTZ
+    valor_diaria : FLOAT <<NN>>
+    valor_total : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    data_solicitacao : TIMESTAMPTZ <<NN>>
+    data_autorizacao : TIMESTAMPTZ
+    data_calculo : TIMESTAMPTZ
+    data_concessao : TIMESTAMPTZ
+    data_inicio_prestacao : TIMESTAMPTZ
+    data_fim_prestacao : TIMESTAMPTZ
+    data_pagamento : TIMESTAMPTZ
+    data_aprovacao : TIMESTAMPTZ
+    data_glosa : TIMESTAMPTZ
+    data_restituicao : TIMESTAMPTZ
+    data_cancelamento : TIMESTAMPTZ
+    motivo_cancelamento : TEXT <<NN>>
+    motivo_glosa : TEXT <<NN>>
+    valor_glosado : FLOAT <<NN>>
+    documento_prestacao_id : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT <<NN>>
+    updated_by : TEXT <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "prestacoes_contas" as Tprestacoes_contas {
+    id : UUID <<PK>>
+    diaria_id : TEXT <<NN>>
+    servidor_id : TEXT <<NN>>
+    dota_id : TEXT <<NN>>
+    data_emissao : TIMESTAMPTZ <<NN>>
+    data_vencimento : TIMESTAMPTZ
+    documento_id : TEXT <<NN>>
+    valor_previsto : FLOAT <<NN>>
+    valor_apresentado : FLOAT <<NN>>
+    valor_glosado : FLOAT <<NN>>
+    valor_liquido : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    motivo_glosa : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "eventos_diarias" as Teventos_diarias {
+    id : UUID <<PK>>
+    diaria_id : TEXT <<NN>>
+    status_anterior : TEXT <<NN>>
+    status_posterior : TEXT <<NN>>
+    usuario_id : TEXT <<NN>>
+    motivo : TEXT <<NN>>
+    data_evento : TIMESTAMPTZ <<NN>>
+    detalhes : TEXT <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tviagens
+ViagemModel
+
+15 colunas mapeadas.
+
+Modelo ORM da tabela `dia.viagens`.
+end note
+
+note right of Tdiarias
+DiariaModel
+
+31 colunas mapeadas.
+
+Modelo ORM da tabela `dia.diarias`.
+end note
+
+note right of Tprestacoes_contas
+PrestacaoContasModel
+
+17 colunas mapeadas.
+
+Modelo ORM da tabela `dia.prestacoes_contas`.
+end note
+
+note right of Teventos_diarias
+EventoDiariaModel
+
+8 colunas mapeadas.
+
+Modelo ORM da tabela `dia.eventos_diarias`.
+end note
+
+note bottom of Tviagens
+|<b>Campos do domínio sem coluna</b>|
+|
+| Viagem:|
+|   data_visita
+|
+| A classificação funcional e os
+| identificadores existem na entidade
+| e são perdidos na persistência.
+end note
+
+note left of Tviagens
+4 tabelas no schema dia.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

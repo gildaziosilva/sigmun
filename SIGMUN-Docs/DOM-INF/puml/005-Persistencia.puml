@@ -1,0 +1,134 @@
+@startuml
+title DOM-INF — Persistência
+
+legend
+SIGMUN
+DOM-INF — Infraestrutura Tecnológica
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema inf" {
+
+  entity "ambientes_infraestrutura" as Tambientes_infraestrutura {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    responsavel : TEXT <<NN>>
+    descricao : TEXT
+    situacao : TEXT <<NN>>
+    ultimo_check : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "recursos_infraestrutura" as Trecursos_infraestrutura {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    ambiente_id : TEXT <<NN>>
+    capacidade : TEXT
+    provedor : TEXT
+    identificador_externo : TEXT
+    situacao : TEXT <<NN>>
+    data_aquisicao : DATE
+    garantia_ate : DATE
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "monitoramentos_infraestrutura" as Tmonitoramentos_infraestrutura {
+    id : UUID <<PK>>
+    recurso_id : TEXT <<NN>>
+    metrica : TEXT <<NN>>
+    valor : FLOAT <<NN>>
+    unidade : TEXT <<NN>>
+    limite : FLOAT
+    status : TEXT <<NN>>
+    coletado_em : TIMESTAMPTZ <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "incidentes_infraestrutura" as Tincidentes_infraestrutura {
+    id : UUID <<PK>>
+    numero : TEXT <<NN>>
+    titulo : TEXT <<NN>>
+    descricao : TEXT
+    recurso_id : TEXT
+    severidade : TEXT <<NN>>
+    aberto_em : TIMESTAMPTZ <<NN>>
+    fechado_em : TIMESTAMPTZ
+    responsavel : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    causa : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+ambientes_infraestrutura ||--o{ recursos_infraestrutura : "ambiente_id"
+recursos_infraestrutura ||--o{ monitoramentos_infraestrutura : "recurso_id"
+recursos_infraestrutura ||--o{ incidentes_infraestrutura : "recurso_id"
+
+note right of Tambientes_infraestrutura
+AmbienteInfraestrutura
+
+12 colunas propostas.
+
+Ambiente de execução por finalidade e criticidade.
+end note
+
+note right of Trecursos_infraestrutura
+RecursoInfraestrutura
+
+15 colunas propostas.
+
+Recurso de computação, armazenamento, rede, banco ou nuvem.
+end note
+
+note right of Tmonitoramentos_infraestrutura
+MonitoramentoInfra
+
+12 colunas propostas.
+
+Métrica coletada do recurso e confrontada com o limite.
+end note
+
+note right of Tincidentes_infraestrutura
+IncidenteInfra
+
+15 colunas propostas.
+
+Incidente operacional com severidade e responsáveis.
+end note
+
+note left of Tambientes_infraestrutura
+4 tabelas propostas no schema inf.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

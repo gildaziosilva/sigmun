@@ -1,0 +1,35 @@
+@startuml
+title DOM-GDO — Processos
+
+legend
+SIGMUN
+DOM-GDO — Gestão Documental
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:TramitarDocumento;
+
+:AssinarDocumento;
+:CriarDocumento;
+:CriarTipoDocumento;
+:AtivarTipoDocumento;
+:InativarTipoDocumento;
+
+:Atualizar ClassificacaoDocumental;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de ClassificacaoDocumental.
+
+Casos de uso no código: 12.
+Entidades do domínio: 9.
+Tabelas mapeadas: 11.
+end note
+
+@enduml

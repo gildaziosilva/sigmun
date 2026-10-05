@@ -1,0 +1,60 @@
+@startuml
+title DOM-INF — Integrações
+
+legend
+SIGMUN
+DOM-INF — Infraestrutura Tecnológica
+Integrações — Troca de dados com outros domínios
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Domínio de Origem" {
+  component "DOM-INF\nInfraestrutura Tecnológica" as ORIGEM
+}
+
+package "Domínios Destino" {
+  component "DOM-SEG\nSegurança da Informação" as DSEG
+  component "DOM-DAD\nDados Corporativos" as DDAD
+  component "DOM-INT\nIntegração e Interoperabilidade" as DINT
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL" as DB
+
+ORIGEM --> DSEG : dados do domínio (prevista)
+ORIGEM --> DDAD : dados do domínio (prevista)
+ORIGEM --> DINT : dados do domínio (prevista)
+ORIGEM --> IDN : autenticação
+ORIGEM --> GDO : anexos e documentos
+ORIGEM --> MET : metadados
+ORIGEM --> AUD : trilha de auditoria
+ORIGEM --> DB : persistência própria
+
+note right of ORIGEM
+DOM-INF como origem da integração.
+
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Contratos previstos em /api/v1/inf.
+Entidade central: RecursoInfraestrutura.
+end note
+
+note bottom of AUD
+Todo evento com efeito no orçamento
+ou no patrimônio é registrado com
+autor, data e valor antes e depois.
+end note
+
+@enduml

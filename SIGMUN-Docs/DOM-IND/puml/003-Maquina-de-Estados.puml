@@ -1,0 +1,43 @@
+@startuml
+title DOM-IND — Máquina de Estados
+
+legend
+SIGMUN
+DOM-IND — Indicadores e Desempenho
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Rascunho : definição do indicador
+Rascunho --> EmValidacao : validar fonte e fórmula (RN-IND-001)
+EmValidacao --> Publicado : publicar após validação (RN-IND-003)
+EmValidacao --> Rascunho : devolver com ressalvas
+Publicado --> EmValidacao : programa de revisão
+Publicado --> Descontinuado : descontinuar com justificativa
+Descontinuado --> [*]
+state Rascunho
+state EmValidacao
+state Publicado
+state Descontinuado
+
+note right of EmValidacao
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+O indicador é domínio mestre (mapa de
+domínios) e referencia a fonte no
+DOM-DAD por identificador (RN-IND-004).
+end note
+
+note bottom of Publicado
+Cada coleta possui um responsável e
+entra no painel somente após validação
+(RN-IND-003); a meta do exercício é
+anual (RN-IND-002).
+end note
+
+@enduml

@@ -1,0 +1,69 @@
+@startuml
+title SIGMUN — Integrações
+
+legend
+SIGMUN
+SIGMUN — Arquitetura Corporativa
+Integrações — Troca de dados entre componentes
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Domínios" {
+  component "Domínio de origem\nsrc/modules/sigmun_*" as ORIGEM
+  component "Domínio consumidor\nsrc/modules/sigmun_*" as DESTINO
+}
+
+package "Serviços Transversais SIGMUN" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados Corporativos" as MET
+  component "DOM-SEG\nSegurança da Informação" as SEG
+  component "DOM-INT\nInteroperabilidade" as INT
+  component "DOM-DAD\nDados Corporativos" as DAD
+  component "Auditoria\ntrilha de eventos" as AUD
+}
+
+package "Sistemas Externos" {
+  component "FalaBR / e-OUV" as EOU
+  component "IBGE e base cartográfica" as IBGE
+  component "Cartório de registro de imóveis" as CARTORIO
+  component "Governos federal e estadual" as OUTROS_GOV
+}
+
+database "PostgreSQL\nschemas por domínio" as PG
+database "Redis 7" as REDIS
+
+ORIGEM --> DESTINO : API REST interna ou evento
+ORIGEM --> IDN : autenticação e autorização
+ORIGEM --> GDO : documentos e anexos
+ORIGEM --> MET : metadados e classificação
+ORIGEM --> SEG : políticas de segurança
+ORIGEM --> DAD : dados corporativos mestres
+ORIGEM --> INT : contrato de interoperabilidade
+ORIGEM --> AUD : eventos
+ORIGEM --> PG : próprio schema
+DESTINO --> REDIS : cache
+
+ORIGEM --> EOU : recepção de manifestação
+ORIGEM --> IBGE : base territorial
+ORIGEM --> CARTORIO : dados registrais
+ORIGEM --> OUTROS_GOV : convênios e transferências
+
+note right of ORIGEM
+34 módulos em src/modules;
+cada módulo publica seu próprio prefixo
+de API e mantém o schema próprio.
+end note
+
+note bottom of INT
+Nenhuma chave estrangeira cruza schemas:
+as referências entre domínios são feitas
+por identificador opaco, conforme contrato.
+end note
+
+@enduml

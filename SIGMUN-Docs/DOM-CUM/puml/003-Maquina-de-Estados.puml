@@ -1,0 +1,37 @@
+@startuml
+title DOM-CUM — Máquina de Estados
+
+legend
+SIGMUN
+DOM-CUM — Cadastro Único Municipal
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Ativa : registro da pessoa (RN-CUM-001)
+Ativa --> Excluida : exclusão lógica (RN-CUM-007)
+Excluida --> [*]
+state Ativa
+state Excluida
+
+note right of Ativa
+Não existe coluna de situação no
+agregado Pessoa: o ciclo de vida é
+implícito nas operações de negócio e
+registrado por deleted_at.
+
+Pessoa física e pessoa jurídica são
+extensões 1:1 da pessoa (RN-CUM-001).
+end note
+
+note bottom of Excluida
+A exclusão atinge a pessoa, a extensão
+e os filhos (endereços, documentos,
+contatos), preservando o histórico.
+end note
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+title DOM-TEL — Máquina de Estados
+
+legend
+SIGMUN
+DOM-TEL — Gestão Territorial
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide empty description
+
+[*] --> Rascunho : cadastro da planta (RN-TEL-003)
+Rascunho --> Vigente : ativar (RN-TEL-003)
+Vigente --> Revogada : revogar com justificativa (RN-TEL-004)
+Revogada --> [*]
+state Rascunho
+state Vigente
+state Revogada
+
+note right of Vigente
+Divisões territoriais e logradouros
+circulam entre ativo e inativo.
+
+A divisão com logradouros ativos não
+pode ser excluída (RN-TEL-006).
+end note
+
+note bottom of Revogada
+Não há retorno a partir de REVOGADA:
+preserva-se a memória histórica dos
+valores aplicados a cada exercício.
+end note
+
+@enduml

@@ -1,0 +1,169 @@
+@startuml
+title DOM-OBR — Persistência
+
+legend
+SIGMUN
+DOM-OBR — Obras e Infraestrutura
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema obr" {
+
+  entity "despesas_obras" as Tdespesas_obras {
+    id : UUID <<PK>>
+    obra_id : TEXT <<NN>>
+    medicao_id : TEXT
+    descricao : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    valor : FLOAT <<NN>>
+    data : DATE <<NN>>
+    documento : TEXT
+    credor : TEXT
+    observacao : TEXT
+    created_at : DATETIME <<NN>>
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "etapas_obras" as Tetapas_obras {
+    id : UUID <<PK>>
+    obra_id : TEXT <<NN>>
+    numero : TEXT <<NN>>
+    descricao : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    percentual_previsto : FLOAT <<NN>>
+    percentual_realizado : FLOAT <<NN>>
+    data_inicio_prevista : DATE
+    data_fim_prevista : DATE
+    data_conclusao : DATE
+    responsavel : TEXT <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "medicoes_obras" as Tmedicoes_obras {
+    id : UUID <<PK>>
+    obra_id : TEXT <<NN>>
+    numero : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    data : DATE <<NN>>
+    percentual_fisico : FLOAT <<NN>>
+    valor_medido : FLOAT <<NN>>
+    responsavel_tecnico : TEXT <<NN>>
+    observacao : TEXT
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "obras" as Tobras {
+    id : UUID <<PK>>
+    numero : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    tipo_contratacao : TEXT <<NN>>
+    fonte_recurso : TEXT <<NN>>
+    valor_orcado : FLOAT <<NN>>
+    valor_contratado : FLOAT <<NN>>
+    valor_mediado : FLOAT <<NN>>
+    valor_pago : FLOAT <<NN>>
+    percentual_fisico : FLOAT <<NN>>
+    percentual_financeiro : FLOAT <<NN>>
+    empresa_contratada : TEXT
+    numero_contrato : TEXT
+    responsavel_tecnico : TEXT
+    endereco : TEXT
+    bairro : TEXT
+    data_inicio_prevista : DATE
+    data_fim_prevista : DATE
+    data_inicio_real : DATE
+    data_fim_real : DATE
+    observacao : TEXT
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "vistorias_obras" as Tvistorias_obras {
+    id : UUID <<PK>>
+    obra_id : TEXT <<NN>>
+    data : DATE <<NN>>
+    tipo : TEXT <<NN>>
+    parecer : TEXT <<NN>>
+    percentual_fisico_verificado : FLOAT <<NN>>
+    fiscal : TEXT <<NN>>
+    observacao : TEXT
+    created_at : DATETIME <<NN>>
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+note right of Tdespesas_obras
+DespesaObraModel
+
+13 colunas mapeadas.
+
+Modelo de despesas financeiras da obra (RN-OBR-006).
+end note
+
+note right of Tetapas_obras
+EtapaObraModel
+
+16 colunas mapeadas.
+
+Modelo de etapas de execução da obra (RN-OBR-007).
+end note
+
+note right of Tmedicoes_obras
+MedicaoObraModel
+
+14 colunas mapeadas.
+
+Modelo de medições físico-financeiras (RN-OBR-005).
+end note
+
+note right of Tobras
+ObraModel
+
+28 colunas mapeadas.
+
+Modelo de obras públicas com acompanhamento físico-financeiro.
+end note
+
+note right of Tvistorias_obras
+VistoriaObraModel
+
+11 colunas mapeadas.
+
+Modelo de vistorias fiscalizadoras da obra (RN-OBR-008).
+end note
+
+note left of Tdespesas_obras
+5 tabelas no schema obr.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

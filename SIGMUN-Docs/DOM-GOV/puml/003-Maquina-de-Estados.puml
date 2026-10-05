@@ -1,0 +1,40 @@
+@startuml
+title DOM-GOV — Máquina de Estados
+
+legend
+SIGMUN
+DOM-GOV — Governança Municipal
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Rascunho : elaboração da política
+Rascunho --> EmRevisao : submeter à revisão
+EmRevisao --> Vigente : aprovar e publicar
+EmRevisao --> Rascunho : devolver com ressalvas
+Vigente --> EmRevisao : programa de revisão
+Vigente --> Revogada : revogação formal
+Revogada --> [*]
+state Rascunho
+state EmRevisao
+state Vigente
+state Revogada
+
+note right of Vigente
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Riscos e controles acompanham a
+política a que se referem.
+end note
+
+note bottom of Revogada
+A revogação preserva o histórico;
+nenhuma política é apagada fisicamente.
+end note
+
+@enduml

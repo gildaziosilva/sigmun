@@ -1,0 +1,65 @@
+@startuml
+title SIGMUN — Arquitetura Geral
+
+legend
+SIGMUN
+SIGMUN — Arquitetura Corporativa
+Arquitetura Geral — Camadas do sistema
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Interfaces" {
+  component "Portal Administrativo\nfrontend/admin" as ADMIN
+  component "Portal do Cidadão\nfrontend/portal-cidadao" as PCID
+  component "Portal do Fornecedor\nfrontend/portal-fornecedor" as PFOR
+  component "Aplicativos Móveis\nmobile/*" as MOV
+}
+
+package "Aplicação — SIGMUN" {
+  component "API REST\nFastAPI · /api/v1" as API
+  component "src/core\naplicação · domínio ·\ninfraestrutura · apresentação" as CORE
+  component "src/modules\n34 domínios (Bounded Context)" as MODS
+  component "src/shared\nconfig · segurança ·\ntarefas · middleware" as SHARED
+}
+
+package "Dados e Plataforma" {
+  database "PostgreSQL 15\nschemas por domínio" as PG
+  database "Redis 7" as REDIS
+  component "Alembic\nalembic/versions" as MIG
+  component "Celery\nworker · beat · flower" as CELERY
+}
+
+ADMIN --> API : HTTP / REST
+PCID --> API : HTTP / REST
+PFOR --> API : HTTP / REST
+MOV --> API : HTTP / REST
+
+API --> CORE
+CORE --> MODS
+CORE --> SHARED
+SHARED --> CELERY : tarefas assíncronas
+
+CORE --> PG : SQLAlchemy
+SHARED --> REDIS : cache
+CELERY --> PG
+CELERY --> REDIS
+MIG --> PG : migrações
+
+note right of CORE
+Arquitetura em quatro camadas no núcleo
+(application, domain, infrastructure e
+presentation) e uma camada de módulos
+por domínio, com verificação de dependência.
+end note
+
+note bottom of API
+Contrato externo único:
+API REST sob /api/v1.
+end note
+
+@enduml

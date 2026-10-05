@@ -1,0 +1,98 @@
+@startuml
+title DOM-COMPRAS-001 — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-COMPRAS-001 — Compras e Contratações
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-COMPRAS-001 — Compras e Contratações" {
+  component "API\n/api/v1" as API
+  component "RegistrarItemCompra" as UC0
+  component "ExcluirContrato" as UC1
+  component "ConsultarProcessoDocumental" as UC2
+  component "RegistrarContrato" as UC3
+  component "InativarFornecedor" as UC4
+  component "RegistrarProcessoDocumental" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-GDO\nGestão Documental" as DGDO
+  component "DOM-ORC\nOrçamento Público" as DORC
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema compras" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : DELETE
+API --> UC1 : GET
+API --> UC2 : PATCH
+API --> UC3 : POST
+
+API --> DGDO : troca de dados
+API --> DORC : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-COMPRAS-001 cobre compras e contratações.
+
+A API expõe 30 operações
+em 6 prefixo.
+
+30 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (5):
+
+- RN-COMPRAS-011
+- RN-COMPRAS-013)
+- RN-COMPRAS-025
+- RN-COMPRAS-030
+- RN-COMPRAS-036
+end note
+
+note bottom of DB
+7 tabelas mapeadas:
+
+- unidades_administrativas
+- processos_documentais
+- fornecedores
+- itens_compras
+- compras
+- contratos
+- eventos
+end note
+
+@enduml

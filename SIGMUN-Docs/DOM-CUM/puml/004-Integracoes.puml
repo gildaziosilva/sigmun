@@ -1,0 +1,57 @@
+@startuml
+title DOM-CUM — Integrações
+
+legend
+SIGMUN
+DOM-CUM — Cadastro Único Municipal
+Integrações — Troca de dados com outros domínios
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Domínio de Origem" {
+  component "DOM-CUM\nCadastro Único Municipal" as ORIGEM
+}
+
+package "Domínios Destino" {
+  component "DOM-PES\nGestão de Pessoas" as DPES
+  component "DOM-IDN\nIdentidade e Acesso" as DIDN
+}
+
+package "Serviços Transversais" {
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "DOM-INT\nInteroperabilidade" as INT
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL" as DB
+
+ORIGEM --> DPES : dados do domínio
+ORIGEM --> DIDN : dados do domínio
+ORIGEM --> GDO : anexos e documentos
+ORIGEM --> MET : metadados
+ORIGEM --> INT : troca de dados
+ORIGEM --> AUD : trilha de auditoria
+ORIGEM --> DB : persistência própria
+
+note right of ORIGEM
+DOM-CUM como origem da integração.
+
+Publica em /api/v1/cadastro.
+12 operações disponíveis.
+
+Entidade central: Pessoa.
+end note
+
+note bottom of AUD
+Todo evento com efeito no orçamento
+ou no patrimônio é registrado com
+autor, data e valor antes e depois.
+end note
+
+@enduml

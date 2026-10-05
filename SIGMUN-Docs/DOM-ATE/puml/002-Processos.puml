@@ -1,0 +1,46 @@
+@startuml
+title DOM-ATE — Processos
+
+legend
+SIGMUN
+DOM-ATE — Atenção Territorial
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:RegistrarGeorreferencia;
+
+:ExcluirGeorreferencia;
+:CadastrarPlantaValores;
+:AtivarPlantaValores;
+:RevogarPlantaValores;
+:AtualizarPlantaValores;
+
+:Atualizar Bairro;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Bairro.
+
+Casos de uso no código: 12.
+Entidades do domínio: 4.
+Tabelas mapeadas: 4.
+end note
+
+note right
+Validações (6):
+
+- RN-TEL-001
+- RN-TEL-002
+- RN-TEL-003
+- RN-TEL-004
+- RN-TEL-005
+- RN-TEL-006
+end note
+
+@enduml

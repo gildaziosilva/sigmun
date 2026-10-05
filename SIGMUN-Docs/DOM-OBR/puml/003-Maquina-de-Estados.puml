@@ -1,0 +1,49 @@
+@startuml
+title DOM-OBR — Máquina de Estados
+
+legend
+SIGMUN
+DOM-OBR — Obras e Infraestrutura
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide empty description
+
+[*] --> Planejada : cadastro da obra (RN-OBR-001)
+Planejada --> EmLicitacao : iniciar contratação
+EmLicitacao --> Contratada : contrato formalizado
+Contratada --> EmExecucao : iniciar execução (RN-OBR-003)
+EmExecucao --> Suspensa : suspender execução (RN-OBR-002)
+Suspensa --> EmExecucao : retomar execução
+EmExecucao --> Concluida : concluir com avanço físico de 100% (RN-OBR-005)
+EmExecucao --> Cancelada : cancelar obra (RN-OBR-002)
+Concluida --> [*]
+Cancelada --> [*]
+state Planejada
+state EmLicitacao
+state Contratada
+state EmExecucao
+state Suspensa
+state Concluida
+state Cancelada
+
+note right of EmExecucao
+A medição percorre REGISTRADA ->
+CONFERIDA -> APROVADA | GLOSADA |
+CANCELADA (RN-OBR-005).
+
+A etapa percorre PENDENTE ->
+EM_EXECUCAO -> CONCLUIDA |
+ATRASADA | CANCELADA (RN-OBR-007).
+end note
+
+note bottom of Concluida
+O percentual físico é recomposto a
+partir das medições aprovadas; o
+financeiro, a partir das despesas.
+end note
+
+@enduml

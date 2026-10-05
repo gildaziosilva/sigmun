@@ -1,0 +1,170 @@
+@startuml
+title DOM-FRO — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-FRO — Frotas
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Outras entidades" {
+
+class Abastecimento <<Entity>> {
+  +id: string
+  +veiculo_id: string
+  +data: date
+  +quantidade_litros: decimal
+  +valor_unitario: decimal
+  +valor_total: decimal
+  +odometro: decimal
+  +posto: string
+  +tipo_combustivel: Combustivel
+  +created_at: datetime
+  +created_by: string
+}
+
+class Manutencao <<Entity>> {
+  +id: string
+  +veiculo_id: string
+  +data_entrada: date
+  +data_saida: date
+  +tipo: TipoManutencao
+  +descricao: string
+  +oficina: string
+  +valor: decimal
+  +status: StatusManutencao
+  +created_at: datetime
+  +created_by: string
+}
+
+class Rota <<Entity>> {
+  +id: string
+  +veiculo_id: string
+  +data: date
+  +origem: string
+  +destino: string
+  +km_inicio: decimal
+  +km_fim: decimal
+  +distancia_km: decimal
+  +descricao: string
+  +status: StatusRota
+  +created_at: datetime
+  +created_by: string
+}
+
+class Veiculo <<Entity>> {
+  +id: string
+  +placa: string
+  +chassi: string
+  +renavam: string
+  +marca: string
+  +modelo: string
+  +ano_fabricacao: int
+  +ano_modelo: int
+  +tipo: TipoVeiculo
+  +combustivel: Combustivel
+  +capacidade: decimal
+  +odometro_atual: decimal
+  +status: StatusVeiculo
+  +unidade_id: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoManutencao {
+  PREVENTIVA = 'preventiva'
+  CORRETIVA = 'corretiva'
+}
+
+enum StatusManutencao {
+  ABERTA = 'aberta'
+  EM_ANDAMENTO = 'em_andamento'
+  CONCLUIDA = 'concluida'
+}
+
+enum StatusRota {
+  PLANEJADA = 'planejada'
+  EM_ANDAMENTO = 'em_andamento'
+  CONCLUIDA = 'concluida'
+  CANCELADA = 'cancelada'
+}
+
+enum TipoVeiculo {
+  LEVE = 'leve'
+  PESADO = 'pesado'
+  MOTOCICLETA = 'motocicleta'
+  ONIBUS = 'onibus'
+  TRATOR = 'trator'
+}
+
+enum Combustivel {
+  GASOLINA = 'gasolina'
+  ALCOOL = 'alcool'
+  FLEX = 'flex'
+  DIESEL = 'diesel'
+  ELEETRICO = 'eletrico'
+  GAS = 'gas'
+}
+
+enum StatusVeiculo {
+  ATIVO = 'ativo'
+  MANUTENCAO = 'manutencao'
+  INATIVO = 'inativo'
+  BAIXADO = 'baixado'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Veiculo "1" *-- "0..*" Abastecimento : "veiculo_id"
+Veiculo "1" *-- "0..*" Manutencao : "veiculo_id"
+Veiculo "1" *-- "0..*" Rota : "veiculo_id"
+Manutencao --> TipoManutencao
+Manutencao --> StatusManutencao
+Rota --> StatusRota
+Veiculo --> TipoVeiculo
+Abastecimento --> Combustivel
+Veiculo --> StatusVeiculo
+
+note right of Abastecimento
+Regras de negócio (2):
+
+- RN-FRO-001:
+  a placa do veículo é única no cadastro.
+- RN-FRO-002:
+  veículos em manutenção têm status ``manutencao``; concluída a manutenção retorna
+end note
+
+note bottom of Abastecimento
+Comportamentos (13):
+
+- Abastecimento.recalcular_total
+- Abastecimento.validar
+- Manutencao.validar
+- Manutencao.concluir
+- Rota.validar
+- Rota.calcular_distancia
+- Rota.concluir
+- Veiculo.validar
+- Veiculo.atualizar_odometro
+- Veiculo.entrar_em_manutencao
+- e mais 3
+end note
+
+@enduml

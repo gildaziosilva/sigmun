@@ -1,0 +1,87 @@
+@startuml
+title DOM-SEG — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-SEG — Segurança
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-SEG — Segurança" {
+  component "API\nsem prefixo" as API
+  component "CriarChave" as UC0
+  component "BuscarChave" as UC1
+  component "AtualizarChave" as UC2
+  component "RevogarChave" as UC3
+  component "ExpirarChave" as UC4
+  component "DeletarChave" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-INT\nInteroperabilidade" as DINT
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema seg" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+
+note left
+Nenhum router registrado no servidor:
+a capacidade existe no código,
+mas não está exposta em /api.
+end note
+
+API --> DINT : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-SEG cobre segurança.
+
+Nenhuma rota está registrada no
+servidor: a capacidade existe no
+código, mas não é exposta.
+
+31 casos de uso no código.
+end note
+
+note bottom of DB
+5 tabelas mapeadas:
+
+- controles_seguranca
+- politicas_seguranca
+- incidentes_seguranca
+- chaves_criptograficas
+- credenciais
+end note
+
+@enduml

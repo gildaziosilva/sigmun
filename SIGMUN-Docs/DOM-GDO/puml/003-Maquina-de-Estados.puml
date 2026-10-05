@@ -1,0 +1,26 @@
+@startuml
+title DOM-GDO — Máquina de Estados
+
+legend
+SIGMUN
+DOM-GDO — Gestão Documental
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide empty description
+
+[*] --> EmExecucao : entrada do domínio
+state EmExecucao
+
+note right of EmExecucao
+Nenhuma máquina de estados é declarada
+em TRANSICOES_* no código deste domínio.
+
+O ciclo de vida é implícito nas operações
+de negócio das entidades.
+end note
+
+@enduml

@@ -1,0 +1,44 @@
+@startuml
+title DOM-GEO — Máquina de Estados
+
+legend
+SIGMUN
+DOM-GEO — Geoinformação Municipal
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide empty description
+
+[*] --> MapaRascunho : cadastro do mapa (RN-GEO-002)
+MapaRascunho --> MapaPublicado : publicar no geoportal (RN-GEO-004)
+MapaPublicado --> MapaArquivado : arquivar (RN-GEO-004)
+MapaRascunho --> [*] : exclusão lógica (RN-GEO-004)
+MapaArquivado --> [*] : exclusão lógica (RN-GEO-004)
+
+[*] --> CamadaRascunho : cadastro da camada (RN-GEO-001)
+CamadaRascunho --> CamadaAtiva : ativar (RN-GEO-006)
+CamadaAtiva --> CamadaDesativada : desativar (RN-GEO-006)
+CamadaRascunho --> [*] : exclusão lógica (RN-GEO-006)
+state MapaRascunho
+state MapaPublicado
+state MapaArquivado
+state CamadaRascunho
+state CamadaAtiva
+state CamadaDesativada
+
+note right of MapaPublicado
+A composição mapa-camada é exigida
+para publicar (RN-GEO-004 e RN-GEO-008)
+e preserva ordem e opacidade.
+end note
+
+note bottom of CamadaAtiva
+Serviço geoespacial percorre
+ATIVO -> INATIVO | MANUTENCAO
+(RN-GEO-007).
+end note
+
+@enduml

@@ -1,0 +1,44 @@
+@startuml
+title DOM-CPT — Processos
+
+legend
+SIGMUN
+DOM-CPT — Gestão de Competências
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Mapear as competências do município;
+:Avaliar o nível atual do servidor;
+:Identificar as lacunas;
+:Definir o plano de desenvolvimento;
+:Ofertar a capacitação;
+:Gerenciar as inscrições;
+:Executar e avaliar a capacitação;
+:Registrar o resultado;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Competencia.
+
+Modelo proposto: capacidades previstas: 5.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-CPT-001
+- RN-CPT-002
+- RN-CPT-003
+- RN-CPT-004
+end note
+
+@enduml

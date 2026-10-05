@@ -1,0 +1,48 @@
+@startuml
+title DOM-MAM — Máquina de Estados
+
+legend
+SIGMUN
+DOM-MAM — Meio Ambiente
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Solicitado : protocolo do requerimento
+Solicitado --> EmAnalise : análise documental
+EmAnalise --> Licenciado : emitir a licença (RN-MAM-001)
+EmAnalise --> Negado : exigência não atendida
+Licenciado --> Suspenso : suspensão por infração (RN-MAM-002)
+Suspenso --> Licenciado : regularização comprovada
+Licenciado --> Revogado : revogação formal
+Negado --> [*]
+Revogado --> [*]
+state Solicitado
+state EmAnalise
+state Licenciado
+state Negado
+state Suspenso
+state Revogado
+
+note right of EmAnalise
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+A atividade é localizada por
+identificador do DOM-TEL ou DOM-GEO
+(RN-MAM-004).
+end note
+
+note bottom of Licenciado
+A licença declara validade e condições
+(RN-MAM-001). A fiscalização pode gerar
+prazo de adequação (RN-MAM-002) e o
+monitoramento registra a conformidade
+(RN-MAM-003).
+end note
+
+@enduml

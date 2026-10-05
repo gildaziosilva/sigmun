@@ -1,0 +1,95 @@
+@startuml
+title DOM-PLA — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-PLA — Planejamento Governamental
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-PLA — Planejamento Governamental" {
+  component "API\n/api/v1/pla" as API
+  component "Planejamento Estratégico" as UC0
+  component "Gestão de Programas" as UC1
+  component "Gestão de Projetos" as UC2
+  component "Metas e Indicadores" as UC3
+  component "Acompanhamento de Resultados" as UC4
+}
+
+package "Domínios Correlatos" {
+  component "DOM-ORC\nOrçamento Público" as DORC
+  component "DOM-IND\nIndicadores e Desempenho" as DIND
+  component "DOM-GOV\nGovernança Municipal" as DGOV
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema pla" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : previsto
+API --> UC1 : previsto
+API --> UC2 : previsto
+API --> UC3 : previsto
+API --> UC4 : previsto
+
+API --> DORC : troca de dados (prevista)
+API --> DIND : troca de dados (prevista)
+API --> DGOV : troca de dados (prevista)
+API --> IDN : autenticação e autorização
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+
+note right of API
+O DOM-PLA cobre Planejamento Governamental.
+
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Capacidades previstas para /api/v1/pla.
+end note
+
+note bottom of API
+Regras propostas (4):
+
+- RN-PLA-001
+- RN-PLA-002
+- RN-PLA-003
+- RN-PLA-004
+end note
+
+note bottom of DB
+4 tabelas propostas:
+
+- planos_estrategicos
+- programas
+- projetos
+- metas
+end note
+
+@enduml

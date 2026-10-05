@@ -1,0 +1,62 @@
+@startuml
+title DOM-GOV — Integrações
+
+legend
+SIGMUN
+DOM-GOV — Governança Municipal
+Integrações — Troca de dados com outros domínios
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Domínio de Origem" {
+  component "DOM-GOV\nGovernança Municipal" as ORIGEM
+}
+
+package "Domínios Destino" {
+  component "DOM-PLA\nPlanejamento Governamental" as DPLA
+  component "DOM-IND\nIndicadores e Desempenho" as DIND
+  component "DOM-DAD\nDados Corporativos" as DDAD
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "DOM-INT\nInteroperabilidade" as INT
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL" as DB
+
+ORIGEM --> DPLA : dados do domínio (prevista)
+ORIGEM --> DIND : dados do domínio (prevista)
+ORIGEM --> DDAD : dados do domínio (prevista)
+ORIGEM --> IDN : autenticação
+ORIGEM --> GDO : anexos e documentos
+ORIGEM --> MET : metadados
+ORIGEM --> INT : troca de dados
+ORIGEM --> AUD : trilha de auditoria
+ORIGEM --> DB : persistência própria
+
+note right of ORIGEM
+DOM-GOV como origem da integração.
+
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Contratos previstos em /api/v1/gov.
+Entidade central: PoliticaGovernanca.
+end note
+
+note bottom of AUD
+Todo evento com efeito no orçamento
+ou no patrimônio é registrado com
+autor, data e valor antes e depois.
+end note
+
+@enduml

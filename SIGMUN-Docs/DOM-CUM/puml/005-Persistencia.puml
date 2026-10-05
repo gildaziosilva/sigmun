@@ -1,0 +1,203 @@
+@startuml
+title DOM-CUM — Persistência
+
+legend
+SIGMUN
+DOM-CUM — Cadastro Único Municipal
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema core" {
+
+  entity "contatos" as Tcontatos {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<NN>>
+    tipo : TEXT <<NN>>
+    valor : TEXT <<NN>>
+    principal : BOOLEAN <<NN>>
+    created_at : DATETIME <<NN>>
+    created_by : UUID
+    updated_at : DATETIME <<NN>>
+    updated_by : UUID
+    deleted_at : DATETIME
+    deleted_by : UUID
+  }
+
+  entity "documentos" as Tdocumentos {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<NN>>
+    tipo : TEXT <<NN>>
+    numero : TEXT <<NN>>
+    orgao_emissor : TEXT
+    data_emissao : DATE
+    data_validade : DATE
+    principal : BOOLEAN <<NN>>
+    created_at : DATETIME <<NN>>
+    created_by : UUID
+    updated_at : DATETIME <<NN>>
+    updated_by : UUID
+    deleted_at : DATETIME
+    deleted_by : UUID
+  }
+
+  entity "enderecos" as Tenderecos {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<NN>>
+    tipo : TEXT <<NN>>
+    logradouro : TEXT <<NN>>
+    numero : TEXT <<NN>>
+    complemento : TEXT
+    bairro : TEXT
+    cep : TEXT
+    cidade : TEXT
+    estado : TEXT
+    pais : TEXT
+    principal : BOOLEAN <<NN>>
+    vigencia_inicio : DATETIME <<NN>>
+    vigencia_fim : DATETIME
+    motivo_alteracao : TEXT
+    created_at : DATETIME <<NN>>
+    created_by : UUID
+    updated_at : DATETIME <<NN>>
+    updated_by : UUID
+    deleted_at : DATETIME
+    deleted_by : UUID
+  }
+
+  entity "pessoas" as Tpessoas {
+    id : UUID <<PK>>
+    tipo : TEXT <<NN>>
+    categoria : TEXT <<NN>>
+    unidade_id : UUID
+    created_at : DATETIME <<NN>>
+    created_by : UUID
+    updated_at : DATETIME <<NN>>
+    updated_by : UUID
+    deleted_at : DATETIME
+    deleted_by : UUID
+  }
+
+  entity "pessoas_fisicas" as Tpessoas_fisicas {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<UQ, NN>>
+    nome : TEXT <<NN>>
+    data_nascimento : DATE
+    sexo : TEXT
+    estado_civil : TEXT
+    mae : TEXT
+    pai : TEXT
+    created_at : DATETIME <<NN>>
+    created_by : UUID
+    updated_at : DATETIME <<NN>>
+    updated_by : UUID
+    deleted_at : DATETIME
+    deleted_by : UUID
+  }
+
+  entity "pessoas_juridicas" as Tpessoas_juridicas {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<UQ, NN>>
+    razao_social : TEXT <<NN>>
+    nome_fantasia : TEXT
+    cnae_principal : TEXT
+    capital : NUMERIC(15, 2)
+    created_at : DATETIME <<NN>>
+    created_by : UUID
+    updated_at : DATETIME <<NN>>
+    updated_by : UUID
+    deleted_at : DATETIME
+    deleted_by : UUID
+  }
+
+  entity "unidades_administrativas" as Tunidades_administrativas {
+    id : UUID <<PK>>
+    unidade_pai_id : UUID
+    codigo_ibge : TEXT
+    codigo_siafi : TEXT
+    nome : TEXT <<NN>>
+    sigla : TEXT
+    created_at : DATETIME <<NN>>
+    created_by : UUID
+    updated_at : DATETIME <<NN>>
+    updated_by : UUID
+    deleted_at : DATETIME
+    deleted_by : UUID
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+note right of Tcontatos
+ContatoModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela ``core.contatos``.
+end note
+
+note right of Tdocumentos
+DocumentoModel
+
+14 colunas mapeadas.
+
+Modelo ORM da tabela ``core.documentos`` (número: dado LGPD).
+end note
+
+note right of Tenderecos
+EnderecoModel
+
+21 colunas mapeadas.
+
+Modelo ORM da tabela ``core.enderecos`` (histórico de vigência).
+end note
+
+note right of Tpessoas
+PessoaModel
+
+10 colunas mapeadas.
+
+Modelo ORM da tabela ``core.pessoas`` (entidade-mestra).
+end note
+
+note right of Tpessoas_fisicas
+PessoaFisicaModel
+
+14 colunas mapeadas.
+
+Modelo ORM da tabela ``core.pessoas_fisicas`` (extensão 1:1).
+end note
+
+note right of Tpessoas_juridicas
+PessoaJuridicaModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``core.pessoas_juridicas`` (extensão 1:1).
+end note
+
+note right of Tunidades_administrativas
+UnidadeAdministrativaModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``core.unidades_administrativas`` (hierárquica).
+end note
+
+note left of Tcontatos
+7 tabelas no schema core.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

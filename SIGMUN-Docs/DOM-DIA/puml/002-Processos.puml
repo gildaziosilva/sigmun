@@ -1,0 +1,50 @@
+@startuml
+title DOM-DIA — Processos
+
+legend
+SIGMUN
+DOM-DIA — Diárias e Viagens
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:Criar Viagem;
+:Atualizar Viagem;
+:Tramitar Viagem;
+:Visitar Viagem;
+:Criar Diaria;
+:Atualizar Diaria;
+:Solicitar Diaria;
+:Criar Prestacao Contas;
+:Aprovar Prestacao;
+:Glosar Prestacao;
+:E mais 9 casos de uso;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Diaria.
+
+Casos de uso no código: 19.
+Entidades do domínio: 4.
+Tabelas mapeadas: 4.
+end note
+
+note right
+Validações (15):
+
+- RN-DIA-001
+- RN-DIA-002
+- RN-DIA-003
+- RN-DIA-004
+- RN-DIA-005
+- RN-DIA-006
+- e mais 9
+end note
+
+@enduml

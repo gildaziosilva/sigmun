@@ -1,0 +1,277 @@
+@startuml
+title DOM-OBR — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-OBR — Obras e Infraestrutura
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-OBR" {
+
+class DespesaObra <<Entity>> {
+  +id: string
+  +obra_id: string
+  +medicao_id: string
+  +descricao: string
+  +tipo: string
+  +valor: decimal
+  +data: date
+  +documento: string
+  +credor: string
+  +observacao: string
+  +created_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class EtapaObra <<Entity>> {
+  +id: string
+  +obra_id: string
+  +numero: string
+  +descricao: string
+  +tipo: string
+  +situacao: string
+  +percentual_previsto: decimal
+  +percentual_realizado: decimal
+  +data_inicio_prevista: date
+  +data_fim_prevista: date
+  +data_conclusao: date
+  +responsavel: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class MedicaoObra <<Entity>> {
+  +id: string
+  +obra_id: string
+  +numero: string
+  +tipo: string
+  +situacao: string
+  +data: date
+  +percentual_fisico: decimal
+  +valor_medido: decimal
+  +responsavel_tecnico: string
+  +observacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Obra <<Entity>> {
+  +id: string
+  +numero: string
+  +nome: string
+  +descricao: string
+  +tipo: string
+  +situacao: string
+  +tipo_contratacao: string
+  +fonte_recurso: string
+  +valor_orcado: decimal
+  +valor_contratado: decimal
+  +valor_mediado: decimal
+  +valor_pago: decimal
+  +percentual_fisico: decimal
+  +percentual_financeiro: decimal
+  +empresa_contratada: string
+  +numero_contrato: string
+  +responsavel_tecnico: string
+  +endereco: string
+  +bairro: string
+  +data_inicio_prevista: date
+  +data_fim_prevista: date
+  +data_inicio_real: date
+  +data_fim_real: date
+  +observacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class VistoriaObra <<Entity>> {
+  +id: string
+  +obra_id: string
+  +data: date
+  +tipo: string
+  +parecer: string
+  +percentual_fisico_verificado: decimal
+  +fiscal: string
+  +observacao: string
+  +created_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoObra {
+  PAVIMENTACAO = 'pavimentacao'
+  DRENAGEM = 'drenagem'
+  CONSTRUCAO = 'construcao'
+  REFORMA = 'reforma'
+  ILUMINACAO = 'iluminacao'
+  SANEAMENTO = 'saneamento'
+  PONTE = 'ponte'
+  PRACA = 'praca'
+  QUADRA = 'quadra'
+  OUTRO = 'outro'
+}
+
+enum SituacaoObra {
+  PLANEJADA = 'planejada'
+  EM_LICITACAO = 'em_licitacao'
+  CONTRATADA = 'contratada'
+  EM_EXECUCAO = 'em_execucao'
+  SUSPENSA = 'suspensa'
+  CONCLUIDA = 'concluida'
+  CANCELADA = 'cancelada'
+}
+
+enum FonteRecurso {
+  ORCAMENTO_PROPRIO = 'orcamento_proprio'
+  CONVENIO = 'convenio'
+  CONVENIO_ESTADUAL = 'convenio_estadual'
+  CONVENIO_FEDERAL = 'convenio_federal'
+  TRANSFERENCIA = 'transferencia'
+  OPERACAO_CREDITO = 'operacao_credito'
+  OUTRO = 'outro'
+}
+
+enum TipoContratacao {
+  LICITACAO = 'licitacao'
+  DISPENSA = 'dispensa'
+  INEXIGIBILIDADE = 'inexigibilidade'
+  CONVENIO = 'convenio'
+  CONTRATO_DIRETO = 'contrato_direto'
+}
+
+enum TipoMedicao {
+  AVANCO = 'avanco'
+  ETAPA = 'etapa'
+  FINAL = 'final'
+  REVISIONAL = 'revisional'
+}
+
+enum SituacaoMedicao {
+  REGISTRADA = 'registrada'
+  CONFERIDA = 'conferida'
+  APROVADA = 'aprovada'
+  GLOSADA = 'glosada'
+  CANCELADA = 'cancelada'
+}
+
+enum TipoDespesa {
+  MEDICAO = 'medicao'
+  REPASSE = 'repasse'
+  MATERIAL = 'material'
+  MAO_DE_OBRA = 'mao_de_obra'
+  TRIBUTOS = 'tributos'
+  CUSTOS = 'custos'
+  OUTRO = 'outro'
+}
+
+enum TipoEtapa {
+  PROJETO = 'projeto'
+  TERRAPLANAGEM = 'terraplanagem'
+  FUNDACAO = 'fundacao'
+  ESTRUTURA = 'estrutura'
+  ACABAMENTO = 'acabamento'
+  INSTALACAO = 'instalacao'
+  PAVIMENTACAO = 'pavimentacao'
+  PAISAGISMO = 'paisagismo'
+  RECEPCAO = 'recepcao'
+}
+
+enum SituacaoEtapa {
+  PENDENTE = 'pendente'
+  EM_EXECUCAO = 'em_execucao'
+  CONCLUIDA = 'concluida'
+  ATRASADA = 'atrasada'
+  CANCELADA = 'cancelada'
+}
+
+enum TipoVistoria {
+  PERIODICA = 'periodica'
+  PARCIAL = 'parcial'
+  FINAL = 'final'
+  RECEPCAO = 'recepcao'
+}
+
+enum ParecerVistoria {
+  APROVADO = 'aprovado'
+  APROVADO_COM_RESSALVAS = 'aprovado_com_ressalvas'
+  REPROVADO = 'reprovado'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Obra "1" *-- "0..*" DespesaObra : "obra_id"
+MedicaoObra "1" *-- "0..*" DespesaObra : "medicao_id"
+Obra "1" *-- "0..*" EtapaObra : "obra_id"
+Obra "1" *-- "0..*" MedicaoObra : "obra_id"
+Obra "1" *-- "0..*" VistoriaObra : "obra_id"
+
+Obra --> TipoObra
+Obra --> SituacaoObra
+Obra --> FonteRecurso
+Obra --> TipoContratacao
+MedicaoObra --> TipoMedicao
+MedicaoObra --> SituacaoMedicao
+EtapaObra --> TipoEtapa
+EtapaObra --> SituacaoEtapa
+DespesaObra --> TipoDespesa
+VistoriaObra --> TipoVistoria
+VistoriaObra --> ParecerVistoria
+
+note right of Obra
+Regras de negócio (8):
+
+- RN-OBR-001:
+  O número da obra é único no cadastro municipal; número e nome são obrigatórios e o número não pode ser alterado após a identificação da obra.
+- RN-OBR-002:
+  A obra percorre `PLANEJADA -> EM_LICITACAO -> CONTRATADA -> EM_EXECUCAO -> CONCLUIDA`, com `SUSPENSA` e `CANCELADA` disponíveis. A conclusão e o cancelamento são terminais e obra concluída não aceita alteração cadastral.
+- RN-OBR-003:
+  A execução só pode ser iniciada em obra contratada ou suspensa, e exige empresa contratada e data de início prevista informadas.
+- RN-OBR-004:
+  Os valores e percentuais são não negativos, o valor contratado não supera o valor orçado, o valor pago não supera o valor medido e **o avanço financeiro nunca ultrapassa o avanço físico**.
+- RN-OBR-005:
+  A medição percorre `REGISTRADA -> CONFERIDA -> APROVADA`, com `GLOSADA` e `CANCELADA` disponíveis. Apenas medição aprovada compõe o avanço da obra; a conclusão exige 100% do avanço físico; o valor medido não pode superar o contratado e o número da medição é único por obra.
+- RN-OBR-006:
+  A despesa exige valor positivo, pertence a obra contratada ou em execução e não pode superar o saldo medido e ainda não pago.
+- e mais 2
+end note
+
+note bottom of Obra
+Comportamentos (17):
+
+- CadastrarObraUseCase
+- AtualizarObraUseCase
+- IniciarExecucaoObraUseCase
+- ConcluirObraUseCase
+- SuspenderObraUseCase
+- CancelarObraUseCase
+- ExcluirObraUseCase
+- RegistrarMedicaoUseCase
+- AprovarMedicaoUseCase
+- GlosarMedicaoUseCase
+- e mais 7
+end note
+
+@enduml

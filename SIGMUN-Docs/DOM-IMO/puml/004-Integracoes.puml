@@ -1,0 +1,59 @@
+@startuml
+title DOM-IMO — Integrações
+
+legend
+SIGMUN
+DOM-IMO — Cadastro Imobiliário
+Integrações — Troca de dados com outros domínios
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Domínio de Origem" {
+  component "DOM-IMO\nCadastro Imobiliário" as ORIGEM
+}
+
+package "Domínios Destino" {
+  component "DOM-TEL\nGestão Territorial" as DTEL
+  component "DOM-GEO\nGeoinformação Municipal" as DGEO
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "DOM-INT\nInteroperabilidade" as INT
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL" as DB
+
+ORIGEM --> DTEL : dados do domínio
+ORIGEM --> DGEO : dados do domínio
+ORIGEM --> IDN : autenticação
+ORIGEM --> GDO : anexos e documentos
+ORIGEM --> MET : metadados
+ORIGEM --> INT : troca de dados
+ORIGEM --> AUD : trilha de auditoria
+ORIGEM --> DB : persistência própria
+
+note right of ORIGEM
+DOM-IMO como origem da integração.
+
+Publica em /api/v1/imo.
+25 operações disponíveis.
+
+Entidade central: Imovel.
+end note
+
+note bottom of AUD
+Todo evento com efeito no orçamento
+ou no patrimônio é registrado com
+autor, data e valor antes e depois.
+end note
+
+@enduml

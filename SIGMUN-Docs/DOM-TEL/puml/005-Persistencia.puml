@@ -1,0 +1,128 @@
+@startuml
+title DOM-TEL — Persistência
+
+legend
+SIGMUN
+DOM-TEL — Gestão Territorial
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema tel" {
+
+  entity "bairros" as Tbairros {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    populacao_estimada : INTEGER <<NN>>
+    area_km2 : FLOAT <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "georreferencias" as Tgeorreferencias {
+    id : UUID <<PK>>
+    bairro_id : TEXT
+    logradouro_id : TEXT
+    geometria : TEXT <<NN>>
+    latitude : FLOAT <<NN>>
+    longitude : FLOAT <<NN>>
+    altitude_m : FLOAT
+    vertices : JSON
+    datum : TEXT <<NN>>
+    precisao_m : FLOAT <<NN>>
+    data_levantamento : DATE <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "logradouros" as Tlogradouros {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    bairro_id : TEXT <<NN>>
+    cep : TEXT
+    numero_inicial : INTEGER <<NN>>
+    numero_final : INTEGER <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "planta_generica_valores" as Tplanta_generica_valores {
+    id : UUID <<PK>>
+    ano : INTEGER <<NN>>
+    bairro_id : TEXT <<NN>>
+    ocupacao : TEXT <<NN>>
+    valor_terreno_m2 : FLOAT <<NN>>
+    valor_construcao_m2 : FLOAT <<NN>>
+    aliquota_percent : FLOAT <<NN>>
+    situacao : TEXT <<NN>>
+    legislacao : TEXT
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+note right of Tbairros
+BairroModel
+
+11 colunas mapeadas.
+
+Modelo de divisões territoriais (bairro, distrito, setor, zona rural).
+end note
+
+note right of Tgeorreferencias
+GeorreferenciaModel
+
+15 colunas mapeadas.
+
+Modelo de georreferências territoriais.
+end note
+
+note right of Tlogradouros
+LogradouroModel
+
+13 colunas mapeadas.
+
+Modelo de logradouros públicos.
+end note
+
+note right of Tplanta_generica_valores
+PlantaGenericaValoresModel
+
+13 colunas mapeadas.
+
+Modelo da planta genérica de valores por ano, bairro e ocupação.
+end note
+
+note left of Tbairros
+4 tabelas no schema tel.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

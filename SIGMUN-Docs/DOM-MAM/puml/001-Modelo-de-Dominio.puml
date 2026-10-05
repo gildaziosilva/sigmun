@@ -1,0 +1,145 @@
+@startuml
+title DOM-MAM — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-MAM — Meio Ambiente
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-MAM" {
+
+class LicenciamentoAmbiental <<Entity>> {
+  +id: string
+  +numero: string
+  +empreendimento: string
+  +tipo: string
+  +atividade: string
+  +situacao: string
+  +data_emissao: date
+  +validade_ate: date
+  +condicoes: texto
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class FiscalizacaoAmbiental <<Entity>> {
+  +id: string
+  +numero: string
+  +licenca_id: string
+  +data: date
+  +agente: string
+  +objeto: string
+  +resultado: string
+  +prazo_adequacao: date
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class MonitoramentoAmbiental <<Entity>> {
+  +id: string
+  +licenca_id: string
+  +parametro: string
+  +data: date
+  +valor: decimal
+  +unidade: string
+  +limite_legal: decimal
+  +conformidade: string
+  +observacao: texto
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class AreaProtegida <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +categoria: string
+  +area_km2: decimal
+  +nivel_protecao: string
+  +bairro_id: string
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoLicenciamento {
+  LICENCA = 'licenca'
+  AUTORIZACAO = 'autorizacao'
+  OUTORGA = 'outorga'
+  APROVACAO = 'aprovacao'
+}
+
+enum SituacaoLicenciamento {
+  SOLICITADO = 'solicitado'
+  EM_ANALISE = 'em_analise'
+  LICENCIADO = 'licenciado'
+  NEGADO = 'negado'
+  SUSPENSO = 'suspenso'
+  REVOGADO = 'revogado'
+}
+
+enum ResultadoFiscalizacao {
+  CONFORME = 'conforme'
+  NAO_CONFORME = 'nao_conforme'
+  PENDENTE = 'pendente'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+LicenciamentoAmbiental "1" *-- "0..*" FiscalizacaoAmbiental : "licenca_id"
+LicenciamentoAmbiental "1" *-- "0..*" MonitoramentoAmbiental : "licenca_id"
+
+LicenciamentoAmbiental --> TipoLicenciamento
+LicenciamentoAmbiental --> SituacaoLicenciamento
+FiscalizacaoAmbiental --> ResultadoFiscalizacao
+
+note right of LicenciamentoAmbiental
+Regras propostas (4):
+
+- RN-MAM-001:
+  a licença tem validade e condições; vencida, ela não autoriza a atividade.
+- RN-MAM-002:
+  resultado não conforme gera prazo de adequação e nova vistoria.
+- RN-MAM-003:
+  o monitoramento compara o valor medido com o limite legal.
+- RN-MAM-004:
+  a referência territorial vem do DOM-TEL ou DOM-GEO, sem cópia.
+end note
+
+note bottom of LicenciamentoAmbiental
+Capacidades previstas (6):
+
+- Licenciamento Ambiental
+- Fiscalização
+- Resíduos Sólidos
+- Recursos Naturais
+- Áreas Protegidas
+- Monitoramento Ambiental
+end note
+
+@enduml

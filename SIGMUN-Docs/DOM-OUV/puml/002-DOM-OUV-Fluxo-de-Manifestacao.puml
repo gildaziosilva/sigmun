@@ -1,0 +1,156 @@
+@startuml
+title DOM-OUV — Fluxo de Manifestação
+
+legend
+SIGMUN
+DOM-OUV — Ouvidoria Municipal
+Manifestações, Denúncias e LAI
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:Receber manifestação;
+
+:Registrar canal de origem;
+:Gerar protocolo;
+:Registrar data e hora;
+
+if (Manifestação identificada?) then (Sim)
+  :Identificar cidadão
+  ou registrar anonimato;
+
+  :Registrar assunto;
+  :Registrar descrição;
+
+else (Não)
+  :Solicitar complementação;
+
+  if (Informações suficientes?) then (Sim)
+    :Continuar registro;
+  else (Não)
+    :Registrar impossibilidade
+    de tratamento;
+    :Comunicar encerramento;
+    stop
+  endif
+endif
+
+:Executar triagem;
+:Classificar manifestação;
+
+if (É pedido LAI?) then (Sim)
+
+  :Criar pedido LAI;
+  :Identificar órgão responsável;
+  :Calcular prazo legal;
+
+  :Encaminhar para autoridade
+  ou unidade competente;
+
+  :Analisar pedido;
+
+  if (Informação disponível?) then (Sim)
+
+    if (Informação possui restrição?) then (Sim)
+      :Aplicar restrição legal;
+      :Preparar acesso parcial
+      ou resposta fundamentada;
+    else (Não)
+      :Preparar informação
+      para acesso;
+    endif
+
+  else (Não)
+    :Registrar inexistência,
+    impossibilidade ou
+    indisponibilidade da informação;
+  endif
+
+  :Elaborar resposta LAI;
+  :Comunicar requerente;
+
+  if (Recurso apresentado?) then (Sim)
+    :Registrar recurso;
+    :Encaminhar para instância competente;
+    :Analisar recurso;
+    :Registrar decisão;
+    :Comunicar decisão;
+  else (Não)
+  endif
+
+elseif (É denúncia?) then (Sim)
+
+  :Criar registro de denúncia;
+  :Avaliar necessidade de
+  proteção de identidade;
+  :Classificar nível de acesso;
+  :Definir prioridade;
+
+  :Identificar órgão ou unidade
+  responsável pela apuração;
+
+  :Encaminhar para apuração;
+
+  :Registrar tratamento;
+
+  if (Necessita documentação?) then (Sim)
+    :Registrar / anexar documentos;
+  else (Não)
+  endif
+
+  :Receber resultado da apuração;
+
+  :Registrar resposta compatível
+  com as restrições aplicáveis;
+
+  :Comunicar manifestante
+  quando permitido;
+
+else (Manifestação geral)
+
+  :Classificar tipo;
+
+  if (Necessita encaminhamento?) then (Sim)
+    :Identificar órgão ou unidade competente;
+    :Encaminhar manifestação;
+  else (Não)
+  endif
+
+  :Registrar tratamento;
+
+  if (Necessita informação adicional?) then (Sim)
+    :Solicitar complementação;
+    :Registrar resposta do manifestante;
+  else (Não)
+  endif
+
+  :Elaborar resposta;
+  :Comunicar manifestante;
+
+endif
+
+:Verificar cumprimento dos prazos;
+
+if (Prazo excedido?) then (Sim)
+  :Registrar ocorrência de prazo;
+  :Notificar responsável;
+  :Escalonar conforme regra;
+else (Não)
+endif
+
+:Registrar conclusão;
+
+if (Avaliação disponível?) then (Sim)
+  :Solicitar avaliação;
+  :Registrar avaliação;
+else (Não)
+endif
+
+:Registrar eventos de auditoria;
+
+stop
+
+@enduml

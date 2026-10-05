@@ -1,0 +1,42 @@
+@startuml
+title DOM-IMO — Máquina de Estados
+
+legend
+SIGMUN
+DOM-IMO — Cadastro Imobiliário
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide empty description
+
+[*] --> Ativo : cadastro do imóvel (RN-IMO-001)
+Ativo --> EmObra : início de obra (RN-IMO-004)
+Ativo --> Inativo : suspensão de uso (RN-IMO-004)
+Inativo --> Ativo : reativação (RN-IMO-004)
+EmObra --> Ativo : obra concluída (RN-IMO-004)
+Ativo --> Desocupado : ocupação encerrada
+Desocupado --> Ativo : nova ocupação
+Ativo --> Demolido : demolição registrada
+Demolido --> [*]
+state Ativo
+state EmObra
+state Inativo
+state Desocupado
+state Demolido
+
+note right of Demolido
+A alteração de situação é feita por
+uso dedicado da API e respeita a
+máquina de estados (RN-IMO-004).
+end note
+
+note bottom of Ativo
+A avaliação de valor venal percorre
+RASCUNHO -> CONCLUIDA | CANCELADA
+(RN-IMO-005).
+end note
+
+@enduml

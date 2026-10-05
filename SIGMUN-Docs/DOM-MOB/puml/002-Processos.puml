@@ -1,0 +1,44 @@
+@startuml
+title DOM-MOB — Processos
+
+legend
+SIGMUN
+DOM-MOB — Mobilidade e Serviços de Campo
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Vincular o dispositivo;
+:Distribuir a ordem de serviço;
+:Assinar a ordem no campo;
+:Executar com registro offline;
+:Capturar evidências e geoponto;
+:Sincronizar os registros;
+:Tratar conflitos de sincronização;
+:Concluir e liberar a ordem;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de OrdemCampo.
+
+Modelo proposto: capacidades previstas: 6.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-MOB-001
+- RN-MOB-002
+- RN-MOB-003
+- RN-MOB-004
+end note
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml
+title SIGMUN — Fluxo de Dados
+
+legend
+SIGMUN
+SIGMUN — Arquitetura Corporativa
+Fluxo de Dados — Ciclo de uma requisição
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+start
+:Usuário envia requisição HTTP;
+:Roteador valida esquema e autentica;
+:Caso de uso aplica a regra de negócio;
+:Entidade é alterada ou consultada;
+:Repositório persiste no schema do domínio;
+:Evento de auditoria é registrado;
+:Resposta JSON é serializada;
+:Resposta HTTP ao usuário;
+
+if (tarefa assíncrona?) then (yes)
+  :Publicar na fila Celery;
+  :Worker processa fora do ciclo da requisição;
+  :Atualizar o estado no PostgreSQL;
+  :Registrar resultado na outbox;
+else (no)
+  :Concluir a transação;
+endif
+
+:Cache Redis atualizado quando aplicável;
+stop
+
+note left
+Fluxo síncrono: interface, API, caso de uso,
+domínio, infraestrutura e PostgreSQL.
+
+Sem chave estrangeira entre schemas de
+domínios: a relação é feita por
+identificador opaco e contrato (DOM-INT).
+end note
+
+note right
+Transação: a escrita e o evento de auditoria
+ocorrem na mesma unidade de trabalho;
+a falha reverte a operação.
+end note
+
+@enduml

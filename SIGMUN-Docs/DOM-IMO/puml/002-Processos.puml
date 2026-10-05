@@ -1,0 +1,50 @@
+@startuml
+title DOM-IMO — Processos
+
+legend
+SIGMUN
+DOM-IMO — Cadastro Imobiliário
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:Cadastrar Imovel;
+:Atualizar Imovel;
+:Alterar Situacao Imovel;
+:Excluir Imovel;
+:Vincular Proprietario;
+:Remover Proprietario;
+:Avaliar Imovel;
+:Concluir Avaliacao;
+:Cancelar Avaliacao;
+:Registrar Caracteristica;
+:E mais 1 casos de uso;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Imovel.
+
+Casos de uso no código: 11.
+Entidades do domínio: 5.
+Tabelas mapeadas: 5.
+end note
+
+note right
+Validações (7):
+
+- RN-IMO-001
+- RN-IMO-002
+- RN-IMO-003
+- RN-IMO-004
+- RN-IMO-005
+- RN-IMO-006
+- e mais 1
+end note
+
+@enduml

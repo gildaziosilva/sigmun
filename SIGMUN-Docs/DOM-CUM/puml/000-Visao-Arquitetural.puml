@@ -1,0 +1,100 @@
+@startuml
+title DOM-CUM — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-CUM — Cadastro Único Municipal
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-CUM — Cadastro Único Municipal" {
+  component "API\n/api/v1/cadastro" as API
+  component "RegistrarPessoa" as UC0
+  component "ConsultarPessoa" as UC1
+  component "ListarPessoas" as UC2
+  component "AtualizarPessoaFisica" as UC3
+  component "AtualizarPessoaJuridica" as UC4
+  component "AlterarCategoriaPessoa" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-PES\nGestão de Pessoas" as DPES
+  component "DOM-IDN\nIdentidade e Acesso" as DIDN
+}
+
+package "Serviços Transversais" {
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema core" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : POST
+API --> UC1 : GET
+API --> UC2 : GET
+API --> UC3 : PATCH
+API --> UC4 : PATCH
+API --> UC5 : PATCH
+
+API --> DPES : troca de dados
+API --> DIDN : troca de dados
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-CUM cobre Cadastro Único Municipal.
+
+A API expõe 12 operações
+em 1 prefixo.
+
+12 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (9):
+
+- RN-CUM-001
+- RN-CUM-002
+- RN-CUM-003
+- RN-CUM-004
+- RN-CUM-005
+- RN-CUM-006
+- e mais 3
+end note
+
+note bottom of DB
+7 tabelas mapeadas:
+
+- contatos
+- documentos
+- enderecos
+- pessoas
+- pessoas_fisicas
+- pessoas_juridicas
+- e mais 1
+end note
+
+@enduml

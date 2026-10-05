@@ -1,0 +1,138 @@
+@startuml
+title DOM-MET — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-MET — Metadados
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Outras entidades" {
+
+class Metadado <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +tipo_dado: TipoDadoMetadado
+  +obrigatorio: bool
+  +multi_valor: bool
+  +aplicavel_a: list
+  +valor_padrao: string
+  +status: StatusMetadado
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class ValorMetadado <<Entity>> {
+  +id: string
+  +metadado_id: string
+  +entidade_tipo: string
+  +entidade_id: string
+  +valor: string
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class Classificacao <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +tipo: TipoClassificacao
+  +nivel: int
+  +cor: string
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class Taxonomia <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +termos_ids: list
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class TermoTaxonomia <<Entity>> {
+  +id: string
+  +taxonomia_id: string
+  +termo_pai_id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +sinonimos: list
+  +ordem: int
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoDadoMetadado {
+  TEXTO = 'texto'
+  NUMERO = 'numero'
+  DATA = 'data'
+  BOOLEANO = 'booleano'
+  LISTA = 'lista'
+  JSON = 'json'
+}
+
+enum StatusMetadado {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+}
+
+enum TipoClassificacao {
+  CONFIDENCIALIDADE = 'confidencialidade'
+  ASSUNTO = 'assunto'
+  RETENCAO = 'retencao'
+  ORIGEM = 'origem'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Metadado "1" *-- "0..*" ValorMetadado : "metadado_id"
+Taxonomia "1" *-- "0..*" TermoTaxonomia : "taxonomia_id"
+Metadado --> TipoDadoMetadado
+Metadado --> StatusMetadado
+Classificacao --> TipoClassificacao
+
+
+note bottom of Metadado
+Comportamentos (32):
+
+- Metadado.esta_ativo
+- Metadado.ativar
+- Metadado.desativar
+- Metadado.adicionar_aplicavel
+- Metadado.remover_aplicavel
+- Metadado.is_active
+- Metadado.activate
+- Metadado.deactivate
+- Metadado.add_aplicavel
+- Metadado.remove_aplicavel
+- e mais 22
+end note
+
+@enduml

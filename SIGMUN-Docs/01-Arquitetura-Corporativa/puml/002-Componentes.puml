@@ -1,0 +1,109 @@
+@startuml
+title SIGMUN — Componentes
+
+legend
+SIGMUN
+SIGMUN — Arquitetura Corporativa
+Componentes — Mapa de componentes do código
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "src/core — núcleo compartilhado" {
+  component "Aplicação (use cases e portas)" as C_application
+  component "Domínio (entidades e regras)" as C_domain
+  component "Infraestrutura (repositórios)" as C_infrastructure
+  component "Apresentação (APIs e schemas)" as C_presentation
+}
+
+package "src/modules — domínios" {
+  component "○ sigmun_administracao" as M_sigmun_administracao
+  component "○ sigmun_agricultura" as M_sigmun_agricultura
+  component "○ sigmun_almoxarifado" as M_sigmun_almoxarifado
+  component "● sigmun_assistencia_social" as M_sigmun_assistencia_social
+  component "● sigmun_cadastro" as M_sigmun_cadastro
+  component "● sigmun_cadastro_imobiliario" as M_sigmun_cadastro_imobiliario
+  component "● sigmun_compras" as M_sigmun_compras
+  component "● sigmun_con" as M_sigmun_con
+  component "○ sigmun_contabilidade" as M_sigmun_contabilidade
+  component "○ sigmun_controladoria" as M_sigmun_controladoria
+  component "● sigmun_dad" as M_sigmun_dad
+  component "● sigmun_dia" as M_sigmun_dia
+  component "● sigmun_educacao" as M_sigmun_educacao
+  component "○ sigmun_financas" as M_sigmun_financas
+  component "● sigmun_frotas" as M_sigmun_frotas
+  component "○ sigmun_gabinete" as M_sigmun_gabinete
+  component "● sigmun_gdo" as M_sigmun_gdo
+  component "● sigmun_geoinformacao" as M_sigmun_geoinformacao
+  component "● sigmun_idn" as M_sigmun_idn
+  component "● sigmun_int" as M_sigmun_int
+  component "○ sigmun_licitacoes" as M_sigmun_licitacoes
+  component "● sigmun_met" as M_sigmun_met
+  component "● sigmun_obras" as M_sigmun_obras
+  component "● sigmun_orc" as M_sigmun_orc
+  component "○ sigmun_ouvidoria" as M_sigmun_ouvidoria
+  component "● sigmun_patrimonio" as M_sigmun_patrimonio
+  component "○ sigmun_planejamento" as M_sigmun_planejamento
+  component "○ sigmun_procuradoria" as M_sigmun_procuradoria
+  component "● sigmun_rh" as M_sigmun_rh
+  component "● sigmun_saude" as M_sigmun_saude
+  component "● sigmun_seg" as M_sigmun_seg
+  component "● sigmun_territorial" as M_sigmun_territorial
+  component "○ sigmun_transparencia" as M_sigmun_transparencia
+  component "● sigmun_tributos" as M_sigmun_tributos
+}
+
+package "src/shared — compartilhado" {
+  component "Configuração e Celery" as S_config
+  component "Constantes" as S_constants
+  component "Exceções" as S_exceptions
+  component "Middleware" as S_middleware
+  component "Segurança" as S_security
+  component "Tarefas assíncronas" as S_tasks
+  component "Utilitários" as S_utils
+}
+
+package "Interfaces" {
+  component "frontend/admin" as F_admin
+  component "frontend/portal-cidadao" as F_cidadao
+  component "frontend/portal-fornecedor" as F_fornecedor
+  component "mobile/*" as MOB
+}
+
+package "Persistência e Infraestrutura" {
+  component "alembic/versions" as MIG
+  component "infra/docker" as IDOCKER
+  component "infra/kubernetes" as IKUBE
+  component "infra/terraform" as ITF
+  component "docker-compose.yml" as COMPOSE
+}
+
+F_admin --> C_presentation : HTTP / REST
+F_cidadao --> C_presentation : HTTP / REST
+F_fornecedor --> C_presentation : HTTP / REST
+MOB --> C_presentation : HTTP / REST
+
+C_presentation --> C_application
+C_application --> C_domain
+C_infrastructure --> C_domain
+C_infrastructure --> MIG
+
+note right of C_presentation
+As interfaces HTTP de todos os domínios
+são registradas em src/main.py.
+end note
+
+note bottom of M_sigmun_territorial
+● módulo com implementação identificada\n○ módulo preparado (scaffolding)
+end note
+
+note bottom of COMPOSE
+Ambiente local com PostgreSQL 15, Redis 7,
+backend, três frontends, worker, beat e flower.
+end note
+
+@enduml

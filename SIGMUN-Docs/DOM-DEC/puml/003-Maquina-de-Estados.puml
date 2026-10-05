@@ -1,0 +1,45 @@
+@startuml
+title DOM-DEC — Máquina de Estados
+
+legend
+SIGMUN
+DOM-DEC — Desenvolvimento Econômico
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Proposto : proposição do programa
+Proposto --> Aprovado : aprovação do colegiado
+Aprovado --> EmExecucao : publicar e abrir adesões
+EmExecucao --> Concluido : encerramento com resultado (RN-DEC-004)
+EmExecucao --> Cancelado : cancelar programa
+Concluido --> [*]
+Cancelado --> [*]
+state Proposto
+state Aprovado
+state EmExecucao
+state Concluido
+state Cancelado
+
+note right of EmExecucao
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+O empreendimento referencia a pessoa
+jurídica do DOM-CUM por identificador
+(RN-DEC-001); adesões somente com o
+programa em execução (RN-DEC-002).
+end note
+
+note bottom of Concluido
+Investimento e empregos aferidos no
+encerramento alimentam os indicadores
+econômicos do DOM-IND (RN-DEC-003 e
+RN-DEC-004).
+end note
+
+@enduml

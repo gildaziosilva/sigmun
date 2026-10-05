@@ -1,0 +1,131 @@
+@startuml
+title DOM-IND — Persistência
+
+legend
+SIGMUN
+DOM-IND — Indicadores e Desempenho
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema ind" {
+
+  entity "indicadores" as Tindicadores {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    categoria : TEXT <<NN>>
+    formula : TEXT <<NN>>
+    unidade : TEXT <<NN>>
+    periodicidade : TEXT <<NN>>
+    fonte_ref : TEXT <<NN>>
+    responsavel : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "metas_indicador" as Tmetas_indicador {
+    id : UUID <<PK>>
+    indicador_id : TEXT <<NN>>
+    exercicio : INTEGER <<NN>>
+    valor_base : FLOAT
+    valor_alvo : FLOAT <<NN>>
+    prazo : DATE <<NN>>
+    responsavel : TEXT
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "coletas_indicador" as Tcoletas_indicador {
+    id : UUID <<PK>>
+    indicador_id : TEXT <<NN>>
+    exercicio : INTEGER <<NN>>
+    periodo : TEXT <<NN>>
+    valor : FLOAT <<NN>>
+    fonte : TEXT <<NN>>
+    data_coleta : DATE <<NN>>
+    validado : BOOLEAN <<NN>>
+    observacao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "paineis" as Tpaineis {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    publico : BOOLEAN <<NN>>
+    periodicidade : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    ultimo_atualizacao : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+indicadores ||--o{ metas_indicador : "indicador_id"
+indicadores ||--o{ coletas_indicador : "indicador_id"
+
+note right of Tindicadores
+Indicador
+
+15 colunas propostas.
+
+Indicador corporativo com fórmula, unidade e fonte de dados.
+end note
+
+note right of Tmetas_indicador
+MetaIndicador
+
+12 colunas propostas.
+
+Meta anual de um indicador com valor base e alvo.
+end note
+
+note right of Tcoletas_indicador
+ColetaIndicador
+
+13 colunas propostas.
+
+Valor apurado do indicador em um período.
+end note
+
+note right of Tpaineis
+Painel
+
+12 colunas propostas.
+
+Painel de indicadores publicado para um público definido.
+end note
+
+note left of Tindicadores
+4 tabelas propostas no schema ind.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

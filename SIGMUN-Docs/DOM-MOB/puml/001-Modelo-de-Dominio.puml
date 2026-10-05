@@ -1,0 +1,150 @@
+@startuml
+title DOM-MOB — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-MOB — Mobilidade e Serviços de Campo
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-MOB" {
+
+class DispositivoMovel <<Entity>> {
+  +id: string
+  +codigo: string
+  +identificador: string
+  +modelo: string
+  +pessoa_id: string
+  +versao_app: string
+  +ultimo_acesso: datetime
+  +sincronizado_em: datetime
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class OrdemCampo <<Entity>> {
+  +id: string
+  +numero: string
+  +titulo: string
+  +tipo: string
+  +dispositivo_id: string
+  +responsavel_id: string
+  +bairro_id: string
+  +prioridade: int
+  +situacao: string
+  +data_abertura: date
+  +data_conclusao: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class EvidenciaCampo <<Entity>> {
+  +id: string
+  +ordem_id: string
+  +tipo: string
+  +arquivo_ref: string
+  +latitude: decimal
+  +longitude: decimal
+  +data_captura: datetime
+  +hash: string
+  +sincronizada: bool
+  +observacao: texto
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class RegistroSincronizacao <<Entity>> {
+  +id: string
+  +dispositivo_id: string
+  +data_inicio: datetime
+  +data_fim: datetime
+  +registros_enviados: int
+  +registros_recebidos: int
+  +conflitos: int
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoOrdemCampo {
+  VISTORIA = 'vistoria'
+  COLETA = 'coleta'
+  MANUTENCAO = 'manutencao'
+  LEVANTAMENTO = 'levantamento'
+  OUTRO = 'outro'
+}
+
+enum SituacaoOrdemCampo {
+  ABERTA = 'aberta'
+  ASSINADA = 'assinada'
+  EM_CAMPO = 'em_campo'
+  CONCLUIDA = 'concluida'
+  CANCELADA = 'cancelada'
+}
+
+enum SituacaoSincronizacao {
+  EM_ANDAMENTO = 'em_andamento'
+  CONCLUIDA = 'concluida'
+  COM_CONFLITO = 'com_conflito'
+  FALHA = 'falha'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+DispositivoMovel "1" *-- "0..*" OrdemCampo : "dispositivo_id"
+OrdemCampo "1" *-- "0..*" EvidenciaCampo : "ordem_id"
+DispositivoMovel "1" *-- "0..*" RegistroSincronizacao : "dispositivo_id"
+
+OrdemCampo --> TipoOrdemCampo
+OrdemCampo --> SituacaoOrdemCampo
+RegistroSincronizacao --> SituacaoSincronizacao
+
+note right of OrdemCampo
+Regras propostas (4):
+
+- RN-MOB-001:
+  o dispositivo é vinculado a pessoa e mantém a última sincronização.
+- RN-MOB-002:
+  a ordem executa offline e só conclui após sincronizar.
+- RN-MOB-003:
+  a evidência preserva data de captura, geolocalização e integridade do arquivo.
+- RN-MOB-004:
+  conflito de sincronização não sobrescreve dado sem decisão.
+end note
+
+note bottom of OrdemCampo
+Capacidades previstas (6):
+
+- Dispositivos Móveis
+- Aplicativos de Campo
+- Ordens de Serviço
+- Captura de Evidências
+- Geolocalização
+- Sincronização e Operação Offline
+end note
+
+@enduml

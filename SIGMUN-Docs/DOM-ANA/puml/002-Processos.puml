@@ -1,0 +1,44 @@
+@startuml
+title DOM-ANA — Processos
+
+legend
+SIGMUN
+DOM-ANA — Analytics e Inteligência
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Formular a pergunta de negócio;
+:Selecionar a fonte de dados;
+:Preparar e transformar os dados;
+:Treinar ou calibrar o modelo;
+:Executar a análise;
+:Validar o resultado;
+:Publicar a recomendação;
+:Monitorar o modelo em uso;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Analise.
+
+Modelo proposto: capacidades previstas: 5.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-ANA-001
+- RN-ANA-002
+- RN-ANA-003
+- RN-ANA-004
+end note
+
+@enduml

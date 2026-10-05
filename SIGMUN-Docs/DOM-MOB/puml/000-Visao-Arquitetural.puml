@@ -1,0 +1,96 @@
+@startuml
+title DOM-MOB — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-MOB — Mobilidade e Serviços de Campo
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-MOB — Mobilidade e Serviços de Campo" {
+  component "API\n/api/v1/mob" as API
+  component "Dispositivos Móveis" as UC0
+  component "Aplicativos de Campo" as UC1
+  component "Ordens de Serviço" as UC2
+  component "Captura de Evidências" as UC3
+  component "Geolocalização" as UC4
+  component "Sincronização e Operação Offline" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-GEO\nGeoinformação Municipal" as DGEO
+  component "DOM-TEL\nGestão Territorial" as DTEL
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema mob" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : previsto
+API --> UC1 : previsto
+API --> UC2 : previsto
+API --> UC3 : previsto
+API --> UC4 : previsto
+API --> UC5 : previsto
+
+API --> DGEO : troca de dados (prevista)
+API --> DTEL : troca de dados (prevista)
+API --> IDN : autenticação e autorização
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-MOB cobre Mobilidade e Serviços de Campo.
+
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Capacidades previstas para /api/v1/mob.
+end note
+
+note bottom of API
+Regras propostas (4):
+
+- RN-MOB-001
+- RN-MOB-002
+- RN-MOB-003
+- RN-MOB-004
+end note
+
+note bottom of DB
+4 tabelas propostas:
+
+- dispositivos_moveis
+- ordens_campo
+- evidencias_campo
+- sincronizacoes
+end note
+
+@enduml

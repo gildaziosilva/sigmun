@@ -1,0 +1,132 @@
+@startuml
+title DOM-PLA — Persistência
+
+legend
+SIGMUN
+DOM-PLA — Planejamento Governamental
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema pla" {
+
+  entity "planos_estrategicos" as Tplanos_estrategicos {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    titulo : TEXT <<NN>>
+    exercicio_inicio : INTEGER <<NN>>
+    exercicio_fim : INTEGER <<NN>>
+    visao : TEXT
+    missao : TEXT
+    situacao : TEXT <<NN>>
+    data_aprovacao : DATE
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "programas" as Tprogramas {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    plano_id : TEXT <<NN>>
+    objetivo : TEXT <<NN>>
+    valor_previsto : FLOAT <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "projetos" as Tprojetos {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    programa_id : TEXT <<NN>>
+    responsavel : TEXT <<NN>>
+    data_inicio : DATE
+    data_fim_prevista : DATE
+    custo_previsto : FLOAT <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "metas" as Tmetas {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    descricao : TEXT <<NN>>
+    programa_id : TEXT <<NN>>
+    indicador_ref : TEXT
+    valor_base : FLOAT
+    valor_alvo : FLOAT <<NN>>
+    prazo : DATE <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+planos_estrategicos ||--o{ programas : "plano_id"
+programas ||--o{ projetos : "programa_id"
+programas ||--o{ metas : "programa_id"
+
+note right of Tplanos_estrategicos
+PlanoEstrategico
+
+13 colunas propostas.
+
+Plano estratégico do município no exercício.
+end note
+
+note right of Tprogramas
+Programa
+
+12 colunas propostas.
+
+Programa de governo vinculado a um plano estratégico.
+end note
+
+note right of Tprojetos
+Projeto
+
+14 colunas propostas.
+
+Projeto de execução vinculado a um programa.
+end note
+
+note right of Tmetas
+Meta
+
+13 colunas propostas.
+
+Meta de programa com valor base, alvo e prazo.
+end note
+
+note left of Tplanos_estrategicos
+4 tabelas propostas no schema pla.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

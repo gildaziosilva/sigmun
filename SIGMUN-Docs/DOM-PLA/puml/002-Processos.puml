@@ -1,0 +1,44 @@
+@startuml
+title DOM-PLA — Processos
+
+legend
+SIGMUN
+DOM-PLA — Planejamento Governamental
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Elaborar o plano estratégico;
+:Aprovar o plano;
+:Estruturar os programas;
+:Definir projetos e responsáveis;
+:Fixar metas e prazos;
+:Acompanhar a execução;
+:Avaliar resultados;
+:Encerrar ou replanejar;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Projeto.
+
+Modelo proposto: capacidades previstas: 5.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-PLA-001
+- RN-PLA-002
+- RN-PLA-003
+- RN-PLA-004
+end note
+
+@enduml

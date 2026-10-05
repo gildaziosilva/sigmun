@@ -1,0 +1,171 @@
+@startuml
+title DOM-GEO — Persistência
+
+legend
+SIGMUN
+DOM-GEO — Geoinformação Municipal
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema geo" {
+
+  entity "camadas_mapa" as Tcamadas_mapa {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    formato : TEXT <<NN>>
+    fonte : TEXT
+    data_atualizacao : DATE <<NN>>
+    datum : TEXT <<NN>>
+    srid : INTEGER <<NN>>
+    url_servico : TEXT
+    zoom_minimo : INTEGER <<NN>>
+    zoom_maximo : INTEGER <<NN>>
+    visivel : BOOLEAN <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "features_geo" as Tfeatures_geo {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    camada_id : TEXT <<NN>>
+    geometria : TEXT <<NN>>
+    latitude : FLOAT <<NN>>
+    longitude : FLOAT <<NN>>
+    vertices : JSON
+    datum : TEXT <<NN>>
+    atributos : JSON
+    criado_por : TEXT
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "mapas_camadas" as Tmapas_camadas {
+    id : UUID <<PK>>
+    mapa_id : TEXT <<NN>>
+    camada_id : TEXT <<NN>>
+    ordem : INTEGER <<NN>>
+    opacidade : FLOAT <<NN>>
+    visivel : BOOLEAN <<NN>>
+    rotulo : TEXT
+    created_at : DATETIME <<NN>>
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "mapas_sig" as Tmapas_sig {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    datum : TEXT <<NN>>
+    srid : INTEGER <<NN>>
+    escala_denominador : INTEGER <<NN>>
+    zoom_inicial : INTEGER <<NN>>
+    zoom_minimo : INTEGER <<NN>>
+    zoom_maximo : INTEGER <<NN>>
+    lat_min : FLOAT
+    lon_min : FLOAT
+    lat_max : FLOAT
+    lon_max : FLOAT
+    publicado_em : DATETIME
+    criado_por : TEXT
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "servicos_geo" as Tservicos_geo {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    url : TEXT
+    camada : TEXT
+    datum : TEXT <<NN>>
+    srid : INTEGER <<NN>>
+    zoom_minimo : INTEGER <<NN>>
+    zoom_maximo : INTEGER <<NN>>
+    publico : BOOLEAN <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+note right of Tcamadas_mapa
+CamadaMapaModel
+
+19 colunas mapeadas.
+
+Modelo de camadas cartográficas do geoportal municipal.
+end note
+
+note right of Tfeatures_geo
+FeatureGeoModel
+
+16 colunas mapeadas.
+
+Modelo de elementos geoespaciais (pontos de interesse) (RN-GEO-003).
+end note
+
+note right of Tmapas_camadas
+MapaCamadaModel
+
+10 colunas mapeadas.
+
+Modelo da composição mapa ↔ camada (RN-GEO-004).
+end note
+
+note right of Tmapas_sig
+MapaSigModel
+
+22 colunas mapeadas.
+
+Modelo de mapas SIG publicados no geoportal municipal.
+end note
+
+note right of Tservicos_geo
+ServicoGeoModel
+
+17 colunas mapeadas.
+
+Modelo de serviços geoespaciais publicados (RN-GEO-007).
+end note
+
+note left of Tcamadas_mapa
+5 tabelas no schema geo.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

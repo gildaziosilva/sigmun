@@ -1,0 +1,87 @@
+@startuml
+title DOM-DAD — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-DAD — Desativação de Bens
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-DAD — Desativação de Bens" {
+  component "API\nsem prefixo" as API
+  component "CriarLinhagem" as UC0
+  component "AtualizarLinhagem" as UC1
+  component "BuscarLinhagem" as UC2
+  component "DeletarLinhagem" as UC3
+  component "CriarPolitica" as UC4
+  component "AtualizarPolitica" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-PAT\nPatrimônio" as DPAT
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema dad" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+
+note left
+Nenhum router registrado no servidor:
+a capacidade existe no código,
+mas não está exposta em /api.
+end note
+
+API --> DPAT : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-DAD cobre desativação de bens.
+
+Nenhuma rota está registrada no
+servidor: a capacidade existe no
+código, mas não é exposta.
+
+20 casos de uso no código.
+end note
+
+note bottom of DB
+5 tabelas mapeadas:
+
+- ativos_dados
+- catalogos
+- linhagens
+- politicas
+- qualidade_dados
+end note
+
+@enduml

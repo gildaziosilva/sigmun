@@ -1,0 +1,62 @@
+@startuml
+title DOM-MAM — Integrações
+
+legend
+SIGMUN
+DOM-MAM — Meio Ambiente
+Integrações — Troca de dados com outros domínios
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Domínio de Origem" {
+  component "DOM-MAM\nMeio Ambiente" as ORIGEM
+}
+
+package "Domínios Destino" {
+  component "DOM-TEL\nGestão Territorial" as DTEL
+  component "DOM-GEO\nGeoinformação Municipal" as DGEO
+  component "DOM-MOB\nMobilidade e Serviços de Campo" as DMOB
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "DOM-INT\nInteroperabilidade" as INT
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL" as DB
+
+ORIGEM --> DTEL : dados do domínio (prevista)
+ORIGEM --> DGEO : dados do domínio (prevista)
+ORIGEM --> DMOB : dados do domínio (prevista)
+ORIGEM --> IDN : autenticação
+ORIGEM --> GDO : anexos e documentos
+ORIGEM --> MET : metadados
+ORIGEM --> INT : troca de dados
+ORIGEM --> AUD : trilha de auditoria
+ORIGEM --> DB : persistência própria
+
+note right of ORIGEM
+DOM-MAM como origem da integração.
+
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Contratos previstos em /api/v1/mam.
+Entidade central: LicenciamentoAmbiental.
+end note
+
+note bottom of AUD
+Todo evento com efeito no orçamento
+ou no patrimônio é registrado com
+autor, data e valor antes e depois.
+end note
+
+@enduml

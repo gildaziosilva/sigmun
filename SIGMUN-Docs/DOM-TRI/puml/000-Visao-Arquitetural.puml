@@ -1,0 +1,100 @@
+@startuml
+title DOM-TRI — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-TRI — Tributos
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-TRI — Tributos" {
+  component "API\n/api/v1/tri" as API
+  component "CadastrarContribuinte" as UC0
+  component "CadastrarImovel" as UC1
+  component "LancarTributo" as UC2
+  component "PagarLancamento" as UC3
+  component "InscreverDividaAtiva" as UC4
+  component "BaixarDividaAtiva" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-ORC\nOrçamento Público" as DORC
+  component "DOM-PES\nCadastro" as DPES
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema trib" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : GET
+API --> UC1 : POST
+
+API --> DORC : troca de dados
+API --> DPES : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-TRI cobre tributos.
+
+A API expõe 16 operações
+em 1 prefixo.
+
+7 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (11):
+
+- RN-TRI-001
+- RN-TRI-002
+- RN-TRI-010
+- RN-TRI-011
+- RN-TRI-020
+- RN-TRI-021
+- RN-TRI-022
+- RN-TRI-030
+- RN-TRI-031
+- RN-TRI-040
+- e mais 1
+end note
+
+note bottom of DB
+5 tabelas mapeadas:
+
+- contribuintes
+- imoveis
+- lancamentos
+- divida_ativa
+- certidoes
+end note
+
+@enduml

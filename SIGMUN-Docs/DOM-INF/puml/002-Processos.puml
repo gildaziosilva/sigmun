@@ -1,0 +1,43 @@
+@startuml
+title DOM-INF — Processos
+
+legend
+SIGMUN
+DOM-INF — Infraestrutura Tecnológica
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Catalogar o recurso;
+:Vincular o recurso ao ambiente;
+:Monitorar as métricas;
+:Tratar o incidente;
+:Executar a manutenção programada;
+:Descomissionar o recurso;
+:Atualizar o inventário;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de RecursoInfraestrutura.
+
+Modelo proposto: capacidades previstas: 6.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-INF-001
+- RN-INF-002
+- RN-INF-003
+- RN-INF-004
+end note
+
+@enduml

@@ -1,0 +1,181 @@
+@startuml
+title DOM-DIA — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-DIA — Diárias e Viagens
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-DIA" {
+
+class Diaria <<Entity>> {
+  +id: string
+  +viagem_id: string
+  +servidor_id: string
+  +dota_id: string
+  +categoria: string
+  +descricao: string
+  +data_inicio: datetime
+  +data_fim: datetime
+  +valor_diaria: decimal
+  +valor_total: decimal
+  +status: string
+  +data_solicitacao: datetime
+  +data_autorizacao: datetime
+  +data_calculo: datetime
+  +data_concessao: datetime
+  +data_inicio_prestacao: datetime
+  +data_fim_prestacao: datetime
+  +data_pagamento: datetime
+  +data_aprovacao: datetime
+  +data_glosa: datetime
+  +data_restituicao: datetime
+  +data_cancelamento: datetime
+  +motivo_cancelamento: string
+  +motivo_glosa: string
+  +valor_glosado: decimal
+  +documento_prestacao_id: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +updated_by: string
+  +is_deleted: bool
+}
+
+class EventoDiaria <<Entity>> {
+  +id: string
+  +diaria_id: string
+  +status_anterior: string
+  +status_posterior: string
+  +usuario_id: string
+  +motivo: string
+  +data_evento: datetime
+  +detalhes: string
+}
+
+class PrestacaoContas <<Entity>> {
+  +id: string
+  +diaria_id: string
+  +servidor_id: string
+  +dota_id: string
+  +data_emissao: datetime
+  +data_vencimento: datetime
+  +documento_id: string
+  +valor_previsto: decimal
+  +valor_apresentado: decimal
+  +valor_glosado: decimal
+  +valor_liquido: decimal
+  +status: string
+  +motivo_glosa: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Viagem <<Entity>> {
+  +id: string
+  +servidor_id: string
+  +dota_id: string
+  +motivo: string
+  +cargo_ocupado: string
+  +unidade_origem_id: string
+  +unidade_destino_id: string
+  +data_inicio: datetime
+  +data_fim: datetime
+  +destino: string
+  +is_antecipacao: bool
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum StatusDiaria {
+  SOLICITADA = 'solicitada'
+  AUTORIZADA = 'autorizada'
+  CALCULADA = 'calculada'
+  CONCEDIDA = 'concedida'
+  EM_PRESTACAO = 'em_prestacao'
+  PAGA = 'paga'
+  APROVADA = 'aprovada'
+  GLOSA = 'glosa'
+  RESTITUIDA = 'restituida'
+  CANCELADA = 'cancelada'
+}
+
+enum CategoriaDiaria {
+  EVENTO = 'evento'
+  REUNIAO = 'reuniao'
+  TREINAMENTO = 'treinamento'
+  VIAGEM_OFICIAL = 'viagem_oficial'
+  SERVICO_CONSULTIVO = 'servico_consultivo'
+}
+
+enum TipoDeslocamento {
+  TERRESTRE = 'terrestre'
+  AEREO = 'aereo'
+  FLUVIAL = 'fluvial'
+  MARITIMO = 'maritimo'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Viagem "1" *-- "0..*" Diaria : "viagem_id"
+Diaria "1" *-- "0..*" EventoDiaria : "diaria_id"
+Diaria "1" *-- "0..*" PrestacaoContas : "diaria_id"
+
+Diaria --> StatusDiaria
+Diaria --> CategoriaDiaria
+
+note right of Diaria
+Regras de negócio (15):
+
+- RN-DIA-001:
+  solicitação inicial da diária.
+- RN-DIA-002:
+  autorização da diária com o valor autorizado.
+- RN-DIA-003:
+  cálculo do valor total da diária.
+- RN-DIA-004:
+  autorização da diária.
+- RN-DIA-005:
+  cálculo do valor da diária.
+- RN-DIA-006:
+  confirmação da concessão da diária.
+- e mais 9
+end note
+
+note bottom of Diaria
+Comportamentos (19):
+
+- CriarViagemUseCase
+- AtualizarViagemUseCase
+- TramitarViagemUseCase
+- VisitarViagemUseCase
+- CriarDiariaUseCase
+- AtualizarDiariaUseCase
+- SolicitarDiariaUseCase
+- CriarPrestacaoContasUseCase
+- AprovarPrestacaoUseCase
+- GlosarPrestacaoUseCase
+- e mais 9
+end note
+
+@enduml

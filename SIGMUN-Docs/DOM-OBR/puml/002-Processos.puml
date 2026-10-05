@@ -1,0 +1,50 @@
+@startuml
+title DOM-OBR — Processos
+
+legend
+SIGMUN
+DOM-OBR — Obras e Infraestrutura
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:Cadastrar Obra;
+:Atualizar Obra;
+:Iniciar Execucao Obra;
+:Concluir Obra;
+:Suspender Obra;
+:Cancelar Obra;
+:Excluir Obra;
+:Registrar Medicao;
+:Aprovar Medicao;
+:Glosar Medicao;
+:E mais 7 casos de uso;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Obra.
+
+Casos de uso no código: 17.
+Entidades do domínio: 5.
+Tabelas mapeadas: 5.
+end note
+
+note right
+Validações (8):
+
+- RN-OBR-001
+- RN-OBR-002
+- RN-OBR-003
+- RN-OBR-004
+- RN-OBR-005
+- RN-OBR-006
+- e mais 2
+end note
+
+@enduml

@@ -1,0 +1,197 @@
+@startuml
+title DOM-TEL — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-TEL — Gestão Territorial
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-TEL" {
+
+class Bairro <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +tipo: string
+  +populacao_estimada: int
+  +area_km2: decimal
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Georreferencia <<Entity>> {
+  +id: string
+  +bairro_id: string
+  +logradouro_id: string
+  +geometria: string
+  +latitude: decimal
+  +longitude: decimal
+  +altitude_m: decimal
+  +vertices: json
+  +datum: string
+  +precisao_m: decimal
+  +data_levantamento: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Logradouro <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +tipo: string
+  +bairro_id: string
+  +cep: string
+  +numero_inicial: int
+  +numero_final: int
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class PlantaGenericaValores <<Entity>> {
+  +id: string
+  +ano: int
+  +bairro_id: string
+  +ocupacao: string
+  +valor_terreno_m2: decimal
+  +valor_construcao_m2: decimal
+  +aliquota_percent: decimal
+  +situacao: string
+  +legislacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoBairro {
+  BAIRRO = 'bairro'
+  DISTRITO = 'distrito'
+  SETOR = 'setor'
+  ZONA_RURAL = 'zona_rural'
+}
+
+enum SituacaoBairro {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+}
+
+enum TipoLogradouro {
+  RUA = 'rua'
+  AVENIDA = 'avenida'
+  TRAVESSA = 'travessa'
+  PRACA = 'praca'
+  RODOVIA = 'rodovia'
+  ESTRADA = 'estrada'
+  ALAMEDA = 'alameda'
+  PARQUE = 'parque'
+  OUTRO = 'outro'
+}
+
+enum SituacaoLogradouro {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+  EM_OBRA = 'em_obra'
+}
+
+enum TipoOcupacaoImovel {
+  RESIDENCIAL = 'residencial'
+  COMERCIAL = 'comercial'
+  INDUSTRIAL = 'industrial'
+  INSTITUCIONAL = 'institucional'
+  MISTO = 'misto'
+  TERRENO = 'terreno'
+}
+
+enum SituacaoPlantaValores {
+  RASCUNHO = 'rascunho'
+  VIGENTE = 'vigente'
+  REVOGADA = 'revogada'
+}
+
+enum DatumGeorreferencia {
+  SIRGAS2000 = 'sirgas2000'
+  SAD69 = 'sad69'
+  WGS84 = 'wgs84'
+}
+
+enum TipoGeometria {
+  PONTO = 'ponto'
+  LINHA = 'linha'
+  POLIGONO = 'poligono'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Bairro "1" *-- "0..*" Georreferencia : "bairro_id"
+Logradouro "1" *-- "0..*" Georreferencia : "logradouro_id"
+Bairro "1" *-- "0..*" Logradouro : "bairro_id"
+Bairro "1" *-- "0..*" PlantaGenericaValores : "bairro_id"
+
+Bairro --> TipoBairro
+Bairro --> SituacaoBairro
+Logradouro --> TipoLogradouro
+Logradouro --> SituacaoLogradouro
+PlantaGenericaValores --> TipoOcupacaoImovel
+PlantaGenericaValores --> SituacaoPlantaValores
+Georreferencia --> DatumGeorreferencia
+Georreferencia --> TipoGeometria
+
+note right of Bairro
+Regras de negócio (6):
+
+- RN-TEL-001:
+  O código da divisão territorial é único no cadastro municipal; código e nome são obrigatórios.
+- RN-TEL-002:
+  O código do logradouro é único e todo logradouro pertence a uma divisão territorial cadastrada.
+- RN-TEL-003:
+  Existe no máximo uma planta vigente para cada combinação de ano, divisão e ocupação.
+- RN-TEL-004:
+  A planta percorre `RASCUNHO -> VIGENTE -> REVOGADA`, sem retorno a partir de `REVOGADA`; a revogação exige justificativa e somente plantas em rascunho podem ser editadas.
+- RN-TEL-005:
+  A georreferência exige datum suportado, está vinculada a uma divisão **ou** a um logradouro (nunca a ambos), e seus vértices são validados quanto à faixa de coordenadas e à quantidade mínima do tipo de geometria.
+- RN-TEL-006:
+  Uma divisão territorial com logradouros ativos não pode ser excluída.
+end note
+
+note bottom of Bairro
+Comportamentos (12):
+
+- CadastrarBairroUseCase
+- AtualizarBairroUseCase
+- ExcluirBairroUseCase
+- CadastrarLogradouroUseCase
+- AtualizarLogradouroUseCase
+- ExcluirLogradouroUseCase
+- CadastrarPlantaValoresUseCase
+- AtualizarPlantaValoresUseCase
+- AtivarPlantaValoresUseCase
+- RevogarPlantaValoresUseCase
+- e mais 2
+end note
+
+@enduml

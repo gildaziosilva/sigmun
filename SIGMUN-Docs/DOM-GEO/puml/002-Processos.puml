@@ -1,0 +1,50 @@
+@startuml
+title DOM-GEO — Processos
+
+legend
+SIGMUN
+DOM-GEO — Geoinformação Municipal
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:Cadastrar Camada;
+:Atualizar Camada;
+:Ativar Camada;
+:Desativar Camada;
+:Excluir Camada;
+:Cadastrar Mapa;
+:Atualizar Mapa;
+:Compor Camada;
+:Remover Composicao;
+:Publicar Mapa;
+:E mais 8 casos de uso;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de MapaSig.
+
+Casos de uso no código: 18.
+Entidades do domínio: 5.
+Tabelas mapeadas: 5.
+end note
+
+note right
+Validações (8):
+
+- RN-GEO-001
+- RN-GEO-002
+- RN-GEO-003
+- RN-GEO-004
+- RN-GEO-005
+- RN-GEO-006
+- e mais 2
+end note
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+title DOM-ANA — Máquina de Estados
+
+legend
+SIGMUN
+DOM-ANA — Analytics e Inteligência
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Rascunho : desenho do modelo
+Rascunho --> EmValidacao : treinar e avaliar
+EmValidacao --> EmProducao : aprovar em produção (RN-ANA-002)
+EmValidacao --> Rascunho : ajustar desenho
+EmProducao --> Descontinuado : descontinuar versão
+Descontinuado --> [*]
+state Rascunho
+state EmValidacao
+state EmProducao
+state Descontinuado
+
+note right of EmValidacao
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+A fonte é referência externa ao domínio
+(RN-ANA-001) e a análise registra
+responsável e data (RN-ANA-003).
+end note
+
+note bottom of EmProducao
+Cada análise permanece rastreável: a
+recomendação referencia a análise de
+origem (RN-ANA-004).
+end note
+
+@enduml

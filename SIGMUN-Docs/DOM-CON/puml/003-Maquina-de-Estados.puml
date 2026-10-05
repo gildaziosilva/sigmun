@@ -1,0 +1,171 @@
+@startuml
+title DOM-CON — Máquina de Estados
+
+hide empty description
+
+legend
+SIGMUN
+DOM-CON — Contabilidade Pública
+Máquina de Estados
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+' =========================================================
+' EMPENHO — agregado raiz
+' =========================================================
+
+[*] --> Emitido : emissão do empenho
+
+Emitido --> Liquidado : primeira liquidação
+Emitido --> Anulado : anulação integral
+Emitido --> EmpenhoCancelado : cancelamento
+
+Liquidado --> Pago : liquidação e /\npagamento totais
+Liquidado --> Emitido : estorno zera /\no valor liquidado
+Liquidado --> EmpenhoCancelado : cancelamento
+
+Pago --> [*]
+Anulado --> [*]
+EmpenhoCancelado --> [*]
+
+note right of Emitido
+Estado inicial de todo empenho.
+
+O valor está comprometido com a
+dotação, mas nenhum direito adquirido
+foi reconhecido.
+end note
+
+note right of Liquidado
+Estado de execução normal da despesa.
+
+O retorno a EMITIDO ocorre somente
+quando o estorno zera integralmente o
+valor liquidado — e desde que o estorno
+não comprometa valor já pago.
+end note
+
+note right of Pago
+Estado terminal.
+
+Pagamento concluído: valor liquidado
+igual ao valor pago e sem saldo a
+liquidar.
+
+Um empenho pago não pode ser cancelado.
+end note
+
+note bottom of Anulado
+Estado terminal.
+
+A anulação devolve saldo à dotação no
+DOM-ORC e exige registro do motivo.
+end note
+
+note bottom of EmpenhoCancelado
+Estado terminal.
+
+O cancelamento encerra o empenho sem
+anulação de valores, usado quando o
+saldo é reclassificado ou bloqueado por
+decisão administrativa.
+end note
+
+' =========================================================
+' LIQUIDAÇÃO
+' =========================================================
+
+[*] --> LiquidacaoRegistrada : registro da liquidação
+
+LiquidacaoRegistrada --> LiquidacaoConfirmada : confirmação
+LiquidacaoRegistrada --> LiquidacaoCancelada : cancelamento
+
+LiquidacaoConfirmada --> [*]
+LiquidacaoCancelada --> [*]
+
+note right of LiquidacaoRegistrada
+Comprova o direito adquirido sobre o
+empenho e exige documento fiscal.
+
+RN-CON-021 — o valor nunca excede o
+saldo a liquidar.
+end note
+
+note bottom of LiquidacaoConfirmada
+Estado terminal.
+
+Somente liquidação confirmada pode
+originar pagamento — RN-CON-030.
+end note
+
+' =========================================================
+' PAGAMENTO
+' =========================================================
+
+[*] --> PagamentoProgramado : programação da ordem bancária
+
+PagamentoProgramado --> PagamentoEfetivado : efetivação
+PagamentoProgramado --> PagamentoCancelado : cancelamento
+
+PagamentoEfetivado --> [*]
+PagamentoCancelado --> [*]
+
+note bottom of PagamentoEfetivado
+Estado terminal.
+
+RN-CON-031 — o valor pago nunca excede
+o saldo a pagar da liquidação.
+end note
+
+' =========================================================
+' LANÇAMENTO CONTÁBIL
+' =========================================================
+
+[*] --> LancamentoRascunho : criação do lançamento
+
+LancamentoRascunho --> LancamentoLancado : balanço /\ndébito = crédito
+LancamentoLancado --> LancamentoEstornado : estorno
+
+LancamentoEstornado --> [*]
+
+note right of LancamentoRascunho
+RN-CON-040 — o lançamento exige ao menos
+duas partidas e débito igual ao crédito.
+
+As contas envolvidas devem ser
+analíticas, ativas e com
+aceita_lancamento verdadeiro.
+end note
+
+note bottom of LancamentoEstornado
+Estado terminal.
+
+O estorno é a contrapartida que preserva
+a trilha do lançamento original, em vez
+de apagá-lo.
+end note
+
+' =========================================================
+' CONCILIAÇÃO CONTÁBIL
+' =========================================================
+
+[*] --> ConciliacaoAberta : abertura da conciliação
+
+ConciliacaoAberta --> ConciliacaoConciliada : diferença zero
+ConciliacaoAberta --> ConciliacaoDivergente : diferença ≠ zero
+ConciliacaoDivergente --> ConciliacaoConciliada : ajuste e reconciliação
+
+ConciliacaoConciliada --> [*]
+
+note right of ConciliacaoDivergente
+A conciliação só é marcada como
+conciliada quando a diferença é zerada.
+
+Havendo divergência, a justificativa é
+obrigatória e o caso permanece aberto
+até o ajuste.
+end note
+
+@enduml

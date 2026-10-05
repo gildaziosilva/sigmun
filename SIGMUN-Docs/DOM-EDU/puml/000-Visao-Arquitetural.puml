@@ -1,0 +1,97 @@
+@startuml
+title DOM-EDU — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-EDU — Educação
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-EDU — Educação" {
+  component "API\n/api/v1/edu" as API
+  component "CadastrarAluno" as UC0
+  component "RealizarMatricula" as UC1
+  component "TransferirMatricula" as UC2
+  component "CancelarMatricula" as UC3
+  component "ConcluirMatricula" as UC4
+  component "RegistrarLancamentoDiario" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-PES\nCadastro" as DPES
+  component "DOM-ORC\nOrçamento Público" as DORC
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema edu" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : GET
+API --> UC1 : PATCH
+API --> UC2 : POST
+
+API --> DPES : troca de dados
+API --> DORC : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-EDU cobre educação.
+
+A API expõe 25 operações
+em 1 prefixo.
+
+13 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (5):
+
+- RN-EDU-001
+- RN-EDU-010
+- RN-EDU-020
+- RN-EDU-030
+- RN-EDU-040
+end note
+
+note bottom of DB
+7 tabelas mapeadas:
+
+- alunos
+- matriculas
+- lancamentos_diario
+- rotas_transporte
+- passagens_transporte
+- itens_merenda
+- distribuicoes_merenda
+end note
+
+@enduml

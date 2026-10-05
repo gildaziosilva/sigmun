@@ -1,0 +1,45 @@
+@startuml
+title DOM-EDU — Processos
+
+legend
+SIGMUN
+DOM-EDU — Educação
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CadastrarAluno;
+
+:RealizarMatricula;
+:TransferirMatricula;
+:CancelarMatricula;
+:ConcluirMatricula;
+:RegistrarLancamentoDiario;
+
+:Atualizar Aluno;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Aluno.
+
+Casos de uso no código: 13.
+Entidades do domínio: 7.
+Tabelas mapeadas: 7.
+end note
+
+note right
+Validações (5):
+
+- RN-EDU-001
+- RN-EDU-010
+- RN-EDU-020
+- RN-EDU-030
+- RN-EDU-040
+end note
+
+@enduml

@@ -1,0 +1,44 @@
+@startuml
+title DOM-PES — Processos
+
+legend
+SIGMUN
+DOM-PES — Cadastro
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:ListarPessoas;
+
+:AdicionarEndereco;
+:AdicionarContato;
+:RegistrarPessoa;
+:AdicionarDocumento;
+:AtualizarPessoaFisica;
+
+:Atualizar Contato;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Contato.
+
+Casos de uso no código: 15.
+Entidades do domínio: 7.
+Tabelas mapeadas: 7.
+end note
+
+note right
+Validações (4):
+
+- RN-CUM-001
+- RN-CUM-005
+- RN-CUM-006
+- RN-CUM-008
+end note
+
+@enduml

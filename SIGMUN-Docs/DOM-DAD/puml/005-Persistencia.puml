@@ -1,0 +1,174 @@
+@startuml
+title DOM-DAD — Persistência
+
+legend
+SIGMUN
+DOM-DAD — Desativação de Bens
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema dad" {
+
+  entity "ativos_dados" as Tativos_dados {
+    id : UUID <<PK>>
+    nome : TEXT <<UQ, NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    status : TEXT <<NN>>
+    qualidade : TEXT <<NN>>
+    dono_id : TEXT
+    steward_id : TEXT
+    schema_origem : TEXT
+    tabela_origem : TEXT
+    classificacao : TEXT
+    tags : TEXT <<NN>>
+    metadata : JSON
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "catalogos" as Tcatalogos {
+    id : UUID <<PK>>
+    nome : TEXT <<UQ, NN>>
+    descricao : TEXT
+    dominio : TEXT
+    ativos_ids : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "linhagens" as Tlinhagens {
+    id : UUID <<PK>>
+    ativo_origem_id : UUID <<NN>>
+    ativo_destino_id : UUID <<NN>>
+    tipo_transformacao : TEXT
+    descricao : TEXT
+    regras : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "politicas" as Tpoliticas {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT
+    regras : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "qualidade_dados" as Tqualidade_dados {
+    id : UUID <<PK>>
+    ativo_id : UUID <<NN>>
+    nivel : TEXT <<NN>>
+    score : FLOAT <<NN>>
+    criterios : TEXT <<NN>>
+    observacao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tativos_dados
+AtivoDadoModel
+
+19 colunas mapeadas.
+
+Modelo ORM da tabela `dad.ativos_dados`.
+end note
+
+note right of Tcatalogos
+CatalogoModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela `dad.catalogos`.
+end note
+
+note right of Tlinhagens
+LinhagemDadoModel
+
+10 colunas mapeadas.
+
+Modelo ORM da tabela `dad.linhagens`.
+end note
+
+note right of Tpoliticas
+PoliticaDadoModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela `dad.politicas`.
+end note
+
+note right of Tqualidade_dados
+QualidadeDadoModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela `dad.qualidade_dados`.
+end note
+
+note bottom of Tativos_dados
+|<b>Campos do domínio sem coluna</b>|
+|
+| AtivoDado:|
+|   metadata
+|   is_deleted
+| Catalogo:|
+|   is_deleted
+| LinhagemDado:|
+|   is_deleted
+| PoliticaDado:|
+|   is_deleted
+| QualidadeDado:|
+|   is_deleted
+|
+| A classificação funcional e os
+| identificadores existem na entidade
+| e são perdidos na persistência.
+end note
+
+note left of Tativos_dados
+5 tabelas no schema dad.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

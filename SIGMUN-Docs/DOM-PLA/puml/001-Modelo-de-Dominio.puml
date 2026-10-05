@@ -1,0 +1,142 @@
+@startuml
+title DOM-PLA — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-PLA — Planejamento Governamental
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-PLA" {
+
+class PlanoEstrategico <<Entity>> {
+  +id: string
+  +codigo: string
+  +titulo: string
+  +exercicio_inicio: int
+  +exercicio_fim: int
+  +visao: texto
+  +missao: texto
+  +situacao: string
+  +data_aprovacao: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Programa <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: texto
+  +plano_id: string
+  +objetivo: texto
+  +valor_previsto: decimal
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Projeto <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: texto
+  +programa_id: string
+  +responsavel: string
+  +data_inicio: date
+  +data_fim_prevista: date
+  +custo_previsto: decimal
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Meta <<Entity>> {
+  +id: string
+  +codigo: string
+  +descricao: texto
+  +programa_id: string
+  +indicador_ref: string
+  +valor_base: decimal
+  +valor_alvo: decimal
+  +prazo: date
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum SituacaoPlanejamento {
+  RASCUNHO = 'rascunho'
+  EM_APROVACAO = 'em_aprovacao'
+  APROVADO = 'aprovado'
+  EM_EXECUCAO = 'em_execucao'
+  SUSPENSO = 'suspenso'
+  CONCLUIDO = 'concluido'
+  CANCELADO = 'cancelado'
+}
+
+enum TipoMeta {
+  PERCENTUAL = 'percentual'
+  VALOR = 'valor'
+  QUANTIDADE = 'quantidade'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+PlanoEstrategico "1" *-- "0..*" Programa : "plano_id"
+Programa "1" *-- "0..*" Projeto : "programa_id"
+Programa "1" *-- "0..*" Meta : "programa_id"
+
+PlanoEstrategico --> SituacaoPlanejamento
+Programa --> SituacaoPlanejamento
+Projeto --> SituacaoPlanejamento
+Meta --> TipoMeta
+Meta --> SituacaoPlanejamento
+
+note right of Projeto
+Regras propostas (4):
+
+- RN-PLA-001:
+  programa pertence a um plano estratégico e projeto pertence a um programa.
+- RN-PLA-002:
+  meta declara indicador de referência, valor base, valor alvo e prazo.
+- RN-PLA-003:
+  projeto concluído exige encerramento formal com o resultado registrado.
+- RN-PLA-004:
+  resultados vão ao DOM-IND como valores, sem duplicar o indicador.
+end note
+
+note bottom of Projeto
+Capacidades previstas (5):
+
+- Planejamento Estratégico
+- Gestão de Programas
+- Gestão de Projetos
+- Metas e Indicadores
+- Acompanhamento de Resultados
+end note
+
+@enduml

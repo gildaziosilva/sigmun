@@ -1,0 +1,97 @@
+@startuml
+title DOM-DIA — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-DIA — Diárias e Viagens
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-DIA — Diárias e Viagens" {
+  component "API\n/api/v1/dia" as API
+  component "CriarViagem" as UC0
+  component "AtualizarViagem" as UC1
+  component "TramitarViagem" as UC2
+  component "VisitarViagem" as UC3
+  component "CriarDiaria" as UC4
+  component "AtualizarDiaria" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-PES\nGestão de Pessoas" as DPES
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema dia" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : POST
+API --> UC1 : PATCH
+API --> UC2 : POST
+API --> UC3 : POST
+API --> UC4 : POST
+API --> UC5 : PATCH
+
+API --> DPES : troca de dados
+API --> IDN : autenticação e autorização
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-DIA cobre Diárias e Viagens.
+
+A API expõe 20 operações
+em 1 prefixo.
+
+19 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (15):
+
+- RN-DIA-001
+- RN-DIA-002
+- RN-DIA-003
+- RN-DIA-004
+- RN-DIA-005
+- RN-DIA-006
+- e mais 9
+end note
+
+note bottom of DB
+4 tabelas mapeadas:
+
+- diarias
+- eventos_diarias
+- prestacoes_contas
+- viagens
+end note
+
+@enduml

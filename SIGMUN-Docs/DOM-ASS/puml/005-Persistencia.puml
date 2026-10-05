@@ -1,0 +1,156 @@
+@startuml
+title DOM-ASS — Persistência
+
+legend
+SIGMUN
+DOM-ASS — Assistência Social
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema ass" {
+
+  entity "familias_cadunico" as Tfamilias_cadunico {
+    id : UUID <<PK>>
+    nis : TEXT <<UQ, NN>>
+    responsavel_nome : TEXT <<NN>>
+    responsavel_cpf : TEXT
+    endereco : TEXT
+    telefone : TEXT
+    renda_per_capita : FLOAT <<NN>>
+    quantidade_pessoas : INTEGER <<NN>>
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "pessoas_cadunico" as Tpessoas_cadunico {
+    id : UUID <<PK>>
+    familia_id : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    cpf : TEXT <<UQ, NN>>
+    data_nascimento : TEXT
+    sexo : TEXT <<NN>>
+    nome_mae : TEXT
+    parentesco : TEXT
+    escolaridade : TEXT
+    ocupacao : TEXT
+    renda : FLOAT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "unidades_assistencia" as Tunidades_assistencia {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    endereco : TEXT
+    telefone : TEXT
+    email : TEXT
+    responsavel : TEXT
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "beneficios_eventuais" as Tbeneficios_eventuais {
+    id : UUID <<PK>>
+    familia_id : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    descricao : TEXT
+    valor : FLOAT <<NN>>
+    quantidade : INTEGER <<NN>>
+    data_solicitacao : TIMESTAMPTZ <<NN>>
+    data_aprovacao : TIMESTAMPTZ
+    data_entrega : TIMESTAMPTZ
+    status : TEXT <<NN>>
+    unidade_id : TEXT
+    observacao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+  }
+
+  entity "atendimentos_sociais" as Tatendimentos_sociais {
+    id : UUID <<PK>>
+    pessoa_id : TEXT <<NN>>
+    unidade_id : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    data : DATE
+    descricao : TEXT
+    encaminhamento : TEXT
+    profissional : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tfamilias_cadunico
+FamiliaCadUnicoModel
+
+13 colunas mapeadas.
+
+Modelo de famílias do CadÚnico.
+end note
+
+note right of Tpessoas_cadunico
+PessoaCadUnicoModel
+
+15 colunas mapeadas.
+
+Modelo de pessoas do CadÚnico.
+end note
+
+note right of Tunidades_assistencia
+UnidadeAssistenciaModel
+
+13 colunas mapeadas.
+
+Modelo de unidades CRAS/CREAS.
+end note
+
+note right of Tbeneficios_eventuais
+BeneficioEventualModel
+
+15 colunas mapeadas.
+
+Modelo de benefícios eventuais.
+end note
+
+note right of Tatendimentos_sociais
+AtendimentoSocialModel
+
+10 colunas mapeadas.
+
+Modelo de atendimentos sociais.
+end note
+
+note left of Tfamilias_cadunico
+5 tabelas no schema ass.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

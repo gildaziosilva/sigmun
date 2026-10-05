@@ -1,0 +1,208 @@
+@startuml
+title DOM-INT — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-INT — Interoperabilidade
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Agregados principais" {
+
+class ContratoIntegracao <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +versao_formato: string
+  +esquema_ref: string
+  +api_externa_id: string
+  +estado: EstadoContrato
+  +criado_em: datetime
+  +atualizado_em: datetime
+  +is_deleted: bool
+}
+
+}
+
+package "Outras entidades" {
+
+class ApiExterna <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +provedor: string
+  +url_base: string
+  +tipo: TipoApi
+  +autenticacao: AutenticacaoApi
+  +estado: EstadoApi
+  +versao: string
+  +limite_por_minuto: int
+  +timeout_seg: int
+  +criado_em: datetime
+  +atualizado_em: datetime
+  +is_deleted: bool
+}
+
+class Conector <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +provedor: string
+  +url_base: string
+  +autenticacao_tipo: string
+  +estado: EstadoConector
+  +config: dict
+  +criado_em: datetime
+  +atualizado_em: datetime
+  +is_deleted: bool
+}
+
+class Webhook <<Entity>> {
+  +id: string
+  +nome: string
+  +url_destino: string
+  +segredo_ref: string
+  +topicos: list
+  +cabecalhos: dict
+  +estado: EstadoInscricao
+  +max_tentativas: int
+  +backoff_base_seg: int
+  +criado_em: datetime
+  +atualizado_em: datetime
+  +is_deleted: bool
+}
+
+class EntregaWebhook <<Entity>> {
+  +id: string
+  +webhook_id: string
+  +url_destino: string
+  +cabecalhos: dict
+  +topico: string
+  +evento_nome: string
+  +agregado_tipo: string
+  +agregado_id: string
+  +payload: dict
+  +estado: EstadoEntrega
+  +tentativas: int
+  +max_tentativas: int
+  +backoff_base_seg: int
+  +ultimo_http_status: int
+  +ultimo_erro: string
+  +proximo_retry: datetime
+  +criado_em: datetime
+  +entregue_em: datetime
+  +atualizado_em: datetime
+  +is_deleted: bool
+}
+
+class EventoProcessado <<Entity>> {
+  +id: string
+  +fonte: string
+  +evento_outbox_id: string
+  +topico: string
+  +evento_nome: string
+  +agregado_tipo: string
+  +agregado_id: string
+  +payload: dict
+  +recebido_em: datetime
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum EstadoApi {
+  RASCUNHO = 'rascunho'
+  TESTES = 'testes'
+  ATIVA = 'ativa'
+  INATIVA = 'inativa'
+  RETIRADA = 'retirada'
+}
+
+enum TipoApi {
+  REST = 'rest'
+  SOAP = 'soap'
+  GRAPHQL = 'graphql'
+}
+
+enum AutenticacaoApi {
+  NENHUMA = 'nenhuma'
+  API_KEY = 'api_key'
+  BASIC = 'basic'
+  OAUTH2 = 'oauth2'
+  MTLS = 'mtls'
+}
+
+enum EstadoContrato {
+  RASCUNHO = 'rascunho'
+  VIGENTE = 'vigente'
+  OBSOLETO = 'obsoleto'
+  RETIRADO = 'retirado'
+}
+
+enum EstadoConector {
+  SEM_CONFIGURACAO = 'sem_configuracao'
+  CONFIGURADO = 'configurado'
+  TESTES = 'testes'
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+}
+
+enum EstadoInscricao {
+  ATIVA = 'ativa'
+  DESATIVADA = 'desativada'
+}
+
+enum EstadoEntrega {
+  PENDENTE = 'pendente'
+  SUCESSO = 'sucesso'
+  FALHOU = 'falhou'
+  FILA_MORTA = 'fila_morta'
+  CANCELADO = 'cancelado'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+ApiExterna "1" *-- "0..*" ContratoIntegracao : "api_externa_id"
+Webhook "1" *-- "0..*" EntregaWebhook : "webhook_id"
+ApiExterna --> EstadoApi
+ApiExterna --> TipoApi
+ApiExterna --> AutenticacaoApi
+ContratoIntegracao --> EstadoContrato
+Conector --> EstadoConector
+Webhook --> EstadoInscricao
+EntregaWebhook --> EstadoEntrega
+
+
+note bottom of ApiExterna
+Comportamentos (16):
+
+- ApiExterna.is_active
+- ApiExterna.eh_consumivel
+- ContratoIntegracao.is_active
+- ContratoIntegracao.eh_vigente
+- Conector.is_active
+- Conector.esta_ativo
+- Webhook.is_active
+- Webhook.inscrito_em
+- EntregaWebhook.is_active
+- EntregaWebhook.eh_sucesso
+- e mais 6
+end note
+
+@enduml

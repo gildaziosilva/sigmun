@@ -1,0 +1,161 @@
+@startuml
+title DOM-SEG — Persistência
+
+legend
+SIGMUN
+DOM-SEG — Segurança
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema seg" {
+
+  entity "controles_seguranca" as Tcontroles_seguranca {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    categoria : TEXT <<NN>>
+    status : TEXT <<NN>>
+    nivel_risco : TEXT <<NN>>
+    responsavel_id : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "politicas_seguranca" as Tpoliticas_seguranca {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    titulo : TEXT <<NN>>
+    conteudo : TEXT <<NN>>
+    versao : TEXT <<NN>>
+    aprovador_id : TEXT
+    data_aprovacao : TIMESTAMPTZ
+    data_revisao : TIMESTAMPTZ
+    ativa : BOOLEAN <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "incidentes_seguranca" as Tincidentes_seguranca {
+    id : UUID <<PK>>
+    titulo : TEXT <<NN>>
+    descricao : TEXT <<NN>>
+    severidade : TEXT <<NN>>
+    impacto : TEXT
+    categoria : TEXT
+    relator_id : TEXT
+    atribuido_a : TEXT
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ <<NN>>
+    data_resolucao : TIMESTAMPTZ
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "chaves_criptograficas" as Tchaves_criptograficas {
+    id : UUID <<PK>>
+    nome : TEXT <<NN>>
+    algoritmo : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    tamanho_bits : INTEGER <<NN>>
+    status : TEXT <<NN>>
+    data_expiracao : TIMESTAMPTZ
+    responsavel_id : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "credenciais" as Tcredenciais {
+    id : UUID <<PK>>
+    usuario_id : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    identificador : TEXT <<NN>>
+    status : TEXT <<NN>>
+    validade : TIMESTAMPTZ
+    ultimo_uso : TIMESTAMPTZ
+    tentativas_falhas : INTEGER <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tcontroles_seguranca
+ControleSegurancaModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``seg.controles_seguranca``.
+end note
+
+note right of Tpoliticas_seguranca
+PoliticaSegurancaModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``seg.politicas_seguranca``.
+end note
+
+note right of Tincidentes_seguranca
+IncidenteSegurancaModel
+
+13 colunas mapeadas.
+
+Modelo ORM da tabela ``seg.incidentes_seguranca``.
+end note
+
+note right of Tchaves_criptograficas
+ChaveCriptograficaModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela ``seg.chaves_criptograficas``.
+end note
+
+note right of Tcredenciais
+CredencialModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela ``seg.credenciais``.
+end note
+
+note bottom of Tcontroles_seguranca
+|<b>Campos do domínio sem coluna</b>|
+|
+| IncidenteSeguranca:|
+|   data_ocorrencia
+|   data_deteccao
+|
+| A classificação funcional e os
+| identificadores existem na entidade
+| e são perdidos na persistência.
+end note
+
+note left of Tcontroles_seguranca
+5 tabelas no schema seg.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

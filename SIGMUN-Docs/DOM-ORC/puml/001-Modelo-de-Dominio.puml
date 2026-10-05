@@ -1,0 +1,228 @@
+@startuml
+title DOM-ORC — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-ORC — Orçamento Público
+Planejamento, Dotação e Reserva de Saldo
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Planejamento Multianual" {
+
+class PPA <<AggregateRoot>> {
+  +id: UUID
+  +ano_inicial: int
+  +ano_final: int
+  +descricao: string
+  +status: StatusPPA
+  +data_publicacao: datetime
+  +data_encerramento: datetime
+}
+
+class LDO <<AggregateRoot>> {
+  +id: UUID
+  +exercicio: int
+  +ppa_id: UUID
+  +descricao: string
+  +status: StatusLDO
+  +meta_fiscal_receita: decimal
+  +meta_fiscal_despesa: decimal
+  +data_aprovacao: datetime
+  +data_sancao: datetime
+}
+
+class LOA <<AggregateRoot>> {
+  +id: UUID
+  +exercicio: int
+  +ldo_id: UUID
+  +descricao: string
+  +status: StatusLOA
+  +valor_receita_prevista: decimal
+  +valor_despesa_fixada: decimal
+  +data_aprovacao: datetime
+  +data_publicacao: datetime
+}
+
+}
+
+package "Execução Orçamentária" {
+
+class Dotacao <<AggregateRoot>> {
+  +id: UUID
+  +loa_id: UUID
+  +exercicio: int
+  +codigo: string
+  +unidade_orcamentaria: string
+  +funcao: string
+  +subfuncao: string
+  +programa: string
+  +acao: string
+  +natureza_despesa: string
+  +fonte_recursos: string
+  +valor_inicial: decimal
+  +valor_suplementado: decimal
+  +valor_anulado: decimal
+  +valor_reservado: decimal
+  +valor_empenhado: decimal
+  +status: StatusDotacao
+}
+
+class ReservaSaldo <<Entity>> {
+  +id: UUID
+  +dotacao_id: UUID
+  +numero: string
+  +valor: decimal
+  +finalidade: string
+  +status: StatusReserva
+  +data_reserva: datetime
+  +data_conversao: datetime
+  +data_cancelamento: datetime
+  +motivo_cancelamento: string
+  +empenho_id: UUID
+}
+
+}
+
+package "Enumerações" {
+
+enum StatusPPA {
+  ELABORACAO
+  VIGENTE
+  ENCERRADO
+  CANCELADO
+}
+
+enum StatusLDO {
+  ELABORACAO
+  APROVADA
+  SANCIONADA
+  CANCELADA
+}
+
+enum StatusLOA {
+  ELABORACAO
+  APROVADA
+  PUBLICADA
+  CANCELADA
+}
+
+enum StatusDotacao {
+  ATIVA
+  ENCERRADA
+}
+
+enum StatusReserva {
+  ATIVA
+  CONVERTIDA
+  CANCELADA
+  EXPIRADA
+}
+
+}
+
+package "Domínios externos" {
+
+entity "Empenho\n(DOM-CON)" as Empenho
+entity "Despesa\n(DOM-COM)" as Despesa
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+PPA "1" --> "0..*" LDO : fundamenta
+LDO "1" --> "0..*" LOA : orienta
+
+LOA "1" *-- "0..*" Dotacao : autoriza
+Dotacao "1" *-- "0..*" ReservaSaldo : bloqueia
+
+PPA --> StatusPPA
+LDO --> StatusLDO
+LOA --> StatusLOA
+Dotacao --> StatusDotacao
+ReservaSaldo --> StatusReserva
+
+Empenho "0..*" --> "1" Dotacao : consome saldo
+ReservaSaldo "0..*" ..> Empenho : converte-se em
+Despesa "0..*" --> "0..1" Dotacao : autoriza
+
+note right of PPA
+O PPA estabelece as diretrizes
+quadrienais do município e é a
+base de todo o planejamento
+orçamentário subsequente.
+
+A publicação exige quadriênio exato:
+ano_final − ano_inicial = 3
+(RN-ORC-001).
+end note
+
+note right of LDO
+A LDO define as metas fiscais do
+exercício e depende de um PPA
+vigente que cubra o mesmo período
+(RN-ORC-011).
+
+Metas fiscais:
+- meta_fiscal_receita
+- meta_fiscal_despesa
+end note
+
+note right of LOA
+A LOA é a lei que autoriza a
+execução orçamentária. Nenhuma
+dotação existe sem LOA publicada
+(RN-ORC-022).
+
+A aprovação exige que a despesa
+fixada não exceda a receita prevista.
+end note
+
+note bottom of Dotacao
+A Dotacao é o agregado central do
+domínio: concentra todo o
+posicionamento orçamentário.
+
+Derivados:
+- valor_atualizado = inicial +
+  suplementado − anulado
+- saldo_disponivel = atualizado −
+  reservado − empenhado
+
+É ela que o DOM-CON consome ao
+emitir empenho.
+end note
+
+note right of ReservaSaldo
+A reserva é o pré-empenho: bloqueia
+saldo sem comprometer despesa.
+
+Caminhos:
+- converter → transfere para
+  valor_empenhado
+- cancelar → devolve o saldo
+- expirar → encerra por prazo
+
+Os três estados finais são terminais.
+end note
+
+note bottom of Empenho
+Dependência funcional direta.
+
+con.empenhos.dotacao_id referencia
+orc.dotacoes.id, sem chave estrangeira
+entre schemas.
+
+O DOM-ORC mantém o saldo; o DOM-CON
+mantém o registro contábil.
+end note
+
+@enduml

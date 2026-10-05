@@ -1,0 +1,132 @@
+@startuml
+title DOM-ANA — Persistência
+
+legend
+SIGMUN
+DOM-ANA — Analytics e Inteligência
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema ana" {
+
+  entity "fontes_analiticas" as Tfontes_analiticas {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    referencia : TEXT <<NN>>
+    periodicidade : TEXT <<NN>>
+    ultima_atualizacao : TIMESTAMPTZ
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "modelos_analiticos" as Tmodelos_analiticos {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    tecnologia : TEXT <<NN>>
+    versao : TEXT <<NN>>
+    metrica : TEXT <<NN>>
+    treinado_em : DATE <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "analises" as Tanalises {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    titulo : TEXT <<NN>>
+    fonte_id : TEXT <<NN>>
+    modelo_id : TEXT
+    responsavel : TEXT <<NN>>
+    data_execucao : DATE <<NN>>
+    resultado : TEXT
+    visibilidade : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "recomendacoes" as Trecomendacoes {
+    id : UUID <<PK>>
+    analise_id : TEXT <<NN>>
+    destinatario : TEXT <<NN>>
+    recomendacao : TEXT <<NN>>
+    prioridade : TEXT <<NN>>
+    data : DATE <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+fontes_analiticas ||--o{ analises : "fonte_id"
+modelos_analiticos ||--o{ analises : "modelo_id"
+analises ||--o{ recomendacoes : "analise_id"
+
+note right of Tfontes_analiticas
+FonteAnalitica
+
+13 colunas propostas.
+
+Fonte de dados analítica referenciada no DOM-DAD.
+end note
+
+note right of Tmodelos_analiticos
+ModeloAnalitico
+
+14 colunas propostas.
+
+Modelo estatístico, preditivo ou de IA em uso.
+end note
+
+note right of Tanalises
+Analise
+
+14 colunas propostas.
+
+Análise executada com fonte, modelo e responsável.
+end note
+
+note right of Trecomendacoes
+Recomendacao
+
+11 colunas propostas.
+
+Recomendação decorrente da análise para a decisão.
+end note
+
+note left of Tfontes_analiticas
+4 tabelas propostas no schema ana.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

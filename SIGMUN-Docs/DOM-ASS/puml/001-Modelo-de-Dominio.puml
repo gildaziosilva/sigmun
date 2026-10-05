@@ -1,0 +1,201 @@
+@startuml
+title DOM-ASS — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-ASS — Assistência Social
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Outras entidades" {
+
+class FamiliaCadUnico <<Entity>> {
+  +id: string
+  +nis: string
+  +responsavel_nome: string
+  +responsavel_cpf: string
+  +endereco: string
+  +telefone: string
+  +renda_per_capita: decimal
+  +quantidade_pessoas: int
+  +status: StatusFamilia
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class PessoaCadUnico <<Entity>> {
+  +id: string
+  +familia_id: string
+  +nome: string
+  +cpf: string
+  +data_nascimento: string
+  +sexo: Sexo
+  +nome_mae: string
+  +parentesco: string
+  +escolaridade: string
+  +ocupacao: string
+  +renda: decimal
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class UnidadeAssistencia <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +tipo: TipoUnidade
+  +endereco: string
+  +telefone: string
+  +email: string
+  +responsavel: string
+  +status: StatusUnidade
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class BeneficioEventual <<Entity>> {
+  +id: string
+  +familia_id: string
+  +tipo: TipoBeneficio
+  +descricao: string
+  +valor: decimal
+  +quantidade: int
+  +data_solicitacao: datetime
+  +data_aprovacao: datetime
+  +data_entrega: datetime
+  +status: StatusBeneficio
+  +unidade_id: string
+  +observacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+}
+
+class AtendimentoSocial <<Entity>> {
+  +id: string
+  +pessoa_id: string
+  +unidade_id: string
+  +tipo: TipoAtendimento
+  +data: date
+  +descricao: string
+  +encaminhamento: string
+  +profissional: string
+  +created_at: datetime
+  +created_by: string
+}
+
+}
+
+package "Enumerações" {
+
+enum Sexo {
+  MASCULINO = 'masculino'
+  FEMININO = 'feminino'
+  IGNORADO = 'ignorado'
+}
+
+enum StatusFamilia {
+  ATIVA = 'ativa'
+  INATIVA = 'inativa'
+  EXCLUIDA = 'excluida'
+}
+
+enum TipoBeneficio {
+  ALIMENTACAO = 'alimentacao'
+  ALUGUEL = 'aluguel'
+  MEDICAMENTO = 'medicamento'
+  FUNERAL = 'funeral'
+  NATALIDADE = 'natalidade'
+  CALAMIDADE = 'calamidade'
+  OUTRO = 'outro'
+}
+
+enum StatusBeneficio {
+  SOLICITADO = 'solicitado'
+  APROVADO = 'aprovado'
+  NEGADO = 'negado'
+  ENTREGUE = 'entregue'
+  CANCELADO = 'cancelado'
+}
+
+enum TipoUnidade {
+  CRAS = 'cras'
+  CREAS = 'creas'
+  CENTRO_POP = 'centro_pop'
+  ABRIGO = 'abrigo'
+  OUTRO = 'outro'
+}
+
+enum StatusUnidade {
+  ATIVA = 'ativa'
+  INATIVA = 'inativa'
+  MANUTENCAO = 'manutencao'
+}
+
+enum TipoAtendimento {
+  ACOLHIMENTO = 'acolhimento'
+  ORIENTACAO = 'orientacao'
+  ENCAMINHAMENTO = 'encaminhamento'
+  VISITA_DOMICILIAR = 'visita_domiciliar'
+  GRUPO_CONVIVENCIA = 'grupo_convivencia'
+  BENEFICIO_EVENTUAL = 'beneficio_eventual'
+  OUTRO = 'outro'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+PessoaCadUnico --> Sexo
+FamiliaCadUnico --> StatusFamilia
+BeneficioEventual --> TipoBeneficio
+BeneficioEventual --> StatusBeneficio
+UnidadeAssistencia --> TipoUnidade
+UnidadeAssistencia --> StatusUnidade
+AtendimentoSocial --> TipoAtendimento
+
+note right of FamiliaCadUnico
+Regras de negócio (4):
+
+- RN-ASS-001:
+  o NIS da família é único no cadastro municipal.
+- RN-ASS-002:
+  o CPF da pessoa é único no cadastro municipal.
+- RN-ASS-003:
+  o benefício eventual obedece à máquina de estados SOLICITADO -> APROVADO | NEGAD
+- RN-ASS-004:
+  atendimentos são registrados por unidade CRAS/CREAS.
+end note
+
+note bottom of FamiliaCadUnico
+Comportamentos (17):
+
+- FamiliaCadUnico.esta_ativa
+- FamiliaCadUnico.inativar
+- FamiliaCadUnico.excluir
+- FamiliaCadUnico.atualizar_renda
+- FamiliaCadUnico.validar
+- PessoaCadUnico.excluir
+- PessoaCadUnico.validar
+- UnidadeAssistencia.esta_ativa
+- UnidadeAssistencia.inativar
+- UnidadeAssistencia.excluir
+- e mais 7
+end note
+
+@enduml

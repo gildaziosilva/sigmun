@@ -1,0 +1,93 @@
+@startuml
+title DOM-DEC — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-DEC — Desenvolvimento Econômico
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-DEC — Desenvolvimento Econômico" {
+  component "API\n/api/v1/dec" as API
+  component "Programas de Desenvolvimento" as UC0
+  component "Empreendimentos" as UC1
+  component "Projetos de Investimento" as UC2
+  component "Emprego e Renda" as UC3
+  component "Economia Local" as UC4
+}
+
+package "Domínios Correlatos" {
+  component "DOM-CUM\nCadastro Único Municipal" as DCUM
+  component "DOM-IND\nIndicadores e Desempenho" as DIND
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema dec" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : previsto
+API --> UC1 : previsto
+API --> UC2 : previsto
+API --> UC3 : previsto
+API --> UC4 : previsto
+
+API --> DCUM : troca de dados (prevista)
+API --> DIND : troca de dados (prevista)
+API --> IDN : autenticação e autorização
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+
+note right of API
+O DOM-DEC cobre Desenvolvimento Econômico.
+
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Capacidades previstas para /api/v1/dec.
+end note
+
+note bottom of API
+Regras propostas (4):
+
+- RN-DEC-001
+- RN-DEC-002
+- RN-DEC-003
+- RN-DEC-004
+end note
+
+note bottom of DB
+4 tabelas propostas:
+
+- programas_desenvolvimento
+- empreendimentos
+- projetos_investimento
+- participacoes_programa
+end note
+
+@enduml

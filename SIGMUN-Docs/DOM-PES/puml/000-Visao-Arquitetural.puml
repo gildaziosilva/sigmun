@@ -1,0 +1,97 @@
+@startuml
+title DOM-PES — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-PES — Cadastro
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-PES — Cadastro" {
+  component "API\n/api/v1/cadastro/pessoas" as API
+  component "ListarPessoas" as UC0
+  component "AdicionarEndereco" as UC1
+  component "AdicionarContato" as UC2
+  component "RegistrarPessoa" as UC3
+  component "AdicionarDocumento" as UC4
+  component "AtualizarPessoaFisica" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-ORC\nOrçamento Público" as DORC
+  component "DOM-CON\nContabilidade Pública" as DCON
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema rh" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : DELETE
+API --> UC1 : GET
+API --> UC2 : PATCH
+API --> UC3 : POST
+
+API --> DORC : troca de dados
+API --> DCON : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-PES cobre cadastro.
+
+A API expõe 12 operações
+em 2 prefixo.
+
+15 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (4):
+
+- RN-CUM-001
+- RN-CUM-005
+- RN-CUM-006
+- RN-CUM-008
+end note
+
+note bottom of DB
+7 tabelas mapeadas:
+
+- pessoas
+- pessoas_fisicas
+- pessoas_juridicas
+- enderecos
+- documentos
+- contatos
+- unidades_administrativas
+end note
+
+@enduml

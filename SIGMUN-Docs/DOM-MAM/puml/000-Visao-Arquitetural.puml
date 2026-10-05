@@ -1,0 +1,98 @@
+@startuml
+title DOM-MAM — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-MAM — Meio Ambiente
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-MAM — Meio Ambiente" {
+  component "API\n/api/v1/mam" as API
+  component "Licenciamento Ambiental" as UC0
+  component "Fiscalização" as UC1
+  component "Resíduos Sólidos" as UC2
+  component "Recursos Naturais" as UC3
+  component "Áreas Protegidas" as UC4
+  component "Monitoramento Ambiental" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-TEL\nGestão Territorial" as DTEL
+  component "DOM-GEO\nGeoinformação Municipal" as DGEO
+  component "DOM-MOB\nMobilidade e Serviços de Campo" as DMOB
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema mam" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : previsto
+API --> UC1 : previsto
+API --> UC2 : previsto
+API --> UC3 : previsto
+API --> UC4 : previsto
+API --> UC5 : previsto
+
+API --> DTEL : troca de dados (prevista)
+API --> DGEO : troca de dados (prevista)
+API --> DMOB : troca de dados (prevista)
+API --> IDN : autenticação e autorização
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-MAM cobre Meio Ambiente.
+
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Capacidades previstas para /api/v1/mam.
+end note
+
+note bottom of API
+Regras propostas (4):
+
+- RN-MAM-001
+- RN-MAM-002
+- RN-MAM-003
+- RN-MAM-004
+end note
+
+note bottom of DB
+4 tabelas propostas:
+
+- licencimentos_ambientais
+- fiscalizacoes_ambientais
+- monitoramentos_ambientais
+- areas_protegidas
+end note
+
+@enduml

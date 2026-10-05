@@ -1,0 +1,137 @@
+@startuml
+title DOM-DAD — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-DAD — Desativação de Bens
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Outras entidades" {
+
+class AtivoDado <<Entity>> {
+  +id: string
+  +nome: string
+  +descricao: string
+  +tipo: TipoAtivoDado
+  +status: StatusAtivo
+  +qualidade: QualidadeNivel
+  +dono_id: string
+  +steward_id: string
+  +schema_origem: string
+  +tabela_origem: string
+  +classificacao: string
+  +tags: list
+  +metadata: dict
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class Catalogo <<Entity>> {
+  +id: string
+  +nome: string
+  +descricao: string
+  +dominio: string
+  +ativos_ids: list
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class LinhagemDado <<Entity>> {
+  +id: string
+  +ativo_origem_id: string
+  +ativo_destino_id: string
+  +tipo_transformacao: string
+  +descricao: string
+  +regras: string
+  +created_at: datetime
+  +is_deleted: bool
+}
+
+class PoliticaDado <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +tipo: string
+  +regras: list
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class QualidadeDado <<Entity>> {
+  +id: string
+  +ativo_id: string
+  +nivel: QualidadeNivel
+  +score: decimal
+  +criterios: list
+  +observacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoAtivoDado {
+  TABELA = 'tabela'
+  CAMPO = 'campo'
+  RELATORIO = 'relatorio'
+  API = 'api'
+  ARQUIVO = 'arquivo'
+}
+
+enum QualidadeNivel {
+  ALTO = 'alto'
+  MEDIO = 'medio'
+  BAIXO = 'baixo'
+  CRITICO = 'critico'
+}
+
+enum StatusAtivo {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+  PENDENTE = 'pendente'
+  ARQUIVADO = 'arquivado'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+AtivoDado --> TipoAtivoDado
+AtivoDado --> QualidadeNivel
+AtivoDado --> StatusAtivo
+
+
+note bottom of AtivoDado
+Comportamentos (36):
+
+- AtivoDado.esta_ativo
+- AtivoDado.ativar
+- AtivoDado.desativar
+- AtivoDado.arquivar
+- AtivoDado.atualizar_qualidade
+- AtivoDado.adicionar_tag
+- AtivoDado.remover_tag
+- AtivoDado.is_active
+- AtivoDado.activate
+- AtivoDado.deactivate
+- e mais 26
+end note
+
+@enduml

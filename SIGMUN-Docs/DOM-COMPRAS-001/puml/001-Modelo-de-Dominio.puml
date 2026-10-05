@@ -1,0 +1,231 @@
+@startuml
+title DOM-COMPRAS-001 — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-COMPRAS-001 — Compras e Contratações
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Agregados principais" {
+
+class Compra <<Entity>> {
+  +id: UUID
+  +processo_documental_id: UUID
+  +fornecedor_id: UUID
+  +unidade_id: UUID
+  +numero: string
+  +data: date
+  +valor_total: decimal
+  +situacao: SituacaoCompra
+  +pendencias_impeditivas: bool
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+class Contrato <<Entity>> {
+  +id: UUID
+  +processo_documental_id: UUID
+  +fornecedor_id: UUID
+  +unidade_id: UUID
+  +licitacao_master_id: UUID
+  +compra_id: UUID
+  +numero: string
+  +data_inicio: date
+  +data_fim: date
+  +valor: decimal
+  +objeto: string
+  +situacao: SituacaoContrato
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+class ItemCompra <<Entity>> {
+  +id: UUID
+  +compra_id: UUID
+  +descricao: string
+  +quantidade: decimal
+  +valor_unitario: decimal
+  +valor_total: decimal
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+class ProcessoDocumental <<Entity>> {
+  +id: UUID
+  +unidade_id: UUID
+  +numero: string
+  +ano: int
+  +assunto: string
+  +descricao: string
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+}
+
+package "Outras entidades" {
+
+class Fornecedor <<Entity>> {
+  +id: UUID
+  +pessoa_juridica_id: UUID
+  +situacao_cadastro: SituacaoFornecedor
+  +macro_categoria: string
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+class RegistroAuditoria <<Entity>> {
+  +id: UUID
+  +ocorrido_em: datetime
+  +categoria: CategoriaEventoAuditor
+  +tipo_evento: string
+  +ator_id: UUID
+  +ator_perfil: string
+  +origem: string
+  +operacao: string
+  +recurso_tipo: string
+  +recurso_id: UUID
+  +chave_negocio: string
+  +resultado: ResultadoEventoAuditor
+  +correlation_id: UUID
+  +justificativa: string
+  +detalhes: map
+  +created_at: datetime
+}
+
+}
+
+package "Enumerações" {
+
+enum SituacaoCompra {
+  RASCUNHO = 'RASCUNHO'
+  EM_INSTRUCAO = 'EM_INSTRUCAO'
+  EM_ANALISE = 'EM_ANALISE'
+  EM_PROCEDIMENTO = 'EM_PROCEDIMENTO'
+  EM_JULGAMENTO = 'EM_JULGAMENTO'
+  HOMOLOGADO = 'HOMOLOGADO'
+  CONTRATADO = 'CONTRATADO'
+  ENCERRADO = 'ENCERRADO'
+  CANCELADO = 'CANCELADO'
+  ARQUIVADO = 'ARQUIVADO'
+}
+
+enum SituacaoContrato {
+  EM_ELABORACAO = 'EM_ELABORACAO'
+  ASSINADO = 'ASSINADO'
+  VIGENTE = 'VIGENTE'
+  SUSPENSO = 'SUSPENSO'
+  ENCERRADO = 'ENCERRADO'
+  RESCINDIDO = 'RESCINDIDO'
+  EXTINTO = 'EXTINTO'
+}
+
+enum SituacaoFornecedor {
+  ATIVO = 'ATIVO'
+  INATIVO = 'INATIVO'
+  SUSPENSO = 'SUSPENSO'
+}
+
+enum CategoriaEventoAuditoria {
+  AUTENTICACAO = 'AUTENTICACAO'
+  AUTORIZACAO = 'AUTORIZACAO'
+  ACESSO = 'ACESSO'
+  CRIACAO = 'CRIACAO'
+  ALTERACAO = 'ALTERACAO'
+  EXCLUSAO = 'EXCLUSAO'
+  APROVACAO = 'APROVACAO'
+  REJEICAO = 'REJEICAO'
+  CANCELAMENTO = 'CANCELAMENTO'
+  ASSINATURA = 'ASSINATURA'
+  PUBLICACAO = 'PUBLICACAO'
+  EXECUCAO = 'EXECUCAO'
+  INTEGRACAO = 'INTEGRACAO'
+  EXPORTACAO = 'EXPORTACAO'
+  IMPORTACAO = 'IMPORTACAO'
+  SEGURANCA = 'SEGURANCA'
+  ADMINISTRACAO = 'ADMINISTRACAO'
+}
+
+enum ResultadoEventoAuditoria {
+  SUCESSO = 'SUCESSO'
+  ERRO = 'ERRO'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+ProcessoDocumental "1" *-- "0..*" Compra : "processo_documental_id"
+Fornecedor "1" *-- "0..*" Compra : "fornecedor_id"
+ProcessoDocumental "1" *-- "0..*" Contrato : "processo_documental_id"
+Fornecedor "1" *-- "0..*" Contrato : "fornecedor_id"
+Compra "1" *-- "0..*" Contrato : "compra_id"
+Compra "1" *-- "0..*" ItemCompra : "compra_id"
+Compra --> SituacaoCompra
+Contrato --> SituacaoContrato
+Fornecedor --> SituacaoFornecedor
+RegistroAuditoria --> CategoriaEventoAuditoria
+RegistroAuditoria --> ResultadoEventoAuditoria
+
+note right of Compra
+Regras de negócio (5):
+
+- RN-COMPRAS-011:
+  descrição adequada e obrigatória do objeto - RN-COMPRAS-012: quantificação obrig
+- RN-COMPRAS-013):
+  unidade de medida ainda não compõe o modelo físico
+- RN-COMPRAS-025:
+  atos vinculados ao processo administrativo (processo_documental_id obrigatório e
+- RN-COMPRAS-030:
+  identificação suficiente (fornecedor deve referenciar pessoa jurídica) - RN-COMP
+- RN-COMPRAS-036:
+  identificação única (numero não duplicado) - RN-COMPRAS-037: vigência coerente (
+end note
+
+note bottom of Compra
+Comportamentos (50):
+
+- Compra._validar_numero
+- Compra._validar_valor_total
+- Compra._validar_situacao
+- Compra.pode_transicionar_para
+- Compra.alterar_situacao
+- Compra.registrar_pendencia
+- Compra.resolver_pendencias
+- Compra.atualizar_dados
+- Compra.excluir
+- Compra.foi_excluido
+- e mais 40
+end note
+
+@enduml

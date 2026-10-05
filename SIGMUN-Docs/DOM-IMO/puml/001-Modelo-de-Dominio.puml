@@ -1,0 +1,201 @@
+@startuml
+title DOM-IMO — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-IMO — Cadastro Imobiliário
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-IMO" {
+
+class AvaliacaoImovel <<Entity>> {
+  +id: string
+  +imovel_id: string
+  +ano: int
+  +valor_terreno_m2_unitario: decimal
+  +valor_construcao_m2_unitario: decimal
+  +aliquota_percent: decimal
+  +area_terreno_m2: decimal
+  +area_construida_m2: decimal
+  +situacao: string
+  +data_avaliacao: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class CaracteristicaImovel <<Entity>> {
+  +id: string
+  +imovel_id: string
+  +obra: string
+  +numero_pavimentos: int
+  +ano_renovacao: int
+  +observacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+}
+
+class GeometriaImovel <<Entity>> {
+  +id: string
+  +imovel_id: string
+  +geometria: string
+  +latitude: decimal
+  +longitude: decimal
+  +vertices: json
+  +datum: string
+  +precisao_m: decimal
+  +data_levantamento: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Imovel <<Entity>> {
+  +id: string
+  +inscricao_imobiliaria: string
+  +logradouro_id: string
+  +bairro_id: string
+  +numero: string
+  +complemento: string
+  +tipo: string
+  +situacao: string
+  +tipo_propriedade: string
+  +area_terreno_m2: decimal
+  +area_construida_m2: decimal
+  +ano_construcao: int
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class ProprietarioImovel <<Entity>> {
+  +id: string
+  +imovel_id: string
+  +pessoa_id: string
+  +nome: string
+  +cpf: string
+  +vinculo: string
+  +principal: bool
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoImovel {
+  LOTE = 'lote'
+  CASA = 'casa'
+  APARTAMENTO = 'apartamento'
+  LOJA = 'loja'
+  GALPAO = 'galpao'
+  TERRENO = 'terreno'
+  OUTRO = 'outro'
+}
+
+enum SituacaoImovel {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+  EM_OBRA = 'em_obra'
+  DESOCUPADO = 'desocupado'
+  DEMOLIDO = 'demolido'
+}
+
+enum TipoPropriedade {
+  PROPRIO = 'proprio'
+  ALUGADO = 'alugado'
+  CEDIDO = 'cedido'
+  INVENCIONADO = 'invencionado'
+}
+
+enum TipoVinculo {
+  TITULAR = 'titular'
+  COMODATO = 'comodato'
+  ARRENDAMENTO = 'arrendamento'
+  USUFRUTO = 'usufruto'
+  PARCEIRO = 'parceiro'
+}
+
+enum TipoObra {
+  RESIDENCIAL = 'residencial'
+  COMERCIAL = 'comercial'
+  INDUSTRIAL = 'industrial'
+  INSTITUCIONAL = 'institucional'
+  MISTA = 'mista'
+  NAO_APLICAVEL = 'nao_aplicavel'
+}
+
+enum SituacaoAvaliacao {
+  RASCUNHO = 'rascunho'
+  CONCLUIDA = 'concluida'
+  CANCELADA = 'cancelada'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Imovel "1" *-- "0..*" AvaliacaoImovel : "imovel_id"
+Imovel "1" *-- "0..*" CaracteristicaImovel : "imovel_id"
+Imovel "1" *-- "0..*" GeometriaImovel : "imovel_id"
+Imovel "1" *-- "0..*" ProprietarioImovel : "imovel_id"
+
+Imovel --> TipoImovel
+Imovel --> SituacaoImovel
+Imovel --> TipoPropriedade
+ProprietarioImovel --> TipoVinculo
+AvaliacaoImovel --> SituacaoAvaliacao
+CaracteristicaImovel --> TipoObra
+
+note right of Imovel
+Regras de negócio (7):
+
+- RN-IMO-001:
+  A inscrição imobiliária é única no município e obrigatória; a alteração posterior mantém o mesmo identificador.
+- RN-IMO-002:
+  O imóvel exige logradouro e divisão territorial vinculados; o bairro é resolvido a partir do logradouro.
+- RN-IMO-003:
+  As áreas do terreno e da construção não podem ser negativas e o ano de construção deve ser coerente.
+- RN-IMO-004:
+  As transições são `ATIVO -> INATIVO | EM_OBRA | DESOCUPADO | DEMOLIDO`, `INATIVO -> ATIVO`, `EM_OBRA -> ATIVO | DEMOLIDO` e `DESOCUPADO -> ATIVO | INATIVO`; `DEMOLIDO` é terminal.
+- RN-IMO-005:
+  `valor_terreno = área_terreno_m2 × Vt`, `valor_construção = área_construida_m2 × Vc`, `valor_venal = valor_terreno + valor_construcao` e `valor_lançamento = valor_venal × alíquota / 100`; um exercício já concluído não pode ser reavaliado.
+- RN-IMO-006:
+  Cada imóvel admite no máximo um proprietário titular principal, a mesma pessoa não é vinculada duas vezes ao mesmo imóvel e o documento é CPF (11 dígitos) ou CNPJ (14 dígitos).
+- e mais 1
+end note
+
+note bottom of Imovel
+Comportamentos (11):
+
+- CadastrarImovelUseCase
+- AtualizarImovelUseCase
+- AlterarSituacaoImovelUseCase
+- ExcluirImovelUseCase
+- VincularProprietarioUseCase
+- RemoverProprietarioUseCase
+- AvaliarImovelUseCase
+- ConcluirAvaliacaoUseCase
+- CancelarAvaliacaoUseCase
+- RegistrarCaracteristicaUseCase
+- e mais 1
+end note
+
+@enduml

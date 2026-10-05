@@ -1,0 +1,206 @@
+@startuml
+title DOM-CON — Integrações
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+legend
+SIGMUN
+DOM-CON — Contabilidade Pública
+Integrações
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "Usuários e Canais" {
+
+  component "Contabilidade\nMunicipal" as User
+
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-CON" {
+
+  component "API DOM-CON\n/api/v1/con" as API
+
+  component "Execução\nOrçamentária" as Execucao
+
+  component "PCASP\nPlano de Contas" as PCASP
+
+  component "Lançamentos\nContábeis" as Lancamentos
+
+  component "Conciliação\nBancária" as Conciliacao
+}
+
+package "Domínios de Negócio" {
+
+  component "DOM-ORC\nOrçamento Público" as ORC
+
+  component "DOM-COM\nCompras e\nContratações" as COM
+
+  component "DOM-FRO\nGestão de Frota" as FRO
+
+  component "DOM-PAT\nGestão Patrimonial" as PAT
+
+  component "DOM-TRI\nAdministração\nTributária" as TRI
+}
+
+package "Serviços Transversais" {
+
+  component "DOM-IDN\nIdentidade e\nAcesso" as IDN
+
+  component "DOM-GDO\nGestão\nDocumental" as GDO
+
+  component "Auditoria" as AUD
+
+  component "Notificações" as NOT
+}
+
+database "PostgreSQL\nschema con" as DB
+
+database "PostgreSQL\nschema orc" as DBORC
+
+' =========================================================
+' CANAIS
+' =========================================================
+
+User --> Portal : rotinas contábeis
+
+Portal --> API : operações CRUD
+
+
+' =========================================================
+' FLUXO INTERNO
+' =========================================================
+
+API --> Execucao : empenho, /\nliquidação e pagamento
+
+API --> PCASP : manutenção do /\nplano de contas
+
+API --> Lancamentos : partidas dobradas
+
+API --> Conciliacao : saldos × extrato
+
+
+' =========================================================
+' INTEGRAÇÃO ORÇAMENTÁRIA
+' =========================================================
+
+Execucao --> ORC : consulta /\ndotação e saldo
+
+Execucao --> ORC : empenhar na dotação
+
+Execucao --> ORC : devolver /\nsaldo na anulação
+
+ORC --> DBORC
+
+
+' =========================================================
+' INTEGRAÇÕES DE NEGÓCIO
+' =========================================================
+
+COM --> API : obrigação contratada /\ne dados do favorecido
+
+FRO --> API : custos de frota
+
+PAT --> API : Tombamento e depreciação
+
+TRI --> API : créditos tributários
+
+
+' =========================================================
+' SERVIÇOS TRANSVERSAIS
+' =========================================================
+
+API --> IDN : autenticação e /\nautorização
+
+API --> AUD : trilha de auditoria
+
+Execucao --> AUD : emissão, /\nliquidação e pagamento
+
+PCASP --> AUD : criação e /\ndesativação de contas
+
+Lancamentos --> AUD : lançamento e estorno
+
+Conciliacao --> AUD : conciliação e /\ndivergência
+
+API --> GDO : documento fiscal /\ne comprovante
+
+Execucao --> GDO : anexos de /\ncomprovação
+
+Lancamentos --> GDO : memória de cálculo
+
+API --> NOT : avisos de /\npendência
+
+
+' =========================================================
+' PERSISTÊNCIA
+' =========================================================
+
+Execucao --> DB
+PCASP --> DB
+Lancamentos --> DB
+Conciliacao --> DB
+
+
+' =========================================================
+' NOTAS ARQUITETURAIS
+' =========================================================
+
+note right of ORC
+Integração crítica e síncrona.
+
+O saldo disponível é a restrição que
+governa a emissão: sem saldo na dotação
+não há empenho.
+
+A emissão e a anulação alteram a
+dotação e gravam o empenho na mesma
+unidade transacional. Divergência entre
+os saldos indica falha que deve ser
+rejeitada, nunca compensada.
+end note
+
+note bottom of GDO
+Documentos fiscais, comprovantes de
+pagamento e memórias de cálculo devem
+utilizar o DOM-GDO.
+
+O DOM-CON referencia o documento pelo
+identificador e não duplica a gestão
+documental.
+end note
+
+note bottom of AUD
+Todo evento com efeito contábil deve
+gerar trilha de auditoria, preservando:
+
+- quem executou a operação
+- quando ocorreu
+- qual entidade foi afetada
+- o valor antes e depois
+
+A conciliação contábil depende dessa
+trilha para comprovar a origem do saldo.
+end note
+
+note right of Lancamentos
+O lançamento é a ponte entre a execução
+orçamentária e a contabilidade analítica.
+
+O campo origem e origem_id registra de
+qual entidade o lançamento se originou,
+permitindo o rastreamento entre o
+empenho e o seu reflexo no PCASP.
+end note
+
+note bottom of DB
+O schema con é exclusivo do DOM-CON.
+
+O schema orc pertence ao DOM-ORC e é
+acessado pelo repositório de dotações,
+mantendo a separação de responsabilidades.
+end note
+
+@enduml

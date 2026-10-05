@@ -1,0 +1,43 @@
+@startuml
+title DOM-INF — Máquina de Estados
+
+legend
+SIGMUN
+DOM-INF — Infraestrutura Tecnológica
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Disponivel : catalogação do recurso (RN-INF-001)
+Disponivel --> Manutencao : manutenção programada
+Manutencao --> Disponivel : manutenção concluída
+Disponivel --> Indisponivel : incidente crítico (RN-INF-003)
+Indisponivel --> Disponivel : resolução do incidente
+Disponivel --> Descomissionado : baixa do recurso
+Descomissionado --> [*]
+state Disponivel
+state Manutencao
+state Indisponivel
+state Descomissionado
+
+note right of Disponivel
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+O ativo de dado hospedado é referenciado
+no DOM-DAD (RN-INF-004) e o ambiente
+determina a criticidade.
+end note
+
+note bottom of Indisponivel
+Métrica acima do limite gera status de
+atenção ou crítico (RN-INF-002); o
+incidente é encerrado com causa e
+responsável registrados.
+end note
+
+@enduml

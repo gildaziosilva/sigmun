@@ -1,0 +1,143 @@
+@startuml
+title DOM-CPT — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-CPT — Gestão de Competências
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-CPT" {
+
+class Competencia <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: texto
+  +categoria: string
+  +nivel_referencia: decimal
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Capacitacao <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: texto
+  +modalidade: string
+  +carga_horativa: int
+  +situacao: string
+  +data_inicio: date
+  +data_fim: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class AvaliacaoCompetencia <<Entity>> {
+  +id: string
+  +pessoa_id: string
+  +competencia_id: string
+  +nivel_atual: decimal
+  +nivel_esperado: decimal
+  +avaliador: string
+  +data_avaliacao: date
+  +observacao: texto
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class PlanoDesenvolvimento <<Entity>> {
+  +id: string
+  +pessoa_id: string
+  +titulo: string
+  +competencia_id: string
+  +capacitacao_id: string
+  +acao: string
+  +prazo: date
+  +situacao: string
+  +resultado: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum CategoriaCompetencia {
+  TECNICA = 'tecnica'
+  COMPORTAMENTAL = 'comportamental'
+  GERENCIAL = 'gerencial'
+}
+
+enum ModalidadeCapacitacao {
+  PRESENCIAL = 'presencial'
+  EAD = 'ead'
+  BLENDED = 'blended'
+  MENTORIA = 'mentoria'
+}
+
+enum SituacaoCapacitacao {
+  PLANEJADA = 'planejada'
+  INSCRICOES_ABERTAS = 'inscricoes_abertas'
+  EM_ANDAMENTO = 'em_andamento'
+  CONCLUIDA = 'concluida'
+  CANCELADA = 'cancelada'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Competencia "1" *-- "0..*" AvaliacaoCompetencia : "competencia_id"
+Competencia "1" *-- "0..*" PlanoDesenvolvimento : "competencia_id"
+Capacitacao "1" *-- "0..*" PlanoDesenvolvimento : "capacitacao_id"
+
+Competencia --> CategoriaCompetencia
+Capacitacao --> ModalidadeCapacitacao
+Capacitacao --> SituacaoCapacitacao
+PlanoDesenvolvimento --> SituacaoCapacitacao
+
+note right of Competencia
+Regras propostas (4):
+
+- RN-CPT-001:
+  lacuna é a diferença entre o nível esperado e o nível avaliado da competência.
+- RN-CPT-002:
+  capacitação só recebe inscrição com inscrições abertas e vaga disponível.
+- RN-CPT-003:
+  a pessoa é referenciada por identificador opaco do DOM-PES.
+- RN-CPT-004:
+  a conclusão registra resultado e pode atualizar a avaliação da competência.
+end note
+
+note bottom of Competencia
+Capacidades previstas (5):
+
+- Catálogo de Competências
+- Avaliação de Lacunas
+- Planos de Desenvolvimento
+- Capacitações
+- Qualificações
+end note
+
+@enduml

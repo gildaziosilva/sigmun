@@ -1,0 +1,46 @@
+@startuml
+title DOM-SAU — Processos
+
+legend
+SIGMUN
+DOM-SAU — Saúde
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CadastrarPaciente;
+
+:RegistrarAtendimento;
+:AgendarConsulta;
+:ConfirmarAgendamento;
+:CancelarAgendamento;
+:RealizarAgendamento;
+
+:Atualizar Atendimento;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Atendimento.
+
+Casos de uso no código: 12.
+Entidades do domínio: 6.
+Tabelas mapeadas: 6.
+end note
+
+note right
+Validações (6):
+
+- RN-SAU-001
+- RN-SAU-002
+- RN-SAU-010
+- RN-SAU-020
+- RN-SAU-030
+- RN-SAU-040
+end note
+
+@enduml

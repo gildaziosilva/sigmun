@@ -1,0 +1,96 @@
+@startuml
+title DOM-SAU — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-SAU — Saúde
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-SAU — Saúde" {
+  component "API\n/api/v1/sau" as API
+  component "CadastrarPaciente" as UC0
+  component "RegistrarAtendimento" as UC1
+  component "AgendarConsulta" as UC2
+  component "ConfirmarAgendamento" as UC3
+  component "CancelarAgendamento" as UC4
+  component "RealizarAgendamento" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-PES\nCadastro" as DPES
+  component "DOM-ORC\nOrçamento Público" as DORC
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema sau" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : GET
+API --> UC1 : POST
+
+API --> DPES : troca de dados
+API --> DORC : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-SAU cobre saúde.
+
+A API expõe 18 operações
+em 1 prefixo.
+
+12 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (6):
+
+- RN-SAU-001
+- RN-SAU-002
+- RN-SAU-010
+- RN-SAU-020
+- RN-SAU-030
+- RN-SAU-040
+end note
+
+note bottom of DB
+6 tabelas mapeadas:
+
+- pacientes
+- atendimentos
+- agendamentos
+- regulacoes
+- medicamentos
+- dispensacoes
+end note
+
+@enduml

@@ -1,0 +1,42 @@
+@startuml
+title DOM-FRO — Processos
+
+legend
+SIGMUN
+DOM-FRO — Frotas
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CadastrarVeiculo;
+
+:RegistrarAbastecimento;
+:AbrirManutencao;
+:ConcluirManutencao;
+:RegistrarRota;
+:ConcluirRota;
+
+:Atualizar Abastecimento;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Abastecimento.
+
+Casos de uso no código: 7.
+Entidades do domínio: 4.
+Tabelas mapeadas: 4.
+end note
+
+note right
+Validações (2):
+
+- RN-FRO-001
+- RN-FRO-002
+end note
+
+@enduml

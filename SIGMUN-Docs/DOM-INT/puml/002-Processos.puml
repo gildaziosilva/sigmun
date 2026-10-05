@@ -1,0 +1,35 @@
+@startuml
+title DOM-INT — Processos
+
+legend
+SIGMUN
+DOM-INT — Interoperabilidade
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CriarContratoIntegracao;
+
+:BuscarContratoIntegracao;
+:AprovarContratoIntegracao;
+:RetirarContratoIntegracao;
+:DeletarContratoIntegracao;
+:AtualizarContratoIntegracao;
+
+:Atualizar ApiExterna;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de ApiExterna.
+
+Casos de uso no código: 26.
+Entidades do domínio: 6.
+Tabelas mapeadas: 6.
+end note
+
+@enduml

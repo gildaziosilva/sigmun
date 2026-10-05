@@ -1,0 +1,139 @@
+@startuml
+title DOM-OUV — Visão Arquitetural
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+legend
+SIGMUN
+DOM-OUV — Ouvidoria Municipal
+Manifestações, Denúncias e LAI
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "Canais de Entrada" {
+  component "Ouvidoria Presencial" as Presencial
+  component "Portal da Ouvidoria" as Portal
+  component "FalaBR /\ne-OUV" as FalaBR
+  component "Protocolo Digital" as Protocolo
+  component "Outros Canais" as Outros
+}
+
+package "DOM-OUV" {
+  component "API de Ouvidoria" as API
+  component "Recepção de Manifestações" as Recepcao
+  component "Classificação e Triagem" as Triagem
+  component "Gestão de Manifestações" as Manifestacoes
+  component "Gestão de Denúncias" as Denuncias
+  component "Gestão de Pedidos LAI" as LAI
+  component "Encaminhamento" as Encaminhamento
+  component "Apuração / Tratamento" as Apuracao
+  component "Respostas" as Respostas
+  component "Prazos e SLA" as Prazos
+  component "Pesquisa de Satisfação" as Satisfacao
+}
+
+package "Serviços Transversais SIGMUN" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "Auditoria" as Auditoria
+  component "Notificações" as Notificacao
+}
+
+package "Domínios da Administração" {
+  component "Domínios\nEspecializados" as Dominios
+  component "Órgãos /\nUnidades Municipais" as Unidades
+}
+
+database "PostgreSQL\nschema ouv" as DB
+
+Presencial --> API : registra manifestação
+Portal --> API : registra manifestação
+FalaBR --> API : integração / recepção
+Protocolo --> API : protocolo digital
+Outros --> API : registro
+
+API --> Recepcao
+Recepcao --> Triagem
+
+Triagem --> Manifestacoes : classifica
+Triagem --> Denuncias : identifica denúncia
+Triagem --> LAI : identifica pedido LAI
+
+Manifestacoes --> Encaminhamento
+Denuncias --> Encaminhamento
+LAI --> Encaminhamento
+
+Encaminhamento --> Unidades
+Encaminhamento --> Dominios
+
+Manifestacoes --> Apuracao
+Denuncias --> Apuracao
+LAI --> Apuracao
+
+Apuracao --> Respostas
+LAI --> Respostas
+
+Prazos --> Manifestacoes
+Prazos --> Denuncias
+Prazos --> LAI
+
+Respostas --> Satisfacao
+
+API --> IDN
+API --> GDO
+API --> Auditoria
+API --> Notificacao
+
+Recepcao --> DB
+Triagem --> DB
+Manifestacoes --> DB
+Denuncias --> DB
+LAI --> DB
+Encaminhamento --> DB
+Apuracao --> DB
+Respostas --> DB
+Prazos --> DB
+Satisfacao --> DB
+
+note right of Triagem
+Toda manifestação recebida deve ser
+classificada e encaminhada conforme
+sua natureza.
+
+Exemplos:
+- reclamação
+- denúncia
+- elogio
+- sugestão
+- solicitação
+- pedido de informação
+- simplifique
+end note
+
+note right of Denuncias
+Denúncias podem exigir tratamento
+com proteção de identidade,
+restrição de acesso e controle
+específico de informações.
+end note
+
+note right of LAI
+Pedidos de acesso à informação
+devem seguir o fluxo específico
+de transparência passiva, incluindo
+prazos, resposta e eventual recurso.
+end note
+
+note bottom of API
+O DOM-OUV é responsável pela
+gestão do processo de ouvidoria.
+
+A execução do serviço ou apuração
+da matéria permanece sob responsabilidade
+do órgão ou domínio competente.
+end note
+
+@enduml

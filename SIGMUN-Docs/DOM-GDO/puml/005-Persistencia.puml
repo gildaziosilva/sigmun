@@ -1,0 +1,310 @@
+@startuml
+title DOM-GDO — Persistência
+
+legend
+SIGMUN
+DOM-GDO — Gestão Documental
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema gdo" {
+
+  entity "documentos" as Tdocumentos {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    numero : TEXT <<NN>>
+    ano : INTEGER <<NN>>
+    tipo_documental_id : TEXT <<NN>>
+    titulo : TEXT <<NN>>
+    descricao : TEXT
+    data_criacao : TIMESTAMPTZ
+    data_recebimento : TIMESTAMPTZ
+    data_arquivamento : TIMESTAMPTZ
+    data_encerramento : TIMESTAMPTZ
+    data_eliminacao : TIMESTAMPTZ
+    unidade_autor_id : TEXT <<NN>>
+    unidade_arquivo_id : UUID
+    processo_id : UUID
+    status : TEXT <<NN>>
+    is_sigiloso : BOOLEAN <<NN>>
+    conteudo_ref : TEXT
+    hash_integridade : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : TEXT
+    deleted_at : TIMESTAMPTZ
+    deleted_by : TEXT
+  }
+
+  entity "versoes_documentos" as Tversoes_documentos {
+    id : UUID <<PK>>
+    documento_id : UUID <<NN>>
+    numero_versao : INTEGER <<NN>>
+    conteudo_ref : TEXT
+    hash_integridade : TEXT
+    data_versao : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+    deleted_at : TIMESTAMPTZ
+    deleted_by : TEXT
+  }
+
+  entity "tramitacoes_documentos" as Ttramitacoes_documentos {
+    id : UUID <<PK>>
+    documento_id : UUID <<NN>>
+    unidade_origem_id : TEXT <<NN>>
+    unidade_destino_id : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    data_envio : TIMESTAMPTZ
+    data_recebimento : TIMESTAMPTZ
+    data_devolucao : TIMESTAMPTZ
+    motivo : TEXT
+    observacao : TEXT
+    created_by : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ <<NN>>
+  }
+
+  entity "processos_documentos" as Tprocessos_documentos {
+    id : UUID <<PK>>
+    numero : TEXT <<NN>>
+    ano : INTEGER <<NN>>
+    tipo_processo_id : TEXT <<NN>>
+    titulo : TEXT <<NN>>
+    descricao : TEXT
+    unidade_autor_id : TEXT <<NN>>
+    data_abertura : TIMESTAMPTZ <<NN>>
+    data_encerramento : TIMESTAMPTZ
+    status : TEXT <<NN>>
+    created_by : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ <<NN>>
+    deleted_at : TIMESTAMPTZ
+    deleted_by : TEXT
+  }
+
+  entity "classificacoes_documentais" as Tclassificacoes_documentais {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    nivel : INTEGER <<NN>>
+    classificacao_pai_id : TEXT
+    prazo_retencao : INTEGER <<NN>>
+    unidade_destino_id : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : TEXT
+    deleted_at : TIMESTAMPTZ
+    deleted_by : TEXT
+  }
+
+  entity "tabelas_temporalidades" as Ttabelas_temporalidades {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    prazo_tempo : INTEGER <<NN>>
+    unidade_tempo : TEXT <<NN>>
+    evento_fim : TEXT <<NN>>
+    tipo_destinacao : TEXT <<NN>>
+    is_ativo : BOOLEAN <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : TEXT
+    deleted_at : TIMESTAMPTZ
+    deleted_by : TEXT
+  }
+
+  entity "arquivamentos_documentos" as Tarquivamentos_documentos {
+    id : UUID <<PK>>
+    documento_id : UUID <<NN>>
+    data_arquivamento : TIMESTAMPTZ <<NN>>
+    data_restauracao : TIMESTAMPTZ
+    created_by : TEXT
+    observacao : TEXT
+  }
+
+  entity "assinaturas_documentos" as Tassinaturas_documentos {
+    id : UUID <<PK>>
+    documento_id : UUID <<NN>>
+    signatario_id : TEXT <<NN>>
+    data_assinatura : TIMESTAMPTZ <<NN>>
+    hash_assinatura : TEXT <<NN>>
+    certificado_id : TEXT
+    is_valida : BOOLEAN <<NN>>
+    is_revogada : BOOLEAN <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+  }
+
+  entity "metadados_documentos" as Tmetadados_documentos {
+    id : UUID <<PK>>
+    documento_id : UUID <<NN>>
+    metadado_id : TEXT <<NN>>
+    valor : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+  }
+
+  entity "tipos_documentais" as Ttipos_documentais {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    is_ativo : BOOLEAN <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : TEXT
+    deleted_at : TIMESTAMPTZ
+    deleted_by : TEXT
+  }
+
+  entity "eventos_outbox" as Teventos_outbox {
+    id : UUID <<PK>>
+    topico : TEXT <<NN>>
+    evento_nome : TEXT <<NN>>
+    agregado_tipo : TEXT <<NN>>
+    agregado_id : TEXT <<NN>>
+    payload : JSONB <<NN>>
+    status : TEXT <<NN>>
+    tentativas : INTEGER <<NN>>
+    ultimo_erro : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    published_at : TIMESTAMPTZ
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tdocumentos
+DocumentoModel
+
+25 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.documentos`.
+end note
+
+note right of Tversoes_documentos
+VersaoDocumentoModel
+
+9 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.versoes_documentos`.
+end note
+
+note right of Ttramitacoes_documentos
+TramitacaoDocumentoModel
+
+13 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.tramitacoes_documentos`.
+end note
+
+note right of Tprocessos_documentos
+ProcessoDocumentoModel
+
+15 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.processos_documentos`.
+end note
+
+note right of Tclassificacoes_documentais
+ClassificacaoDocumentalModel
+
+14 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.classificacoes_documentais`.
+end note
+
+note right of Ttabelas_temporalidades
+TabelaTemporalidadeModel
+
+14 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.tabelas_temporalidades`.
+end note
+
+note right of Tarquivamentos_documentos
+ArquivamentoDocumentoModel
+
+6 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.arquivamentos_documentos`.
+end note
+
+note right of Tassinaturas_documentos
+AssinaturaDocumentoModel
+
+9 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.assinaturas_documentos`.
+end note
+
+note right of Tmetadados_documentos
+MetadadoDocumentoModel
+
+5 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.metadados_documentos`.
+end note
+
+note right of Ttipos_documentais
+TipoDocumentalModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.tipos_documentais` (referência).
+end note
+
+note right of Teventos_outbox
+EventoOutboxModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela `gdo.eventos_outbox` (Transactional Outbox).
+end note
+
+note bottom of Tdocumentos
+|<b>Campos do domínio sem coluna</b>|
+|
+| ClassificacaoDocumental:|
+|   is_deleted
+| Documento:|
+|   is_deleted
+| VersaoDocumento:|
+|   is_deleted
+| ProcessoDocumento:|
+|   is_encerrado
+|   is_deleted
+| TabelaTemporalidade:|
+|   is_deleted
+| ArquivamentoDocumento:|
+|   is_restaurado
+|
+| A classificação funcional e os
+| identificadores existem na entidade
+| e são perdidos na persistência.
+end note
+
+note left of Tdocumentos
+11 tabelas no schema gdo.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

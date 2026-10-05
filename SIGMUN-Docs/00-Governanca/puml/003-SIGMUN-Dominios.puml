@@ -1,0 +1,68 @@
+@startuml
+title SIGMUN — Mapa de Domínios
+
+' ============================================================
+' SIGMUN — Sistema Integrado de Gestão Municipal
+' Artefato: Mapa de Domínios
+' Classificação da Informação: Pública
+' Status: Vigente
+' Responsável: Equipe SIGMUN
+' ============================================================
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+package "Domínios Transversais" {
+    [DOM-IDN\nIdentidade] as IDN
+    [DOM-SEG\nSegurança] as SEG
+}
+
+package "Domínios Administrativos" {
+    [DOM-DIA\nDiárias, Viagens e Deslocamentos] as DIA
+    [DOM-GDO\nGestão Documental] as GDO
+    [DOM-COM\nCompras] as COM
+}
+
+package "Domínios Finalísticos" {
+    [DOM-SAU\nSaúde] as SAU
+    [DOM-EDU\nEducação] as EDU
+    [Outros Domínios Finalísticos] as FIN
+}
+
+package "Plataforma Compartilhada" {
+    [Auditoria]
+    [Indicadores]
+    [Notificações]
+}
+
+IDN --> DIA
+IDN --> GDO
+IDN --> COM
+IDN --> SAU
+IDN --> EDU
+
+SEG --> DIA
+SEG --> GDO
+SEG --> COM
+SEG --> SAU
+SEG --> EDU
+
+DIA --> GDO : documentos /\nevidências
+COM --> GDO : documentos
+SAU --> GDO : documentos
+EDU --> GDO : documentos
+
+DIA --> Indicadores
+GDO --> Auditoria
+COM --> Auditoria
+SAU --> Auditoria
+EDU --> Auditoria
+
+note bottom
+O mapa representa fronteiras conceituais.
+A relação entre domínios deve ser detalhada
+nos diagramas específicos de cada domínio.
+end note
+
+@enduml

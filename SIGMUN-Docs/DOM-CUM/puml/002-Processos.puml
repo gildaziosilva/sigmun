@@ -1,0 +1,50 @@
+@startuml
+title DOM-CUM — Processos
+
+legend
+SIGMUN
+DOM-CUM — Cadastro Único Municipal
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Registrar Pessoa;
+:Consultar Pessoa;
+:Listar Pessoas;
+:Atualizar Pessoa Fisica;
+:Atualizar Pessoa Juridica;
+:Alterar Categoria Pessoa;
+:Excluir Pessoa;
+:Registrar Unidade;
+:Consultar Unidade;
+:Listar Unidades;
+:E mais 2 casos de uso;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Pessoa.
+
+Casos de uso no código: 12.
+Entidades do domínio: 7.
+Tabelas mapeadas: 7.
+end note
+
+note right
+Validações (9):
+
+- RN-CUM-001
+- RN-CUM-002
+- RN-CUM-003
+- RN-CUM-004
+- RN-CUM-005
+- RN-CUM-006
+- e mais 3
+end note
+
+@enduml

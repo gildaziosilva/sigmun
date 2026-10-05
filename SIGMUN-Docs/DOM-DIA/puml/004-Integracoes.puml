@@ -1,0 +1,57 @@
+@startuml
+title DOM-DIA — Integrações
+
+legend
+SIGMUN
+DOM-DIA — Diárias e Viagens
+Integrações — Troca de dados com outros domínios
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Domínio de Origem" {
+  component "DOM-DIA\nDiárias e Viagens" as ORIGEM
+}
+
+package "Domínios Destino" {
+  component "DOM-PES\nGestão de Pessoas" as DPES
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "DOM-INT\nInteroperabilidade" as INT
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL" as DB
+
+ORIGEM --> DPES : dados do domínio
+ORIGEM --> IDN : autenticação
+ORIGEM --> GDO : anexos e documentos
+ORIGEM --> MET : metadados
+ORIGEM --> INT : troca de dados
+ORIGEM --> AUD : trilha de auditoria
+ORIGEM --> DB : persistência própria
+
+note right of ORIGEM
+DOM-DIA como origem da integração.
+
+Publica em /api/v1/dia.
+20 operações disponíveis.
+
+Entidade central: Diaria.
+end note
+
+note bottom of AUD
+Todo evento com efeito no orçamento
+ou no patrimônio é registrado com
+autor, data e valor antes e depois.
+end note
+
+@enduml

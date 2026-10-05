@@ -1,0 +1,236 @@
+@startuml
+title DOM-CUM — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-CUM — Cadastro Único Municipal
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-CUM" {
+
+class Contato <<Entity>> {
+  +id: string
+  +pessoa_id: string
+  +tipo: string
+  +valor: string
+  +principal: bool
+  +created_at: datetime
+  +created_by: string
+  +updated_at: datetime
+  +updated_by: string
+  +deleted_at: datetime
+  +deleted_by: string
+}
+
+class Documento <<Entity>> {
+  +id: string
+  +pessoa_id: string
+  +tipo: string
+  +numero: string
+  +orgao_emissor: string
+  +data_emissao: date
+  +data_validade: date
+  +principal: bool
+  +created_at: datetime
+  +created_by: string
+  +updated_at: datetime
+  +updated_by: string
+  +deleted_at: datetime
+  +deleted_by: string
+}
+
+class Endereco <<Entity>> {
+  +id: string
+  +pessoa_id: string
+  +tipo: string
+  +logradouro: string
+  +numero: string
+  +complemento: string
+  +bairro: string
+  +cep: string
+  +cidade: string
+  +estado: string
+  +pais: string
+  +principal: bool
+  +vigencia_inicio: datetime
+  +vigencia_fim: datetime
+  +motivo_alteracao: string
+  +created_at: datetime
+  +created_by: string
+  +updated_at: datetime
+  +updated_by: string
+  +deleted_at: datetime
+  +deleted_by: string
+}
+
+class Pessoa <<Entity>> {
+  +id: string
+  +tipo: string
+  +categoria: string
+  +unidade_id: string
+  +created_at: datetime
+  +created_by: string
+  +updated_at: datetime
+  +updated_by: string
+  +deleted_at: datetime
+  +deleted_by: string
+}
+
+class PessoaFisica <<Entity>> {
+  +id: string
+  +pessoa_id: string
+  +nome: string
+  +data_nascimento: date
+  +sexo: string
+  +estado_civil: string
+  +mae: string
+  +pai: string
+  +created_at: datetime
+  +created_by: string
+  +updated_at: datetime
+  +updated_by: string
+  +deleted_at: datetime
+  +deleted_by: string
+}
+
+class PessoaJuridica <<Entity>> {
+  +id: string
+  +pessoa_id: string
+  +razao_social: string
+  +nome_fantasia: string
+  +cnae_principal: string
+  +capital: decimal
+  +created_at: datetime
+  +created_by: string
+  +updated_at: datetime
+  +updated_by: string
+  +deleted_at: datetime
+  +deleted_by: string
+}
+
+class UnidadeAdministrativa <<Entity>> {
+  +id: string
+  +unidade_pai_id: string
+  +codigo_ibge: string
+  +codigo_siafi: string
+  +nome: string
+  +sigla: string
+  +created_at: datetime
+  +created_by: string
+  +updated_at: datetime
+  +updated_by: string
+  +deleted_at: datetime
+  +deleted_by: string
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoContato {
+  TELEFONE = 'TEL'
+  EMAIL = 'EMAIL'
+  REDES = 'REDES'
+  WHATSAPP = 'WHATSAPP'
+}
+
+enum TipoDocumento {
+  CPF = 'CPF'
+  CNPJ = 'CNPJ'
+  RG = 'RG'
+  INSCRICAO_ESTADUAL = 'INSCRICAO_ESTADUAL'
+  INSCRICAO_MUNICIPAL = 'INSCRICAO_MUNICIPAL'
+  CNH = 'CNH'
+  OUTRO = 'OUTRO'
+}
+
+enum TipoEndereco {
+  RESIDENCIAL = 'RESIDENCIAL'
+  COMERCIAL = 'COMERCIAL'
+  COBRANCA = 'COBRANCA'
+  ENTREGA = 'ENTREGA'
+  OUTRO = 'OUTRO'
+}
+
+enum TipoPessoa {
+  FISICA = 'FISICA'
+  JURIDICA = 'JURIDICA'
+}
+
+enum CategoriaPessoa {
+  CIDADAO = 'CIDADAO'
+  SERVIDOR = 'SERVIDOR'
+  FORNECEDOR = 'FORNECEDOR'
+  AGENTE_EXTERNO = 'AGENTE_EXTERNO'
+}
+
+enum Sexo {
+  MASCULINO = 'M'
+  FEMININO = 'F'
+  OUTRO = 'OUTRO'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Pessoa "1" *-- "0..*" Contato : "pessoa_id"
+Pessoa "1" *-- "0..*" Documento : "pessoa_id"
+Pessoa "1" *-- "0..*" Endereco : "pessoa_id"
+UnidadeAdministrativa "1" *-- "0..*" Pessoa : "unidade_id"
+Pessoa "1" *-- "0..*" PessoaFisica : "pessoa_id"
+Pessoa "1" *-- "0..*" PessoaJuridica : "pessoa_id"
+UnidadeAdministrativa "1" *-- "0..*" UnidadeAdministrativa : "unidade_pai_id"
+
+Pessoa --> TipoPessoa
+Pessoa --> CategoriaPessoa
+Pessoa --> Sexo
+Endereco --> TipoEndereco
+Documento --> TipoDocumento
+Contato --> TipoContato
+
+note right of Pessoa
+Regras de negócio (9):
+
+- RN-CUM-001:
+  a pessoa é física ou jurídica e sua extensão é obrigatória e única.
+- RN-CUM-002:
+  o CPF é validado por dígitos verificadores e armazenado sem máscara.
+- RN-CUM-003:
+  o CNPJ é validado por dígitos verificadores e armazenado sem máscara.
+- RN-CUM-004:
+  o número de documento é único entre pessoas não excluídas.
+- RN-CUM-005:
+  há no máximo um endereço principal por pessoa.
+- RN-CUM-006:
+  documento e contato principais são únicos no agregado da pessoa.
+- e mais 3
+end note
+
+note bottom of Pessoa
+Comportamentos (12):
+
+- RegistrarPessoaUseCase
+- ConsultarPessoaUseCase
+- ListarPessoasUseCase
+- AtualizarPessoaFisicaUseCase
+- AtualizarPessoaJuridicaUseCase
+- AlterarCategoriaPessoaUseCase
+- ExcluirPessoaUseCase
+- RegistrarUnidadeUseCase
+- ConsultarUnidadeUseCase
+- ListarUnidadesUseCase
+- e mais 2
+end note
+
+@enduml

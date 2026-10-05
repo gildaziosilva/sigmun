@@ -1,0 +1,181 @@
+@startuml
+title DOM-INT — Persistência
+
+legend
+SIGMUN
+DOM-INT — Interoperabilidade
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema integracao" {
+
+  entity "apis_externas" as Tapis_externas {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    provedor : TEXT
+    url_base : TEXT
+    tipo : TEXT <<NN>>
+    autenticacao : TEXT <<NN>>
+    estado : TEXT <<NN>>
+    versao : TEXT <<NN>>
+    limite_por_minuto : INTEGER <<NN>>
+    timeout_seg : INTEGER <<NN>>
+    criado_em : TIMESTAMPTZ <<NN>>
+    atualizado_em : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "contratos_integracao" as Tcontratos_integracao {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    versao_formato : TEXT <<NN>>
+    esquema_ref : TEXT
+    api_externa_id : UUID
+    estado : TEXT <<NN>>
+    criado_em : TIMESTAMPTZ <<NN>>
+    atualizado_em : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "conectores" as Tconectores {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    provedor : TEXT
+    url_base : TEXT
+    autenticacao_tipo : TEXT <<NN>>
+    estado : TEXT <<NN>>
+    config : JSONB <<NN>>
+    criado_em : TIMESTAMPTZ <<NN>>
+    atualizado_em : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "webhooks" as Twebhooks {
+    id : UUID <<PK>>
+    nome : TEXT <<UQ, NN>>
+    url_destino : TEXT <<NN>>
+    segredo_ref : TEXT
+    topicos : JSONB <<NN>>
+    cabecalhos : JSONB <<NN>>
+    estado : TEXT <<NN>>
+    max_tentativas : INTEGER <<NN>>
+    backoff_base_seg : INTEGER <<NN>>
+    criado_em : TIMESTAMPTZ <<NN>>
+    atualizado_em : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "entregas_webhook" as Tentregas_webhook {
+    id : UUID <<PK>>
+    webhook_id : UUID <<NN>>
+    url_destino : TEXT <<NN>>
+    cabecalhos : JSONB <<NN>>
+    topico : TEXT <<NN>>
+    evento_nome : TEXT <<NN>>
+    agregado_tipo : TEXT <<NN>>
+    agregado_id : TEXT <<NN>>
+    payload : JSONB <<NN>>
+    estado : TEXT <<NN>>
+    tentativas : INTEGER <<NN>>
+    max_tentativas : INTEGER <<NN>>
+    backoff_base_seg : INTEGER <<NN>>
+    ultimo_http_status : INTEGER
+    ultimo_erro : TEXT
+    proximo_retry : TIMESTAMPTZ
+    criado_em : TIMESTAMPTZ <<NN>>
+    entregue_em : TIMESTAMPTZ
+    atualizado_em : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "eventos_processados" as Teventos_processados {
+    id : UUID <<PK>>
+    fonte : TEXT <<NN>>
+    evento_outbox_id : TEXT <<NN>>
+    topico : TEXT <<NN>>
+    evento_nome : TEXT <<NN>>
+    agregado_tipo : TEXT <<NN>>
+    agregado_id : TEXT <<NN>>
+    payload : JSONB <<NN>>
+    recebido_em : TIMESTAMPTZ <<NN>>
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tapis_externas
+ApiExternaModel
+
+15 colunas mapeadas.
+
+Modelo ORM da tabela ``integracao.apis_externas``.
+end note
+
+note right of Tcontratos_integracao
+ContratoIntegracaoModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela ``integracao.contratos_integracao``.
+end note
+
+note right of Tconectores
+ConectorModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``integracao.conectores``.
+end note
+
+note right of Twebhooks
+WebhookModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``integracao.webhooks``.
+end note
+
+note right of Tentregas_webhook
+EntregaWebhookModel
+
+20 colunas mapeadas.
+
+Modelo ORM da tabela ``integracao.entregas_webhook`` (retry/DLQ).
+end note
+
+note right of Teventos_processados
+EventoProcessadoModel
+
+10 colunas mapeadas.
+
+Modelo ORM da tabela ``integracao.eventos_processados`` (inbox do barr
+end note
+
+note left of Tapis_externas
+6 tabelas no schema integracao.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

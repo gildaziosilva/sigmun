@@ -1,0 +1,164 @@
+@startuml
+title DOM-TRI — Persistência
+
+legend
+SIGMUN
+DOM-TRI — Tributos
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema trib" {
+
+  entity "contribuintes" as Tcontribuintes {
+    id : UUID <<PK>>
+    tipo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    cpf_cnpj : VARCHAR <<UQ, NN>>
+    inscricao_municipal : TEXT
+    email : TEXT
+    telefone : TEXT
+    endereco : TEXT
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "imoveis" as Timoveis {
+    id : UUID <<PK>>
+    contribuinte_id : TEXT <<NN>>
+    inscricao_imobiliaria : TEXT <<UQ, NN>>
+    logradouro : TEXT
+    numero : TEXT
+    bairro : TEXT
+    cidade : TEXT
+    uf : VARCHAR
+    cep : VARCHAR
+    area_terreno : FLOAT <<NN>>
+    area_construida : FLOAT <<NN>>
+    valor_venal : FLOAT <<NN>>
+    aliquota : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "lancamentos" as Tlancamentos {
+    id : UUID <<PK>>
+    contribuinte_id : TEXT <<NN>>
+    imovel_id : TEXT
+    tipo_tributo : TEXT <<NN>>
+    exercicio : INTEGER <<NN>>
+    numero_lancamento : TEXT <<UQ, NN>>
+    descricao : TEXT
+    base_calculo : FLOAT <<NN>>
+    aliquota : FLOAT <<NN>>
+    valor_tributo : FLOAT <<NN>>
+    juros : FLOAT <<NN>>
+    multa : FLOAT <<NN>>
+    valor_total : FLOAT <<NN>>
+    data_vencimento : DATE
+    status : TEXT <<NN>>
+    data_pagamento : DATE
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "divida_ativa" as Tdivida_ativa {
+    id : UUID <<PK>>
+    lancamento_id : TEXT <<UQ, NN>>
+    numero_inscricao : TEXT <<UQ, NN>>
+    data_inscricao : DATE
+    valor_original : FLOAT <<NN>>
+    valor_atualizado : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "certidoes" as Tcertidoes {
+    id : UUID <<PK>>
+    contribuinte_id : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    numero : TEXT <<UQ, NN>>
+    data_emissao : DATE
+    valido_ate : DATE
+    observacao : TEXT
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tcontribuintes
+ContribuinteModel
+
+13 colunas mapeadas.
+
+Modelo de contribuintes.
+end note
+
+note right of Timoveis
+ImovelModel
+
+18 colunas mapeadas.
+
+Modelo de imóveis (IPTU).
+end note
+
+note right of Tlancamentos
+LancamentoModel
+
+20 colunas mapeadas.
+
+Modelo de lançamentos (créditos tributários).
+end note
+
+note right of Tdivida_ativa
+DividaAtivaModel
+
+11 colunas mapeadas.
+
+Modelo de inscrições em dívida ativa.
+end note
+
+note right of Tcertidoes
+CertidaoModel
+
+12 colunas mapeadas.
+
+Modelo de certidões fiscais.
+end note
+
+note left of Tcontribuintes
+5 tabelas no schema trib.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

@@ -1,0 +1,166 @@
+@startuml
+title DOM-SAU — Persistência
+
+legend
+SIGMUN
+DOM-SAU — Saúde
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema sau" {
+
+  entity "pacientes" as Tpacientes {
+    id : UUID <<PK>>
+    nome : TEXT <<NN>>
+    cns : TEXT <<UQ, NN>>
+    cpf : TEXT
+    data_nascimento : TEXT
+    sexo : TEXT <<NN>>
+    nome_mae : TEXT
+    telefone : TEXT
+    endereco : TEXT
+    ubs_referencia : TEXT
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "atendimentos" as Tatendimentos {
+    id : UUID <<PK>>
+    paciente_id : TEXT <<NN>>
+    data : DATE
+    tipo : TEXT <<NN>>
+    profissional : TEXT <<NN>>
+    estabelecimento : TEXT <<NN>>
+    queixa : TEXT
+    conduta : TEXT
+    cid10 : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+  entity "agendamentos" as Tagendamentos {
+    id : UUID <<PK>>
+    paciente_id : TEXT <<NN>>
+    especialidade : TEXT <<NN>>
+    data : DATE
+    hora : TEXT
+    estabelecimento : TEXT
+    status : TEXT <<NN>>
+    motivo_cancelamento : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+  }
+
+  entity "regulacoes" as Tregulacoes {
+    id : UUID <<PK>>
+    paciente_id : TEXT <<NN>>
+    procedimento : TEXT <<NN>>
+    prioridade : TEXT <<NN>>
+    solicitante : TEXT
+    data_solicitacao : DATE
+    status : TEXT <<NN>>
+    justificativa : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+  }
+
+  entity "medicamentos" as Tmedicamentos {
+    id : UUID <<PK>>
+    nome : TEXT <<NN>>
+    apresentacao : TEXT
+    estoque : FLOAT <<NN>>
+    estoque_minimo : FLOAT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "dispensacoes" as Tdispensacoes {
+    id : UUID <<PK>>
+    paciente_id : TEXT <<NN>>
+    medicamento_id : TEXT <<NN>>
+    quantidade : FLOAT <<NN>>
+    data : DATE
+    receita : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tpacientes
+PacienteModel
+
+15 colunas mapeadas.
+
+Modelo de pacientes.
+end note
+
+note right of Tatendimentos
+AtendimentoModel
+
+11 colunas mapeadas.
+
+Modelo de atendimentos do prontuario.
+end note
+
+note right of Tagendamentos
+AgendamentoModel
+
+11 colunas mapeadas.
+
+Modelo de agendamentos SUS.
+end note
+
+note right of Tregulacoes
+RegulacaoModel
+
+11 colunas mapeadas.
+
+Modelo da central de regulacao.
+end note
+
+note right of Tmedicamentos
+MedicamentoModel
+
+9 colunas mapeadas.
+
+Modelo da farmacia basica.
+end note
+
+note right of Tdispensacoes
+DispensacaoModel
+
+8 colunas mapeadas.
+
+Modelo de dispensacoes.
+end note
+
+note left of Tpacientes
+6 tabelas no schema sau.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

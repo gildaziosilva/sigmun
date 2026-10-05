@@ -1,0 +1,201 @@
+@startuml
+title DOM-COMPRAS-001 — Persistência
+
+legend
+SIGMUN
+DOM-COMPRAS-001 — Compras e Contratações
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema compras" {
+
+  entity "unidades_administrativas" as Tunidades_administrativas {
+    id : UUID <<PK>>
+    unidade_pai_id : UUID
+    codigo_ibge : TEXT
+    codigo_siafi : TEXT
+    nome : TEXT <<NN>>
+    sigla : TEXT
+  }
+
+  entity "processos_documentais" as Tprocessos_documentais {
+    id : UUID <<PK>>
+    unidade_id : UUID <<NN>>
+    numero : TEXT <<NN>>
+    ano : INTEGER <<NN>>
+    assunto : TEXT <<NN>>
+    descricao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "fornecedores" as Tfornecedores {
+    id : UUID <<PK>>
+    pessoa_juridica_id : UUID <<UQ, NN>>
+    situacao_cadastro : TEXT <<NN>>
+    macro_categoria : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "itens_compras" as Titens_compras {
+    id : UUID <<PK>>
+    compra_id : UUID <<NN>>
+    descricao : TEXT <<NN>>
+    quantidade : NUMERIC <<NN>>
+    valor_unitario : NUMERIC <<NN>>
+    valor_total : NUMERIC <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "compras" as Tcompras {
+    id : UUID <<PK>>
+    processo_documental_id : UUID <<NN>>
+    fornecedor_id : UUID <<NN>>
+    unidade_id : UUID <<NN>>
+    numero : TEXT <<NN>>
+    data : DATE <<NN>>
+    valor_total : NUMERIC
+    situacao : TEXT <<NN>>
+    pendencias_impeditivas : BOOLEAN <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "contratos" as Tcontratos {
+    id : UUID <<PK>>
+    processo_documental_id : UUID <<NN>>
+    fornecedor_id : UUID <<NN>>
+    unidade_id : UUID <<NN>>
+    licitacao_master_id : UUID
+    compra_id : UUID
+    numero : TEXT <<NN>>
+    data_inicio : DATE <<NN>>
+    data_fim : DATE
+    valor : NUMERIC
+    objeto : TEXT
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "eventos" as Teventos {
+    id : UUID <<PK>>
+    ocorrido_em : TIMESTAMPTZ <<NN>>
+    categoria : TEXT <<NN>>
+    tipo_evento : TEXT <<NN>>
+    ator_id : UUID
+    ator_perfil : TEXT
+    origem : TEXT <<NN>>
+    operacao : TEXT <<NN>>
+    recurso_tipo : TEXT <<NN>>
+    recurso_id : UUID
+    chave_negocio : TEXT
+    resultado : TEXT <<NN>>
+    correlation_id : UUID
+    justificativa : TEXT
+    detalhes : JSONB
+    created_at : TIMESTAMPTZ <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tunidades_administrativas
+UnidadeAdministrativaModel
+
+6 colunas mapeadas.
+
+Modelo ORM mínimo da tabela ``core.unidades_administrativas``.
+end note
+
+note right of Tprocessos_documentais
+ProcessoDocumentalModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``core.processos_documentais``.
+end note
+
+note right of Tfornecedores
+FornecedorModel
+
+10 colunas mapeadas.
+
+Modelo ORM da tabela ``core.fornecedores``.
+end note
+
+note right of Titens_compras
+ItemCompraModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``compras.itens_compras``.
+end note
+
+note right of Tcompras
+CompraModel
+
+15 colunas mapeadas.
+
+Modelo ORM da tabela ``compras.compras``.
+end note
+
+note right of Tcontratos
+ContratoModel
+
+18 colunas mapeadas.
+
+Modelo ORM da tabela ``compras.contratos``.
+end note
+
+note right of Teventos
+TrilhaAuditoriaModel
+
+16 colunas mapeadas.
+
+Modelo ORM da trilha de auditoria (tabela ``auditoria.eventos``).
+end note
+
+note left of Tunidades_administrativas
+7 tabelas no schema compras.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml
+title DOM-MET — Processos
+
+legend
+SIGMUN
+DOM-MET — Metadados
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CriarTermo;
+
+:AtualizarTermo;
+:BuscarTermo;
+:DeletarTermo;
+:CriarMetadado;
+:AtualizarMetadado;
+
+:Atualizar Metadado;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Metadado.
+
+Casos de uso no código: 23.
+Entidades do domínio: 5.
+Tabelas mapeadas: 5.
+end note
+
+@enduml

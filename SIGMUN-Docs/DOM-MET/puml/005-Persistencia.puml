@@ -1,0 +1,175 @@
+@startuml
+title DOM-MET — Persistência
+
+legend
+SIGMUN
+DOM-MET — Metadados
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema met" {
+
+  entity "metadados" as Tmetadados {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo_dado : TEXT <<NN>>
+    obrigatorio : BOOLEAN <<NN>>
+    multi_valor : BOOLEAN <<NN>>
+    aplicavel_a : TEXT <<NN>>
+    valor_padrao : TEXT
+    status : TEXT <<NN>>
+    config : JSON
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "valores_metadados" as Tvalores_metadados {
+    id : UUID <<PK>>
+    metadado_id : UUID <<NN>>
+    entidade_tipo : TEXT <<NN>>
+    entidade_id : UUID <<NN>>
+    valor : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "classificacoes" as Tclassificacoes {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    tipo : TEXT <<NN>>
+    nivel : INTEGER <<NN>>
+    cor : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "taxonomias" as Ttaxonomias {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    termos_ids : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "termos_taxonomias" as Ttermos_taxonomias {
+    id : UUID <<PK>>
+    taxonomia_id : UUID <<NN>>
+    termo_pai_id : UUID
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    sinonimos : TEXT <<NN>>
+    ordem : INTEGER <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tmetadados
+MetadadoModel
+
+17 colunas mapeadas.
+
+Modelo ORM da tabela `met.metadados`.
+end note
+
+note right of Tvalores_metadados
+ValorMetadadoModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela `met.valores_metadados`.
+end note
+
+note right of Tclassificacoes
+ClassificacaoModel
+
+13 colunas mapeadas.
+
+Modelo ORM da tabela `met.classificacoes`.
+end note
+
+note right of Ttaxonomias
+TaxonomiaModel
+
+11 colunas mapeadas.
+
+Modelo ORM da tabela `met.taxonomias`.
+end note
+
+note right of Ttermos_taxonomias
+TermoTaxonomiaModel
+
+14 colunas mapeadas.
+
+Modelo ORM da tabela `met.termos_taxonomias`.
+end note
+
+note bottom of Tmetadados
+|<b>Campos do domínio sem coluna</b>|
+|
+| Metadado:|
+|   is_deleted
+| ValorMetadado:|
+|   is_deleted
+| Classificacao:|
+|   is_deleted
+| Taxonomia:|
+|   is_deleted
+| TermoTaxonomia:|
+|   is_deleted
+|
+| A classificação funcional e os
+| identificadores existem na entidade
+| e são perdidos na persistência.
+end note
+
+note left of Tmetadados
+5 tabelas no schema met.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

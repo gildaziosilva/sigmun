@@ -1,0 +1,61 @@
+@startuml
+title SIGMUN — Infraestrutura e Serviços de Plataforma
+
+' ============================================================
+' SIGMUN — Sistema Integrado de Gestão Municipal
+' Artefato: Infraestrutura
+' Classificação da Informação: Pública
+' Status: Vigente
+' Responsável: Equipe SIGMUN
+' ============================================================
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+node "Ambiente SIGMUN" {
+
+    node "Aplicação" {
+        component "Backend API\nFastAPI / Uvicorn" as API
+        component "Admin Frontend\nReact / Vite" as FRONT
+        component "Portal Cidadão" as PC
+        component "Portal Fornecedor" as PF
+    }
+
+    node "Processamento" {
+        component "Worker" as WORKER
+        component "Scheduler / Beat" as BEAT
+    }
+
+    node "Dados" {
+        database "PostgreSQL 15" as PG
+        database "Redis" as REDIS
+    }
+}
+
+FRONT --> API : HTTP / REST
+PC --> API : HTTP / REST
+PF --> API : HTTP / REST
+
+API --> PG : SQL
+API --> REDIS : cache / estado auxiliar
+
+API --> WORKER : tarefas assíncronas
+BEAT --> WORKER : tarefas agendadas
+
+WORKER --> PG
+WORKER --> REDIS
+
+note bottom of PG
+Banco principal do SIGMUN.
+Schemas de domínio e estruturas
+compartilhadas são administrados
+por migrations/Alembic.
+end note
+
+note bottom of API
+Contrato externo:
+API REST /api/v1
+end note
+
+@enduml

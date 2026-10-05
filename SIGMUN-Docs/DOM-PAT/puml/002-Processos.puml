@@ -1,0 +1,43 @@
+@startuml
+title DOM-PAT — Processos
+
+legend
+SIGMUN
+DOM-PAT — Patrimônio
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CadastrarBem;
+
+:DepreciarBem;
+:TransferirBem;
+:ConcluirTransferencia;
+:BaixarBem;
+
+:Atualizar Bem;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Bem.
+
+Casos de uso no código: 5.
+Entidades do domínio: 3.
+Tabelas mapeadas: 3.
+end note
+
+note right
+Validações (4):
+
+- RN-PAT-001
+- RN-PAT-002
+- RN-PAT-003
+- RN-PAT-010
+end note
+
+@enduml

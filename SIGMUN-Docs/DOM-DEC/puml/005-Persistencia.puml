@@ -1,0 +1,128 @@
+@startuml
+title DOM-DEC — Persistência
+
+legend
+SIGMUN
+DOM-DEC — Desenvolvimento Econômico
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema dec" {
+
+  entity "programas_desenvolvimento" as Tprogramas_desenvolvimento {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    objetivo : TEXT <<NN>>
+    publico : TEXT
+    orcamento : FLOAT <<NN>>
+    situacao : TEXT <<NN>>
+    data_inicio : DATE
+    data_fim : DATE
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "empreendimentos" as Tempreendimentos {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    pessoa_id : TEXT
+    nome : TEXT <<NN>>
+    setor : TEXT <<NN>>
+    porte : TEXT <<NN>>
+    bairro_id : TEXT
+    data_abertura : DATE
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "projetos_investimento" as Tprojetos_investimento {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    empreendimento_id : TEXT <<NN>>
+    descricao : TEXT <<NN>>
+    investimento_previsto : FLOAT <<NN>>
+    empregos_previstos : INTEGER <<NN>>
+    empregos_realizados : INTEGER
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "participacoes_programa" as Tparticipacoes_programa {
+    id : UUID <<PK>>
+    programa_id : TEXT <<NN>>
+    empreendimento_id : TEXT <<NN>>
+    data_ingresso : DATE <<NN>>
+    situacao : TEXT <<NN>>
+    resultado : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+programas_desenvolvimento ||--o{ participacoes_programa : "programa_id"
+empreendimentos ||--o{ participacoes_programa : "empreendimento_id"
+empreendimentos ||--o{ projetos_investimento : "empreendimento_id"
+
+note right of Tprogramas_desenvolvimento
+ProgramaDesenvolvimento
+
+13 colunas propostas.
+
+Programa municipal de fomento e desenvolvimento.
+end note
+
+note right of Tempreendimentos
+Empreendimento
+
+13 colunas propostas.
+
+Empreendimento local vinculado a pessoa jurídica do DOM-CUM.
+end note
+
+note right of Tprojetos_investimento
+ProjetoInvestimento
+
+12 colunas propostas.
+
+Investimento previsto e realizado com geração de empregos.
+end note
+
+note right of Tparticipacoes_programa
+ParticipacaoPrograma
+
+10 colunas propostas.
+
+Adesão de empreendimento a um programa em execução.
+end note
+
+note left of Tprogramas_desenvolvimento
+4 tabelas propostas no schema dec.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

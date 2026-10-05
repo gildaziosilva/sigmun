@@ -1,0 +1,158 @@
+@startuml
+title DOM-ORC — Máquina de Estados
+
+legend
+SIGMUN
+DOM-ORC — Orçamento Público
+Planejamento, Dotação e Reserva de Saldo
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide empty description
+
+' =========================================================
+' PPA
+' =========================================================
+
+[*] --> ElaboracaoPPA : elaboração do quadriênio
+
+ElaboracaoPPA --> VigentePPA : publicar
+ElaboracaoPPA --> CanceladoPPA : cancelamento
+
+VigentePPA --> EncerradoPPA : encerramento
+
+EncerradoPPA --> [*]
+CanceladoPPA --> [*]
+
+state ElaboracaoPPA
+state VigentePPA
+state EncerradoPPA
+state CanceladoPPA
+
+note right of ElaboracaoPPA
+A publicação exige quadriênio
+exato: ano_final − ano_inicial = 3
+(RN-ORC-001).
+end note
+
+note bottom of EncerradoPPA
+Estado terminal (RN-ORC-003).
+end note
+
+' =========================================================
+' LDO
+' =========================================================
+
+[*] --> ElaboracaoLDO : definição das metas fiscais
+
+ElaboracaoLDO --> AprovadaLDO : aprovação
+ElaboracaoLDO --> CanceladaLDO : cancelamento
+
+AprovadaLDO --> SancionadaLDO : sanção
+
+SancionadaLDO --> [*]
+CanceladaLDO --> [*]
+
+state ElaboracaoLDO
+state AprovadaLDO
+state SancionadaLDO
+state CanceladaLDO
+
+note bottom of SancionadaLDO
+Estado terminal (RN-ORC-012).
+end note
+
+' =========================================================
+' LOA
+' =========================================================
+
+[*] --> ElaboracaoLOA : elaboração da lei anual
+
+ElaboracaoLOA --> AprovadaLOA : aprovação
+ElaboracaoLOA --> CanceladaLOA : cancelamento
+
+AprovadaLOA --> PublicadaLOA : publicação
+
+PublicadaLOA --> [*]
+CanceladaLOA --> [*]
+
+state ElaboracaoLOA
+state AprovadaLOA
+state PublicadaLOA
+state CanceladaLOA
+
+note right of AprovadaLOA
+A aprovação exige que a
+despesa fixada não exceda
+a receita prevista
+(RN-ORC-022).
+end note
+
+note bottom of PublicadaLOA
+Estado terminal (RN-ORC-022).
+
+Somente LOA publicada autoriza
+a criação de dotações.
+end note
+
+' =========================================================
+' DOTACAO
+' =========================================================
+
+[*] --> AtivaDotacao : criação
+
+AtivaDotacao --> EncerradaDotacao : encerramento
+
+EncerradaDotacao --> [*]
+
+state AtivaDotacao
+state EncerradaDotacao
+
+note right of AtivaDotacao
+Estado operacional único.
+
+Recebe suplementação, anulação,
+reserva e empenho. Toda operação
+exige dotação ativa.
+end note
+
+note bottom of EncerradaDotacao
+Estado terminal (RN-ORC-033).
+
+Imutável: não aceita mais
+alteração de valor nem
+movimentação de saldo.
+end note
+
+' =========================================================
+' RESERVA
+' =========================================================
+
+[*] --> AtivaReserva : criação
+
+AtivaReserva --> ConvertidaReserva : conversão
+AtivaReserva --> CanceladaReserva : cancelamento
+AtivaReserva --> ExpiradaReserva : expiração
+
+ConvertidaReserva --> [*]
+CanceladaReserva --> [*]
+ExpiradaReserva --> [*]
+
+state AtivaReserva
+state ConvertidaReserva
+state CanceladaReserva
+state ExpiradaReserva
+
+note bottom of AtivaReserva
+O pré-empenho: bloqueia saldo sem
+comprometer despesa.
+
+- converter transfere para
+  valor_empenhado
+- cancelar devolve o saldo
+- expirar encerra por prazo
+end note
+
+@enduml

@@ -1,0 +1,104 @@
+@startuml
+title DOM-PAT — Persistência
+
+legend
+SIGMUN
+DOM-PAT — Patrimônio
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema pat" {
+
+  entity "bens" as Tbens {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    tipo : TEXT <<NN>>
+    descricao : TEXT <<NN>>
+    categoria : TEXT
+    valor_aquisicao : FLOAT <<NN>>
+    data_aquisicao : DATE
+    valor_residual : FLOAT <<NN>>
+    vida_util_anos : INTEGER <<NN>>
+    valor_contabil : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    localizacao : TEXT
+    responsavel_id : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "depreciacoes" as Tdepreciacoes {
+    id : UUID <<PK>>
+    bem_id : TEXT <<NN>>
+    data : DATE
+    valor_depreciado : FLOAT <<NN>>
+    valor_acumulado : FLOAT <<NN>>
+    valor_liquido : FLOAT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+  entity "transferencias" as Ttransferencias {
+    id : UUID <<PK>>
+    bem_id : TEXT <<NN>>
+    de_localizacao : TEXT
+    para_localizacao : TEXT <<NN>>
+    de_responsavel_id : TEXT
+    para_responsavel_id : TEXT
+    data_transferencia : DATE
+    motivo : TEXT
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tbens
+BemModel
+
+17 colunas mapeadas.
+
+Modelo de bens patrimoniais.
+end note
+
+note right of Tdepreciacoes
+DepreciacaoModel
+
+8 colunas mapeadas.
+
+Modelo de depreciações de bens.
+end note
+
+note right of Ttransferencias
+TransferenciaModel
+
+11 colunas mapeadas.
+
+Modelo de transferências de bens.
+end note
+
+note left of Tbens
+3 tabelas no schema pat.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

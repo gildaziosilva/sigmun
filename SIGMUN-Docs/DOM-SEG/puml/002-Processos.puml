@@ -1,0 +1,35 @@
+@startuml
+title DOM-SEG — Processos
+
+legend
+SIGMUN
+DOM-SEG — Segurança
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CriarChave;
+
+:BuscarChave;
+:AtualizarChave;
+:RevogarChave;
+:ExpirarChave;
+:DeletarChave;
+
+:Atualizar ControleSeguranca;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de ControleSeguranca.
+
+Casos de uso no código: 31.
+Entidades do domínio: 5.
+Tabelas mapeadas: 5.
+end note
+
+@enduml

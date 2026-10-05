@@ -1,0 +1,47 @@
+@startuml
+title SIGMUN — Diagrama de Contexto
+
+' ============================================================
+' SIGMUN — Sistema Integrado de Gestão Municipal
+' Artefato: Contexto do Sistema
+' Classificação da Informação: Pública
+' Status: Vigente
+' Responsável: Equipe SIGMUN
+' ============================================================
+
+skinparam shadowing false
+skinparam linetype ortho
+
+actor "Cidadão" as Cidadao
+actor "Servidor Público" as Servidor
+actor "Gestor Municipal" as Gestor
+actor "Fornecedor" as Fornecedor
+actor "Administrador do SIGMUN" as Admin
+
+rectangle "SIGMUN" as SIGMUN
+
+rectangle "Serviços de Identidade /\nAutenticação" as IDP
+rectangle "Serviços Financeiros /\nOrçamentários" as FIN
+rectangle "Serviços de Documentos" as DOC
+rectangle "Serviços de Comunicação" as COM
+rectangle "Sistemas / Serviços\nExternos" as EXT
+
+Cidadao --> SIGMUN : consulta / solicita serviços
+Servidor --> SIGMUN : executa processos
+Gestor --> SIGMUN : acompanha / decide
+Fornecedor --> SIGMUN : participa de processos
+Admin --> SIGMUN : administra plataforma
+
+SIGMUN --> IDP : autenticação /\nautorização
+SIGMUN --> FIN : integrações financeiras
+SIGMUN --> DOC : documentos / evidências
+SIGMUN --> COM : notificações / comunicação
+SIGMUN --> EXT : integrações externas
+
+note bottom of SIGMUN
+Sistema integrado para gestão municipal,
+com domínios especializados e serviços
+compartilhados.
+end note
+
+@enduml

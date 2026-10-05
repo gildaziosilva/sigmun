@@ -1,0 +1,78 @@
+@startuml
+title DOM-ORC — Processo de Planejamento e Dotação
+
+legend
+SIGMUN
+DOM-ORC — Orçamento Público
+Planejamento, Dotação e Reserva de Saldo
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:Elaborar PPA com o quadriênio;
+
+if (Quadriênio de 4 anos?) then (Não)
+  :Recusar publicação
+  (RN-ORC-001);
+  stop
+endif
+
+:Publicar PPA
+→ VIGENTE;
+:Definir metas fiscais
+na LDO do exercício;
+
+if (LDO aprovada?) then (Sim)
+  :Sancionar LDO
+  → SANCIONADA;
+else (Não)
+  :Retornar à
+  elaboração;
+  stop
+endif
+
+:Elaborar LOA com receita
+prevista e despesa fixada;
+
+if (Despesa fixada > receita
+prevista?) then (Sim)
+  :Recusar aprovação
+  (RN-ORC-022);
+  :Ajustar valores;
+  stop
+endif
+
+:Aprovar e publicar LOA
+→ PUBLICADA;
+:Criar dotações
+por unidade e ação;
+
+:Registrar dotação
+com valor inicial;
+
+:Registrar evento
+de auditoria;
+
+stop
+
+note left
+A cascata normativa é
+obrigatória:
+
+PPA → LDO → LOA
+
+Nenhuma etapa avança sem
+a anterior estar vigente.
+end note
+
+note right
+A LOA publicada é terminal.
+Suplementação e anulação
+passam a ocorrer na
+dotação, e não na lei.
+end note
+
+@enduml

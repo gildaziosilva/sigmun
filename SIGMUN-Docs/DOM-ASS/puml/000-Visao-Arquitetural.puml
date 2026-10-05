@@ -1,0 +1,95 @@
+@startuml
+title DOM-ASS — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-ASS — Assistência Social
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-ASS — Assistência Social" {
+  component "API\n/api/v1/ass" as API
+  component "CadastrarFamilia" as UC0
+  component "CadastrarPessoa" as UC1
+  component "CadastrarUnidade" as UC2
+  component "SolicitarBeneficio" as UC3
+  component "AprovarBeneficio" as UC4
+  component "NegarBeneficio" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-PES\nCadastro" as DPES
+  component "DOM-ORC\nOrçamento Público" as DORC
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema ass" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : DELETE
+API --> UC1 : GET
+API --> UC2 : PATCH
+API --> UC3 : POST
+
+API --> DPES : troca de dados
+API --> DORC : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-ASS cobre assistência social.
+
+A API expõe 31 operações
+em 1 prefixo.
+
+15 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (4):
+
+- RN-ASS-001
+- RN-ASS-002
+- RN-ASS-003
+- RN-ASS-004
+end note
+
+note bottom of DB
+5 tabelas mapeadas:
+
+- familias_cadunico
+- pessoas_cadunico
+- unidades_assistencia
+- beneficios_eventuais
+- atendimentos_sociais
+end note
+
+@enduml

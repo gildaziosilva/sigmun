@@ -1,0 +1,76 @@
+@startuml
+title SIGMUN — Arquitetura em Camadas
+
+' ============================================================
+' SIGMUN — Sistema Integrado de Gestão Municipal
+' Artefato: Arquitetura em Camadas
+' Classificação da Informação: Pública
+' Status: Vigente
+' Responsável: Equipe SIGMUN
+' ============================================================
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+package "Interfaces" {
+    [Portal Administrativo] as Admin
+    [Portal do Cidadão] as Cidadao
+    [Portal do Fornecedor] as Fornecedor
+    [API REST] as API
+}
+
+package "Aplicação" {
+    [Casos de Uso] as UC
+    [Serviços de Aplicação] as APP
+}
+
+package "Domínio" {
+    [DOM-IDN] as IDN
+    [DOM-SEG] as SEG
+    [DOM-DIA] as DIA
+    [DOM-GDO] as GDO
+    [DOM-SAU] as SAU
+    [DOM-EDU] as EDU
+    [Outros Domínios] as OUTROS
+}
+
+package "Infraestrutura" {
+    [Repositórios] as REPO
+    [Mensageria / Outbox] as MSG
+    [Jobs / Workers] as JOB
+    [Cache] as CACHE
+}
+
+database "PostgreSQL" as DB
+database "Redis" as REDIS
+
+Admin --> API
+Cidadao --> API
+Fornecedor --> API
+
+API --> UC
+UC --> APP
+
+APP --> IDN
+APP --> SEG
+APP --> DIA
+APP --> GDO
+APP --> SAU
+APP --> EDU
+APP --> OUTROS
+
+APP --> REPO
+APP --> MSG
+APP --> CACHE
+
+REPO --> DB
+MSG --> JOB
+CACHE --> REDIS
+
+note right of DIA
+A camada de domínio concentra
+regras e conceitos de negócio.
+end note
+
+@enduml

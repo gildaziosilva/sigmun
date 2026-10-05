@@ -1,0 +1,138 @@
+@startuml
+title DOM-ANA — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-ANA — Analytics e Inteligência
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-ANA" {
+
+class FonteAnalitica <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: texto
+  +tipo: string
+  +referencia: string
+  +periodicidade: string
+  +ultima_atualizacao: datetime
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class ModeloAnalitico <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: texto
+  +tipo: string
+  +tecnologia: string
+  +versao: string
+  +metrica: string
+  +treinado_em: date
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Analise <<Entity>> {
+  +id: string
+  +codigo: string
+  +titulo: string
+  +fonte_id: string
+  +modelo_id: string
+  +responsavel: string
+  +data_execucao: date
+  +resultado: texto
+  +visibilidade: string
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Recomendacao <<Entity>> {
+  +id: string
+  +analise_id: string
+  +destinatario: string
+  +recomendacao: texto
+  +prioridade: string
+  +data: date
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoModeloAnalitico {
+  ESTATISTICO = 'estatistico'
+  PREDITIVO = 'preditivo'
+  CLUSTERIZACAO = 'clusterizacao'
+  IA = 'ia'
+}
+
+enum SituacaoAnalitica {
+  RASCUNHO = 'rascunho'
+  EM_VALIDACAO = 'em_validacao'
+  EM_PRODUCAO = 'em_producao'
+  DESCONTINUADO = 'descontinuado'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+FonteAnalitica "1" *-- "0..*" Analise : "fonte_id"
+ModeloAnalitico "1" *-- "0..*" Analise : "modelo_id"
+Analise "1" *-- "0..*" Recomendacao : "analise_id"
+
+ModeloAnalitico --> TipoModeloAnalitico
+ModeloAnalitico --> SituacaoAnalitica
+Analise --> SituacaoAnalitica
+
+note right of Analise
+Regras propostas (4):
+
+- RN-ANA-001:
+  a fonte referencia ativo do DOM-DAD por identificador; sem cópia.
+- RN-ANA-002:
+  modelo em produção declara versão, métrica e data de treinamento.
+- RN-ANA-003:
+  a análise registra fonte, modelo quando houver, responsável e data.
+- RN-ANA-004:
+  resultado aplicado a decisão pública é rastreável até a análise que o originou.
+end note
+
+note bottom of Analise
+Capacidades previstas (5):
+
+- Análise de Dados
+- Estatística
+- Modelos Preditivos
+- Ciência de Dados e IA
+- Apoio à Decisão
+end note
+
+@enduml

@@ -1,0 +1,142 @@
+@startuml
+title DOM-DEC — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-DEC — Desenvolvimento Econômico
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-DEC" {
+
+class ProgramaDesenvolvimento <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +objetivo: texto
+  +publico: texto
+  +orcamento: decimal
+  +situacao: string
+  +data_inicio: date
+  +data_fim: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Empreendimento <<Entity>> {
+  +id: string
+  +codigo: string
+  +pessoa_id: string
+  +nome: string
+  +setor: string
+  +porte: string
+  +bairro_id: string
+  +data_abertura: date
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class ProjetoInvestimento <<Entity>> {
+  +id: string
+  +codigo: string
+  +empreendimento_id: string
+  +descricao: texto
+  +investimento_previsto: decimal
+  +empregos_previstos: int
+  +empregos_realizados: int
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class ParticipacaoPrograma <<Entity>> {
+  +id: string
+  +programa_id: string
+  +empreendimento_id: string
+  +data_ingresso: date
+  +situacao: string
+  +resultado: texto
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum SetorEconomico {
+  AGROPECUARIA = 'agropecuaria'
+  INDUSTRIA = 'industria'
+  SERVICOS = 'servicos'
+  COMERCIO = 'comercio'
+}
+
+enum PorteEmpresa {
+  ME = 'me'
+  EPP = 'epp'
+  DEMAIS = 'demais'
+}
+
+enum SituacaoPrograma {
+  PROPOSTO = 'proposto'
+  APROVADO = 'aprovado'
+  EM_EXECUCAO = 'em_execucao'
+  CONCLUIDO = 'concluido'
+  CANCELADO = 'cancelado'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+ProgramaDesenvolvimento "1" *-- "0..*" ParticipacaoPrograma : "programa_id"
+Empreendimento "1" *-- "0..*" ParticipacaoPrograma : "empreendimento_id"
+Empreendimento "1" *-- "0..*" ProjetoInvestimento : "empreendimento_id"
+
+Empreendimento --> SetorEconomico
+Empreendimento --> PorteEmpresa
+ProgramaDesenvolvimento --> SituacaoPrograma
+ProjetoInvestimento --> SituacaoPrograma
+
+note right of ProgramaDesenvolvimento
+Regras propostas (4):
+
+- RN-DEC-001:
+  o empreendimento referencia a pessoa jurídica do DOM-CUM por identificador opaco.
+- RN-DEC-002:
+  a adesão ao programa exige programa em execução e vaga disponível.
+- RN-DEC-003:
+  o projeto registra investimento e empregos previstos e realizados.
+- RN-DEC-004:
+  os resultados são repassados ao DOM-IND como valores de indicador econômico.
+end note
+
+note bottom of ProgramaDesenvolvimento
+Capacidades previstas (5):
+
+- Programas de Desenvolvimento
+- Empreendimentos
+- Projetos de Investimento
+- Emprego e Renda
+- Economia Local
+end note
+
+@enduml

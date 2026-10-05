@@ -1,0 +1,130 @@
+@startuml
+title DOM-MAM — Persistência
+
+legend
+SIGMUN
+DOM-MAM — Meio Ambiente
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema mam" {
+
+  entity "licencimentos_ambientais" as Tlicencimentos_ambientais {
+    id : UUID <<PK>>
+    numero : TEXT <<NN>>
+    empreendimento : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    atividade : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    data_emissao : DATE
+    validade_ate : DATE
+    condicoes : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "fiscalizacoes_ambientais" as Tfiscalizacoes_ambientais {
+    id : UUID <<PK>>
+    numero : TEXT <<NN>>
+    licenca_id : TEXT
+    data : DATE <<NN>>
+    agente : TEXT <<NN>>
+    objeto : TEXT <<NN>>
+    resultado : TEXT <<NN>>
+    prazo_adequacao : DATE
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "monitoramentos_ambientais" as Tmonitoramentos_ambientais {
+    id : UUID <<PK>>
+    licenca_id : TEXT
+    parametro : TEXT <<NN>>
+    data : DATE <<NN>>
+    valor : FLOAT <<NN>>
+    unidade : TEXT <<NN>>
+    limite_legal : FLOAT
+    conformidade : TEXT <<NN>>
+    observacao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "areas_protegidas" as Tareas_protegidas {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    categoria : TEXT <<NN>>
+    area_km2 : FLOAT <<NN>>
+    nivel_protecao : TEXT <<NN>>
+    bairro_id : TEXT
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+licencimentos_ambientais ||--o{ fiscalizacoes_ambientais : "licenca_id"
+licencimentos_ambientais ||--o{ monitoramentos_ambientais : "licenca_id"
+
+note right of Tlicencimentos_ambientais
+LicenciamentoAmbiental
+
+13 colunas propostas.
+
+Licença, autorização ou outorga da atividade ambiental.
+end note
+
+note right of Tfiscalizacoes_ambientais
+FiscalizacaoAmbiental
+
+13 colunas propostas.
+
+Auto de fiscalização com resultado e prazo de adequação.
+end note
+
+note right of Tmonitoramentos_ambientais
+MonitoramentoAmbiental
+
+13 colunas propostas.
+
+Medição de parâmetro ambiental comparada ao limite legal.
+end note
+
+note right of Tareas_protegidas
+AreaProtegida
+
+12 colunas propostas.
+
+Unidade ou área protegida do município.
+end note
+
+note left of Tlicencimentos_ambientais
+4 tabelas propostas no schema mam.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

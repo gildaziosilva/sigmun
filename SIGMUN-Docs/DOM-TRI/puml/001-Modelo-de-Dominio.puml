@@ -1,0 +1,219 @@
+@startuml
+title DOM-TRI — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-TRI — Tributos
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Outras entidades" {
+
+class Certidao <<Entity>> {
+  +id: string
+  +contribuinte_id: string
+  +tipo: TipoCertidao
+  +numero: string
+  +data_emissao: date
+  +valido_ate: date
+  +observacao: string
+  +status: StatusCertidao
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Contribuinte <<Entity>> {
+  +id: string
+  +tipo: TipoContribuinte
+  +nome: string
+  +cpf_cnpj: string
+  +inscricao_municipal: string
+  +email: string
+  +telefone: string
+  +endereco: string
+  +status: StatusContribuinte
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class InscricaoDividaAtiva <<Entity>> {
+  +id: string
+  +lancamento_id: string
+  +numero_inscricao: string
+  +data_inscricao: date
+  +valor_original: decimal
+  +valor_atualizado: decimal
+  +status: StatusDividaAtiva
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Imovel <<Entity>> {
+  +id: string
+  +contribuinte_id: string
+  +inscricao_imobiliaria: string
+  +logradouro: string
+  +numero: string
+  +bairro: string
+  +cidade: string
+  +uf: string
+  +cep: string
+  +area_terreno: decimal
+  +area_construida: decimal
+  +valor_venal: decimal
+  +aliquota: decimal
+  +status: StatusImovel
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Lancamento <<Entity>> {
+  +id: string
+  +contribuinte_id: string
+  +imovel_id: string
+  +tipo_tributo: TipoTributo
+  +exercicio: int
+  +numero_lancamento: string
+  +descricao: string
+  +base_calculo: decimal
+  +aliquota: decimal
+  +valor_tributo: decimal
+  +juros: decimal
+  +multa: decimal
+  +valor_total: decimal
+  +data_vencimento: date
+  +status: StatusLancamento
+  +data_pagamento: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoCertidao {
+  NEGATIVA = 'negativa'
+  POSITIVA = 'positiva'
+  POSITIVA_NEGATIVA = 'positiva_negativa'
+}
+
+enum StatusCertidao {
+  EMITIDA = 'emitida'
+  CANCELADA = 'cancelada'
+}
+
+enum TipoContribuinte {
+  PESSOA_FISICA = 'pf'
+  PESSOA_JURIDICA = 'pj'
+}
+
+enum StatusContribuinte {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+}
+
+enum StatusDividaAtiva {
+  ATIVA = 'ativa'
+  BAIXADA = 'baixada'
+  CANCELADA = 'cancelada'
+}
+
+enum StatusImovel {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+  DEMOLIDO = 'demolido'
+}
+
+enum TipoTributo {
+  IPTU = 'iptu'
+  ISSQN = 'issqn'
+  ITBI = 'itbi'
+  TAXA = 'taxa'
+}
+
+enum StatusLancamento {
+  LANCADO = 'lancado'
+  PAGO = 'pago'
+  INSCRITO_EM_DIVIDA_ATIVA = 'inscrito_em_divida_ativa'
+  CANCELADO = 'cancelado'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Contribuinte "1" *-- "0..*" Certidao : "contribuinte_id"
+Lancamento "1" *-- "0..*" InscricaoDividaAtiva : "lancamento_id"
+Contribuinte "1" *-- "0..*" Imovel : "contribuinte_id"
+Contribuinte "1" *-- "0..*" Lancamento : "contribuinte_id"
+Imovel "1" *-- "0..*" Lancamento : "imovel_id"
+Certidao --> TipoCertidao
+Certidao --> StatusCertidao
+Contribuinte --> TipoContribuinte
+Contribuinte --> StatusContribuinte
+InscricaoDividaAtiva --> StatusDividaAtiva
+Imovel --> StatusImovel
+Lancamento --> TipoTributo
+Lancamento --> StatusLancamento
+
+note right of Certidao
+Regras de negócio (11):
+
+- RN-TRI-001:
+  CPF/CNPJ do contribuinte é único e validado.
+- RN-TRI-002:
+  inscrição municipal é um atributo do cadastro, mas não substitui a identificação
+- RN-TRI-010:
+  inscrição imobiliária é única no município.
+- RN-TRI-011:
+  o IPTU é calculado sobre o valor venal aplicando a alíquota vigente do imóvel.
+- RN-TRI-020:
+  o lançamento constitui o crédito tributário com base de cálculo declarada/apuráv
+- RN-TRI-021:
+  o valor total do lançamento é tributo + juros + multa.
+- RN-TRI-022:
+  um lançamento pago ou já inscrito em dívida ativa não pode ser pago duplamente s
+- RN-TRI-030:
+  a inscrição em dívida ativa formaliza créditos vencidos e não pagos, com número 
+- RN-TRI-031:
+  valores atualizados (juros e multa) podem ser recompostos até a baixa da inscriç
+- e mais 2
+end note
+
+note bottom of Certidao
+Comportamentos (22):
+
+- Certidao.validar
+- Certidao.cancelar
+- Certidao.excluir
+- Contribuinte.esta_ativo
+- Contribuinte.ativar
+- Contribuinte.inativar
+- Contribuinte.excluir
+- Contribuinte.validar
+- InscricaoDividaAtiva.validar
+- InscricaoDividaAtiva.atualizar_valor
+- e mais 12
+end note
+
+@enduml

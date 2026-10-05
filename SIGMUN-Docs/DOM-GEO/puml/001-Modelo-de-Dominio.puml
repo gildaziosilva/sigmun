@@ -1,0 +1,252 @@
+@startuml
+title DOM-GEO — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-GEO — Geoinformação Municipal
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-GEO" {
+
+class CamadaMapa <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +tipo: string
+  +formato: string
+  +fonte: string
+  +data_atualizacao: date
+  +datum: string
+  +srid: int
+  +url_servico: string
+  +zoom_minimo: int
+  +zoom_maximo: int
+  +visivel: bool
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class FeatureGeo <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +camada_id: string
+  +geometria: string
+  +latitude: decimal
+  +longitude: decimal
+  +vertices: json
+  +datum: string
+  +atributos: json
+  +criado_por: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class MapaCamada <<Entity>> {
+  +id: string
+  +mapa_id: string
+  +camada_id: string
+  +ordem: int
+  +opacidade: decimal
+  +visivel: bool
+  +rotulo: string
+  +created_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class MapaSig <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +tipo: string
+  +situacao: string
+  +datum: string
+  +srid: int
+  +escala_denominador: int
+  +zoom_inicial: int
+  +zoom_minimo: int
+  +zoom_maximo: int
+  +lat_min: decimal
+  +lon_min: decimal
+  +lat_max: decimal
+  +lon_max: decimal
+  +publicado_em: datetime
+  +criado_por: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class ServicoGeo <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +tipo: string
+  +situacao: string
+  +url: string
+  +camada: string
+  +datum: string
+  +srid: int
+  +zoom_minimo: int
+  +zoom_maximo: int
+  +publico: bool
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum DatumGeografico {
+  SIRGAS2000 = 'sirgas2000'
+  SAD69 = 'sad69'
+  WGS84 = 'wgs84'
+}
+
+enum TipoGeometria {
+  PONTO = 'ponto'
+  LINHA = 'linha'
+  POLIGONO = 'poligono'
+}
+
+enum TipoCamadaMapa {
+  ORTOFOTO = 'ortofoto'
+  HIPSOMETRIA = 'hipsometria'
+  HIPSOGRAFIA = 'hipsografia'
+  TOPOGRAFIA = 'topografia'
+  HIDROGRAFIA = 'hidrografia'
+  USO_SOLO = 'uso_solo'
+  VEGETACAO = 'vegetacao'
+  MALHA_URBANA = 'malha_urbana'
+  INFRAESTRUTURA = 'infraestrutura'
+  CADASTRO_TERRITORIAL = 'cadastro_territorial'
+  OUTRO = 'outro'
+}
+
+enum FormatoCamada {
+  GEOTIFF = 'geotiff'
+  SHAPEFILE = 'shapefile'
+  GEOJSON = 'geojson'
+  KML = 'kml'
+  POSTGIS = 'postgis'
+  WMS = 'wms'
+  WFS = 'wfs'
+  WMTS = 'wmts'
+  XYZ = 'xyz'
+  VETORIAL = 'vetorial'
+}
+
+enum SituacaoCamadaMapa {
+  RASCUNHO = 'rascunho'
+  ATIVA = 'ativa'
+  DESATIVADA = 'desativada'
+}
+
+enum TipoMapaSig {
+  TEMATICO = 'tematico'
+  CADASTRAL = 'cadastral'
+  BASEMAP = 'basemap'
+  INFRAESTRUTURA = 'infraestrutura'
+  AMBIENTAL = 'ambiental'
+  OUTRO = 'outro'
+}
+
+enum SituacaoMapaSig {
+  RASCUNHO = 'rascunho'
+  PUBLICADO = 'publicado'
+  ARQUIVADO = 'arquivado'
+}
+
+enum TipoServicoGeo {
+  WMS = 'wms'
+  WFS = 'wfs'
+  WMTS = 'wmts'
+  XYZ = 'xyz'
+  REST = 'rest'
+}
+
+enum SituacaoServicoGeo {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+  MANUTENCAO = 'manutencao'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+CamadaMapa "1" *-- "0..*" FeatureGeo : "camada_id"
+MapaSig "1" *-- "0..*" MapaCamada : "mapa_id"
+CamadaMapa "1" *-- "0..*" MapaCamada : "camada_id"
+
+CamadaMapa --> TipoCamadaMapa
+CamadaMapa --> FormatoCamada
+CamadaMapa --> SituacaoCamadaMapa
+CamadaMapa --> DatumGeografico
+MapaSig --> TipoMapaSig
+MapaSig --> SituacaoMapaSig
+MapaSig --> DatumGeografico
+FeatureGeo --> TipoGeometria
+FeatureGeo --> DatumGeografico
+ServicoGeo --> TipoServicoGeo
+ServicoGeo --> SituacaoServicoGeo
+
+note right of MapaSig
+Regras de negócio (8):
+
+- RN-GEO-001:
+  O código da camada de mapa é único no geoportal municipal; código e nome são obrigatórios.
+- RN-GEO-002:
+  O código do mapa SIG é único no geoportal municipal; código e nome são obrigatórios.
+- RN-GEO-003:
+  O elemento geoespacial exige geometria suportada, coordenadas no intervalo do datum e quantidade de vértices compatível com o tipo de geometria (ponto 1, linha 2, polígono 3).
+- RN-GEO-004:
+  O mapa percorre `RASCUNHO -> PUBLICADO -> ARQUIVADO`, sem retorno a partir de `ARQUIVADO`. Somente mapas em rascunho aceitam alteração de composição, a publicação exige ao menos uma camada ativa e mapa publicado não pode ser excluído diretamente.
+- RN-GEO-005:
+  A extensão (bbox) do mapa deve ser coerente, o SRID deve estar em faixa válida e a faixa de zoom deve respeitar `zoom_minimo <= zoom_inicial <= zoom_maximo`.
+- RN-GEO-006:
+  A camada percorre `RASCUNHO -> ATIVA -> DESATIVADA`, sem retorno a partir de `DESATIVADA`. Camada ativa cujo formato seja de serviço (WMS, WFS, WMTS, XYZ) exige URL preenchida, e somente camada ativa compõe mapa.
+- e mais 2
+end note
+
+note bottom of MapaSig
+Comportamentos (18):
+
+- CadastrarCamadaUseCase
+- AtualizarCamadaUseCase
+- AtivarCamadaUseCase
+- DesativarCamadaUseCase
+- ExcluirCamadaUseCase
+- CadastrarMapaUseCase
+- AtualizarMapaUseCase
+- ComporCamadaUseCase
+- RemoverComposicaoUseCase
+- PublicarMapaUseCase
+- e mais 8
+end note
+
+@enduml

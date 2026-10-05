@@ -1,0 +1,43 @@
+@startuml
+title DOM-IND — Processos
+
+legend
+SIGMUN
+DOM-IND — Indicadores e Desempenho
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Definir o indicador;
+:Validar fonte e fórmula;
+:Fixar a meta do exercício;
+:Coletar os valores;
+:Validar a coleta;
+:Publicar no painel;
+:Revisar ou descontinuar;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Indicador.
+
+Modelo proposto: capacidades previstas: 6.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-IND-001
+- RN-IND-002
+- RN-IND-003
+- RN-IND-004
+end note
+
+@enduml

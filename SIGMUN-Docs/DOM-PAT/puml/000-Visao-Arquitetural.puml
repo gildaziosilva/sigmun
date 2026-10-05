@@ -1,0 +1,89 @@
+@startuml
+title DOM-PAT — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-PAT — Patrimônio
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-PAT — Patrimônio" {
+  component "API\n/api/v1/pat" as API
+  component "CadastrarBem" as UC0
+  component "DepreciarBem" as UC1
+  component "TransferirBem" as UC2
+  component "ConcluirTransferencia" as UC3
+  component "BaixarBem" as UC4
+}
+
+package "Domínios Correlatos" {
+  component "DOM-ORC\nOrçamento Público" as DORC
+  component "DOM-CON\nContabilidade Pública" as DCON
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema pat" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : GET
+API --> UC1 : POST
+
+API --> DORC : troca de dados
+API --> DCON : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+
+note right of API
+O DOM-PAT cobre patrimônio.
+
+A API expõe 8 operações
+em 1 prefixo.
+
+5 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (4):
+
+- RN-PAT-001
+- RN-PAT-002
+- RN-PAT-003
+- RN-PAT-010
+end note
+
+note bottom of DB
+3 tabelas mapeadas:
+
+- bens
+- depreciacoes
+- transferencias
+end note
+
+@enduml

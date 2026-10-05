@@ -1,4 +1,3 @@
-```plantuml id="v8m3kx"
 @startuml
 title DOM-OUV — Persistência
 
@@ -288,5 +287,3 @@ Domínios especializados
 end note
 
 @enduml
-```
-

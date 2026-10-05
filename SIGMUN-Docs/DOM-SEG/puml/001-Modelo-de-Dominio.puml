@@ -1,0 +1,171 @@
+@startuml
+title DOM-SEG — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-SEG — Segurança
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Outras entidades" {
+
+class ControleSeguranca <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +tipo: TipoControle
+  +categoria: CategoriaControle
+  +status: StatusControle
+  +responsavel_id: string
+  +nivel_risco: string
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class PoliticaSeguranca <<Entity>> {
+  +id: string
+  +codigo: string
+  +titulo: string
+  +conteudo: string
+  +versao: string
+  +aprovador_id: string
+  +data_aprovacao: datetime
+  +data_revisao: datetime
+  +ativa: bool
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class IncidenteSeguranca <<Entity>> {
+  +id: string
+  +titulo: string
+  +descricao: string
+  +severidade: SeveridadeIncidente
+  +status: StatusIncidente
+  +data_ocorrencia: datetime
+  +data_deteccao: datetime
+  +data_resolucao: datetime
+  +relator_id: string
+  +atribuido_a: string
+  +impacto: string
+  +categoria: string
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class ChaveCriptografica <<Entity>> {
+  +id: string
+  +nome: string
+  +algoritmo: string
+  +tamanho_bits: int
+  +tipo: string
+  +status: string
+  +data_expiracao: datetime
+  +responsavel_id: string
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class Credencial <<Entity>> {
+  +id: string
+  +usuario_id: string
+  +tipo: string
+  +identificador: string
+  +status: StatusCredencial
+  +validade: datetime
+  +ultimo_uso: datetime
+  +tentativas_falhas: int
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoControle {
+  FISICO = 'fisico'
+  TECNICO = 'tecnico'
+  ADMINISTRATIVO = 'administrativo'
+}
+
+enum CategoriaControle {
+  ACESSO = 'acesso'
+  CRIPTOGRAFIA = 'criptografia'
+  INCIDENTE = 'incidente'
+  CONTINUIDADE = 'continuidade'
+  CONFORMIDADE = 'conformidade'
+}
+
+enum StatusControle {
+  IMPLEMENTADO = 'implementado'
+  PARCIAL = 'parcial'
+  PLANEJADO = 'planejado'
+}
+
+enum SeveridadeIncidente {
+  BAIXA = 'baixa'
+  MEDIA = 'media'
+  ALTA = 'alta'
+  CRITICA = 'critica'
+}
+
+enum StatusIncidente {
+  ABERTO = 'aberto'
+  EM_ANALISE = 'em_analise'
+  EM_MITIGACAO = 'em_mitigacao'
+  RESOLVIDO = 'resolvido'
+  ENCERRADO = 'encerrado'
+}
+
+enum StatusCredencial {
+  ATIVA = 'ativa'
+  SUSPENSA = 'suspensa'
+  REVOGADA = 'revogada'
+  EXPIRADA = 'expirada'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+ControleSeguranca --> TipoControle
+ControleSeguranca --> CategoriaControle
+ControleSeguranca --> StatusControle
+IncidenteSeguranca --> SeveridadeIncidente
+IncidenteSeguranca --> StatusIncidente
+Credencial --> StatusCredencial
+
+
+note bottom of ControleSeguranca
+Comportamentos (19):
+
+- ControleSeguranca.is_active
+- ControleSeguranca.implementar
+- ControleSeguranca.parcial
+- PoliticaSeguranca.is_active
+- PoliticaSeguranca.aprovar
+- IncidenteSeguranca.is_active
+- IncidenteSeguranca.detectar
+- IncidenteSeguranca.escalar
+- IncidenteSeguranca.mitigar
+- IncidenteSeguranca.resolver
+- e mais 9
+end note
+
+@enduml

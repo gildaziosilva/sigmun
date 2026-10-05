@@ -1,0 +1,129 @@
+@startuml
+title DOM-CPT — Persistência
+
+legend
+SIGMUN
+DOM-CPT — Gestão de Competências
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema cpt" {
+
+  entity "competencias" as Tcompetencias {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    categoria : TEXT <<NN>>
+    nivel_referencia : FLOAT <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "capacitacoes" as Tcapacitacoes {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    modalidade : TEXT <<NN>>
+    carga_horativa : INTEGER <<NN>>
+    situacao : TEXT <<NN>>
+    data_inicio : DATE
+    data_fim : DATE
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "avaliacoes_competencia" as Tavaliacoes_competencia {
+    id : UUID <<PK>>
+    pessoa_id : TEXT <<NN>>
+    competencia_id : TEXT <<NN>>
+    nivel_atual : FLOAT <<NN>>
+    nivel_esperado : FLOAT <<NN>>
+    avaliador : TEXT <<NN>>
+    data_avaliacao : DATE <<NN>>
+    observacao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "planos_desenvolvimento" as Tplanos_desenvolvimento {
+    id : UUID <<PK>>
+    pessoa_id : TEXT <<NN>>
+    titulo : TEXT <<NN>>
+    competencia_id : TEXT <<NN>>
+    capacitacao_id : TEXT
+    acao : TEXT <<NN>>
+    prazo : DATE <<NN>>
+    situacao : TEXT <<NN>>
+    resultado : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+competencias ||--o{ avaliacoes_competencia : "competencia_id"
+competencias ||--o{ planos_desenvolvimento : "competencia_id"
+capacitacoes ||--o{ planos_desenvolvimento : "capacitacao_id"
+
+note right of Tcompetencias
+Competencia
+
+11 colunas propostas.
+
+Competência, habilidade ou qualificação do catálogo.
+end note
+
+note right of Tcapacitacoes
+Capacitacao
+
+13 colunas propostas.
+
+Capacitação ou treinamento ofertado.
+end note
+
+note right of Tavaliacoes_competencia
+AvaliacaoCompetencia
+
+12 colunas propostas.
+
+Nível avaliado e esperado de uma pessoa em uma competência.
+end note
+
+note right of Tplanos_desenvolvimento
+PlanoDesenvolvimento
+
+13 colunas propostas.
+
+Ação individual para reduzir uma lacuna de competência.
+end note
+
+note left of Tcompetencias
+4 tabelas propostas no schema cpt.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

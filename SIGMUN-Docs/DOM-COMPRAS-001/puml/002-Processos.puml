@@ -1,0 +1,45 @@
+@startuml
+title DOM-COMPRAS-001 — Processos
+
+legend
+SIGMUN
+DOM-COMPRAS-001 — Compras e Contratações
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:RegistrarItemCompra;
+
+:ExcluirContrato;
+:ConsultarProcessoDocumental;
+:RegistrarContrato;
+:InativarFornecedor;
+:RegistrarProcessoDocumental;
+
+:Atualizar Compra;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Compra.
+
+Casos de uso no código: 30.
+Entidades do domínio: 6.
+Tabelas mapeadas: 7.
+end note
+
+note right
+Validações (5):
+
+- RN-COMPRAS-011
+- RN-COMPRAS-013)
+- RN-COMPRAS-025
+- RN-COMPRAS-030
+- RN-COMPRAS-036
+end note
+
+@enduml

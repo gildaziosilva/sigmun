@@ -1,0 +1,44 @@
+@startuml
+title DOM-GOV — Processos
+
+legend
+SIGMUN
+DOM-GOV — Governança Municipal
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Elaborar a política;
+:Submeter à revisão;
+:Aprovar e publicar;
+:Identificar e tratar riscos;
+:Executar os controles de conformidade;
+:Registrar a deliberação do colegiado;
+:Monitorar indicadores de governança;
+:Revisar ou revogar a política;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de PoliticaGovernanca.
+
+Modelo proposto: capacidades previstas: 5.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-GOV-001
+- RN-GOV-002
+- RN-GOV-003
+- RN-GOV-004
+end note
+
+@enduml

@@ -1,0 +1,98 @@
+@startuml
+title DOM-INF — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-INF — Infraestrutura Tecnológica
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-INF — Infraestrutura Tecnológica" {
+  component "API\n/api/v1/inf" as API
+  component "Computação e Armazenamento" as UC0
+  component "Redes" as UC1
+  component "Bancos de Dados" as UC2
+  component "Nuvem" as UC3
+  component "Dispositivos" as UC4
+  component "Ambientes" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-SEG\nSegurança da Informação" as DSEG
+  component "DOM-DAD\nDados Corporativos" as DDAD
+  component "DOM-INT\nIntegração e Interoperabilidade" as DINT
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema inf" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : previsto
+API --> UC1 : previsto
+API --> UC2 : previsto
+API --> UC3 : previsto
+API --> UC4 : previsto
+API --> UC5 : previsto
+
+API --> DSEG : troca de dados (prevista)
+API --> DDAD : troca de dados (prevista)
+API --> DINT : troca de dados (prevista)
+API --> IDN : autenticação e autorização
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-INF cobre Infraestrutura Tecnológica.
+
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+Capacidades previstas para /api/v1/inf.
+end note
+
+note bottom of API
+Regras propostas (4):
+
+- RN-INF-001
+- RN-INF-002
+- RN-INF-003
+- RN-INF-004
+end note
+
+note bottom of DB
+4 tabelas propostas:
+
+- ambientes_infraestrutura
+- recursos_infraestrutura
+- monitoramentos_infraestrutura
+- incidentes_infraestrutura
+end note
+
+@enduml

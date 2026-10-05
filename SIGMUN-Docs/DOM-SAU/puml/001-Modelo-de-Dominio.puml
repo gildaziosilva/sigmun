@@ -1,0 +1,198 @@
+@startuml
+title DOM-SAU — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-SAU — Saúde
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Outras entidades" {
+
+class Atendimento <<Entity>> {
+  +id: string
+  +paciente_id: string
+  +data: date
+  +tipo: TipoAtendimento
+  +profissional: string
+  +estabelecimento: string
+  +queixa: string
+  +conduta: string
+  +cid10: string
+  +created_at: datetime
+  +created_by: string
+}
+
+class Agendamento <<Entity>> {
+  +id: string
+  +paciente_id: string
+  +especialidade: string
+  +data: date
+  +hora: string
+  +estabelecimento: string
+  +status: StatusAgendamento
+  +motivo_cancelamento: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+}
+
+class Regulacao <<Entity>> {
+  +id: string
+  +paciente_id: string
+  +procedimento: string
+  +prioridade: PrioridadeRegulacao
+  +solicitante: string
+  +data_solicitacao: date
+  +status: StatusRegulacao
+  +justificativa: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+}
+
+class Medicamento <<Entity>> {
+  +id: string
+  +nome: string
+  +apresentacao: string
+  +estoque: decimal
+  +estoque_minimo: decimal
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Dispensacao <<Entity>> {
+  +id: string
+  +paciente_id: string
+  +medicamento_id: string
+  +quantidade: decimal
+  +data: date
+  +receita: string
+  +created_at: datetime
+  +created_by: string
+}
+
+class Paciente <<Entity>> {
+  +id: string
+  +nome: string
+  +cns: string
+  +cpf: string
+  +data_nascimento: string
+  +sexo: Sexo
+  +nome_mae: string
+  +telefone: string
+  +endereco: string
+  +ubs_referencia: string
+  +status: StatusPaciente
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoAtendimento {
+  CONSULTA = 'consulta'
+  RETORNO = 'retorno'
+  URGENCIA = 'urgencia'
+  VISITA_DOMICILIAR = 'visita_domiciliar'
+  TELEATENDIMENTO = 'teleatendimento'
+}
+
+enum StatusAgendamento {
+  AGENDADO = 'agendado'
+  CONFIRMADO = 'confirmado'
+  CANCELADO = 'cancelado'
+  REALIZADO = 'realizado'
+  FALTA = 'falta'
+}
+
+enum PrioridadeRegulacao {
+  ROTINA = 'rotina'
+  PRIORITARIA = 'prioritaria'
+  URGENCIA = 'urgencia'
+}
+
+enum StatusRegulacao {
+  SOLICITADA = 'solicitada'
+  AUTORIZADA = 'autorizada'
+  NEGADA = 'negada'
+  AGENDADA = 'agendada'
+}
+
+enum Sexo {
+  MASCULINO = 'masculino'
+  FEMININO = 'feminino'
+  IGNORADO = 'ignorado'
+}
+
+enum StatusPaciente {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+  OBITO = 'obito'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Paciente "1" *-- "0..*" Atendimento : "paciente_id"
+Paciente "1" *-- "0..*" Agendamento : "paciente_id"
+Paciente "1" *-- "0..*" Regulacao : "paciente_id"
+Paciente "1" *-- "0..*" Dispensacao : "paciente_id"
+Medicamento "1" *-- "0..*" Dispensacao : "medicamento_id"
+Atendimento --> TipoAtendimento
+Agendamento --> StatusAgendamento
+Regulacao --> PrioridadeRegulacao
+Regulacao --> StatusRegulacao
+Paciente --> Sexo
+Paciente --> StatusPaciente
+
+note right of Atendimento
+Regras de negócio (6):
+
+- RN-SAU-001:
+  o CNS do paciente é único no cadastro municipal.
+- RN-SAU-002:
+  prontuário reúne atendimentos em ordem cronológica.
+- RN-SAU-010:
+  atendimento exige paciente e profissional/estabelecimento.
+- RN-SAU-020:
+  agendamento nasce ``agendado`` e só transita para ``confirmado/cancelado/realiza
+- RN-SAU-030:
+  regulação nasce ``solicitada`` e transita para ``autorizada/negada/agendada``; a
+- RN-SAU-040:
+  dispensação exige estoque suficiente; baixa é atômica no caso de uso (entidade s
+end note
+
+note bottom of Atendimento
+Comportamentos (20):
+
+- Atendimento.validar
+- Agendamento.validar
+- Agendamento.confirmar
+- Agendamento.cancelar
+- Agendamento.registrar_realizado
+- Agendamento.registrar_falta
+- Regulacao.validar
+- Regulacao.autorizar
+- Regulacao.negar
+- Regulacao.agendar
+- e mais 10
+end note
+
+@enduml

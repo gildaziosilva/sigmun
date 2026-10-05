@@ -1,0 +1,134 @@
+@startuml
+title DOM-MOB — Persistência
+
+legend
+SIGMUN
+DOM-MOB — Mobilidade e Serviços de Campo
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema mob" {
+
+  entity "dispositivos_moveis" as Tdispositivos_moveis {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    identificador : TEXT <<NN>>
+    modelo : TEXT
+    pessoa_id : TEXT
+    versao_app : TEXT
+    ultimo_acesso : TIMESTAMPTZ
+    sincronizado_em : TIMESTAMPTZ
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "ordens_campo" as Tordens_campo {
+    id : UUID <<PK>>
+    numero : TEXT <<NN>>
+    titulo : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    dispositivo_id : TEXT
+    responsavel_id : TEXT
+    bairro_id : TEXT
+    prioridade : INTEGER <<NN>>
+    situacao : TEXT <<NN>>
+    data_abertura : DATE <<NN>>
+    data_conclusao : DATE
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "evidencias_campo" as Tevidencias_campo {
+    id : UUID <<PK>>
+    ordem_id : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    arquivo_ref : TEXT
+    latitude : FLOAT <<NN>>
+    longitude : FLOAT <<NN>>
+    data_captura : TIMESTAMPTZ <<NN>>
+    hash : TEXT
+    sincronizada : BOOLEAN <<NN>>
+    observacao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "sincronizacoes" as Tsincronizacoes {
+    id : UUID <<PK>>
+    dispositivo_id : TEXT <<NN>>
+    data_inicio : TIMESTAMPTZ <<NN>>
+    data_fim : TIMESTAMPTZ
+    registros_enviados : INTEGER <<NN>>
+    registros_recebidos : INTEGER
+    conflitos : INTEGER <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+dispositivos_moveis ||--o{ ordens_campo : "dispositivo_id"
+ordens_campo ||--o{ evidencias_campo : "ordem_id"
+dispositivos_moveis ||--o{ sincronizacoes : "dispositivo_id"
+
+note right of Tdispositivos_moveis
+DispositivoMovel
+
+13 colunas propostas.
+
+Dispositivo vinculado a um servidor e ao aplicativo de campo.
+end note
+
+note right of Tordens_campo
+OrdemCampo
+
+15 colunas propostas.
+
+Ordem de serviço executada em campo, inclusive offline.
+end note
+
+note right of Tevidencias_campo
+EvidenciaCampo
+
+14 colunas propostas.
+
+Foto, áudio, texto ou geoponto capturado em campo.
+end note
+
+note right of Tsincronizacoes
+RegistroSincronizacao
+
+12 colunas propostas.
+
+Execução de sincronização entre dispositivo e servidor.
+end note
+
+note left of Tdispositivos_moveis
+4 tabelas propostas no schema mob.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

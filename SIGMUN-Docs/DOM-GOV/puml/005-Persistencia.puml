@@ -1,0 +1,132 @@
+@startuml
+title DOM-GOV — Persistência
+
+legend
+SIGMUN
+DOM-GOV — Governança Municipal
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema gov" {
+
+  entity "politicas_governanca" as Tpoliticas_governanca {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    titulo : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    escopo : TEXT
+    responsavel : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    vigencia_inicio : DATE <<NN>>
+    vigencia_fim : DATE
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "riscos_governanca" as Triscos_governanca {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    descricao : TEXT <<NN>>
+    categoria : TEXT <<NN>>
+    probabilidade : TEXT <<NN>>
+    impacto : TEXT <<NN>>
+    nivel : TEXT <<NN>>
+    dono : TEXT <<NN>>
+    tratamento : TEXT
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "controles_compliance" as Tcontroles_compliance {
+    id : UUID <<PK>>
+    codigo : TEXT <<NN>>
+    nome : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    periodicidade : TEXT <<NN>>
+    responsavel : TEXT <<NN>>
+    evidencia : TEXT
+    resultado : TEXT
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "deliberacoes" as Tdeliberacoes {
+    id : UUID <<PK>>
+    numero : TEXT <<NN>>
+    data : DATE <<NN>>
+    orgao : TEXT <<NN>>
+    ementa : TEXT <<NN>>
+    vinculo : TEXT <<NN>>
+    referencia_id : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+politicas_governanca ||--o{ deliberacoes : "referencia_id"
+riscos_governanca ||--o{ deliberacoes : "referencia_id"
+controles_compliance ||--o{ deliberacoes : "referencia_id"
+
+note right of Tpoliticas_governanca
+PoliticaGovernanca
+
+13 colunas propostas.
+
+Política, diretriz, norma ou procedimento de governança.
+end note
+
+note right of Triscos_governanca
+RiscoGovernanca
+
+14 colunas propostas.
+
+Risco corporativo com dono, classificação e tratamento.
+end note
+
+note right of Tcontroles_compliance
+ControleCompliance
+
+13 colunas propostas.
+
+Controle de conformidade com evidência e resultado.
+end note
+
+note right of Tdeliberacoes
+DeliberacaoGoverno
+
+12 colunas propostas.
+
+Deliberação de colegiado vinculada a política, risco ou controle.
+end note
+
+note left of Tpoliticas_governanca
+4 tabelas propostas no schema gov.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

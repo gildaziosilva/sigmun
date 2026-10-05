@@ -1,0 +1,56 @@
+@startuml
+title DOM-DIA — Máquina de Estados
+
+legend
+SIGMUN
+DOM-DIA — Diárias e Viagens
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide empty description
+
+[*] --> Solicitada : solicitar diária (RN-DIA-001)
+Solicitada --> Autorizada : autorizar diária (RN-DIA-004)
+Autorizada --> Calculada : calcular valor (RN-DIA-005)
+Calculada --> Concedida : confirmar concessão (RN-DIA-006)
+Concedida --> EmPrestacao : iniciar prestação de contas (RN-DIA-007)
+EmPrestacao --> Paga : registrar pagamento (RN-DIA-008)
+Paga --> Concedida : reverter para pagamento (RN-DIA-008)
+Paga --> Aprovada : aprovar prestação de contas (RN-DIA-015)
+Paga --> Glosa : glosar prestação de contas (RN-DIA-016)
+Glosa --> Restituida : restituir valor glosado (RN-DIA-017)
+Solicitada --> Cancelada : cancelar diária
+Concedida --> Cancelada : cancelar diária
+Aprovada --> [*]
+Restituida --> [*]
+Cancelada --> [*]
+state Solicitada
+state Autorizada
+state Calculada
+state Concedida
+state EmPrestacao
+state Paga
+state Aprovada
+state Glosa
+state Restituida
+state Cancelada
+
+note right of Paga
+A prestação de contas exige documento
+anexado no DOM-GDO (RN-DIA-009) e cada
+transição é gravada em dia.eventos_diarias,
+preservando o histórico de status.
+end note
+
+note bottom of Glosa
+A restituição exige diária paga e
+prestação glosada (RN-DIA-017).
+
+TipoDeslocamento existe na entidade
+Viagem e não é persistido (ver 005).
+end note
+
+@enduml

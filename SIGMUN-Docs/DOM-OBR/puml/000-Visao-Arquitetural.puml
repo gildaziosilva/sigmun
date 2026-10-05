@@ -1,0 +1,98 @@
+@startuml
+title DOM-OBR — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-OBR — Obras e Infraestrutura
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-OBR — Obras e Infraestrutura" {
+  component "API\n/api/v1/obr" as API
+  component "CadastrarObra" as UC0
+  component "AtualizarObra" as UC1
+  component "IniciarExecucaoObra" as UC2
+  component "ConcluirObra" as UC3
+  component "SuspenderObra" as UC4
+  component "CancelarObra" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-TEL\nGestão Territorial" as DTEL
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema obr" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : POST
+API --> UC1 : PATCH
+API --> UC2 : POST
+API --> UC3 : POST
+API --> UC4 : POST
+API --> UC5 : POST
+
+API --> DTEL : troca de dados
+API --> IDN : autenticação e autorização
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-OBR cobre Obras e Infraestrutura.
+
+A API expõe 24 operações
+em 1 prefixo.
+
+17 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (8):
+
+- RN-OBR-001
+- RN-OBR-002
+- RN-OBR-003
+- RN-OBR-004
+- RN-OBR-005
+- RN-OBR-006
+- e mais 2
+end note
+
+note bottom of DB
+5 tabelas mapeadas:
+
+- despesas_obras
+- etapas_obras
+- medicoes_obras
+- obras
+- vistorias_obras
+end note
+
+@enduml

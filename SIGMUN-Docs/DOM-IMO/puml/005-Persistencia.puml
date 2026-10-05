@@ -1,0 +1,150 @@
+@startuml
+title DOM-IMO — Persistência
+
+legend
+SIGMUN
+DOM-IMO — Cadastro Imobiliário
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema imo" {
+
+  entity "avaliacoes_imoveis" as Tavaliacoes_imoveis {
+    id : UUID <<PK>>
+    imovel_id : TEXT <<NN>>
+    ano : INTEGER <<NN>>
+    valor_terreno_m2_unitario : FLOAT <<NN>>
+    valor_construcao_m2_unitario : FLOAT <<NN>>
+    aliquota_percent : FLOAT <<NN>>
+    area_terreno_m2 : FLOAT <<NN>>
+    area_construida_m2 : FLOAT <<NN>>
+    situacao : TEXT <<NN>>
+    data_avaliacao : DATE <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "caracteristicas_imoveis" as Tcaracteristicas_imoveis {
+    id : UUID <<PK>>
+    imovel_id : TEXT <<NN>>
+    obra : TEXT <<NN>>
+    numero_pavimentos : INTEGER <<NN>>
+    ano_renovacao : INTEGER
+    observacao : TEXT
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+  }
+
+  entity "geometrias_imoveis" as Tgeometrias_imoveis {
+    id : UUID <<PK>>
+    imovel_id : TEXT <<NN>>
+    geometria : TEXT <<NN>>
+    latitude : FLOAT <<NN>>
+    longitude : FLOAT <<NN>>
+    vertices : JSON
+    datum : TEXT <<NN>>
+    precisao_m : FLOAT <<NN>>
+    data_levantamento : DATE <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "imoveis" as Timoveis {
+    id : UUID <<PK>>
+    inscricao_imobiliaria : TEXT <<UQ, NN>>
+    logradouro_id : TEXT <<NN>>
+    bairro_id : TEXT <<NN>>
+    numero : TEXT
+    complemento : TEXT
+    tipo : TEXT <<NN>>
+    situacao : TEXT <<NN>>
+    tipo_propriedade : TEXT <<NN>>
+    area_terreno_m2 : FLOAT <<NN>>
+    area_construida_m2 : FLOAT <<NN>>
+    ano_construcao : INTEGER
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "proprietarios_imoveis" as Tproprietarios_imoveis {
+    id : UUID <<PK>>
+    imovel_id : TEXT <<NN>>
+    pessoa_id : TEXT
+    nome : TEXT <<NN>>
+    cpf : TEXT <<NN>>
+    vinculo : TEXT <<NN>>
+    principal : BOOLEAN <<NN>>
+    created_at : DATETIME <<NN>>
+    updated_at : DATETIME
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+note right of Tavaliacoes_imoveis
+AvaliacaoImovelModel
+
+14 colunas mapeadas.
+
+Modelo das avaliações de valor venal dos imóveis.
+end note
+
+note right of Tcaracteristicas_imoveis
+CaracteristicaImovelModel
+
+9 colunas mapeadas.
+
+Modelo das características construtivas dos imóveis.
+end note
+
+note right of Tgeometrias_imoveis
+GeometriaImovelModel
+
+13 colunas mapeadas.
+
+Modelo das geometrias georreferenciadas dos lotes.
+end note
+
+note right of Timoveis
+ImovelModel
+
+16 colunas mapeadas.
+
+Modelo das unidades imobiliárias (lotes).
+end note
+
+note right of Tproprietarios_imoveis
+ProprietarioImovelModel
+
+11 colunas mapeadas.
+
+Modelo dos vínculos de propriedade pessoa-imóvel.
+end note
+
+note left of Tavaliacoes_imoveis
+5 tabelas no schema imo.
+
+Colunas de auditoria (created_at, updated_at,
+created_by, is_deleted) seguem o padrão corporativo.
+end note
+
+@enduml

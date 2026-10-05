@@ -1,0 +1,286 @@
+@startuml
+title DOM-CON — Modelo de Domínio
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+legend
+SIGMUN
+DOM-CON — Contabilidade Pública
+Modelo de Domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "Execução Orçamentária" {
+
+class Empenho <<AggregateRoot>> {
+  +id: UUID
+  +exercicio: int
+  +numero: string
+  +dotacao_id: UUID
+  +reserva_id: UUID
+  +favorecido_id: UUID
+  +favorecido_nome: string
+  +tipo: TipoEmpenho
+  +descricao: string
+  +valor_empenhado: decimal
+  +valor_anulado: decimal
+  +valor_liquidado: decimal
+  +valor_pago: decimal
+  +status: StatusEmpenho
+  +data_emissao: datetime
+  +data_anulacao: datetime
+  +motivo_anulacao: string
+}
+
+class Liquidacao <<Entity>> {
+  +id: UUID
+  +empenho_id: UUID
+  +numero: string
+  +valor: decimal
+  +documento_fiscal: string
+  +descricao: string
+  +status: StatusLiquidacao
+  +data_liquidacao: datetime
+  +data_cancelamento: datetime
+  +motivo_cancelamento: string
+}
+
+class Pagamento <<Entity>> {
+  +id: UUID
+  +liquidacao_id: UUID
+  +empenho_id: UUID
+  +numero_ob: string
+  +valor: decimal
+  +conta_bancaria: string
+  +descricao: string
+  +status: StatusPagamento
+  +data_programacao: datetime
+  +data_efetivacao: datetime
+  +motivo_cancelamento: string
+}
+
+}
+
+package "Contabilidade Analítica" {
+
+class ContaContabil <<Entity>> {
+  +id: UUID
+  +codigo: string
+  +nome: string
+  +classe: string
+  +grupo: string
+  +natureza_saldo: string
+  +tipo: string
+  +aceita_lancamento: boolean
+  +ativa: boolean
+  +conta_pai_id: UUID
+}
+
+class LancamentoContabil <<AggregateRoot>> {
+  +id: UUID
+  +exercicio: int
+  +numero: string
+  +data_lancamento: datetime
+  +historico: string
+  +origem: string
+  +origem_id: UUID
+  +status: StatusLancamento
+}
+
+class Partida <<ValueObject>> {
+  +conta_id: UUID
+  +codigo_conta: string
+  +tipo: TipoPartida
+  +valor: decimal
+  +historico: string
+}
+
+class ConciliacaoContabil <<Entity>> {
+  +id: UUID
+  +conta_id: UUID
+  +codigo_conta: string
+  +competencia_ano: int
+  +competencia_mes: int
+  +saldo_contabil: decimal
+  +saldo_extrato: decimal
+  +diferenca: decimal
+  +status: StatusConciliacao
+  +justificativa: string
+  +data_conciliacao: datetime
+}
+
+}
+
+package "Enumerações" {
+
+enum StatusEmpenho {
+  EMITIDO
+  LIQUIDADO
+  PAGO
+  ANULADO
+  CANCELADO
+}
+
+enum TipoEmpenho {
+  ORDINARIO
+  GLOBAL
+  ESTIMATIVO
+}
+
+enum StatusLiquidacao {
+  REGISTRADA
+  CONFIRMADA
+  CANCELADA
+}
+
+enum StatusPagamento {
+  PROGRAMADO
+  EFETIVADO
+  CANCELADO
+}
+
+enum StatusLancamento {
+  RASCUNHO
+  LANCADO
+  ESTORNADO
+}
+
+enum StatusConciliacao {
+  ABERTA
+  CONCILIADA
+  DIVERGENTE
+}
+
+enum TipoPartida {
+  DEBITO
+  CREDITO
+}
+
+}
+
+package "Domínios externos" {
+
+entity "Dotação\n(DOM-ORC)" as Dotacao
+entity "Conta Bancária\n(DOM-FRO)" as ContaBancaria
+entity "Documento Fiscal\n(DOM-GDO)" as Documento
+
+}
+
+' =========================================================
+' RELACIONAMENTOS INTERNOS
+' =========================================================
+
+Empenho "1" *-- "0..*" Liquidacao : liquidações
+Empenho "1" -- "0..*" Pagamento : pagamentos
+
+Liquidacao "1" -- "0..*" Pagamento : origem
+
+LancamentoContabil "1" *-- "2..*" Partida : partidas dobradas
+Partida --> ContaContabil : conta
+
+ContaContabil "0..1" -- "0..*" ContaContabil : conta_pai_id
+ContaContabil "1" -- "0..*" ConciliacaoContabil : conciliada por
+ContaContabil "1" -- "0..*" Partida : recebe
+
+Empenho --> StatusEmpenho
+Empenho --> TipoEmpenho
+Liquidacao --> StatusLiquidacao
+Pagamento --> StatusPagamento
+LancamentoContabil --> StatusLancamento
+ConciliacaoContabil --> StatusConciliacao
+Partida --> TipoPartida
+
+' =========================================================
+' INTEGRAÇÕES DE DOMÍNIO
+' =========================================================
+
+Dotacao "1" --> "0..*" Empenho : autoriza
+ContaBancaria "1" --> "0..*" Pagamento : credita
+Documento "1" --> "0..*" Liquidacao : comprova
+
+LancamentoContabil ..> Empenho : origem /\norigem_id
+
+note right of Empenho
+O empenho é a raiz de agregado do ciclo
+da despesa.
+
+Ele acumula os quatro valores — empenhado,
+anulado, liquidado e pago — e é a partir
+deles que se derivam:
+
+- valor líquido = empenhado − anulado
+- saldo a liquidar = líquido − liquidado
+- saldo a pagar = liquidado − pago
+
+Por isso o registro é único e as
+liquidações e pagamentos são apenas
+comprovantes vinculados ao mesmo saldo.
+end note
+
+note right of Liquidacao
+Comprova o direito adquirido sobre o
+empenho.
+
+O documento fiscal é a evidência que
+sustenta a liquidação e deve ser anexado
+via DOM-GDO.
+end note
+
+note right of Pagamento
+Representa a ordem bancária.
+
+O número da OB e a conta bancária
+identificam a saída de recursos; o
+pagamento referencia tanto a liquidação
+quanto o empenho para viabilizar o
+estorno.
+end note
+
+note bottom of Partida
+A partida dobrada é o objeto de valor do
+lançamento contábil.
+
+Partidas existem apenas dentro de um
+lançamento: não têm identidade nem
+ciclo de vida próprio. É por isso que o
+agregado é LancamentoContabil, e não
+Partida.
+end note
+
+note bottom of ContaContabil
+Segue o PCASP.
+
+Apenas contas analíticas, ativas e com
+aceita_lancamento verdadeiro recebem
+partidas. Contas sintéticas apenas
+consolidam o saldo das filhas.
+
+RN-CON-010 — código único no plano.
+RN-CON-011 — sintética não recebe
+lançamento.
+RN-CON-012 — inativa não recebe
+lançamento.
+end note
+
+note bottom of ConciliacaoContabil
+Compara o saldo contábil da conta com o
+saldo do extrato bancário na competência.
+
+Diferença zero → conciliada.
+Diferença ≠ zero → divergente, e a
+justificativa passa a ser obrigatória.
+end note
+
+note bottom of Dotacao
+Dependência funcional direta de DOM-ORC.
+
+O identificador é referenciado sem
+duplicar o cadastro orçamentário e sem
+chave estrangeira física entre schemas.
+end note
+
+@enduml

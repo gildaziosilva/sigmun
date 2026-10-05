@@ -1,0 +1,61 @@
+@startuml
+title DOM-TEL — Integrações
+
+legend
+SIGMUN
+DOM-TEL — Gestão Territorial
+Integrações — Troca de dados com outros domínios
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Domínio de Origem" {
+  component "DOM-TEL\nGestão Territorial" as ORIGEM
+}
+
+package "Domínios Destino" {
+  component "DOM-IMO\nCadastro Imobiliário" as DIMO
+  component "DOM-GEO\nGeoinformação Municipal" as DGEO
+  component "DOM-TRI\nAdministração Tributária" as DTRI
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "DOM-INT\nInteroperabilidade" as INT
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL" as DB
+
+ORIGEM --> DIMO : dados do domínio
+ORIGEM --> DGEO : dados do domínio
+ORIGEM --> DTRI : dados do domínio
+ORIGEM --> IDN : autenticação
+ORIGEM --> GDO : anexos e documentos
+ORIGEM --> MET : metadados
+ORIGEM --> INT : troca de dados
+ORIGEM --> AUD : trilha de auditoria
+ORIGEM --> DB : persistência própria
+
+note right of ORIGEM
+DOM-TEL como origem da integração.
+
+Publica em /api/v1/tel.
+25 operações disponíveis.
+
+Entidade central: Bairro.
+end note
+
+note bottom of AUD
+Todo evento com efeito no orçamento
+ou no patrimônio é registrado com
+autor, data e valor antes e depois.
+end note
+
+@enduml

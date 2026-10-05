@@ -1,0 +1,149 @@
+@startuml
+title DOM-INF — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-INF — Infraestrutura Tecnológica
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-INF" {
+
+class AmbienteInfraestrutura <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +tipo: string
+  +responsavel: string
+  +descricao: texto
+  +situacao: string
+  +ultimo_check: datetime
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class RecursoInfraestrutura <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +tipo: string
+  +ambiente_id: string
+  +capacidade: string
+  +provedor: string
+  +identificador_externo: string
+  +situacao: string
+  +data_aquisicao: date
+  +garantia_ate: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class MonitoramentoInfra <<Entity>> {
+  +id: string
+  +recurso_id: string
+  +metrica: string
+  +valor: decimal
+  +unidade: string
+  +limite: decimal
+  +status: string
+  +coletado_em: datetime
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class IncidenteInfra <<Entity>> {
+  +id: string
+  +numero: string
+  +titulo: string
+  +descricao: texto
+  +recurso_id: string
+  +severidade: string
+  +aberto_em: datetime
+  +fechado_em: datetime
+  +responsavel: string
+  +situacao: string
+  +causa: texto
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoRecursoInfra {
+  SERVIDOR = 'servidor'
+  ESTOQUE = 'estoque'
+  REDE = 'rede'
+  BANCO = 'banco'
+  NUVEM = 'nuvem'
+  DISPOSITIVO = 'dispositivo'
+}
+
+enum SituacaoRecurso {
+  DISPONIVEL = 'disponivel'
+  MANUTENCAO = 'manutencao'
+  INDISPONIVEL = 'indisponivel'
+  DESCOMISSIONADO = 'descomissionado'
+}
+
+enum StatusMonitoramento {
+  OK = 'ok'
+  ATENCAO = 'atencao'
+  CRITICO = 'critico'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+AmbienteInfraestrutura "1" *-- "0..*" RecursoInfraestrutura : "ambiente_id"
+RecursoInfraestrutura "1" *-- "0..*" MonitoramentoInfra : "recurso_id"
+RecursoInfraestrutura "1" *-- "0..*" IncidenteInfra : "recurso_id"
+
+RecursoInfraestrutura --> TipoRecursoInfra
+RecursoInfraestrutura --> SituacaoRecurso
+MonitoramentoInfra --> StatusMonitoramento
+
+note right of RecursoInfraestrutura
+Regras propostas (4):
+
+- RN-INF-001:
+  o recurso pertence a um ambiente e registra tipo e situação.
+- RN-INF-002:
+  métrica coletada além do limite gera status de atenção ou crítico.
+- RN-INF-003:
+  o incidente tem severidade, responsável, data de abertura e data de encerramento.
+- RN-INF-004:
+  ativos de dados são referenciados no DOM-DAD por identificador.
+end note
+
+note bottom of RecursoInfraestrutura
+Capacidades previstas (6):
+
+- Computação e Armazenamento
+- Redes
+- Bancos de Dados
+- Nuvem
+- Dispositivos
+- Ambientes
+end note
+
+@enduml

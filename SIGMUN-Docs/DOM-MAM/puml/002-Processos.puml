@@ -1,0 +1,44 @@
+@startuml
+title DOM-MAM — Processos
+
+legend
+SIGMUN
+DOM-MAM — Meio Ambiente
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+start
+
+:Requerer a licença;
+:Analisar a documentação;
+:Emitir a licença com condições;
+:Operar sob monitoramento;
+:Fiscalizar a atividade;
+:Aplicar a providência;
+:Adequar no prazo assinalado;
+:Renovar, suspender ou revogar;
+
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de LicenciamentoAmbiental.
+
+Modelo proposto: capacidades previstas: 6.
+Entidades propostas: 4.
+Tabelas propostas: 4.
+end note
+
+note right
+Validações (4):
+
+- RN-MAM-001
+- RN-MAM-002
+- RN-MAM-003
+- RN-MAM-004
+end note
+
+@enduml

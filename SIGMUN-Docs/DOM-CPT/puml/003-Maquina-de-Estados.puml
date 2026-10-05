@@ -1,0 +1,44 @@
+@startuml
+title DOM-CPT — Máquina de Estados
+
+legend
+SIGMUN
+DOM-CPT — Gestão de Competências
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Planejada : programação da capacitação
+Planejada --> InscricoesAbertas : abrir inscrições (RN-CPT-002)
+InscricoesAbertas --> EmAndamento : encerrar inscrições e iniciar
+EmAndamento --> Concluida : avaliação aplicada (RN-CPT-004)
+Planejada --> Cancelada : cancelar oferta
+InscricoesAbertas --> Cancelada : cancelar oferta
+EmAndamento --> Cancelada : cancelar oferta
+Concluida --> [*]
+Cancelada --> [*]
+state Planejada
+state InscricoesAbertas
+state EmAndamento
+state Concluida
+state Cancelada
+
+note right of EmAndamento
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+A pessoa participante é referenciada
+por identificador do DOM-PES (RN-CPT-003).
+end note
+
+note bottom of Concluida
+O resultado atualiza o nível avaliado
+da competência e alimenta o plano de
+desenvolvimento (RN-CPT-004).
+end note
+
+@enduml

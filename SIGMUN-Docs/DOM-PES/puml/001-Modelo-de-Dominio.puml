@@ -1,0 +1,218 @@
+@startuml
+title DOM-PES — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-PES — Cadastro
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de apoio" {
+
+class Contato <<Entity>> {
+  +pessoa_id: UUID
+  +tipo: TipoContato
+  +valor: string
+  +id: UUID
+  +principal: bool
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+class Endereco <<Entity>> {
+  +pessoa_id: UUID
+  +tipo: TipoEndereco
+  +logradouro: string
+  +numero: string
+  +id: UUID
+  +complemento: string
+  +bairro: string
+  +cep: string
+  +cidade: string
+  +estado: string
+  +pais: string
+  +principal: bool
+  +vigencia_inicio: datetime
+  +vigencia_fim: datetime
+  +motivo_alteracao: string
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+}
+
+package "Outras entidades" {
+
+class Documento <<Entity>> {
+  +pessoa_id: UUID
+  +tipo: TipoDocumento
+  +numero: string
+  +id: UUID
+  +orgao_emissor: string
+  +data_emissao: date
+  +data_validade: date
+  +principal: bool
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+class DadosFisicos <<Entity>> {
+  +nome: string
+  +data_nascimento: date
+  +sexo: Sexo
+  +estado_civil: string
+  +mae: string
+  +pai: string
+}
+
+class DadosJuridicos <<Entity>> {
+  +razao_social: string
+  +nome_fantasia: string
+  +cnae_principal: string
+  +capital: decimal
+}
+
+class Pessoa <<Entity>> {
+  +tipo: TipoPessoa
+  +categoria: CategoriaPessoa
+  +id: UUID
+  +unidade_id: UUID
+  +dados_fisicos: DadosFisicos
+  +dados_juridicos: DadosJuridicos
+  +enderecos: list
+  +documentos: list
+  +contatos: list
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+class UnidadeAdministrativa <<Entity>> {
+  +nome: string
+  +id: UUID
+  +unidade_pai_id: UUID
+  +codigo_ibge: string
+  +codigo_siafi: string
+  +sigla: string
+  +created_at: datetime
+  +created_by: UUID
+  +updated_at: datetime
+  +updated_by: UUID
+  +deleted_at: datetime
+  +deleted_by: UUID
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoContato {
+  TELEFONE = 'TEL'
+  EMAIL = 'EMAIL'
+  REDES = 'REDES'
+  WHATSAPP = 'WHATSAPP'
+}
+
+enum TipoDocumento {
+  CPF = 'CPF'
+  CNPJ = 'CNPJ'
+  RG = 'RG'
+  INSCRICAO_ESTADUAL = 'INSCRICAO_ESTADUAL'
+  INSCRICAO_MUNICIPAL = 'INSCRICAO_MUNICIPAL'
+  CNH = 'CNH'
+  OUTRO = 'OUTRO'
+}
+
+enum TipoEndereco {
+  RESIDENCIAL = 'RESIDENCIAL'
+  COMERCIAL = 'COMERCIAL'
+  COBRANCA = 'COBRANCA'
+  ENTREGA = 'ENTREGA'
+  OUTRO = 'OUTRO'
+}
+
+enum TipoPessoa {
+  FISICA = 'FISICA'
+  JURIDICA = 'JURIDICA'
+}
+
+enum CategoriaPessoa {
+  CIDADAO = 'CIDADAO'
+  SERVIDOR = 'SERVIDOR'
+  FORNECEDOR = 'FORNECEDOR'
+  AGENTE_EXTERNO = 'AGENTE_EXTERNO'
+}
+
+enum Sexo {
+  MASCULINO = 'M'
+  FEMININO = 'F'
+  OUTRO = 'OUTRO'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Pessoa "1" *-- "0..*" Contato : "pessoa_id"
+Pessoa "1" *-- "0..*" Documento : "pessoa_id"
+Pessoa "1" *-- "0..*" Endereco : "pessoa_id"
+Contato --> TipoContato
+Documento --> TipoDocumento
+Endereco --> TipoEndereco
+Pessoa --> TipoPessoa
+Pessoa --> CategoriaPessoa
+
+note right of Contato
+Regras de negócio (4):
+
+- RN-CUM-001:
+  tipo {FISICA, JURIDICA} exige extensão correspondente (pessoa física exige nome;
+- RN-CUM-005:
+  unicidade de endereço principal vigente por pessoa - Histórico de vigência: alte
+- RN-CUM-006:
+  unicidade de contato principal por tipo por pessoa
+- RN-CUM-008:
+  hierarquia sem ciclos (unidade não pode ser ancestral de si mesma) - RN-CUM-009:
+end note
+
+note bottom of Contato
+Comportamentos (26):
+
+- Contato.excluir
+- Contato.foi_excluido
+- Documento.excluir
+- Documento.esta_vigente
+- Documento.foi_excluido
+- Endereco.esta_vigente
+- Endereco.encerrar_vigencia
+- Endereco.excluir
+- Endereco.foi_excluido
+- Pessoa.nome_identificacao
+- e mais 16
+end note
+
+@enduml

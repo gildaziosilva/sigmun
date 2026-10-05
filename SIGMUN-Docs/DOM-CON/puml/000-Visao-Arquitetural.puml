@@ -1,0 +1,114 @@
+@startuml
+title DOM-CON — Visão Arquitetural
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+legend
+SIGMUN
+DOM-CON — Contabilidade Pública
+Execução Orçamentária, PCASP e Conciliação
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "Usuários e Canais" {
+  actor "Contabilidade Municipal" as User
+  component "Portal Web SIGMUN" as Portal
+  component "Consolidado e\nRelatórios" as Relatorio
+}
+
+package "DOM-CON" {
+  component "API de Contabilidade\n/api/v1/con" as API
+  component "Execução Orçamentária" as Execucao
+  component "PCASP\nPlano de Contas" as PCASP
+  component "Lançamentos Contábeis" as Lancamentos
+  component "Conciliação Bancária" as Conciliacao
+}
+
+package "Domínios de Negócio" {
+  component "DOM-ORC\nOrçamento Público" as ORC
+}
+
+package "Serviços Transversais SIGMUN" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "Auditoria" as AUD
+  component "Notificações" as NOT
+}
+
+database "PostgreSQL\nschema con" as DB
+
+User --> Portal : executa rotina contábil
+User --> API : registra despesa
+Portal --> API : operações CRUD
+Relatorio --> API : consulta saldos e /\nlançamentos consolidados
+
+API --> Execucao : empenhar, liquidar, pagar
+API --> PCASP : manter plano de contas
+API --> Lancamentos : registrar partidas dobradas
+API --> Conciliacao : conciliar saldos
+
+Execucao --> ORC : baixa na dotação
+ORC --> Execucao : saldo disponível
+
+API --> IDN : autenticação /\nautorização
+API --> AUD : eventos de auditoria
+Execucao --> AUD : eventos
+Lancamentos --> AUD : eventos
+Conciliacao --> AUD : eventos
+
+API --> GDO : documentos fiscais\ne evidências
+Execucao --> GDO : anexos de respaldo
+API --> NOT : avisos de\npendência
+
+API --> DB
+Execucao --> DB
+PCASP --> DB
+Lancamentos --> DB
+Conciliacao --> DB
+
+note right of Execucao
+O bloco de execução orçamentária
+materializa o ciclo da despesa
+pública:
+
+- Empenho (compromisso)
+- Liquidação (direito adquirido)
+- Pagamento (efetivação)
+
+Os saldos são acumulados no próprio
+empenho, que é o agregado do domínio.
+end note
+
+note bottom of ORC
+Integração crítica DOM-ORC → DOM-CON.
+
+O empenho consome saldo da dotação
+orçamentária; a anulação devolve saldo.
+
+A dependência é funcional e está
+materializada por dotacao_id, sem chave
+estrangeira física entre os schemas.
+end note
+
+note bottom of PCASP
+O plano de contas segue o PCASP.
+
+Somente contas analíticas e ativas
+aceitam lançamento — regra do domínio
+que a contabilidade analítica não pode
+descumprir.
+end note
+
+note bottom of DB
+Persistência operacional do domínio.
+
+O schema con é exclusivo do DOM-CON.
+Referências a outros domínios são feitas
+por identificador, sem duplicação
+cadastral.
+end note
+
+@enduml

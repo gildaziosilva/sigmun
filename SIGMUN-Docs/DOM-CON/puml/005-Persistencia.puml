@@ -1,0 +1,238 @@
+@startuml
+title DOM-CON — Persistência
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+legend
+SIGMUN
+DOM-CON — Contabilidade Pública
+Persistência — schema con
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+package "PostgreSQL — schema con" {
+
+  entity "empenhos" as empenhos {
+    id : UUID <<PK>>
+    exercicio : INTEGER <<NN>>
+    numero : TEXT <<NN>>
+    dotacao_id : TEXT <<NN>>
+    reserva_id : TEXT
+    favorecido_nome : TEXT
+    tipo : TEXT <<NN>>
+    descricao : TEXT
+    valor_empenhado : FLOAT <<NN>>
+    valor_anulado : FLOAT <<NN>>
+    valor_liquidado : FLOAT <<NN>>
+    valor_pago : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    data_emissao : TIMESTAMPTZ
+    motivo_anulacao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    updated_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "liquidacoes" as liquidacoes {
+    id : UUID <<PK>>
+    empenho_id : UUID <<NN>>
+    numero : TEXT
+    valor : FLOAT <<NN>>
+    documento_fiscal : TEXT
+    status : TEXT <<NN>>
+    motivo_cancelamento : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    updated_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "pagamentos" as pagamentos {
+    id : UUID <<PK>>
+    liquidacao_id : UUID <<NN>>
+    empenho_id : UUID <<NN>>
+    numero_ob : TEXT
+    valor : FLOAT <<NN>>
+    conta_bancaria : TEXT
+    status : TEXT <<NN>>
+    motivo_cancelamento : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    updated_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "contas_contabeis" as contas {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    classe : TEXT
+    natureza_saldo : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    aceita_lancamento : BOOLEAN <<NN>>
+    ativa : BOOLEAN <<NN>>
+    conta_pai_id : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "lancamentos" as lancamentos {
+    id : UUID <<PK>>
+    exercicio : INTEGER <<NN>>
+    numero : TEXT
+    historico : TEXT
+    origem : TEXT
+    origem_id : TEXT
+    partidas : TEXT <<NN>>
+    total_debito : FLOAT <<NN>>
+    total_credito : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "conciliacoes" as conciliacoes {
+    id : UUID <<PK>>
+    conta_id : TEXT <<NN>>
+    codigo_conta : TEXT
+    competencia_ano : INTEGER <<NN>>
+    competencia_mes : INTEGER <<NN>>
+    saldo_contabil : FLOAT <<NN>>
+    saldo_extrato : FLOAT <<NN>>
+    diferenca : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    justificativa : TEXT
+    data_conciliacao : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+empenhos ||--o{ liquidacoes : "FK empenho_id"
+
+empenhos ||--o{ pagamentos : "FK empenho_id"
+
+liquidacoes ||--o{ pagamentos : "FK liquidacao_id"
+
+
+' =========================================================
+' CHAVES E RESTRIÇÕES
+' =========================================================
+
+note right of empenhos
+Raiz do agregado de execução.
+
+Os saldos são desnormalizados aqui por
+decisão de projeto: valor_anulado,
+valor_liquidado e valor_pago mantêm o
+posicionamento acumulado do empenho,
+permitindo leitura direta sem agregação
+sobre liquidações e pagamentos.
+
+dotacao_id e reserva_id referenciam o
+DOM-ORC por identificador, sem chave
+estrangeira física entre schemas.
+
+UNIQUE (exercicio, numero) — RN-CON-001.
+end note
+
+note right of liquidacoes
+Comprovante do direito adquirido.
+
+ON DELETE RESTRICT impede apagar um
+empenho que já possui liquidações,
+preservando a trilha contábil.
+
+ON UPDATE CASCADE mantém a integridade
+em caso de recodificação do identificador.
+end note
+
+note right of pagamentos
+Refere-se tanto à liquidação quanto ao
+empenho.
+
+A referência redundante ao empenho é
+intencional: viabiliza o estorno e o
+relatório de execução sem consultar a
+liquidação.
+end note
+
+note bottom of contas
+Plano de contas PCASP.
+
+codigo é UNIQUE no schema — RN-CON-010.
+
+conta_pai_id é referência interna sem
+chave estrangeira, permitindo a
+hierarquia de classes e grupos.
+end note
+
+note bottom of lancamentos
+As partidas dobradas são gravadas como
+JSON em uma coluna TEXT, e não como
+tabela filha.
+
+Consequência: não há integridade
+referencial das contas no nível do banco,
+e a validação da conta ocorre apenas na
+camada de aplicação.
+end note
+
+note bottom of conciliacoes
+conta_id é TEXT sem chave estrangeira
+para contas_contabeis.
+
+Registra a conciliação por competência
+(ano e mês) e compara saldo contábil
+com saldo do extrato bancário.
+end note
+
+note as NCHECK
+|<b>Restrições já materializadas</b>|
+|
+| UNIQUE (contas_contabeis.codigo)|
+| NOT NULL nos campos <<NN>>|
+| FK com ON DELETE RESTRICT em:|
+|   liquidacoes.empenho_id|
+|   pagamentos.liquidacao_id|
+|   pagamentos.empenho_id|
+|
+| <b>Unicidades não impostas</b>|
+|
+| UNIQUE (empenhos.exercicio,|
+|         empenhos.numero)|
+|
+| RN-CON-001 existe na camada de
+| aplicação, mas não como restrição
+| física. Não elevar a restrição de banco
+| antes de registrar a regra.
+|
+| <b>Referências externas sem FK</b>|
+|
+| empenhos.dotacao_id → orc.dotacoes|
+| empenhos.reserva_id → orc.reservas|
+| conciliacoes.conta_id → con.contas_contabeis|
+| contas_contabeis.conta_pai_id|
+| lancamentos.partidas → contas_contabeis|
+end note
+
+
+@enduml

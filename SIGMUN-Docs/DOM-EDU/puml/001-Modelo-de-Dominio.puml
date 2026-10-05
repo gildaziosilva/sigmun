@@ -1,0 +1,184 @@
+@startuml
+title DOM-EDU — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-EDU — Educação
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de apoio" {
+
+class ItemMerenda <<Entity>> {
+  +id: string
+  +nome: string
+  +tipo: string
+  +estoque: decimal
+  +estoque_minimo: decimal
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Outras entidades" {
+
+class Aluno <<Entity>> {
+  +id: string
+  +nome: string
+  +cpf: string
+  +data_nascimento: string
+  +sexo: Sexo
+  +nome_mae: string
+  +telefone: string
+  +endereco: string
+  +status: StatusAluno
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class LancamentoDiario <<Entity>> {
+  +id: string
+  +matricula_id: string
+  +data: date
+  +presente: bool
+  +nota: decimal
+  +observacao: string
+  +created_at: datetime
+  +created_by: string
+}
+
+class Matricula <<Entity>> {
+  +id: string
+  +aluno_id: string
+  +escola: string
+  +serie: string
+  +turno: string
+  +ano_letivo: int
+  +data_matricula: date
+  +status: StatusMatricula
+  +escola_destino: string
+  +motivo: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+}
+
+class DistribuicaoMerenda <<Entity>> {
+  +id: string
+  +matricula_id: string
+  +item_id: string
+  +quantidade: decimal
+  +data: date
+  +refeicao: string
+  +created_at: datetime
+  +created_by: string
+}
+
+class RotaTransporte <<Entity>> {
+  +id: string
+  +identificacao: string
+  +veiculo: string
+  +motorista: string
+  +vagas: int
+  +turno: string
+  +status: StatusRota
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+}
+
+class PassagemTransporte <<Entity>> {
+  +id: string
+  +rota_id: string
+  +matricula_id: string
+  +data: date
+  +created_at: datetime
+  +created_by: string
+}
+
+}
+
+package "Enumerações" {
+
+enum Sexo {
+  MASCULINO = 'masculino'
+  FEMININO = 'feminino'
+  IGNORADO = 'ignorado'
+}
+
+enum StatusAluno {
+  ATIVO = 'ativo'
+  INATIVO = 'inativo'
+}
+
+enum StatusMatricula {
+  ATIVA = 'ativa'
+  TRANSFERIDA = 'transferida'
+  CANCELADA = 'cancelada'
+  CONCLUIDA = 'concluida'
+}
+
+enum StatusRota {
+  ATIVA = 'ativa'
+  INATIVA = 'inativa'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Matricula "1" *-- "0..*" LancamentoDiario : "matricula_id"
+Aluno "1" *-- "0..*" Matricula : "aluno_id"
+Matricula "1" *-- "0..*" DistribuicaoMerenda : "matricula_id"
+Matricula "1" *-- "0..*" PassagemTransporte : "matricula_id"
+Aluno --> Sexo
+Aluno --> StatusAluno
+Matricula --> StatusMatricula
+RotaTransporte --> StatusRota
+
+note right of Aluno
+Regras de negócio (5):
+
+- RN-EDU-001:
+  o CPF do aluno, quando informado, tem 11 dígitos e é único
+- RN-EDU-010:
+  o aluno possui no máximo UMA matrícula ``ativa`` por vez;
+- RN-EDU-020:
+  o lançamento exige matrícula ativa vinculada; a nota, quando
+- RN-EDU-030:
+  passagem exige rota ``ativa``, matrícula ativa e vaga
+- RN-EDU-040:
+  distribuição exige estoque suficiente; a baixa é atômica no
+end note
+
+note bottom of Aluno
+Comportamentos (20):
+
+- Aluno.esta_ativo
+- Aluno.inativar
+- Aluno.excluir
+- Aluno.validar
+- LancamentoDiario.validar
+- Matricula.esta_ativa
+- Matricula.validar
+- Matricula.transferir
+- Matricula.cancelar
+- Matricula.concluir
+- e mais 10
+end note
+
+@enduml

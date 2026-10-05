@@ -1,0 +1,35 @@
+@startuml
+title DOM-IDN — Processos
+
+legend
+SIGMUN
+DOM-IDN — Identidade e Acesso
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:AutenticarUsuarioJWT;
+
+:RenovarToken;
+:LogoutJWT;
+:CriarUsuario;
+:AtivarUsuario;
+:DesativarUsuario;
+
+:Atualizar Usuario;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de Usuario.
+
+Casos de uso no código: 11.
+Entidades do domínio: 5.
+Tabelas mapeadas: 7.
+end note
+
+@enduml

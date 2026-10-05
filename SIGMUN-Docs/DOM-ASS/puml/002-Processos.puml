@@ -1,0 +1,44 @@
+@startuml
+title DOM-ASS — Processos
+
+legend
+SIGMUN
+DOM-ASS — Assistência Social
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CadastrarFamilia;
+
+:CadastrarPessoa;
+:CadastrarUnidade;
+:SolicitarBeneficio;
+:AprovarBeneficio;
+:NegarBeneficio;
+
+:Atualizar FamiliaCadUnico;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de FamiliaCadUnico.
+
+Casos de uso no código: 15.
+Entidades do domínio: 5.
+Tabelas mapeadas: 5.
+end note
+
+note right
+Validações (4):
+
+- RN-ASS-001
+- RN-ASS-002
+- RN-ASS-003
+- RN-ASS-004
+end note
+
+@enduml

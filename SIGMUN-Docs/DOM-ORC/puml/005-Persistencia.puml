@@ -1,0 +1,242 @@
+@startuml
+title DOM-ORC — Persistência
+
+legend
+SIGMUN
+DOM-ORC — Orçamento Público
+Planejamento, Dotação e Reserva de Saldo
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema orc" {
+
+  entity "ppas" as ppas {
+    id : UUID <<PK>>
+    ano_inicial : INTEGER <<NN>>
+    ano_final : INTEGER <<NN>>
+    descricao : TEXT
+    status : TEXT <<NN>>
+    data_publicacao : TIMESTAMPTZ
+    data_encerramento : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    updated_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "ldos" as ldos {
+    id : UUID <<PK>>
+    exercicio : INTEGER <<UQ, NN>>
+    ppa_id : UUID <<NN>>
+    descricao : TEXT
+    status : TEXT <<NN>>
+    meta_fiscal_receita : FLOAT <<NN>>
+    meta_fiscal_despesa : FLOAT <<NN>>
+    data_aprovacao : TIMESTAMPTZ
+    data_sancao : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    updated_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "loas" as loas {
+    id : UUID <<PK>>
+    exercicio : INTEGER <<UQ, NN>>
+    ldo_id : UUID <<NN>>
+    descricao : TEXT
+    status : TEXT <<NN>>
+    valor_receita_prevista : FLOAT <<NN>>
+    valor_despesa_fixada : FLOAT <<NN>>
+    data_aprovacao : TIMESTAMPTZ
+    data_publicacao : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    updated_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "dotacoes" as dotacoes {
+    id : UUID <<PK>>
+    loa_id : UUID <<NN>>
+    exercicio : INTEGER <<NN>>
+    codigo : TEXT <<NN>>
+    unidade_orcamentaria : TEXT
+    natureza_despesa : TEXT
+    fonte_recursos : TEXT
+    valor_inicial : FLOAT <<NN>>
+    valor_suplementado : FLOAT <<NN>>
+    valor_anulado : FLOAT <<NN>>
+    valor_reservado : FLOAT <<NN>>
+    valor_empenhado : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    updated_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "reservas" as reservas {
+    id : UUID <<PK>>
+    dotacao_id : UUID <<NN>>
+    numero : TEXT
+    valor : FLOAT <<NN>>
+    finalidade : TEXT
+    status : TEXT <<NN>>
+    data_reserva : TIMESTAMPTZ <<NN>>
+    data_conversao : TIMESTAMPTZ
+    data_cancelamento : TIMESTAMPTZ
+    motivo_cancelamento : TEXT
+    empenho_id : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    updated_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+ppas ||--o{ ldos : "FK ppa_id"
+
+ldos ||--o{ loas : "FK ldo_id"
+
+loas ||--o{ dotacoes : "FK loa_id"
+
+dotacoes ||--o{ reservas : "FK dotacao_id"
+
+
+' =========================================================
+' CHAVES E RESTRIÇÕES
+' =========================================================
+
+note right of ppas
+Plano Plurianual: diretrizes
+quadrienais.
+
+Sem restrição UNIQUE em
+(ano_inicial, ano_final) — a unicidade
+do quadriênio (RN-ORC-001) é validada
+apenas na aplicação.
+end note
+
+note right of ldos
+exercicio tem restrição UNIQUE no
+schema — um LDO por exercício
+(RN-ORC-010).
+
+As metas fiscais são os campos de
+comparação no acompanhamento.
+end note
+
+note right of loas
+exercicio tem restrição UNIQUE —
+uma LOA por exercício (RN-ORC-020).
+
+A LOA é terminal após publicação; a
+alteração orçamentária passa a
+ocorrer na dotação.
+end note
+
+note bottom of dotacoes
+Tabela central da execução.
+
+Os cinco campos de valor formam o
+posicionamento da dotação:
+
+valor_atualizado = inicial +
+  suplementado − anulado
+
+saldo_disponivel = atualizado −
+  reservado − empenhado
+
+Lacuna: funcao, subfuncao, programa
+e acao existem na entidade de domínio
+mas não possuem coluna — a classificação
+funcional da despesa é perdida
+na persistência.
+end note
+
+note bottom of reservas
+Pré-empenho: bloqueia saldo sem
+comprometer despesa.
+
+A conversão para empenho é feita por
+dotacao.consumir_reserva_empenhar,
+que transfere valor_reservado para
+valor_empenhado.
+
+empenho_id é TEXT sem FK — referencia
+o DOM-CON sem acoplamento físico.
+end note
+
+note as NCHECK
+|<b>Restrições já materializadas</b>|
+|
+| UNIQUE (ldos.exercicio)|
+| UNIQUE (loas.exercicio)|
+| FK ON DELETE RESTRICT em:|
+|   ldos.ppa_id|
+|   loas.ldo_id|
+|   dotacoes.loa_id|
+|   reservas.dotacao_id|
+| NOT NULL nos campos <<NN>>|
+|
+| <b>Unicidades não impostas</b>|
+|
+| UNIQUE (ppas.ano_inicial, ano_final)|
+| UNIQUE (dotacoes.exercicio, codigo)|
+|
+| RN-ORC-001 e RN-ORC-030 existem na
+| camada de aplicação, mas não como
+| restrição física. Não elevar a
+| restrição de banco antes de
+| registrar a regra.
+|
+| <b>Campos sem coluna</b>|
+|
+| dotacoes.funcao|
+| dotacoes.subfuncao|
+| dotacoes.programa|
+| dotacoes.acao|
+|
+| <b>Referências externas sem FK</b>|
+|
+| reservas.empenho_id → con.empenhos|
+end note
+
+note as NPERF
+|<b>Índices</b>|
+|
+| Nenhum índice é criado pela migration
+| 20260919_04_dom_orc_models.
+|
+| Consultas por exercício, por LOA e por
+| dotação empenhada atingem varredura
+| sequencial.
+|
+| Índices recomendados:
+|
+| ix_orc_dotacoes_loa_id|
+| ix_orc_dotacoes_exercicio|
+| ix_orc_dotacoes_codigo|
+| ix_orc_reservas_dotacao_id|
+| ix_orc_loas_exercicio|
+end note
+
+@enduml

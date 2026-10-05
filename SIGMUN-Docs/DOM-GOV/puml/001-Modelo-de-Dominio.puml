@@ -1,0 +1,146 @@
+@startuml
+title DOM-GOV — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-GOV — Governança Municipal
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-GOV" {
+
+class PoliticaGovernanca <<Entity>> {
+  +id: string
+  +codigo: string
+  +titulo: string
+  +tipo: string
+  +escopo: texto
+  +responsavel: string
+  +situacao: string
+  +vigencia_inicio: date
+  +vigencia_fim: date
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class RiscoGovernanca <<Entity>> {
+  +id: string
+  +codigo: string
+  +descricao: texto
+  +categoria: string
+  +probabilidade: string
+  +impacto: string
+  +nivel: string
+  +dono: string
+  +tratamento: texto
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class ControleCompliance <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +tipo: string
+  +periodicidade: string
+  +responsavel: string
+  +evidencia: texto
+  +resultado: string
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class DeliberacaoGoverno <<Entity>> {
+  +id: string
+  +numero: string
+  +data: date
+  +orgao: string
+  +ementa: texto
+  +vinculo: string
+  +referencia_id: string
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoPolitica {
+  POLITICA = 'politica'
+  DIRETRIZ = 'diretriz'
+  NORMA = 'norma'
+  PROCEDIMENTO = 'procedimento'
+}
+
+enum NivelRisco {
+  BAIXO = 'baixo'
+  MEDIO = 'medio'
+  ALTO = 'alto'
+  CRITICO = 'critico'
+}
+
+enum SituacaoGovernanca {
+  RASCUNHO = 'rascunho'
+  EM_REVISAO = 'em_revisao'
+  VIGENTE = 'vigente'
+  REVOGADA = 'revogada'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+PoliticaGovernanca "1" *-- "0..*" DeliberacaoGoverno : "referencia_id"
+RiscoGovernanca "1" *-- "0..*" DeliberacaoGoverno : "referencia_id"
+ControleCompliance "1" *-- "0..*" DeliberacaoGoverno : "referencia_id"
+
+PoliticaGovernanca --> TipoPolitica
+PoliticaGovernanca --> SituacaoGovernanca
+RiscoGovernanca --> NivelRisco
+ControleCompliance --> SituacaoGovernanca
+
+note right of PoliticaGovernanca
+Regras propostas (4):
+
+- RN-GOV-001:
+  toda política declara escopo, responsável, vigência e situação.
+- RN-GOV-002:
+  todo risco tem dono, classificação de probabilidade e impacto.
+- RN-GOV-003:
+  o controle de conformidade registra a evidência e o resultado da verificação.
+- RN-GOV-004:
+  a deliberação vincula-se à política, risco ou controle e guarda histórico.
+end note
+
+note bottom of PoliticaGovernanca
+Capacidades previstas (5):
+
+- Governança Corporativa
+- Gestão de Políticas
+- Gestão de Riscos
+- Compliance
+- Governança Digital
+end note
+
+@enduml

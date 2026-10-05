@@ -1,0 +1,151 @@
+@startuml
+title DOM-CON — Processo de Execução Orçamentária da Despesa
+
+legend
+SIGMUN
+DOM-CON — Contabilidade Pública
+Processo: Empenho → Liquidação → Pagamento
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:Identificar dotação autorizada
+no DOM-ORC;
+:Consultar saldo disponível
+da dotação;
+
+if (Dotação com saldo suficiente?) then (Não)
+  :Rejeitar emissão
+  (RN-CON-002);
+  :Registrar ocorrência;
+  :Notificar responsável;
+  stop
+endif
+
+if (Número já emitido
+no exercício?) then (Sim)
+  :Rejeitar emissão
+  (RN-CON-001);
+  :Registrar ocorrência;
+  stop
+endif
+
+:Registrar empenho;
+:Debitar dotação no DOM-ORC;
+:Atualizar valor_empenhado;
+:Status = EMITIDO;
+:Registrar evento de auditoria;
+
+' =========================================================
+' LIQUIDAÇÃO
+' =========================================================
+
+:Analisar obrigação
+a liquidar;
+
+if (Valor ≤ saldo a liquidar?) then (Sim)
+  :Registrar liquidação;
+  :Anexar documento fiscal
+  via DOM-GDO;
+  :Acrescentar valor_liquidado
+  (RN-CON-003);
+  :Confirmar liquidação;
+  :Status do empenho = LIQUIDADO;
+else (Não)
+  :Rejeitar liquidação
+  (RN-CON-003);
+  :Registrar ocorrência;
+  stop
+endif
+
+' =========================================================
+' PAGAMENTO
+' =========================================================
+
+:Emitir ordem bancária;
+:Programar pagamento;
+
+if (Liquidação confirmada
+e valor ≤ saldo a pagar?) then (Sim)
+  :Registrar pagamento;
+  :Anexar comprovante
+  via DOM-GDO;
+  :Acrescentar valor_pago
+  (RN-CON-031);
+  :Efetivar pagamento;
+  :Status do pagamento = EFETIVADO;
+else (Não)
+  :Rejeitar pagamento
+  (RN-CON-030);
+  :Registrar ocorrência;
+  stop
+endif
+
+' =========================================================
+' ENCERRAMENTO
+' =========================================================
+
+if (Empenho totalmente pago?) then (Sim)
+  :Status do empenho = PAGO;
+  :Encerrar ciclo;
+  stop
+endif
+
+if (Cancelamento
+administrativo?) then (Sim)
+  :Cancelar empenho;
+  :Registrar motivo;
+  :Status = CANCELADO;
+  :Encerrar ciclo;
+  stop
+endif
+
+if (Anulação do
+saldo remanescente?) then (Sim)
+  :Anular saldo do empenho;
+  :Devolver saldo à dotação
+  no DOM-ORC;
+  :Status = ANULADO;
+  :Encerrar ciclo;
+  stop
+endif
+
+:Registrar pendência
+para o exercício seguinte;
+:Encerrar ciclo;
+
+stop
+
+note right
+A emissão debita a dotação no DOM-ORC
+antes de persistir o empenho.
+
+Se a gravação falhar, a transação deve
+ser revertida para não deixar a dotação
+debitada sem o empenho correspondente.
+end note
+
+note right
+O estorno da liquidação só é permitido
+enquanto não houver valor pago
+comprometido.
+
+Ao zerar o valor liquidado, o empenho
+retorna de LIQUIDADO para EMITIDO.
+end note
+
+note left
+A anulação exige registro do motivo e
+devolve saldo à dotação no DOM-ORC.
+
+Estados terminais do empenho:
+PAGO, ANULADO e CANCELADO.
+
+Um empenho PAGO não pode ser cancelado
+— RN-CON-004.
+end note
+
+@enduml

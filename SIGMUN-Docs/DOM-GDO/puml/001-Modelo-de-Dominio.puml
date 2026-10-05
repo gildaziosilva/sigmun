@@ -1,0 +1,216 @@
+@startuml
+title DOM-GDO — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-GDO — Gestão Documental
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Agregados principais" {
+
+class ProcessoDocumento <<Entity>> {
+  +id: string
+  +numero: string
+  +ano: int
+  +tipo_processo_id: string
+  +titulo: string
+  +descricao: string
+  +unidade_autor_id: string
+  +data_abertura: datetime
+  +data_encerramento: datetime
+  +status: string
+  +is_encerrado: bool
+  +created_by: string
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+}
+
+package "Entidades de apoio" {
+
+class VersaoDocumento <<Entity>> {
+  +id: string
+  +documento_id: string
+  +numero_versao: int
+  +conteudo_ref: string
+  +hash_integridade: string
+  +data_versao: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Outras entidades" {
+
+class ClassificacaoDocumental <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +nivel: int
+  +classificacao_pai_id: string
+  +prazo_retencao: int
+  +unidade_destino_id: string
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class Documento <<Entity>> {
+  +id: string
+  +codigo: string
+  +numero: string
+  +ano: int
+  +tipo_documental_id: string
+  +titulo: string
+  +descricao: string
+  +data_criacao: datetime
+  +data_recebimento: datetime
+  +data_arquivamento: datetime
+  +data_encerramento: datetime
+  +data_eliminacao: datetime
+  +unidade_autor_id: string
+  +unidade_arquivo_id: string
+  +processo_id: string
+  +status: StatusDocumento
+  +is_sigiloso: bool
+  +conteudo_ref: string
+  +hash_integridade: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +updated_by: string
+  +is_deleted: bool
+}
+
+class TramitacaoDocumento <<Entity>> {
+  +id: string
+  +documento_id: string
+  +unidade_origem_id: string
+  +unidade_destino_id: string
+  +tipo: TipoTramitacao
+  +data_envio: datetime
+  +data_recebimento: datetime
+  +data_devolucao: datetime
+  +motivo: string
+  +observacao: string
+  +created_by: string
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class TabelaTemporalidade <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +prazo_tempo: int
+  +unidade_tempo: string
+  +evento_fim: string
+  +tipo_destinacao: TipoDestinacao
+  +is_ativo: bool
+  +created_at: datetime
+  +updated_at: datetime
+  +is_deleted: bool
+}
+
+class TipoDocumental <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +is_ativo: bool
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class ArquivamentoDocumento <<Entity>> {
+  +id: string
+  +documento_id: string
+  +data_arquivamento: datetime
+  +data_restauracao: datetime
+  +created_by: string
+  +observacao: string
+  +is_restaurado: bool
+}
+
+class AssinaturaDocumento <<Entity>> {
+  +id: string
+  +documento_id: string
+  +signatario_id: string
+  +data_assinatura: datetime
+  +hash_assinatura: string
+  +certificado_id: string
+  +is_valida: bool
+  +is_revogada: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum StatusDocumento {
+  RASCUNHO = 'rascunho'
+  ATIVO = 'ativo'
+  ARQUIVADO = 'arquivado'
+  ENCERRADO = 'encerrado'
+  REJEITADO = 'rejeitado'
+}
+
+enum TipoDestinacao {
+  ELIMINACAO = 'eliminacao'
+  GUARDA_PERMANENTE = 'guarda_permanente'
+  PRORROGACAO = 'prorrogacao'
+}
+
+enum TipoTramitacao {
+  ENVIO = 'envio'
+  RECEPCAO = 'recepcao'
+  DEVOLVIDO = 'devolvido'
+  ARQUIVAMENTO = 'arquivamento'
+  RESTAURACAO = 'restauracao'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+TipoDocumental "1" *-- "0..*" Documento : "tipo_documental_id"
+Documento "1" *-- "0..*" VersaoDocumento : "documento_id"
+Documento "1" *-- "0..*" TramitacaoDocumento : "documento_id"
+Documento "1" *-- "0..*" ArquivamentoDocumento : "documento_id"
+Documento "1" *-- "0..*" AssinaturaDocumento : "documento_id"
+Documento --> StatusDocumento
+TabelaTemporalidade --> TipoDestinacao
+TramitacaoDocumento --> TipoTramitacao
+
+
+note bottom of ClassificacaoDocumental
+Comportamentos (22):
+
+- ClassificacaoDocumental.esta_ativo
+- ClassificacaoDocumental.foi_excluido
+- ClassificacaoDocumental.is_active
+- ClassificacaoDocumental.eh_raiz
+- ClassificacaoDocumental.is_root
+- Documento.esta_ativo
+- Documento.foi_excluido
+- Documento.is_active
+- Documento.is_assinado
+- VersaoDocumento.esta_ativo
+- e mais 12
+end note
+
+@enduml

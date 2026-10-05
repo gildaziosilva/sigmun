@@ -1,0 +1,213 @@
+@startuml
+title DOM-PES — Persistência
+
+legend
+SIGMUN
+DOM-PES — Cadastro
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema rh" {
+
+  entity "pessoas" as Tpessoas {
+    id : UUID <<PK>>
+    tipo : TEXT <<NN>>
+    categoria : TEXT <<NN>>
+    unidade_id : UUID
+  }
+
+  entity "pessoas_fisicas" as Tpessoas_fisicas {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<UQ, NN>>
+    nome : TEXT <<NN>>
+    data_nascimento : DATE
+    sexo : TEXT
+    estado_civil : TEXT
+    mae : TEXT
+    pai : TEXT
+  }
+
+  entity "pessoas_juridicas" as Tpessoas_juridicas {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<UQ, NN>>
+    razao_social : TEXT <<NN>>
+    nome_fantasia : TEXT
+    cnae_principal : TEXT
+    capital : NUMERIC
+  }
+
+  entity "enderecos" as Tenderecos {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<NN>>
+    tipo : TEXT <<NN>>
+    logradouro : TEXT <<NN>>
+    numero : TEXT <<NN>>
+    complemento : TEXT
+    bairro : TEXT
+    cep : TEXT
+    cidade : TEXT
+    estado : TEXT
+    pais : TEXT
+    principal : BOOLEAN <<NN>>
+    vigencia_inicio : TIMESTAMPTZ <<NN>>
+    vigencia_fim : TIMESTAMPTZ
+    motivo_alteracao : TEXT
+  }
+
+  entity "documentos" as Tdocumentos {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<NN>>
+    tipo : TEXT <<NN>>
+    numero : TEXT <<NN>>
+    orgao_emissor : TEXT
+    data_emissao : DATE
+    data_validade : DATE
+    principal : BOOLEAN <<NN>>
+  }
+
+  entity "contatos" as Tcontatos {
+    id : UUID <<PK>>
+    pessoa_id : UUID <<NN>>
+    tipo : TEXT <<NN>>
+    valor : TEXT <<NN>>
+    principal : BOOLEAN <<NN>>
+  }
+
+  entity "unidades_administrativas" as Tunidades_administrativas {
+    id : UUID <<PK>>
+    unidade_pai_id : UUID
+    codigo_ibge : TEXT
+    codigo_siafi : TEXT
+    nome : TEXT <<NN>>
+    sigla : TEXT
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tpessoas
+PessoaModel
+
+4 colunas mapeadas.
+
+Modelo ORM da tabela ``core.pessoas`` (entidade-mestra).
+end note
+
+note right of Tpessoas_fisicas
+PessoaFisicaModel
+
+8 colunas mapeadas.
+
+Modelo ORM da tabela ``core.pessoas_fisicas`` (extensão 1:1).
+end note
+
+note right of Tpessoas_juridicas
+PessoaJuridicaModel
+
+6 colunas mapeadas.
+
+Modelo ORM da tabela ``core.pessoas_juridicas`` (extensão 1:1).
+end note
+
+note right of Tenderecos
+EnderecoModel
+
+15 colunas mapeadas.
+
+Modelo ORM da tabela ``core.enderecos`` (histórico de vigência).
+end note
+
+note right of Tdocumentos
+DocumentoModel
+
+8 colunas mapeadas.
+
+Modelo ORM da tabela ``core.documentos`` (número: dado LGPD).
+end note
+
+note right of Tcontatos
+ContatoModel
+
+5 colunas mapeadas.
+
+Modelo ORM da tabela ``core.contatos``.
+end note
+
+note right of Tunidades_administrativas
+UnidadeAdministrativaModel
+
+6 colunas mapeadas.
+
+Modelo ORM da tabela ``core.unidades_administrativas`` (hierárquica).
+end note
+
+note bottom of Tpessoas
+|<b>Campos do domínio sem coluna</b>|
+|
+| Contato:|
+|   created_at
+|   created_by
+|   updated_at
+|   updated_by
+|   deleted_at
+|   deleted_by
+| Documento:|
+|   created_at
+|   created_by
+|   updated_at
+|   updated_by
+|   deleted_at
+|   deleted_by
+| Endereco:|
+|   created_at
+|   created_by
+|   updated_at
+|   updated_by
+|   deleted_at
+|   deleted_by
+| Pessoa:|
+|   dados_fisicos
+|   dados_juridicos
+|   enderecos
+|   documentos
+|   contatos
+|   created_at
+|   created_by
+|   updated_at
+|   updated_by
+|   deleted_at
+|   deleted_by
+| UnidadeAdministrativa:|
+|   created_at
+|   created_by
+|   updated_at
+|   updated_by
+|   deleted_at
+|   deleted_by
+|
+| A classificação funcional e os
+| identificadores existem na entidade
+| e são perdidos na persistência.
+end note
+
+note left of Tpessoas
+7 tabelas no schema rh.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

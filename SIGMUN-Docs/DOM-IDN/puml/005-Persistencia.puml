@@ -1,0 +1,193 @@
+@startuml
+title DOM-IDN — Persistência
+
+legend
+SIGMUN
+DOM-IDN — Identidade e Acesso
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema idn" {
+
+  entity "usuarios" as Tusuarios {
+    id : UUID <<PK>>
+    login : TEXT <<UQ, NN>>
+    email : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    status : TEXT <<NN>>
+    senha_hash : TEXT <<NN>>
+    unidades_ids : TEXT <<NN>>
+    last_login : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "roles" as Troles {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "permissoes" as Tpermissoes {
+    id : UUID <<PK>>
+    codigo : TEXT <<UQ, NN>>
+    nome : TEXT <<NN>>
+    descricao : TEXT
+    escopo : TEXT <<NN>>
+    modulo : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+    updated_by : UUID
+    deleted_at : TIMESTAMPTZ
+    deleted_by : UUID
+  }
+
+  entity "usuario_roles" as Tusuario_roles {
+    id : UUID <<PK>>
+    usuario_id : UUID <<NN>>
+    role_id : UUID <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+  }
+
+  entity "role_permissoes" as Trole_permissoes {
+    id : UUID <<PK>>
+    role_id : UUID <<NN>>
+    permissao_id : UUID <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+  }
+
+  entity "sessoes" as Tsessoes {
+    id : UUID <<PK>>
+    usuario_id : UUID <<NN>>
+    token : TEXT <<UQ, NN>>
+    ip_origem : TEXT
+    user_agent : TEXT
+    is_active : BOOLEAN <<NN>>
+    expires_at : TIMESTAMPTZ
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : UUID
+    updated_at : TIMESTAMPTZ <<NN>>
+  }
+
+  entity "auditoria_logins" as Tauditoria_logins {
+    id : UUID <<PK>>
+    usuario_id : UUID
+    login : TEXT <<NN>>
+    ip_origem : TEXT
+    user_agent : TEXT
+    sucesso : BOOLEAN <<NN>>
+    motivo_falha : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tusuarios
+UsuarioModel
+
+14 colunas mapeadas.
+
+Modelo ORM da tabela ``idn.usuarios``.
+end note
+
+note right of Troles
+RoleModel
+
+10 colunas mapeadas.
+
+Modelo ORM da tabela ``idn.roles``.
+end note
+
+note right of Tpermissoes
+PermissaoModel
+
+12 colunas mapeadas.
+
+Modelo ORM da tabela ``idn.permissoes``.
+end note
+
+note right of Tusuario_roles
+UsuarioRoleModel
+
+5 colunas mapeadas.
+
+Modelo ORM da tabela ``idn.usuario_roles`` (relação N:N).
+end note
+
+note right of Trole_permissoes
+RolePermissaoModel
+
+5 colunas mapeadas.
+
+Modelo ORM da tabela ``idn.role_permissoes`` (relação N:N).
+end note
+
+note right of Tsessoes
+SessaoModel
+
+10 colunas mapeadas.
+
+Modelo ORM da tabela ``idn.sessoes``.
+end note
+
+note right of Tauditoria_logins
+AuditoriaLoginModel
+
+8 colunas mapeadas.
+
+Modelo ORM da tabela ``idn.auditoria_logins``.
+end note
+
+note bottom of Tusuarios
+|<b>Campos do domínio sem coluna</b>|
+|
+| Usuario:|
+|   roles_ids
+|   is_deleted
+| Role:|
+|   permissoes
+|   is_deleted
+| Permissao:|
+|   is_deleted
+|
+| A classificação funcional e os
+| identificadores existem na entidade
+| e são perdidos na persistência.
+end note
+
+note left of Tusuarios
+7 tabelas no schema idn.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

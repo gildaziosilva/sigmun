@@ -1,0 +1,145 @@
+@startuml
+title DOM-IND — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-IND — Indicadores e Desempenho
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Entidades de DOM-IND" {
+
+class Indicador <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: texto
+  +categoria: string
+  +formula: texto
+  +unidade: string
+  +periodicidade: string
+  +fonte_ref: string
+  +responsavel: string
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class MetaIndicador <<Entity>> {
+  +id: string
+  +indicador_id: string
+  +exercicio: int
+  +valor_base: decimal
+  +valor_alvo: decimal
+  +prazo: date
+  +responsavel: string
+  +situacao: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class ColetaIndicador <<Entity>> {
+  +id: string
+  +indicador_id: string
+  +exercicio: int
+  +periodo: string
+  +valor: decimal
+  +fonte: string
+  +data_coleta: date
+  +validado: bool
+  +observacao: texto
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Painel <<Entity>> {
+  +id: string
+  +codigo: string
+  +nome: string
+  +descricao: texto
+  +publico: bool
+  +periodicidade: string
+  +situacao: string
+  +ultimo_atualizacao: datetime
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+}
+
+package "Enumerações" {
+
+enum CategoriaIndicador {
+  ESTRATEGICO = 'estrategico'
+  OPERACIONAL = 'operacional'
+  POLITICA_PUBLICA = 'politica_publica'
+}
+
+enum Periodicidade {
+  MENSAL = 'mensal'
+  TRIMESTRAL = 'trimestral'
+  SEMESTRAL = 'semestral'
+  ANUAL = 'anual'
+}
+
+enum SituacaoIndicador {
+  RASCUNHO = 'rascunho'
+  EM_VALIDACAO = 'em_validacao'
+  PUBLICADO = 'publicado'
+  DESCONTINUADO = 'descontinuado'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Indicador "1" *-- "0..*" MetaIndicador : "indicador_id"
+Indicador "1" *-- "0..*" ColetaIndicador : "indicador_id"
+
+Indicador --> CategoriaIndicador
+Indicador --> Periodicidade
+Indicador --> SituacaoIndicador
+MetaIndicador --> SituacaoIndicador
+
+note right of Indicador
+Regras propostas (4):
+
+- RN-IND-001:
+  o indicador declara fórmula, unidade, periodicidade e fonte.
+- RN-IND-002:
+  a meta é anual e declara valor base, valor alvo, prazo e responsável.
+- RN-IND-003:
+  o valor coletado só é publicado após validação do responsável.
+- RN-IND-004:
+  a fonte é referenciada ao DOM-DAD por identificador; sem cópia.
+end note
+
+note bottom of Indicador
+Capacidades previstas (6):
+
+- Indicadores Estratégicos
+- Indicadores Operacionais
+- Indicadores de Políticas Públicas
+- Metas
+- Resultados
+- Painéis
+end note
+
+@enduml

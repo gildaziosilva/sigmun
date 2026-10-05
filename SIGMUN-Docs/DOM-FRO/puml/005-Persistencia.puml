@@ -1,0 +1,131 @@
+@startuml
+title DOM-FRO — Persistência
+
+legend
+SIGMUN
+DOM-FRO — Frotas
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema fro" {
+
+  entity "veiculos" as Tveiculos {
+    id : UUID <<PK>>
+    placa : TEXT <<UQ, NN>>
+    chassi : TEXT
+    renavam : TEXT
+    marca : TEXT <<NN>>
+    modelo : TEXT <<NN>>
+    ano_fabricacao : INTEGER <<NN>>
+    ano_modelo : INTEGER <<NN>>
+    tipo : TEXT <<NN>>
+    combustivel : TEXT <<NN>>
+    capacidade : FLOAT <<NN>>
+    odometro_atual : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    unidade_id : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "abastecimentos" as Tabastecimentos {
+    id : UUID <<PK>>
+    veiculo_id : TEXT <<NN>>
+    data : DATE
+    quantidade_litros : FLOAT <<NN>>
+    valor_unitario : FLOAT <<NN>>
+    valor_total : FLOAT <<NN>>
+    odometro : FLOAT <<NN>>
+    posto : TEXT
+    tipo_combustivel : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+  entity "manutencoes" as Tmanutencoes {
+    id : UUID <<PK>>
+    veiculo_id : TEXT <<NN>>
+    data_entrada : DATE
+    data_saida : DATE
+    tipo : TEXT <<NN>>
+    descricao : TEXT <<NN>>
+    oficina : TEXT
+    valor : FLOAT <<NN>>
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+  entity "rotas" as Trotas {
+    id : UUID <<PK>>
+    veiculo_id : TEXT <<NN>>
+    data : DATE
+    origem : TEXT <<NN>>
+    destino : TEXT <<NN>>
+    km_inicio : FLOAT <<NN>>
+    km_fim : FLOAT <<NN>>
+    distancia_km : FLOAT <<NN>>
+    descricao : TEXT
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Tveiculos
+VeiculoModel
+
+18 colunas mapeadas.
+
+Modelo de veículos da frota.
+end note
+
+note right of Tabastecimentos
+AbastecimentoModel
+
+11 colunas mapeadas.
+
+Modelo de abastecimentos.
+end note
+
+note right of Tmanutencoes
+ManutencaoModel
+
+11 colunas mapeadas.
+
+Modelo de manutenções.
+end note
+
+note right of Trotas
+RotaModel
+
+12 colunas mapeadas.
+
+Modelo de rotas/deslocamentos.
+end note
+
+note left of Tveiculos
+4 tabelas no schema fro.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml
+title DOM-DAD — Processos
+
+legend
+SIGMUN
+DOM-DAD — Desativação de Bens
+Processos — Fluxo do caso de uso principal
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+start
+
+:CriarLinhagem;
+
+:AtualizarLinhagem;
+:BuscarLinhagem;
+:DeletarLinhagem;
+:CriarPolitica;
+:AtualizarPolitica;
+
+:Atualizar AtivoDado;
+:Registrar evento de auditoria;
+stop
+
+note left
+A rotina gira em torno de AtivoDado.
+
+Casos de uso no código: 20.
+Entidades do domínio: 5.
+Tabelas mapeadas: 5.
+end note
+
+@enduml

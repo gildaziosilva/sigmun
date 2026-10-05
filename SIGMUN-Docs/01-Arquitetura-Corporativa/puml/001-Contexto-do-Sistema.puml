@@ -1,0 +1,52 @@
+@startuml
+title SIGMUN — Contexto do Sistema
+
+legend
+SIGMUN
+SIGMUN — Arquitetura Corporativa
+Contexto do Sistema — Atores e fronteiras
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Cidadão" as Cidadao
+actor "Servidor Público" as Servidor
+actor "Gestor Municipal" as Gestor
+actor "Fornecedor" as Fornecedor
+actor "Administrador do SIGMUN" as Admin
+
+rectangle "SIGMUN — Sistema Integrado de Gestão Municipal" as SIGMUN
+
+rectangle "Serviços de Identidade e Acesso\nDOM-IDN" as IDN
+rectangle "Segurança da Informação\nDOM-SEG" as SEG
+rectangle "Gestão Documental\nDOM-GDO" as GDO
+rectangle "Metadados Corporativos\nDOM-MET" as MET
+rectangle "Interoperabilidade\nDOM-INT" as INT
+rectangle "Auditoria\ntrilha de eventos" as AUD
+rectangle "Sistemas externos\nFalaBR / e-OUV · IBGE · cartório" as EXT
+
+Cidadao --> SIGMUN : consulta e solicita serviços
+Servidor --> SIGMUN : executa processos
+Gestor --> SIGMUN : acompanha e decide
+Fornecedor --> SIGMUN : participa de processos
+Admin --> SIGMUN : administra a plataforma
+
+SIGMUN --> IDN : autenticação e autorização
+SIGMUN --> SEG : políticas e controles de acesso
+SIGMUN --> GDO : documentos e evidências
+SIGMUN --> MET : metadados e classificação
+SIGMUN --> INT : troca de dados entre domínios
+SIGMUN --> AUD : eventos
+SIGMUN --> EXT : integrações externas
+
+note bottom of SIGMUN
+Fronteira única de dados: a API REST sob
+/api/v1 e 34 módulos de domínio
+em src/modules.
+end note
+
+@enduml

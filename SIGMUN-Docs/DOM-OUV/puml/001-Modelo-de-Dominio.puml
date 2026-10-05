@@ -1,0 +1,205 @@
+@startuml
+title DOM-OUV — Modelo de Domínio
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+legend
+SIGMUN
+DOM-OUV — Ouvidoria Municipal
+Manifestações, Denúncias e LAI
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+class UnidadeOuvidoria {
+  +id: UUID
+  +codigo: string
+  +nome: string
+  +ativo: boolean
+}
+
+class CanalOuvidoria {
+  +id: UUID
+  +codigo: string
+  +nome: string
+  +tipo: string
+  +ativo: boolean
+}
+
+class Manifestacao {
+  +id: UUID
+  +protocolo: string
+  +data_hora: datetime
+  +tipo: string
+  +assunto: string
+  +descricao: text
+  +origem: string
+  +sigilosa: boolean
+  +status: string
+}
+
+class ClassificacaoManifestacao {
+  +id: UUID
+  +codigo: string
+  +nome: string
+  +descricao: string
+  +ativo: boolean
+}
+
+class Denuncia {
+  +id: UUID
+  +manifestacao_id: UUID
+  +data_hora: datetime
+  +fato_narrado: text
+  +local_fato: string
+  +envolvidos: text
+  +prioridade: int
+  +status_apuracao: string
+}
+
+class PedidoLAI {
+  +id: UUID
+  +manifestacao_id: UUID
+  +data_hora: datetime
+  +informacao_solicitada: text
+  +orgao_destino: string
+  +fundamento_restricao: string
+  +status: string
+}
+
+class EncaminhamentoOuvidoria {
+  +id: UUID
+  +manifestacao_id: UUID
+  +data_hora: datetime
+  +orgao_destino: string
+  +unidade_destino: string
+  +motivo: string
+  +status: string
+}
+
+class PrazoOuvidoria {
+  +id: UUID
+  +manifestacao_id: UUID
+  +tipo: string
+  +inicio: datetime
+  +vencimento: datetime
+  +prorrogado: boolean
+  +data_prorrogacao: datetime
+}
+
+class TratamentoManifestacao {
+  +id: UUID
+  +manifestacao_id: UUID
+  +data_hora: datetime
+  +descricao: text
+  +responsavel_ref: UUID
+  +resultado: string
+}
+
+class RespostaOuvidoria {
+  +id: UUID
+  +manifestacao_id: UUID
+  +data_hora: datetime
+  +tipo: string
+  +conteudo: text
+  +publicavel: boolean
+}
+
+class RecursoLAI {
+  +id: UUID
+  +pedido_lai_id: UUID
+  +data_hora: datetime
+  +instancia: string
+  +fundamento: text
+  +decisao: string
+  +data_decisao: datetime
+}
+
+class AvaliacaoOuvidoria {
+  +id: UUID
+  +manifestacao_id: UUID
+  +data_hora: datetime
+  +nota: int
+  +comentario: text
+}
+
+UnidadeOuvidoria "1" -- "0..*" Manifestacao : recebe
+CanalOuvidoria "1" -- "0..*" Manifestacao : origina
+
+ClassificacaoManifestacao "1" -- "0..*" Manifestacao : classifica
+
+Manifestacao "1" -- "0..1" Denuncia : pode ser
+Manifestacao "1" -- "0..1" PedidoLAI : pode ser
+
+Manifestacao "1" -- "0..*" EncaminhamentoOuvidoria : gera
+Manifestacao "1" -- "0..*" PrazoOuvidoria : possui
+Manifestacao "1" -- "0..*" TratamentoManifestacao : recebe
+Manifestacao "1" -- "0..*" RespostaOuvidoria : recebe
+Manifestacao "1" -- "0..1" AvaliacaoOuvidoria : avalia
+
+PedidoLAI "1" -- "0..*" RecursoLAI : pode gerar
+
+note right of Manifestacao
+A Manifestacao é a entidade
+central do DOM-OUV.
+
+O cidadão/usuário não é replicado
+aqui como cadastro próprio.
+
+Sua identificação deve referenciar
+os domínios cadastrais e de identidade
+do SIGMUN quando aplicável.
+end note
+
+note right of Denuncia
+Denúncias podem possuir informações
+com acesso restrito.
+
+A política de classificação da
+informação deve determinar o nível
+de proteção dos dados e documentos.
+end note
+
+note right of PedidoLAI
+PedidoLAI representa exclusivamente
+o fluxo de acesso à informação.
+
+Pode resultar em:
+- acesso concedido
+- acesso parcial
+- acesso negado
+- informação inexistente
+- pedido não atendido
+- recurso
+end note
+
+note right of EncaminhamentoOuvidoria
+O encaminhamento transfere a matéria
+para o órgão ou unidade competente.
+
+O DOM-OUV mantém o histórico
+do encaminhamento e dos prazos.
+end note
+
+note bottom of RespostaOuvidoria
+A resposta pode possuir conteúdo
+público ou restrito conforme a
+classificação da informação.
+
+Documentos e anexos devem ser
+integrados ao DOM-GDO.
+end note
+
+note bottom of RecursoLAI
+Recursos pertencem ao fluxo LAI
+e não devem ser tratados como
+uma nova manifestação independente.
+
+O histórico do pedido original
+deve permanecer preservado.
+end note
+
+@enduml

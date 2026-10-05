@@ -1,0 +1,179 @@
+@startuml
+title DOM-EDU — Persistência
+
+legend
+SIGMUN
+DOM-EDU — Educação
+Persistência — Tabelas e colunas
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL — schema edu" {
+
+  entity "alunos" as Talunos {
+    id : UUID <<PK>>
+    nome : TEXT <<NN>>
+    cpf : TEXT
+    data_nascimento : TEXT
+    sexo : TEXT <<NN>>
+    nome_mae : TEXT
+    telefone : TEXT
+    endereco : TEXT
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "matriculas" as Tmatriculas {
+    id : UUID <<PK>>
+    aluno_id : TEXT <<NN>>
+    escola : TEXT <<NN>>
+    serie : TEXT <<NN>>
+    turno : TEXT <<NN>>
+    ano_letivo : INTEGER <<NN>>
+    data_matricula : DATE
+    status : TEXT <<NN>>
+    escola_destino : TEXT
+    motivo : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+  }
+
+  entity "lancamentos_diario" as Tlancamentos_diario {
+    id : UUID <<PK>>
+    matricula_id : TEXT <<NN>>
+    data : DATE
+    presente : BOOLEAN <<NN>>
+    nota : FLOAT
+    observacao : TEXT
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+  entity "rotas_transporte" as Trotas_transporte {
+    id : UUID <<PK>>
+    identificacao : TEXT <<NN>>
+    veiculo : TEXT
+    motorista : TEXT <<NN>>
+    vagas : INTEGER <<NN>>
+    turno : TEXT <<NN>>
+    status : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+  }
+
+  entity "passagens_transporte" as Tpassagens_transporte {
+    id : UUID <<PK>>
+    rota_id : TEXT <<NN>>
+    matricula_id : TEXT <<NN>>
+    data : DATE
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+  entity "itens_merenda" as Titens_merenda {
+    id : UUID <<PK>>
+    nome : TEXT <<NN>>
+    tipo : TEXT <<NN>>
+    estoque : FLOAT <<NN>>
+    estoque_minimo : FLOAT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    updated_at : TIMESTAMPTZ
+    created_by : TEXT
+    is_deleted : BOOLEAN <<NN>>
+  }
+
+  entity "distribuicoes_merenda" as Tdistribuicoes_merenda {
+    id : UUID <<PK>>
+    matricula_id : TEXT <<NN>>
+    item_id : TEXT <<NN>>
+    quantidade : FLOAT <<NN>>
+    data : DATE
+    refeicao : TEXT <<NN>>
+    created_at : TIMESTAMPTZ <<NN>>
+    created_by : TEXT
+  }
+
+}
+
+' =================================================
+' RELACIONAMENTOS
+' =================================================
+
+
+note right of Talunos
+AlunoModel
+
+13 colunas mapeadas.
+
+Modelo de alunos da rede municipal.
+end note
+
+note right of Tmatriculas
+MatriculaModel
+
+13 colunas mapeadas.
+
+Modelo de matriculas escolares.
+end note
+
+note right of Tlancamentos_diario
+LancamentoDiarioModel
+
+8 colunas mapeadas.
+
+Modelo do diario de classe digital.
+end note
+
+note right of Trotas_transporte
+RotaTransporteModel
+
+10 colunas mapeadas.
+
+Modelo de rotas de transporte escolar.
+end note
+
+note right of Tpassagens_transporte
+PassagemTransporteModel
+
+6 colunas mapeadas.
+
+Modelo de passagens de transporte escolar.
+end note
+
+note right of Titens_merenda
+ItemMerendaModel
+
+9 colunas mapeadas.
+
+Modelo do estoque de merenda.
+end note
+
+note right of Tdistribuicoes_merenda
+DistribuicaoMerendaModel
+
+8 colunas mapeadas.
+
+Modelo de distribuicoes de merenda.
+end note
+
+note left of Talunos
+7 tabelas no schema edu.
+
+Colunas derivadas (saldo, valor
+atualizado) não são persistidas:
+são recalculadas na leitura.
+end note
+
+@enduml

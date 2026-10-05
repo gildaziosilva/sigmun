@@ -1,0 +1,100 @@
+@startuml
+title DOM-GEO — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-GEO — Geoinformação Municipal
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-GEO — Geoinformação Municipal" {
+  component "API\n/api/v1/geo" as API
+  component "CadastrarCamada" as UC0
+  component "AtualizarCamada" as UC1
+  component "AtivarCamada" as UC2
+  component "DesativarCamada" as UC3
+  component "ExcluirCamada" as UC4
+  component "CadastrarMapa" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-TEL\nGestão Territorial" as DTEL
+  component "DOM-TRI\nAdministração Tributária" as DTRI
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema geo" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : POST
+API --> UC1 : PATCH
+API --> UC2 : POST
+API --> UC3 : POST
+API --> UC4 : DELETE
+API --> UC5 : POST
+
+API --> DTEL : troca de dados
+API --> DTRI : troca de dados
+API --> IDN : autenticação e autorização
+API --> GDO : documentos
+API --> MET : metadados
+API --> AUD : eventos de auditoria
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-GEO cobre Geoinformação Municipal.
+
+A API expõe 28 operações
+em 1 prefixo.
+
+18 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (8):
+
+- RN-GEO-001
+- RN-GEO-002
+- RN-GEO-003
+- RN-GEO-004
+- RN-GEO-005
+- RN-GEO-006
+- e mais 2
+end note
+
+note bottom of DB
+5 tabelas mapeadas:
+
+- camadas_mapa
+- features_geo
+- mapas_camadas
+- mapas_sig
+- servicos_geo
+end note
+
+@enduml

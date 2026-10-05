@@ -1,0 +1,55 @@
+@startuml
+title SIGMUN — Infraestrutura
+
+legend
+SIGMUN
+SIGMUN — Arquitetura Corporativa
+Infraestrutura — Serviços e ambientes
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Ambiente local — docker-compose.yml" {
+  component "postgres\npostgres:15\nportas 5433:5432" as SVC0
+  component "redis\nredis:7-alpine\nportas 6379:6379" as SVC1
+  component "backend\nDockerfile do repositório\nportas 8000:8000" as SVC2
+  component "frontend-admin\nDockerfile do repositório\nportas 3000:80" as SVC3
+  component "frontend-portal-cidadao\nDockerfile do repositório\nportas 3001:80" as SVC4
+  component "frontend-portal-fornecedor\nDockerfile do repositório\nportas 3002:80" as SVC5
+  component "worker\nDockerfile do repositório" as SVC6
+  component "beat\nDockerfile do repositório" as SVC7
+  component "flower\nDockerfile do repositório\nportas 5555:5555" as SVC8
+}
+
+package "Persistência" {
+  database "PostgreSQL 15\nschema sigmun e schemas por domínio" as PG
+  database "Redis 7-alpine" as REDIS
+  component "Alembic\nalembic/versions" as MIG
+  component "init.sql\ninfra/docker/database" as INIT
+}
+
+package "Implantação" {
+  component "docker\nDockerfiles e banco local" as INFRA0
+  component "kubernetes\nManifestos de orquestração" as INFRA1
+  component "terraform\nProvisionamento de infraestrutura" as INFRA2
+}
+
+SVC6 --> PG : filas celery, gdo.outbox e gdo.expurgo
+SVC7 --> SVC6 : agenda tarefas periódicas
+
+note bottom of PG
+Banco do sistema: schema core (cadastro)
+e um schema por domínio implementado.
+end note
+
+note bottom of SVC6
+Processamento assíncrono com Celery;
+o beat agenda as tarefas e o flower
+acompanha as filas.
+end note
+
+@enduml

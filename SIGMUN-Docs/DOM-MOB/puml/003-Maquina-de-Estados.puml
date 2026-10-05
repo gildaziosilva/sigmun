@@ -1,0 +1,47 @@
+@startuml
+title DOM-MOB — Máquina de Estados
+
+legend
+SIGMUN
+DOM-MOB — Mobilidade e Serviços de Campo
+Máquina de Estados — Ciclo de vida das entidades
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Em elaboração
+endlegend
+
+hide empty description
+
+[*] --> Aberta : distribuição da ordem
+Aberta --> Assinada : aceite pelo servidor (RN-MOB-001)
+Assinada --> EmCampo : início da execução
+EmCampo --> AguardandoSincronizacao : execução offline concluída
+AguardandoSincronizacao --> Concluida : sincronização sem conflito (RN-MOB-002)
+AguardandoSincronizacao --> EmCampo : conflito de sincronização (RN-MOB-004)
+Aberta --> Cancelada : cancelar ordem
+EmCampo --> Cancelada : cancelar ordem
+Concluida --> [*]
+Cancelada --> [*]
+state Aberta
+state Assinada
+state EmCampo
+state AguardandoSincronizacao
+state Concluida
+state Cancelada
+
+note right of EmCampo
+Modelo proposto: o domínio não possui
+módulo implementado (matriz 031).
+
+A evidência preserva data, geolocalização
+e integridade do arquivo (RN-MOB-003).
+end note
+
+note bottom of AguardandoSincronizacao
+A ordem só é concluída depois da
+sincronização (RN-MOB-002); conflito
+exige decisão explícita e não
+sobrescreve o dado local (RN-MOB-004).
+end note
+
+@enduml

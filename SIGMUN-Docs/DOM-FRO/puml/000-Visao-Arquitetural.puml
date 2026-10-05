@@ -1,0 +1,90 @@
+@startuml
+title DOM-FRO — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-FRO — Frotas
+Visão Arquitetural — Arquitetura do domínio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Servidor\npúblico" as User
+  component "Portal Web\nSIGMUN" as Portal
+}
+
+package "DOM-FRO — Frotas" {
+  component "API\n/api/v1/fro" as API
+  component "CadastrarVeiculo" as UC0
+  component "RegistrarAbastecimento" as UC1
+  component "AbrirManutencao" as UC2
+  component "ConcluirManutencao" as UC3
+  component "RegistrarRota" as UC4
+  component "ConcluirRota" as UC5
+}
+
+package "Domínios Correlatos" {
+  component "DOM-PES\nCadastro" as DPES
+  component "DOM-ORC\nOrçamento Público" as DORC
+}
+
+package "Serviços Transversais" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "DOM-MET\nMetadados" as MET
+  component "Auditoria" as AUD
+}
+
+database "PostgreSQL\nschema fro" as DB
+
+User --> Portal : executa rotina
+Portal --> API : operações do domínio
+
+API --> UC0 : GET
+API --> UC1 : POST
+
+API --> DPES : troca de dados
+API --> DORC : troca de dados
+API --> IDN : autenticação e autorização
+API --> AUD : eventos de auditoria
+API --> MET : metadados
+API --> GDO : documentos
+
+UC0 --> DB : persistência
+UC1 --> DB : persistência
+UC2 --> DB : persistência
+UC3 --> DB : persistência
+UC4 --> DB : persistência
+UC5 --> DB : persistência
+
+note right of API
+O DOM-FRO cobre frotas.
+
+A API expõe 13 operações
+em 1 prefixo.
+
+7 casos de uso no código.
+end note
+
+note bottom of API
+Regras de negócio (2):
+
+- RN-FRO-001
+- RN-FRO-002
+end note
+
+note bottom of DB
+4 tabelas mapeadas:
+
+- veiculos
+- abastecimentos
+- manutencoes
+- rotas
+end note
+
+@enduml

@@ -1,0 +1,127 @@
+@startuml
+title DOM-PAT — Modelo de Domínio
+
+legend
+SIGMUN
+DOM-PAT — Patrimônio
+Modelo de Domínio — Entidades e regras de negócio
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+package "Outras entidades" {
+
+class Bem <<Entity>> {
+  +id: string
+  +codigo: string
+  +tipo: TipoBem
+  +descricao: string
+  +categoria: string
+  +valor_aquisicao: decimal
+  +data_aquisicao: date
+  +valor_residual: decimal
+  +vida_util_anos: int
+  +valor_contabil: decimal
+  +status: StatusBem
+  +localizacao: string
+  +responsavel_id: string
+  +created_at: datetime
+  +updated_at: datetime
+  +created_by: string
+  +is_deleted: bool
+}
+
+class Depreciacao <<Entity>> {
+  +id: string
+  +bem_id: string
+  +data: date
+  +valor_depreciado: decimal
+  +valor_acumulado: decimal
+  +valor_liquido: decimal
+  +created_at: datetime
+  +created_by: string
+}
+
+class Transferencia <<Entity>> {
+  +id: string
+  +bem_id: string
+  +de_localizacao: string
+  +para_localizacao: string
+  +de_responsavel_id: string
+  +para_responsavel_id: string
+  +data_transferencia: date
+  +motivo: string
+  +status: StatusTransferencia
+  +created_at: datetime
+  +created_by: string
+}
+
+}
+
+package "Enumerações" {
+
+enum TipoBem {
+  MOVEL = 'movel'
+  IMOVEL = 'imovel'
+}
+
+enum StatusBem {
+  EM_USO = 'em_uso'
+  OCIOSO = 'ocioso'
+  EM_TRANSFERENCIA = 'em_transferencia'
+  BAIXADO = 'baixado'
+}
+
+enum StatusTransferencia {
+  PENDENTE = 'pendente'
+  CONCLUIDA = 'concluida'
+  CANCELADA = 'cancelada'
+}
+
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+Bem "1" *-- "0..*" Depreciacao : "bem_id"
+Bem "1" *-- "0..*" Transferencia : "bem_id"
+Bem --> TipoBem
+Bem --> StatusBem
+Transferencia --> StatusTransferencia
+
+note right of Bem
+Regras de negócio (4):
+
+- RN-PAT-001:
+  o tombo/código do bem é único no município.
+- RN-PAT-002:
+  a depreciação é calculada pelo método linear (custo − residual) / vida útil.
+- RN-PAT-003:
+  bens baixados não podem ser depreciados ou transferidos.
+- RN-PAT-010:
+  uma transferência registra a movimentação entre localizações e/ou responsáveis,
+end note
+
+note bottom of Bem
+Comportamentos (12):
+
+- Bem.validar
+- Bem.valor_depreciavel
+- Bem.depreciacao_anual
+- Bem.depreciar
+- Bem.transferir
+- Bem.confirmar_localizacao
+- Bem.baixar
+- Bem.excluir
+- Depreciacao.validar
+- Transferencia.validar
+- e mais 2
+end note
+
+@enduml

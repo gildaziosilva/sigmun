@@ -1,0 +1,111 @@
+@startuml
+title DOM-ORC — Visão Arquitetural
+
+legend
+SIGMUN
+DOM-ORC — Orçamento Público
+Planejamento, Dotação e Reserva de Saldo
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "Usuários e Canais" {
+  actor "Contabilidade e\nPlanejamento" as User
+  component "Portal Web\nSIGMUN" as Portal
+  component "Secretaria de\nPlanejamento" as SecPlan
+}
+
+package "DOM-ORC" {
+  component "API de Orçamento\n/api/v1/orc" as API
+  component "Planejamento\nMultianual" as Planejamento
+  component "Gestão de\nDotações" as Dotacoes
+  component "Reserva de\nSaldo" as Reservas
+}
+
+package "Domínios de Negócio" {
+  component "DOM-CON\nContabilidade Pública" as CON
+}
+
+package "Serviços Transversais SIGMUN" {
+  component "DOM-IDN\nIdentidade e Acesso" as IDN
+  component "DOM-GDO\nGestão Documental" as GDO
+  component "Auditoria" as AUD
+  component "Notificações" as NOT
+}
+
+database "PostgreSQL\nschema orc" as DB
+
+User --> Portal : executa rotina orçamentária
+User --> API : registra planejamento
+SecPlan --> API : elabora PPA, LDO e LOA
+Portal --> API : operações CRUD
+
+API --> Planejamento : PPA, LDO, LOA
+API --> Dotacoes : cria, suplementa, anula
+API --> Reservas : reserva, cancela
+
+Planejamento --> Dotacoes : LOA publicada \nautoriza dotações
+
+Dotacoes --> CON : saldo disponível
+CON --> Dotacoes : empenha e anula
+
+API --> IDN : autenticação /\nautorização
+API --> AUD : eventos de auditoria
+Planejamento --> AUD : publicação de leis
+Dotacoes --> AUD : alterações de valor
+Reservas --> AUD : bloqueios de saldo
+
+API --> GDO : anexos de \nleis orçamentárias
+API --> NOT : avisos de \nvencimento
+
+Planejamento --> DB
+Dotacoes --> DB
+Reservas --> DB
+
+note right of Planejamento
+O bloco de planejamento reproduz a
+cascata normativa brasileira:
+
+PPA → LDO → LOA
+
+- PPA: quadriênio (diretrizes)
+- LDO: exercício (metas fiscais)
+- LOA: exercício (autorização)
+
+Nenhum avanço ocorre sem o
+anterior estar vigente.
+end note
+
+note bottom of Dotacoes
+A Dotacao é o ponto de controle
+da execução: concentra saldo
+inicial, suplementado, anulado,
+reservado e empenhado.
+
+Qualquer alteração de valor é
+registrada em auditoria.
+end note
+
+note bottom of CON
+Integração crítica DOM-ORC → DOM-CON.
+
+O DOM-ORC detém a autorização; o
+DOM-CON detém o registro contábil.
+
+O saldo é alterado por empenho e
+restituído por anulação.
+end note
+
+note bottom of DB
+Persistência operacional do domínio.
+
+O schema orc é exclusivo do DOM-ORC.
+Referências a outros domínios são
+feitas por identificador.
+end note
+
+@enduml

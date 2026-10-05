@@ -1,0 +1,146 @@
+@startuml
+title DOM-OUV — Máquina de Estados da Manifestação
+
+hide empty description
+
+legend
+SIGMUN
+DOM-OUV — Ouvidoria Municipal
+Manifestações, Denúncias e LAI
+Classificação da Informação: Pública
+Responsável: Equipe SIGMUN
+Status da revisão: Vigente
+endlegend
+
+[*] --> Recebida : registro da manifestação
+
+Recebida --> EmTriagem : iniciar triagem
+Recebida --> Cancelada : cancelamento válido
+
+EmTriagem --> Classificada : classificação concluída
+EmTriagem --> AguardandoComplementacao : dados insuficientes
+
+AguardandoComplementacao --> EmTriagem : complementação recebida
+AguardandoComplementacao --> Encerrada : prazo de complementação expirado
+
+Classificada --> Encaminhada : necessita unidade responsável
+Classificada --> EmTratamento : tratamento pela ouvidoria
+
+Encaminhada --> EmTratamento : recebimento pela unidade
+Encaminhada --> Devolvida : encaminhamento inadequado
+
+Devolvida --> EmTriagem : reclassificação
+Devolvida --> Encaminhada : novo encaminhamento
+
+EmTratamento --> AguardandoInformacao : necessita informação adicional
+EmTratamento --> EmApuracao : necessita apuração
+EmTratamento --> Respondida : resposta preparada
+EmTratamento --> Encerrada : conclusão sem resposta externa
+
+AguardandoInformacao --> EmTratamento : informação recebida
+AguardandoInformacao --> Encerrada : prazo expirado
+
+EmApuracao --> EmTratamento : apuração concluída
+EmApuracao --> Encaminhada : novo encaminhamento
+
+Respondida --> AguardandoRecurso : resposta LAI com recurso possível
+Respondida --> Concluida : resposta final
+
+AguardandoRecurso --> EmRecurso : recurso apresentado
+AguardandoRecurso --> Concluida : prazo recursal encerrado
+
+EmRecurso --> Respondida : decisão do recurso
+EmRecurso --> Concluida : recurso concluído
+
+Concluida --> Avaliada : avaliação registrada
+Concluida --> [*]
+
+Avaliada --> [*]
+
+Encerrada --> [*]
+Cancelada --> [*]
+
+state Recebida
+state EmTriagem
+state AguardandoComplementacao
+state Classificada
+state Encaminhada
+state Devolvida
+state EmTratamento
+state AguardandoInformacao
+state EmApuracao
+state Respondida
+state AguardandoRecurso
+state EmRecurso
+state Concluida
+state Avaliada
+state Encerrada
+state Cancelada
+
+note right of Recebida
+Manifestação registrada
+e protocolo gerado.
+
+Neste estado ainda não há
+necessariamente classificação
+definitiva da matéria.
+end note
+
+note right of EmTriagem
+A triagem determina:
+
+- tipo
+- assunto
+- prioridade
+- órgão responsável
+- necessidade de sigilo
+- fluxo específico
+end note
+
+note right of EmTratamento
+Estado operacional principal.
+
+Pode envolver:
+- análise
+- encaminhamento
+- solicitação de informação
+- apuração
+- produção de resposta
+end note
+
+note right of EmApuracao
+Utilizado especialmente para
+denúncias ou matérias que
+necessitem investigação,
+verificação ou providência
+do órgão competente.
+end note
+
+note right of AguardandoRecurso
+Estado aplicável principalmente
+ao fluxo LAI.
+
+O recurso deve permanecer
+vinculado ao pedido original.
+end note
+
+note bottom of Concluida
+Conclusão significa que o
+tratamento administrativo
+da manifestação foi finalizado.
+
+A conclusão não implica que
+todo o conteúdo seja público.
+As regras de classificação
+continuam aplicáveis.
+end note
+
+note bottom of Cancelada
+Cancelamento somente deve ocorrer
+por motivo válido e auditável.
+
+O histórico da manifestação
+não deve ser fisicamente apagado.
+end note
+
+@enduml
