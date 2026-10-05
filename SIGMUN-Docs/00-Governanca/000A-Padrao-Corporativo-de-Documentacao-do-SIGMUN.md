@@ -143,6 +143,20 @@ Após o cabeçalho deverá constar a seguinte tabela:
 | Próxima Revisão | DD/MM/AAAA |
 | Aprovado por | Instância competente |
 
+### Regra de interpretação do campo `Status`
+
+O campo `Status` representa o **estado documental do artefato**. O status `Vigente`
+indica que o documento constitui a referência documental oficial atualmente válida
+para sua finalidade.
+
+O status documental **não constitui, por si só, evidência de implementação,
+homologação, operação ou prontidão para produção** do domínio, módulo, processo,
+API, funcionalidade ou solução descrita.
+
+A maturidade técnica, o estado de implementação, a correspondência entre domínio
+e módulo e a prontidão operacional deverão ser registrados por campos, matrizes
+ou artefatos próprios.
+
 ---
 
 # 7. Classificação da Informação
