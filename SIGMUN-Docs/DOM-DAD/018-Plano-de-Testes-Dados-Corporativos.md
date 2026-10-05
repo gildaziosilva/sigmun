@@ -1,6 +1,6 @@
-# 018 – Plano de Testes – Dados Corporativos
+# 018 – Plano-de-Testes – Dados Corporativos
 
-#### Plano de Testes – Dados Corporativos
+#### Plano-de-Testes – Dados Corporativos
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,7 +8,7 @@
 
 **Domínio:** Dados Corporativos
 
-**Versão:** 1.0
+**Versão:** 2.0
 
 **Status:** Vigente
 
@@ -23,41 +23,63 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Plano de Testes – Dados Corporativos** (`DOM-DAD`) tem como finalidade mapear e definir plano de testes do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Dados Corporativos** (`DOM-DAD`) avance.
+Este artefato detalha **o plano de testes** do domínio Dados Corporativos (`DOM-DAD`), com base na implementação material identificada em `src/modules/sigmun_dad` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Suítes por classe
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Dados Corporativos**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+| Arquivo | Classe | Testes |
+| --- | --- | --- |
+| `tests/unit/test_dad_use_cases.py` | TestCriarAtivoUseCase | 3 |
+| `tests/unit/test_dad_use_cases.py` | TestAtivarAtivoUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestDesativarAtivoUseCase | 1 |
+| `tests/unit/test_dad_use_cases.py` | TestArquivarAtivoUseCase | 1 |
+| `tests/unit/test_dad_use_cases.py` | TestBuscarAtivoUseCase | 3 |
+| `tests/unit/test_dad_use_cases.py` | TestCriarCatalogoUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestBuscarCatalogoUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestDeletarCatalogoUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestCriarLinhagemUseCase | 3 |
+| `tests/unit/test_dad_use_cases.py` | TestBuscarLinhagemUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestDeletarLinhagemUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestCriarPoliticaUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestBuscarPoliticaUseCase | 3 |
+| `tests/unit/test_dad_use_cases.py` | TestDeletarPoliticaUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestAvaliarQualidadeUseCase | 2 |
+| `tests/unit/test_dad_use_cases.py` | TestBuscarQualidadeUseCase | 3 |
+| `tests/unit/test_dad_use_cases.py` | TestDeletarQualidadeUseCase | 2 |
 
 ---
 
-# 3. Versionamento
+---
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
 
 ---
 
-**Documento:** 018-Plano-de-Testes-Dados-Corporativos.md
+**Documento:** 018-Dados-Corporativos-Plano-de-Testes.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

@@ -1,6 +1,6 @@
-# 010 – Especificações – Infraestrutura Tecnológica
+# 010 – Especificacoes – Infraestrutura Tecnológica
 
-#### Especificações – Infraestrutura Tecnológica
+#### Especificacoes – Infraestrutura Tecnológica
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Infraestrutura Tecnológica
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,58 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Especificações – Infraestrutura Tecnológica** (`DOM-INF`) tem como finalidade mapear e definir especificações do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Infraestrutura Tecnológica** (`DOM-INF`) avance.
+Este artefato descreve **as especificações** do domínio Infraestrutura Tecnológica (`DOM-INF`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Contratos previstos
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Infraestrutura Tecnológica**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+| Método | Caminho | Recurso | Corpo |
+| --- | --- | --- | --- |
+| PLANEJADO | `/api/v1/inf` | proposto | JSON (payload do domínio) |
 
 ---
 
-# 3. Versionamento
+# 3. Validações aplicadas
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Regra | Validação |
+| --- | --- |
+| RN-INF-001 | o recurso pertence a um ambiente e registra tipo e situação. |
+| RN-INF-002 | métrica coletada além do limite gera status de atenção ou crítico. |
+| RN-INF-003 | o incidente tem severidade, responsável, data de abertura e data de encerramento. |
+| RN-INF-004 | ativos de dados são referenciados no DOM-DAD por identificador. |
 
 ---
 
-**Documento:** 010-Especificacoes-Infraestrutura-Tecnologica.md
+---
 
-**Última atualização:** 2026-08-20
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 010-Infraestrutura-Tecnologica-Especificacoes.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

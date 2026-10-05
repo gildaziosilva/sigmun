@@ -283,7 +283,7 @@ Sugere-se registrar como primeiros ADRs do SIGMUN:
 
 ---
 
-**Documento:**000F-Registro-de-Decisoes-Arquiteturais(ADR-Arqhiteture-Decision-Records).md
+**Documento:**000F-Registro-de-Decisoes-Arquiteturais-ADRs.md
 **Última atualização:** 2026-08-03
 **Responsável:** Equipe SIGMUN
 **Status da revisão:** Vigente

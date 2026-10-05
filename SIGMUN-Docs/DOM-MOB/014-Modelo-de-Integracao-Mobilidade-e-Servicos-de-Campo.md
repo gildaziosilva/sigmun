@@ -1,6 +1,6 @@
-# 014 – Modelo de Integração – Mobilidade e Serviços de Campo
+# 014 – Modelo-de-Integracao – Mobilidade e Serviços de Campo
 
-#### Modelo de Integração – Mobilidade e Serviços de Campo
+#### Modelo-de-Integracao – Mobilidade e Serviços de Campo
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Mobilidade e Serviços de Campo
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,56 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Modelo de Integração – Mobilidade e Serviços de Campo** (`DOM-MOB`) tem como finalidade mapear e definir modelo de integração do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Mobilidade e Serviços de Campo** (`DOM-MOB`) avance.
+Este artefato descreve **o modelo de integração** do domínio Mobilidade e Serviços de Campo (`DOM-MOB`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Princípios
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Mobilidade e Serviços de Campo**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+* Sem chave estrangeira entre schemas de domínios.
+* Comunicação por contrato (API ou evento).
+* Contrato previsto em `/api/v1/mob`.
 
 ---
 
-# 3. Versionamento
+# 3. Integrações
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Domínio | Nome | Sentido | Finalidade |
+| --- | --- | --- | --- |
+| DOM-GEO | Geoinformação Municipal | Fornece | integração registrada no mapa de domínios |
+| DOM-TEL | Gestão Territorial | Consome | integração registrada no mapa de domínios |
 
 ---
 
-**Documento:** 014-Modelo-de-Integracao-Mobilidade-e-Servicos-de-Campo.md
+---
 
-**Última atualização:** 2026-08-20
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 014-Mobilidade-e-Servicos-de-Campo-Modelo-de-Integracao.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

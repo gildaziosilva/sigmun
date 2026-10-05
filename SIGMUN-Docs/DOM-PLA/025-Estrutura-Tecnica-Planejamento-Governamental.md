@@ -1,6 +1,6 @@
-# 025 – Estrutura Técnica – Planejamento Governamental
+# 025 – Estrutura-Tecnica – Planejamento Governamental
 
-#### Estrutura Técnica – Planejamento Governamental
+#### Estrutura-Tecnica – Planejamento Governamental
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Planejamento Governamental
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,59 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Estrutura Técnica – Planejamento Governamental** (`DOM-PLA`) tem como finalidade mapear e definir estrutura técnica do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Planejamento Governamental** (`DOM-PLA`) avance.
+Este artefato descreve **a estrutura técnica** do domínio Planejamento Governamental (`DOM-PLA`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Módulo `sigmun_planejamento`
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Planejamento Governamental**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+| Arquivo | Linhas |
+| --- | --- |
+| `src/modules/sigmun_planejamento/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/application/commands/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/application/queries/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/application/use_cases/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/domain/entities/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/domain/events/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/domain/services/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/domain/value_objects/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/infrastructure/database/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/infrastructure/integrations/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/infrastructure/repositories/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/presentation/api/__init__.py` | 1 |
+| `src/modules/sigmun_planejamento/presentation/schemas/__init__.py` | 1 |
 
 ---
 
-# 3. Versionamento
+---
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
 
 ---
 
-**Documento:** 025-Estrutura-Tecnica-Planejamento-Governamental.md
+**Documento:** 025-Planejamento-Governamental-Estrutura-Tecnica.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

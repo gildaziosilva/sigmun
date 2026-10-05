@@ -1,6 +1,6 @@
-# 008 – Requisitos Funcionais – Identidade e Acesso
+# 008 – Requisitos-Funcionais – Identidade e Acesso
 
-#### Requisitos Funcionais – Identidade e Acesso
+#### Requisitos-Funcionais – Identidade e Acesso
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,7 +8,7 @@
 
 **Domínio:** Identidade e Acesso
 
-**Versão:** 1.0
+**Versão:** 2.0
 
 **Status:** Vigente
 
@@ -23,41 +23,64 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Requisitos Funcionais – Identidade e Acesso** (`DOM-IDN`) tem como finalidade mapear e definir requisitos funcionais do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Identidade e Acesso** (`DOM-IDN`) avance.
+Este artefato detalha **os requisitos funcionais** do domínio Identidade e Acesso (`DOM-IDN`), com base na implementação material identificada em `src/modules/sigmun_idn` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Requisitos
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Identidade e Acesso**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+| ID | Requisito | Prioridade | Recurso | Capacidade |
+| --- | --- | --- | --- | --- |
+| RF-IDN-001 | POST /api/v1/idn/auth/login | Alta | auth | CAP-IDN-001 |
+| RF-IDN-002 | POST /api/v1/idn/auth/login/jwt | Alta | auth | CAP-IDN-001 |
+| RF-IDN-003 | POST /api/v1/idn/auth/logout | Alta | auth | CAP-IDN-001 |
+| RF-IDN-004 | POST /api/v1/idn/auth/logout/jwt | Alta | auth | CAP-IDN-001 |
+| RF-IDN-005 | GET /api/v1/idn/auth/me | Média | auth | CAP-IDN-001 |
+| RF-IDN-006 | POST /api/v1/idn/auth/refresh | Alta | auth | CAP-IDN-001 |
+| RF-IDN-007 | GET /api/v1/idn/usuarios | Média | usuarios | CAP-IDN-001 |
+| RF-IDN-008 | POST /api/v1/idn/usuarios | Alta | usuarios | CAP-IDN-001 |
+| RF-IDN-009 | GET /api/v1/idn/usuarios/{usuario_id} | Média | usuarios | CAP-IDN-001 |
+| RF-IDN-010 | POST /api/v1/idn/usuarios/{usuario_id}/ativar | Alta | usuarios | CAP-IDN-001 |
+| RF-IDN-011 | POST /api/v1/idn/usuarios/{usuario_id}/bloquear | Alta | usuarios | CAP-IDN-001 |
+| RF-IDN-012 | POST /api/v1/idn/usuarios/{usuario_id}/desativar | Alta | usuarios | CAP-IDN-001 |
 
 ---
 
-# 3. Versionamento
+# 3. Cobertura
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+Operações publicadas: **12**.
 
 ---
 
-**Documento:** 008-Requisitos-Funcionais-Identidade-e-Acesso.md
+---
 
-**Última atualização:** 2026-08-20
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 008-Identidade-e-Acesso-Requisitos-Funcionais.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

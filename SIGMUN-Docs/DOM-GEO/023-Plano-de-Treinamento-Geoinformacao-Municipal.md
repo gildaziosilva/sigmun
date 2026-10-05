@@ -20,7 +20,7 @@
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
 * `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
-* `000C-HIERARQUIA-DOCUMENTAL.md`
+* `000C-HIERARQUIA-DOCUMENTAL-v1.0.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
 * `030-Roadmap-de-Implementacao-dos-Dominios.md`
 * `Mapa-de-Dominios.md`

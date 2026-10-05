@@ -1,6 +1,6 @@
-# 002 – Mapa de Capacidades – Segurança da Informação
+# 002 – Mapa-de-Capacidades – Segurança da Informação
 
-#### Mapa de Capacidades – Segurança da Informação
+#### Mapa-de-Capacidades – Segurança da Informação
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,7 +8,7 @@
 
 **Domínio:** Segurança da Informação
 
-**Versão:** 1.0
+**Versão:** 2.0
 
 **Status:** Vigente
 
@@ -23,41 +23,61 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Mapa de Capacidades – Segurança da Informação** (`DOM-SEG`) tem como finalidade mapear e definir mapa de capacidades do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Segurança da Informação** (`DOM-SEG`) avance.
+Este artefato detalha **o mapa de capacidades** do domínio Segurança da Informação (`DOM-SEG`), com base na implementação material identificada em `src/modules/sigmun_seg` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Capacidades
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Segurança da Informação**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | Capacidade | Descrição | Processo |
+| --- | --- | --- | --- |
+| CAP-SEG-001 | Políticas de segurança | Versiona e publica políticas de segurança. | PRO-SEG-001 |
+| CAP-SEG-002 | Controles | Registra controles preventivos, detectivos e corretivos. | PRO-SEG-002 |
+| CAP-SEG-003 | Credenciais e chaves | Cadastra credencial e controla chave criptográfica. | PRO-SEG-003 |
+| CAP-SEG-004 | Incidentes | Registra, classifica e trata incidente por severidade. | PRO-SEG-004 |
 
 ---
 
-**Documento:** 002-Mapa-de-Capacidades-Seguranca-da-Informacao.md
+# 3. Processos por capacidade
 
-**Última atualização:** 2026-08-20
+| Processo | Descrição | Regras |
+| --- | --- | --- |
+| PRO-SEG-001 | Publicar política | Cria e publica política com vigência. | — |
+| PRO-SEG-002 | Avaliar controle | Registra controle e seu estado de vigência. | — |
+| PRO-SEG-003 | Gerir credencial | Cadastra, revoga e expira credencial e chave. | — |
+| PRO-SEG-004 | Tratar incidente | Classifica pela severidade e registra o tratamento. | — |
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 002-Seguranca-da-Informacao-Mapa-de-Capacidades.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

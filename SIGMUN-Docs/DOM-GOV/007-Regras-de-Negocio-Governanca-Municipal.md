@@ -1,6 +1,6 @@
-# 007 – Regras de Negócio – Governança Municipal
+# 007 – Regras-de-Negocio – Governança Municipal
 
-#### Regras de Negócio – Governança Municipal
+#### Regras-de-Negocio – Governança Municipal
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Governança Municipal
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,56 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Regras de Negócio – Governança Municipal** (`DOM-GOV`) tem como finalidade mapear e definir regras de negócio do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Governança Municipal** (`DOM-GOV`) avance.
+Este artefato descreve **as regras de negócio** do domínio Governança Municipal (`DOM-GOV`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Regras propostas
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Governança Municipal**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | Descrição | Fonte |
+| --- | --- | --- |
+| RN-GOV-001 | toda política declara escopo, responsável, vigência e situação. | modelo proposto |
+| RN-GOV-002 | todo risco tem dono, classificação de probabilidade e impacto. | modelo proposto |
+| RN-GOV-003 | o controle de conformidade registra a evidência e o resultado da verificação. | modelo proposto |
+| RN-GOV-004 | a deliberação vincula-se à política, risco ou controle e guarda histórico. | modelo proposto |
 
 ---
 
-**Documento:** 007-Regras-de-Negocio-Governanca-Municipal.md
+# 3. Cobertura
 
-**Última atualização:** 2026-08-20
+Regras referenciadas no código: **4**.
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 007-Governanca-Municipal-Regras-de-Negocio.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

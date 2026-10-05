@@ -1,6 +1,6 @@
-# 006 – Histórias de Usuário – Atendimento ao Cidadão
+# 006 – Historias-de-Usuario – Atendimento ao Cidadão
 
-#### Histórias de Usuário – Atendimento ao Cidadão
+#### Historias-de-Usuario – Atendimento ao Cidadão
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Atendimento ao Cidadão
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,49 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Histórias de Usuário – Atendimento ao Cidadão** (`DOM-ATE`) tem como finalidade mapear e definir histórias de usuário do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Atendimento ao Cidadão** (`DOM-ATE`) avance.
+Este artefato detalha **as histórias de usuário** do domínio Atendimento ao Cidadão (`DOM-ATE`), com base na implementação material identificada em `src/modules/sigmun_ate` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Histórias
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Atendimento ao Cidadão**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+| Identificador | História | Capacidade | Prioridade |
+| --- | --- | --- | --- |
+| HU-ATE-001 | Como cidadão, quero retirar senha e ser chamado no guichê. | CAP-ATE-002 | Alta |
+| HU-ATE-002 | Como atendente, quero ver a triagem antes de iniciar o atendimento. | CAP-ATE-001 | Alta |
+| HU-ATE-003 | Como cidadão, quero avaliar o atendimento recebido. | CAP-ATE-004 | Média |
 
 ---
 
-# 3. Versionamento
+---
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
 
 ---
 
-**Documento:** 006-Historias-de-Usuario-Atendimento-ao-Cidadao.md
+**Documento:** 006-Atendimento-ao-Cidadao-Historias-de-Usuario.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

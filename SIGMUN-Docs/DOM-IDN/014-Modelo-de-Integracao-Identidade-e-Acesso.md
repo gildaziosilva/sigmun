@@ -1,6 +1,6 @@
-# 014 – Modelo de Integração – Identidade e Acesso
+# 014 – Modelo-de-Integracao – Identidade e Acesso
 
-#### Modelo de Integração – Identidade e Acesso
+#### Modelo-de-Integracao – Identidade e Acesso
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,7 +8,7 @@
 
 **Domínio:** Identidade e Acesso
 
-**Versão:** 1.0
+**Versão:** 2.0
 
 **Status:** Vigente
 
@@ -23,41 +23,57 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Modelo de Integração – Identidade e Acesso** (`DOM-IDN`) tem como finalidade mapear e definir modelo de integração do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Identidade e Acesso** (`DOM-IDN`) avance.
+Este artefato detalha **o modelo de integração** do domínio Identidade e Acesso (`DOM-IDN`), com base na implementação material identificada em `src/modules/sigmun_idn` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Princípios
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Identidade e Acesso**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+* Sem chave estrangeira entre schemas de domínios.
+* Comunicação por contrato (API ou evento).
+* Contrato publicado em `/api/v1/idn`.
 
 ---
 
-# 3. Versionamento
+# 3. Integrações
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Domínio | Nome | Sentido | Finalidade |
+| --- | --- | --- | --- |
+| DOM-CUM | Cadastro Único Municipal | Fornece | Identificação da pessoa. |
+| DOM-SEG | Segurança da Informação | Consome | Política e controle de acesso. |
+| DOM-INT | Interoperabilidade | Fornece | Contrato de outbox. |
 
 ---
 
-**Documento:** 014-Modelo-de-Integracao-Identidade-e-Acesso.md
+---
 
-**Última atualização:** 2026-08-20
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 014-Identidade-e-Acesso-Modelo-de-Integracao.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

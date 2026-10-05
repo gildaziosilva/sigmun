@@ -972,7 +972,7 @@ A Arquitetura de Governança de Dados e Gestão da Informação estabelece os fu
 
 
 
-**Documento:**017-Arquitetura-de-Governanca-de-Governaca-de-Dados.md
+**Documento:** 017-Arquitetura-de-Governanca-de-Dados.md
 
 **Última atualização:** 2026-08-03
 

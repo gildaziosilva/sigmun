@@ -13,7 +13,7 @@
 **Documento(s) Relacionado(s):**
 
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
-* `Cadeia-de-Valor.md`
+* `Cadeia-de-Valor-v1.1.md`
 * `Mapa-de-Atores.md`
 * `Mapa-de-Capacidades.md`
 * `Mapa-de-Dominios.md`
@@ -22,7 +22,7 @@
 * `Mapa-de-Servicos.md`
 * `Modelo-de-Competencias.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
-* `000C-HIERARQUIA-DOCUMENTAL.md`
+* `000C-HIERARQUIA-DOCUMENTAL-v1.0.md`
 * `000-CATALOGO-CORPORATIVO-DO-CONHECIMENTO.md`
 * `005-Arquitetura-de-Negocio.md`
 * `006-Modelo-de-Governanca.md`

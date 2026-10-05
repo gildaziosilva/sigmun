@@ -1,6 +1,6 @@
-# 006 – Histórias de Usuário – Mobilidade e Serviços de Campo
+# 006 – Historias-de-Usuario – Mobilidade e Serviços de Campo
 
-#### Histórias de Usuário – Mobilidade e Serviços de Campo
+#### Historias-de-Usuario – Mobilidade e Serviços de Campo
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Mobilidade e Serviços de Campo
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,52 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Histórias de Usuário – Mobilidade e Serviços de Campo** (`DOM-MOB`) tem como finalidade mapear e definir histórias de usuário do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Mobilidade e Serviços de Campo** (`DOM-MOB`) avance.
+Este artefato descreve **as histórias de usuário** do domínio Mobilidade e Serviços de Campo (`DOM-MOB`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Histórias
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Mobilidade e Serviços de Campo**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | História | Capacidade | Prioridade |
+| --- | --- | --- | --- |
+| HU-MOB-001 | Como usuário, quero dispositivos móveis para atender a necessidade do domínio. | CAP-MOB-001 | Alta |
+| HU-MOB-002 | Como usuário, quero aplicativos de campo para atender a necessidade do domínio. | CAP-MOB-002 | Alta |
+| HU-MOB-003 | Como usuário, quero ordens de serviço para atender a necessidade do domínio. | CAP-MOB-003 | Alta |
+| HU-MOB-004 | Como usuário, quero captura de evidências para atender a necessidade do domínio. | CAP-MOB-004 | Média |
+| HU-MOB-005 | Como usuário, quero geolocalização para atender a necessidade do domínio. | CAP-MOB-005 | Média |
+| HU-MOB-006 | Como usuário, quero sincronização e operação offline para atender a necessidade do domínio. | CAP-MOB-006 | Média |
 
 ---
 
-**Documento:** 006-Historias-de-Usuario-Mobilidade-e-Servicos-de-Campo.md
+---
 
-**Última atualização:** 2026-08-20
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 006-Mobilidade-e-Servicos-de-Campo-Historias-de-Usuario.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

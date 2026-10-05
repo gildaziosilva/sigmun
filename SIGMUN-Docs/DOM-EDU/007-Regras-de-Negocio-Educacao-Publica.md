@@ -1,6 +1,6 @@
-# 007 – Regras de Negócio – Educação Pública
+# 007 – Regras-de-Negocio – Educação Pública
 
-#### Regras de Negócio – Educação Pública
+#### Regras-de-Negocio – Educação Pública
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Educação Pública
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,59 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Regras de Negócio – Educação Pública** (`DOM-EDU`) tem como finalidade mapear e definir regras de negócio do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Educação Pública** (`DOM-EDU`) avance.
+Este artefato detalha **as regras de negócio** do domínio Educação Pública (`DOM-EDU`), com base na implementação material identificada em `src/modules/sigmun_educacao` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Regras implementadas
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Educação Pública**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | Descrição | Fonte |
+| --- | --- | --- |
+| RN-EDU-001 | o CPF do aluno, quando informado, tem 11 dígitos e é único | `src/modules/sigmun_educacao` |
+| RN-EDU-002 | a transferência exige matrícula concluída na origem. | `src/modules/sigmun_educacao` |
+| RN-EDU-003 | o lançamento no diário referencia a matrícula ativa. | `src/modules/sigmun_educacao` |
+| RN-EDU-010 | o aluno possui no máximo UMA matrícula ``ativa`` por vez; | `src/modules/sigmun_educacao` |
+| RN-EDU-020 | o lançamento exige matrícula ativa vinculada; a nota, quando | `src/modules/sigmun_educacao` |
+| RN-EDU-030 | passagem exige rota ``ativa``, matrícula ativa e vaga | `src/modules/sigmun_educacao` |
+| RN-EDU-040 | distribuição exige estoque suficiente; a baixa é atômica no | `src/modules/sigmun_educacao` |
 
 ---
 
-**Documento:** 007-Regras-de-Negocio-Educacao-Publica.md
+# 3. Cobertura
 
-**Última atualização:** 2026-08-20
+Regras referenciadas no código: **7**.
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 007-Educacao-Publica-Regras-de-Negocio.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

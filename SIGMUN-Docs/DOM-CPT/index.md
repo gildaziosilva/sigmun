@@ -1,4 +1,8 @@
-# DOM-CPT — Gestão de Competências
+# DOM-CPT — Gestão de Competências (RH — não confundir com Compras/CPT)
+
+> **Desambiguação:** este domínio trata de **Gestão de Competências** (pessoas/capacidades organizacionais).
+> **Não confundir** com Compras e Contratações, cuja identidade vigente é **DOM-COM**
+> (diretório físico `DOM-COMPRAS-001/`, conforme ADR-0006).
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 **Domínio:** DOM-CPT

@@ -15,7 +15,7 @@
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
 * `000-CATALOGO-CORPORATIVO-DO-CONHECIMENTO.md`
-* `Cadeia-de-Valor.md`
+* `Cadeia-de-Valor-v1.1.md`
 * `Mapa-de-Atores.md`
 * `Mapa-de-Capacidades.md`
 * `Mapa-de-Dominios.md`

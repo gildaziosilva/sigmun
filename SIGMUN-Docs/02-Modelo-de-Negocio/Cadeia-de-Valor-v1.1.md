@@ -17,7 +17,7 @@
 * 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md
 * 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md
 * 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md
-* 000C-HIERARQUIA-DOCUMENTAL.md
+* 000C-HIERARQUIA-DOCUMENTAL-v1.0.md
 * 000D-MODELO-DE-DOCUMENTO.md
 * 000E-GUIA-DE-CONTRIBUICAO.md
 * 000F-REGISTRO-DE-DECISOES-ARQUITETURAIS.md
@@ -26,7 +26,7 @@
 * 002-Visao-do-Projeto.md
 * 003-Objetivos-Estrategicos.md
 * 004-Modelo-de-Governanca.md
-* Cadeia-de-Valor.md
+* Cadeia-de-Valor-v1.1.md
 * Mapa-de-Atores.md
 * Mapa-de-Capacidades.md
 * Mapa-de-Dominios.md
@@ -1720,7 +1720,7 @@ O princípio fundamental permanece:
 
 ---
 
-**Documento:** Cadeia-de-Valor.md
+**Documento:** Cadeia-de-Valor-v1.1.md
 
 **Última atualização:** 2026-08-11
 

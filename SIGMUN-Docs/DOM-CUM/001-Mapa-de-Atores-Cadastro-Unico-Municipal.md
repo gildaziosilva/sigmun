@@ -1,6 +1,6 @@
-# 001 – Mapa de Atores – Cadastro Único Municipal
+# 001 – Mapa-de-Atores – Cadastro Único Municipal
 
-#### Mapa de Atores – Cadastro Único Municipal
+#### Mapa-de-Atores – Cadastro Único Municipal
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,32 +8,9 @@
 
 **Domínio:** Cadastro Único Municipal
 
-**Versão:** 1.0
+**Versão:** 2.0
 
 **Status:** Vigente
-
-**Entidades Implementadas:**
-- `Pessoa` - Agregado familiar com atributos: CPF/CNPJ, nome, tipo (Física/Jurídica), data de nascimento, endereço principal
-- `UnidadeAdministrativa` - Estrutura administrativa (cidade, bairro, rua, CEP) relacionada ao cadastro
-- `DadosFisicos` - Endereço, telefone, contato de emergência (para pessoa física)
-- `DadosJuridicos` - Razão social, inscrição estadual, atividade econômica (para pessoa jurídica)
-
-**Casos de Uso Principais (15 total):**
-1. Cadastro de pessoa física (RN-CUM-001 a 003: CPF/CNPJ unicidade, endereço principal)
-2. Cadastro de pessoa jurídica (RN-CUM-004 a 007: CNPJ unicidade, atividade econômica)
-3. Inclusão de endereço ao agregado (RN-CUM-005: endereço principal/alternativo)
-4. Inclusão de documento (RN-CUM-002/003: validação CPF/CNPJ; RN-CUM-006: contato)
-5. Inclusão de contato (telefone, e-mail, redes sociais) (RN-CUM-006)
-6. Consultas e listagens de pessoas cadastradas
-7. Atualização de dados cadastrais
-8. Exclusão lógica de pessoas e documentos
-9. Consulta de unidade administrativa associated a pessoa
-10. Agrupamento familiar (vínculo entre pessoas Físicas e Jurídicas)
-11. Consulta por CPF/CNPJ (validade e status)
-12. Registro de histórico de alterações
-13. Integração com DOM-IDN para autenticação e autorização
-14. Integração com DOM-DAD para metadados e qualidade da informação
-15. Geração de relatórios e indicadores cadastrais
 
 **Classificação da Informação:** Pública
 
@@ -46,41 +23,73 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Mapa de Atores – Cadastro Único Municipal** (`DOM-CUM`) tem como finalidade mapear e definir identificação dos atores do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Cadastro Único Municipal** (`DOM-CUM`) avance.
+Este artefato detalha **o mapa de atores** do domínio Cadastro Único Municipal (`DOM-CUM`), com base na implementação material identificada em `src/modules/sigmun_cadastro` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Atores do domínio
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Cadastro Único Municipal**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | Ator | Classificação | Papel | Responsabilidade |
+| --- | --- | --- | --- | --- |
+| AT-CUM-001 | Operador de Cadastro | Interno | Servidor público | Cadastra e mantém pessoas, endereços, documentos e contatos. |
+| AT-CUM-002 | Gestor de Unidade | Interno | Gestor municipal | Mantém o cadastro das unidades administrativas sob sua responsabilidade. |
+| AT-CUM-003 | Titular do Cadastro | Externo | Cidadão ou pessoa jurídica | Fornece e corrige seus próprios dados em atendimento. |
+| AT-CUM-004 | Administrador do SIGMUN | Interno | Administrador de plataforma | Administra parâmetros de auditoria e operação do cadastro. |
+| AT-CUM-005 | DOM-IDN | Serviço | Identidade e Acesso | Autentica o operador e resolve a identidade digital da pessoa. |
+| AT-CUM-006 | Domínios consumidores | Externo | Domínios do SIGMUN | Consomem o cadastro como fonte oficial de pessoa e unidade. |
 
 ---
 
-**Documento:** 001-Mapa-de-Atores-Cadastro-Unico-Municipal.md
+# 3. Matriz ator × capacidade
 
-**Última atualização:** 2026-08-20
+| Ator | Capacidades |
+| --- | --- |
+| AT-CUM-001 | CAP-CUM-001, CAP-CUM-002, CAP-CUM-003, CAP-CUM-004, CAP-CUM-005, CAP-CUM-006, CAP-CUM-007 |
+| AT-CUM-002 |  |
+| AT-CUM-003 |  |
+| AT-CUM-004 |  |
+| AT-CUM-005 |  |
+| AT-CUM-006 |  |
+
+---
+
+# 4. Lacunas a validar
+
+* Autenticação: resolvido no ADR-0007 (JWT do DOM-IDN obrigatório nas escritas).
+* Revisão periódica: definida no ADR-0007 (12 meses, tarefa mensal, indicador).
+* Compartilhamento: contrato formal definido no ADR-0007 (fonte oficial, id opaco).
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 001-Cadastro-Unico-Municipal-Mapa-de-Atores.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
 **Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

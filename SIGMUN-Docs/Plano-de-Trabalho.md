@@ -808,7 +808,7 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | — | 000C-HIERARQUIA-DOCUMENTAL-v1.0 | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+18) |
 | — | 000D-MODELO-DE-DOCUMENTO | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | 000E-GUIA-DE-CONTRIBUICAO | 00-Governanca | ✅ | A informar | Não declaradas |
-| — | 000F-Registro-de-Decisoes-Arquiteturais(ADR-Arqhiteture-Decision-Records) | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
+| — | 000F-Registro-de-Decisoes-Arquiteturais-ADRs | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | 000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | 000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE | 00-Governanca | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+23) |
 | 0001 | 0001-adopt-apache-2.0-license | 00-Governanca/ADR | 🟡 | A informar | Não declaradas |
@@ -837,8 +837,8 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 014 | 014-Arquitetura-de-Notificacoes-e-Comunicacao | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 015 | 015-Arquitetura-de-Dispositivos-Moveis-e-Servicos-de-Campo | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 016 | 016-Arquitetura-de-Observabilidade-e-Operacoes-DevSecOps | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
-| 017 | 017-Arquitetura-de-Governaca-de-Dados | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
-| 018 | 018-Arquitetura-de-BI-Analytcs-e-Inteligencia-Artificial | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
+| 017 | 017-Arquitetura-de-Governanca-de-Dados | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
+| 018 | 018-Arquitetura-de-BI-Analytics-e-Inteligencia-Artificial | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 019 | 019-Arquitetura-de-Gestao-de-Configuracao-e-versionamento | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 020 | 020-Arquitetura-de-Gestao-do-Ciclo-de-Vida | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | 021 | 021-Arquitetura-de-Continuidade-e-Evolucao-Tecnologica | 01-Arquitetura-Corporativa | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
@@ -855,16 +855,16 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | — | Cadeia-de-Valor-v1.0 | 02-Modelo-de-Negocio | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md |
 | — | Cadeia-de-Valor-v1.1 | 02-Modelo-de-Negocio | ✅ | 1.1 – Revisada | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+31) |
 | — | Glossario-de-Negocio | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`; `000-CATALOGO-CORPORATIVO-DO-CONHECIMENTO.md` (+10) |
-| — | Mapa-de-Atores | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor.md`; `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade.md` (+2) |
-| — | Mapa-de-Capacidades | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor.md`; `Mapa-de-Atores.md` (+3) |
-| — | Mapa-de-Dominios | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor.md`; `Mapa-de-Atores.md` (+6) |
-| — | Mapa-de-Processos | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor.md`; `Mapa-de-Atores.md` (+6) |
-| — | Mapa-de-Secretarias | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor.md`; `Mapa-de-Atores.md` (+6) |
-| — | Mapa-de-Servicos | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor.md`; `Mapa-de-Atores.md` (+9) |
-| — | Modelo-de-Competencias | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor.md`; `Mapa-de-Atores.md` (+10) |
-| — | Modelo-de-Governanca-Administrativa | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor.md`; `Mapa-de-Atores.md` (+21) |
-| — | Casos-de-Uso | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; Cadeia-de-Valor.md; Mapa-de-Atores.md (+11) |
-| — | Criterios-de-Aceitacao | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000G-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md; Cadeia-de-Valor.md (+11) |
+| — | Mapa-de-Atores | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor-v1.1.md`; `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade.md` (+2) |
+| — | Mapa-de-Capacidades | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor-v1.1.md`; `Mapa-de-Atores.md` (+3) |
+| — | Mapa-de-Dominios | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor-v1.1.md`; `Mapa-de-Atores.md` (+6) |
+| — | Mapa-de-Processos | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor-v1.1.md`; `Mapa-de-Atores.md` (+6) |
+| — | Mapa-de-Secretarias | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor-v1.1.md`; `Mapa-de-Atores.md` (+6) |
+| — | Mapa-de-Servicos | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor-v1.1.md`; `Mapa-de-Atores.md` (+9) |
+| — | Modelo-de-Competencias | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor-v1.1.md`; `Mapa-de-Atores.md` (+10) |
+| — | Modelo-de-Governanca-Administrativa | 02-Modelo-de-Negocio | ✅ | 1.0 | `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`; `Cadeia-de-Valor-v1.1.md`; `Mapa-de-Atores.md` (+21) |
+| — | Casos-de-Uso | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; Cadeia-de-Valor-v1.1.md; Mapa-de-Atores.md (+11) |
+| — | Criterios-de-Aceitacao | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000G-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md; Cadeia-de-Valor-v1.1.md (+11) |
 | — | Especificacoes-v1.0 | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+12) |
 | — | Historias-de-Usuario-v1.0 | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+17) |
 | — | Matriz-de-Rastreabilidade-v1 | 03-Requisitos | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+15) |
@@ -1059,14 +1059,14 @@ Esta seção registra todos os documentos Markdown existentes em `SIGMUN-Docs`, 
 | 016 | 016-Modelo-de-Seguranca-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+20) |
 | 017 | 017-Modelo-de-Auditoria-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+23) |
 | 018 | 018-Plano-de-Testes-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+25) |
-| 019 | 019-Casos-de-Teste-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md (+20) |
-| 020 | 020-Plano-de-Implantacao-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md (+21) |
-| 021 | 021-Checklist-de-Prontidao-para-Producao-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md (+22) |
-| 022 | 022-Plano-de-Migracao-de-Dados-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md (+23) |
-| 023 | 023-Plano-de-Treinamento-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md (+24) |
-| 024 | 024-Plano-de-Suporte-e-Operacao-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md (+25) |
+| 019 | 019-Casos-de-Teste-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL-v1.0.md (+20) |
+| 020 | 020-Plano-de-Implantacao-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL-v1.0.md (+21) |
+| 021 | 021-Checklist-de-Prontidao-para-Producao-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL-v1.0.md (+22) |
+| 022 | 022-Plano-de-Migracao-de-Dados-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL-v1.0.md (+23) |
+| 023 | 023-Plano-de-Treinamento-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL-v1.0.md (+24) |
+| 024 | 024-Plano-de-Suporte-e-Operacao-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL-v1.0.md (+25) |
 | 025 | 025-Estrutura-Tecnica-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000A-PADRAO-CORPORATIVO-DE-DOCUMENTACAO-DO-SIGMUN.md; 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md (+27) |
-| 026 | 026-Modelo-de-Dominio-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL.md; 000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md (+18) |
+| 026 | 026-Modelo-de-Dominio-Gestao-de-Compras-e-Contratacoes | DOM-COMPRAS-001 | ✅ | 1.0 | 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md; 000C-HIERARQUIA-DOCUMENTAL-v1.0.md; 000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md (+18) |
 | 2026 | 2026-08-29-checklist-prontidao-compras | DOM-COMPRAS-001/evidencias | 🟡 | 0.1.0 (`pyproject.toml`, `src/main.py`) | Não declaradas |
 | 2026 | 2026-08-29-reexecucao-checklist-prontidao | DOM-COMPRAS-001/evidencias | ✅ | 0.1.0 | Não declaradas |
 | 2026 | 2026-08-29-resolucao-pendencias-P001-P010 | DOM-COMPRAS-001/evidencias | ✅ | 0.1.0 | Não declaradas |

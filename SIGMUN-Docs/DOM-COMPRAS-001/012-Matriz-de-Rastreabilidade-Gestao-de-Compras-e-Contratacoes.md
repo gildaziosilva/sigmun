@@ -403,7 +403,7 @@ e deverá permanecer alinhado ao documento corporativo:
 Documentos Corporativos
 00-Governanca/000A–Padrao-Corporativo-de-Documentacao-do-SIGMUN.md
 00-Governanca/000C-HIERARQUIA-DOCUMENTAL-v1.0.md
-00-Governanca/000F-Registro-de-Decisoes-Arquiteturais(ADR-Arqhiteture-Decision-Records).md
+00-Governanca/000F-Registro-de-Decisoes-Arquiteturais-ADRs.md
 00-Governanca/000G–Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md
 00-Governanca/000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md
 Documentos Corporativos de Negócio e Requisitos

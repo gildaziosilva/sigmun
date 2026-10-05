@@ -27,6 +27,11 @@
 
 ## Como interpretar
 
+> **Atualização 2026-10-02 (P2):** o parágrafo abaixo refere-se à verificação de 17/09/2026
+> (28 dirs, 14 `include_router`). Em 02/10/2026: **34** `sigmun_*` em `src/modules/` e **27**
+> `include_router` em `src/main.py`; índices criados para `sigmun_con`, `sigmun_dia`, `sigmun_orc`.
+> A matriz 031 v1.2 permanece a referência até republicação v1.3.
+
 Este catálogo cobre os 28 diretórios técnicos existentes. São 9 módulos com implementação identificada e 19 preparados. A correspondência é um eixo independente: 8 confirmadas no escopo observado, 9 candidatas e 12 não determinadas. Nenhum código MOD proposto é apresentado como aprovado.
 
 Índices usam o nome técnico `sigmun_*`, sem mover código ou documentos de domínio. O diretório `modelo` é um template, não um 29º módulo.
@@ -37,6 +42,7 @@ Este catálogo cobre os 28 diretórios técnicos existentes. São 9 módulos com
 | [sigmun_agricultura](sigmun_agricultura/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_almoxarifado](sigmun_almoxarifado/index.md) | Não determinado | Não definido | Preparado | Não determinada |
 | [sigmun_assistencia_social](sigmun_assistencia_social/index.md) | [DOM-ASS](../DOM-ASS/index.md) | `MOD-ASS` | Implementação identificada | Candidata; validar escopo |
+| [sigmun_ate](sigmun_ate/index.md) | [DOM-ATE](../DOM-ATE/index.md) | `MOD-ATE` | Implementação identificada | Confirmada no escopo observado |
 | [sigmun_cadastro](sigmun_cadastro/index.md) | [DOM-CUM](../DOM-CUM/index.md) | `MOD-CUM` | Implementação identificada | Confirmada no escopo observado |
 | [sigmun_cadastro_imobiliario](sigmun_cadastro_imobiliario/index.md) | [DOM-IMO](../DOM-IMO/index.md) | `MOD-IMO` | Implementação identificada | Candidata; validar escopo |
 | [sigmun_compras](sigmun_compras/index.md) | [DOM-COM](../DOM-COMPRAS-001/index.md) | `MOD-COMPRAS` | Implementação identificada | Confirmada no escopo observado |

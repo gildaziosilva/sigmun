@@ -1,6 +1,6 @@
-# 005 – Casos de Uso – Meio Ambiente
+# 005 – Casos-de-Uso – Meio Ambiente
 
-#### Casos de Uso – Meio Ambiente
+#### Casos-de-Uso – Meio Ambiente
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Meio Ambiente
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,58 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Casos de Uso – Meio Ambiente** (`DOM-MAM`) tem como finalidade mapear e definir casos de uso do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Meio Ambiente** (`DOM-MAM`) avance.
+Este artefato descreve **os casos de uso** do domínio Meio Ambiente (`DOM-MAM`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Casos de uso propostos
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Meio Ambiente**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | Caso de uso | Classe | Resumo |
+| --- | --- | --- | --- |
+| CU-MAM-001 | LicenciamentoAmbiental | `LicenciamentoAmbiental` | Licenciamento Ambiental |
+| CU-MAM-002 | Fiscalização | `Fiscalização` | Fiscalização |
+| CU-MAM-003 | ResíduosSólidos | `ResíduosSólidos` | Resíduos Sólidos |
+| CU-MAM-004 | RecursosNaturais | `RecursosNaturais` | Recursos Naturais |
+| CU-MAM-005 | ÁreasProtegidas | `ÁreasProtegidas` | Áreas Protegidas |
+| CU-MAM-006 | MonitoramentoAmbiental | `MonitoramentoAmbiental` | Monitoramento Ambiental |
 
 ---
 
-**Documento:** 005-Casos-de-Uso-Meio-Ambiente.md
+# 3. Cobertura
 
-**Última atualização:** 2026-08-20
+Casos de uso previstos: **6**. Operações previstas: **1**.
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 005-Meio-Ambiente-Casos-de-Uso.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

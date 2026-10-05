@@ -1,6 +1,6 @@
-# 021 – Checklist de Prontidão para Produção – Analytics e Inteligência
+# 021 – Checklist-de-Prontidao-para-Producao – Analytics e Inteligência
 
-#### Checklist de Prontidão para Produção – Analytics e Inteligência
+#### Checklist-de-Prontidao-para-Producao – Analytics e Inteligência
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Analytics e Inteligência
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,54 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Checklist de Prontidão para Produção – Analytics e Inteligência** (`DOM-ANA`) tem como finalidade mapear e definir checklist de prontidão para produção do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Analytics e Inteligência** (`DOM-ANA`) avance.
+Este artefato descreve **o checklist de prontidão** do domínio Analytics e Inteligência (`DOM-ANA`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Itens
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Analytics e Inteligência**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Item | Situação | Evidência |
+| --- | --- | --- |
+| Esquema de persistência | PROPOSTO | 4 tabelas previstas |
+| API publicada | PROPOSTA | Contrato previsto em `/api/v1/ana` |
+| Regras propostas | NÃO APLICÁVEL | 4 regras propostas |
+| Suíte de testes | NÃO APLICÁVEL | Testes serão definidos na implementação |
+| Autenticação das escritas | OK | JWT do DOM-IDN obrigatório (ADR-0007) |
+| Compatibilidade legada | EM TRANSIÇÃO | Header X-Usuario-Id aceito e depreciado |
+| Revisão periódica | OK | Política de 12 meses definida no ADR-0007 |
+| Compartilhamento de pessoa | OK | Contrato formal no ADR-0007 |
 
 ---
 
-**Documento:** 021-Checklist-de-Prontidao-para-Producao-Analytics-e-Inteligencia.md
+---
 
-**Última atualização:** 2026-08-20
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 021-Analytics-e-Inteligencia-Checklist-de-Prontidao-para-Producao.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

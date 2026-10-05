@@ -1,6 +1,6 @@
-# 002 – Mapa de Capacidades – Desenvolvimento Econômico
+# 002 – Mapa-de-Capacidades – Desenvolvimento Econômico
 
-#### Mapa de Capacidades – Desenvolvimento Econômico
+#### Mapa-de-Capacidades – Desenvolvimento Econômico
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Desenvolvimento Econômico
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,66 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Mapa de Capacidades – Desenvolvimento Econômico** (`DOM-DEC`) tem como finalidade mapear e definir mapa de capacidades do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Desenvolvimento Econômico** (`DOM-DEC`) avance.
+Este artefato descreve **o mapa de capacidades** do domínio Desenvolvimento Econômico (`DOM-DEC`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Capacidades
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Desenvolvimento Econômico**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | Capacidade | Descrição | Processo |
+| --- | --- | --- | --- |
+| CAP-DEC-001 | Programas de Desenvolvimento | Capacidade proposta; descrição detalhada a validar na implementação do domínio. | — |
+| CAP-DEC-002 | Empreendimentos | Capacidade proposta; descrição detalhada a validar na implementação do domínio. | — |
+| CAP-DEC-003 | Projetos de Investimento | Capacidade proposta; descrição detalhada a validar na implementação do domínio. | — |
+| CAP-DEC-004 | Emprego e Renda | Capacidade proposta; descrição detalhada a validar na implementação do domínio. | — |
+| CAP-DEC-005 | Economia Local | Capacidade proposta; descrição detalhada a validar na implementação do domínio. | — |
 
 ---
 
-**Documento:** 002-Mapa-de-Capacidades-Desenvolvimento-Economico.md
+# 3. Processos por capacidade
 
-**Última atualização:** 2026-08-20
+| Processo | Descrição | Regras |
+| --- | --- | --- |
+| PRO-DEC-001 | Propor o programa de desenvolvimento | Processo proposto; descrição detalhada a validar na implementação do domínio. | — |
+| PRO-DEC-002 | Aprovar e publicar o programa | Processo proposto; descrição detalhada a validar na implementação do domínio. | — |
+| PRO-DEC-003 | Cadastrar o empreendimento | Processo proposto; descrição detalhada a validar na implementação do domínio. | — |
+| PRO-DEC-004 | Avaliar a adesão ao programa | Processo proposto; descrição detalhada a validar na implementação do domínio. | — |
+| PRO-DEC-005 | Registrar o projeto de investimento | Processo proposto; descrição detalhada a validar na implementação do domínio. | — |
+| PRO-DEC-006 | Acompanhar investimento e empregos | Processo proposto; descrição detalhada a validar na implementação do domínio. | — |
+| PRO-DEC-007 | Aferir os resultados | Processo proposto; descrição detalhada a validar na implementação do domínio. | — |
+| PRO-DEC-008 | Encerrar ou renovar o programa | Processo proposto; descrição detalhada a validar na implementação do domínio. | — |
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 002-Desenvolvimento-Economico-Mapa-de-Capacidades.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

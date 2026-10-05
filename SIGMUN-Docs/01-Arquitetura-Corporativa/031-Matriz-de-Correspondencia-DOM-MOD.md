@@ -4,9 +4,9 @@
 **Classificação da Informação:** Pública
 **Documento:** Matriz de Correspondência entre Domínios e Módulos
 **Código:** 031
-**Versão:** 1.2
+**Versão:** 1.3
 **Status:** Revisão
-**Última atualização:** 2026-09-17
+**Última atualização:** 2026-10-02
 **Responsável:** Equipe SIGMUN
 **Domínio:** Arquitetura Corporativa
 **Documento(s) Relacionado(s):**
@@ -21,11 +21,11 @@
 | Projeto | SIGMUN |
 | Proprietário | Arquitetura Corporativa |
 | Responsável | Equipe SIGMUN |
-| Versão | 1.2 |
+| Versão | 1.3 |
 | Status | Revisão |
 | Classificação | Pública |
 | Data de Criação | 16/09/2026 |
-| Última Revisão | 17/09/2026 |
+| Última Revisão | 02/10/2026 |
 | Próxima Revisão | Na próxima alteração DOM ↔ módulo ou validação desta revisão |
 | Aprovado por | Canonicalização autorizada no ADR-0006; aprovação integral da matriz não registrada |
 
@@ -73,10 +73,17 @@ Dependência pressupõe utilização demonstrável de uma interface, serviço, c
 
 ## 4. Evidências e limites da verificação
 
-Inspeção estática em **17/09/2026**, sobre a base Git `51c82dc`, com as alterações documentais desta revisão ainda não commitadas:
+Inspeção estática em **17/09/2026**, sobre a base Git `51c82dc`, com as alterações documentais desta revisão ainda não commitadas (revisão 1.2):
 
 - [Registro da aplicação](../../src/main.py): 14 chamadas `include_router`, provenientes de 8 módulos.
 - [Módulos de aplicação](../../src/modules/): 28 diretórios `sigmun_*`.
+
+**Atualização 02/10/2026 (revisão 1.3, P2/F11):** `src/main.py` contém **27** chamadas
+`include_router` (incl. coleções `_orc/_pes/_tri/_pat/_fro` e routers `dia/con`) e
+`src/modules/` contém **34** diretórios `sigmun_*` (novos: `sigmun_con`, `sigmun_dia`,
+`sigmun_orc` — índices criados em `05-Modulos/`; correspondências DOM-CON/DOM-DIA/DOM-ORC
+a validar, sem presunção de cobertura). Os totais das §§ 6 e 15 abaixo referem-se à
+base 17/09/2026 e serão republicados após revalidação completa das fronteiras.
 - [Migrações](../../alembic/versions/): arquivos de persistência correspondentes aos módulos com código.
 - [Testes unitários](../../tests/unit/) e [testes de integração](../../tests/integration/): artefatos disponíveis; presença não equivale a execução ou aprovação.
 - [Mapa de domínios](../02-Modelo-de-Negocio/Mapa-de-Dominios.md) e documentos dos domínios: referência de negócio, com ressalvas de nomenclatura registradas abaixo.
@@ -279,3 +286,4 @@ Confirmados por inspeção: 28 estruturas modulares, 8 com implementação ident
 | 1.0 | 2026-09-16 | Criação da matriz formal DOM ↔ MOD com base na análise do repositório | Equipe SIGMUN |
 | 1.1 | 2026-09-17 | Correção Markdown; eixos independentes; evidências locais; revisão de dependências inferidas; divergências de nomenclatura e regras de indexação. Em revisão, sem aprovação presumida | Equipe SIGMUN |
 | 1.2 | 2026-09-17 | Aplicação do ADR-0006: DOM-COM vigente; histórico e localização física preservados; demais pendências mantidas | Gildazio, por autorização do solicitante |
+| 1.3 | 2026-10-02 | P2/F11: recontagem (27 routers, 34 módulos; novos sigmun_con/dia/orc com índices); P2/F5b: renames 000F/017/018 com shims; P2/F4: 10 DOMs propostos reescritos como "sem implementação registrada"; nota de convenção de Status | Equipe SIGMUN (auditoria documental) |

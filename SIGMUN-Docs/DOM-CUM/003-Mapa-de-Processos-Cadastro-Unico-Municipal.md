@@ -1,6 +1,6 @@
-# 003 – Mapa de Processos – Cadastro Único Municipal
+# 003 – Mapa-de-Processos – Cadastro Único Municipal
 
-#### Mapa de Processos – Cadastro Único Municipal
+#### Mapa-de-Processos – Cadastro Único Municipal
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,35 +8,9 @@
 
 **Domínio:** Cadastro Único Municipal
 
-**Versão:** 1.0
+**Versão:** 2.0
 
 **Status:** Vigente
-
-**Mapa de Processos Implementados:**
-Os 11 processos mapeados refletem as operações críticas do Cadastro Único:
-
-1. **Cadastro Inicial** (RN-CUM-001): Recebimento e validação de dados do beneficiário (CPF/CNPJ)
-2. **Atualização Cadastral** (RN-CUM-008): Atualização de informações a cada 24 meses ou evento mudança
-3. **Inclusão de Endereço** (RN-CUM-005): Registro de endereço principal e/ou alternativo ao agregado
-4. **Inclusão de Documento** (RN-CUM-002/003/006): Emissão e validção de CPF/CNPJ e outros documentos
-5. **Inclusão de Contato** (RN-CUM-006): Registro de meios de comunicação (telefone, e-mail)
-6. **Consulta de Beneficiário** (RN-CUM-010): Busca por CPF/CNPJ, nome, unidade administrativa
-7. **Exclusão Lógica** (RN-CUM-011): Marcação de registro como excluído preservando histórico
-8. **Agrupamento Familiar** (RN-CUM-012): Vinculação entre pessoas Físicas e Jurídicas do mesmo núcleo
-9. **Consulta por CPF/CNPJ com Validade** (RN-CUM-013): Verificação de status ativo/inativo do cadastro
-10. **Geração de Relatório** (RN-CUM-014): Produção de relatórios de cadastro para órgãos federais
-11. **Atualização de Grupo Familiar** (RN-CUM-015): Atualização das relações de parentesco e dependência
-
-**Fluxo de Trabalho:**
-- Captura → Validação → Classificação → Inclusão → Consulta → Atualização → Exclusão (se necessário)
-- Cada etapa possui regras de negócio (RN-CUM) e indicadores de qualidade associados
-- Integração com fluxos de DOM-GDO (gestão documental) para protocolo e arquivamento
-
-**Indicadores Associados:**
-- Tempo médio de cadastro
-- Taxa de validação de documentos
-- Percentual de atualizações dentro do prazo
-- Consistencia entre CPF/CNPJ e dados cadastrais
 
 **Classificação da Informação:** Pública
 
@@ -49,41 +23,57 @@ Os 11 processos mapeados refletem as operações críticas do Cadastro Único:
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Mapa de Processos – Cadastro Único Municipal** (`DOM-CUM`) tem como finalidade mapear e definir mapa de processos do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Cadastro Único Municipal** (`DOM-CUM`) avance.
+Este artefato detalha **o mapa de processos** do domínio Cadastro Único Municipal (`DOM-CUM`), com base na implementação material identificada em `src/modules/sigmun_cadastro` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Processos do domínio
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Cadastro Único Municipal**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | Processo | Descrição | Regras |
+| --- | --- | --- | --- |
+| PRO-CUM-001 | Registrar pessoa | Registra a pessoa e sua extensão. | RN-CUM-001 a 003 |
+| PRO-CUM-002 | Complementar cadastro | Endereço, documento e contato. | RN-CUM-004 a 006 |
+| PRO-CUM-003 | Manter unidade administrativa | Hierarquia de órgãos e setores. | RN-CUM-008, 009 |
+| PRO-CUM-004 | Consultar cadastro | Consulta por identificador. | — |
+| PRO-CUM-005 | Excluir logicamente | Exclusão em cascata com histórico. | RN-CUM-007 |
 
 ---
 
-**Documento:** 003-Mapa-de-Processos-Cadastro-Unico-Municipal.md
+# 3. Fluxo de trabalho
 
-**Última atualização:** 2026-08-20
+Captura → validação → classificação → gravação → consulta → atualização → exclusão lógica, conforme as regras do domínio.
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 003-Cadastro-Unico-Municipal-Mapa-de-Processos.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
 **Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

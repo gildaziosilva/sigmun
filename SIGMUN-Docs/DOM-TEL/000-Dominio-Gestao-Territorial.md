@@ -19,7 +19,7 @@
 * 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md
 * 000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md
 * 000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md
-* 000C-HIERARQUIA-DOCUMENTAL.md
+* 000C-HIERARQUIA-DOCUMENTAL-v1.0.md
 * 000D-MODELO-DE-DOCUMENTO.md
 * 000F-Registro-de-Decisoes-Arquiteturais(ADR).md
 * 000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md

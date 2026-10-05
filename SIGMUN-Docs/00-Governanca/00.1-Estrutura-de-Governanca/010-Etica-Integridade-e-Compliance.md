@@ -922,7 +922,7 @@ Esta arquitetura possui relação direta ou complementar com os seguintes artefa
 ### Artefatos Corporativos
 
 - `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`
-- `000F-Registro-de-Decisoes-Arquiteturais(ADR-Arqhiteture-Decision-Records).md`
+- `000F-Registro-de-Decisoes-Arquiteturais-ADRs.md`
 - `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 - `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
 

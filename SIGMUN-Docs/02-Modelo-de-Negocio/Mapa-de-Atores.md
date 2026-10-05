@@ -13,7 +13,7 @@
 **Documento(s) Relacionado(s):**
 
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
-* `Cadeia-de-Valor.md`
+* `Cadeia-de-Valor-v1.1.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade.md`
 * `004-Modelo-de-Governanca.md`
 * `011-Plano-de-Gestao-das-Partes-Interessadas.md`
@@ -875,7 +875,7 @@ A identificação correta dos atores é fundamental para garantir que o SIGMUN s
 
 O documento deverá ser utilizado conjuntamente com:
 
-* `Cadeia-de-Valor.md`;
+* `Cadeia-de-Valor-v1.1.md`;
 * `Modelo-de-Capacidades.md`;
 * `Arquitetura-de-Negocio.md`;
 * `Gestao-de-Processos.md`;

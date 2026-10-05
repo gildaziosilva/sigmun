@@ -1,6 +1,6 @@
-# 026 – Modelo de Domínio – Assistência Social
+# 026 – Modelo-de-Dominio – Assistência Social
 
-#### Modelo de Domínio – Assistência Social
+#### Modelo-de-Dominio – Assistência Social
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Assistência Social
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,128 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Modelo de Domínio – Assistência Social** (`DOM-ASS`) tem como finalidade mapear e definir modelo de domínio do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Assistência Social** (`DOM-ASS`) avance.
+Este artefato detalha **o modelo de domínio** do domínio Assistência Social (`DOM-ASS`), com base na implementação material identificada em `src/modules/sigmun_assistencia_social` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Entidades
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Assistência Social**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Tabela | Classe | Atributos |
+| --- | --- | --- |
+| atendimentos_sociais | `AtendimentoSocialModel` | 10 |
+| beneficios_eventuais | `BeneficioEventualModel` | 15 |
+| familias_cadunico | `FamiliaCadUnicoModel` | 13 |
+| pessoas_cadunico | `PessoaCadUnicoModel` | 15 |
+| unidades_assistencia | `UnidadeAssistenciaModel` | 13 |
 
 ---
 
-**Documento:** 026-Modelo-de-Dominio-Assistencia-Social.md
+# 3. Domínios de valor
 
-**Última atualização:** 2026-08-20
+### Sexo
+
+| Membro | Valor |
+| --- | --- |
+| MASCULINO | "masculino" |
+| FEMININO | "feminino" |
+| IGNORADO | "ignorado" |
+### StatusFamilia
+
+| Membro | Valor |
+| --- | --- |
+| ATIVA | "ativa" |
+| INATIVA | "inativa" |
+| EXCLUIDA | "excluida" |
+### TipoBeneficio
+
+| Membro | Valor |
+| --- | --- |
+| ALIMENTACAO | "alimentacao" |
+| ALUGUEL | "aluguel" |
+| MEDICAMENTO | "medicamento" |
+| FUNERAL | "funeral" |
+| NATALIDADE | "natalidade" |
+| CALAMIDADE | "calamidade" |
+| OUTRO | "outro" |
+### StatusBeneficio
+
+| Membro | Valor |
+| --- | --- |
+| SOLICITADO | "solicitado" |
+| APROVADO | "aprovado" |
+| NEGADO | "negado" |
+| ENTREGUE | "entregue" |
+| CANCELADO | "cancelado" |
+### TipoUnidade
+
+| Membro | Valor |
+| --- | --- |
+| CRAS | "cras" |
+| CREAS | "creas" |
+| CENTRO_POP | "centro_pop" |
+| ABRIGO | "abrigo" |
+| OUTRO | "outro" |
+### StatusUnidade
+
+| Membro | Valor |
+| --- | --- |
+| ATIVA | "ativa" |
+| INATIVA | "inativa" |
+| MANUTENCAO | "manutencao" |
+### TipoAtendimento
+
+| Membro | Valor |
+| --- | --- |
+| ACOLHIMENTO | "acolhimento" |
+| ORIENTACAO | "orientacao" |
+| ENCAMINHAMENTO | "encaminhamento" |
+| VISITA_DOMICILIAR | "visita_domiciliar" |
+| GRUPO_CONVIVENCIA | "grupo_convivencia" |
+| BENEFICIO_EVENTUAL | "beneficio_eventual" |
+| OUTRO | "outro" |
+
+---
+
+# 4. Regras
+
+| ID | Descrição |
+| --- | --- |
+| RN-ASS-001 | o NIS da família é único no cadastro municipal |
+| RN-ASS-002 | o CPF da pessoa é único no cadastro municipal |
+| RN-ASS-003 | o benefício eventual obedece à máquina de estados |
+| RN-ASS-004 | atendimentos são registrados por unidade CRAS/CREAS |
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 026-Assistencia-Social-Modelo-de-Dominio.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

@@ -1,6 +1,6 @@
-# 002 – Mapa de Capacidades – Gestão de Pessoas
+# 002 – Mapa-de-Capacidades – Gestão de Pessoas
 
-#### Mapa de Capacidades – Gestão de Pessoas
+#### Mapa-de-Capacidades – Gestão de Pessoas
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Gestão de Pessoas
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,63 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Mapa de Capacidades – Gestão de Pessoas** (`DOM-PES`) tem como finalidade mapear e definir mapa de capacidades do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Gestão de Pessoas** (`DOM-PES`) avance.
+Este artefato detalha **o mapa de capacidades** do domínio Gestão de Pessoas (`DOM-PES`), com base na implementação material identificada em `src/modules/sigmun_rh` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Capacidades
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Gestão de Pessoas**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Identificador | Capacidade | Descrição | Processo |
+| --- | --- | --- | --- |
+| CAP-PES-001 | Cargos | Mantém cargos, níveis e salário base. | PRO-PES-001 |
+| CAP-PES-002 | Servidores | Admissão, afastamento, reativação e desligamento. | PRO-PES-002 |
+| CAP-PES-003 | Lotação | Lota o servidor em unidade administrativa. | PRO-PES-003 |
+| CAP-PES-004 | Folha e férias | Consolida folha e conduz o período de férias. | PRO-PES-004 |
+| CAP-PES-005 | Frequência | Registra presença, falta e justificativa. | PRO-PES-005 |
 
 ---
 
-**Documento:** 002-Mapa-de-Capacidades-Gestao-de-Pessoas.md
+# 3. Processos por capacidade
 
-**Última atualização:** 2026-08-20
+| Processo | Descrição | Regras |
+| --- | --- | --- |
+| PRO-PES-001 | Admitir servidor | Cadastra matrícula, cargo e data de admissão. | RN-PES-010, RN-PES-011 |
+| PRO-PES-002 | Lotar servidor | Define unidade e cargo de lotação. | RN-PES-020, RN-PES-021 |
+| PRO-PES-003 | Fechar folha | Consolida, fecha, homologa e paga. | RN-PES-030 a RN-PES-033 |
+| PRO-PES-004 | Conceder férias | Planeja, aprova, inicia e conclui o gozo. | RN-PES-040, RN-PES-041 |
+| PRO-PES-005 | Registrar frequência | Aponta presença, falta e justificativa. | RN-PES-050 |
+
+---
+
+---
+
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 002-Gestao-de-Pessoas-Mapa-de-Capacidades.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

@@ -1,4 +1,4 @@
-# 018 Arquitetura de BI Analytcs e Inteligencia Artificial
+# 018 Arquitetura de BI Analytics e Inteligência Artificial
 
 
 
@@ -942,7 +942,7 @@ A Arquitetura de Business Intelligence, Analytics e Inteligência Artificial pos
 
 
 
-**Documento:**018-Arquitetura-de-BI-Analytcs-e-Inteligencia-Artificial.md
+**Documento:**018-Arquitetura-de-BI-Analytics-e-Inteligencia-Artificial.md
 
 **Última atualização:** 2026-08-03
 

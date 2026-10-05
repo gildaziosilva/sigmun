@@ -1,6 +1,6 @@
-# 016 – Modelo de Segurança – Integração e Interoperabilidade
+# 016 – Modelo-de-Seguranca – Integração e Interoperabilidade
 
-#### Modelo de Segurança – Integração e Interoperabilidade
+#### Modelo-de-Seguranca – Integração e Interoperabilidade
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,7 +8,7 @@
 
 **Domínio:** Integração e Interoperabilidade
 
-**Versão:** 1.0
+**Versão:** 2.0
 
 **Status:** Vigente
 
@@ -23,41 +23,58 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Modelo de Segurança – Integração e Interoperabilidade** (`DOM-INT`) tem como finalidade mapear e definir modelo de segurança do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Integração e Interoperabilidade** (`DOM-INT`) avance.
+Este artefato detalha **o modelo de segurança** do domínio Integração e Interoperabilidade (`DOM-INT`), com base na implementação material identificada em `src/modules/sigmun_int` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Controles aplicáveis
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Integração e Interoperabilidade**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+| ID | Categoria | Controle |
+| --- | --- | --- |
+| RNF-INT-003 | Autenticação | Credencial da API externa é guardada de forma protegida. |
 
 ---
 
-# 3. Versionamento
+# 3. Papéis
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Ator | Acesso |
+| --- | --- |
+| AT-INT-001 | Administrador de integração |
+| AT-INT-002 | Domínio integrador |
+| AT-INT-003 | Sistema externo |
+| AT-INT-004 | Operação de integração |
 
 ---
 
-**Documento:** 016-Modelo-de-Seguranca-Integracao-e-Interoperabilidade.md
+---
 
-**Última atualização:** 2026-08-20
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 016-Integracao-e-Interoperabilidade-Modelo-de-Seguranca.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

@@ -13,7 +13,7 @@
 **Documento(s) Relacionado(s):**
 
 - 000-CONSTITUICAO-DO-PROJETO-SIGMUN.md
-- 000C-HIERARQUIA-DOCUMENTAL.md
+- 000C-HIERARQUIA-DOCUMENTAL-v1.0.md
 - 000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md
 - 000-Dominio-Gestao-de-Compras-e-Contratacoes.md
 - 002-Mapa-de-Capacidades-Gestao-de-Compras-e-Contratacoes.md

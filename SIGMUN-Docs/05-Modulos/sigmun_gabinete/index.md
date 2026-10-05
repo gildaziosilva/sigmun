@@ -1,3 +1,5 @@
+> **STUB** — conteúdo mínimo gerado a partir de scaffolding (verificação 17/09/2026). Não presume implementação, cobertura ou correspondência DOM. Revalidar ao alterar o código-fonte.
+
 # sigmun_gabinete — índice do módulo
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal

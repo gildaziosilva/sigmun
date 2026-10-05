@@ -15,7 +15,7 @@
 **Documento(s) Relacionado(s):**
 
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
-* `Cadeia-de-Valor.md`
+* `Cadeia-de-Valor-v1.1.md`
 * `Mapa-de-Atores.md`
 * `Mapa-de-Capacidades.md`
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`
@@ -1509,7 +1509,7 @@ Resultados
 
 O documento deverá ser utilizado conjuntamente com:
 
-* `Cadeia-de-Valor.md`;
+* `Cadeia-de-Valor-v1.1.md`;
 * `Mapa-de-Atores.md`;
 * `Mapa-de-Capacidades.md`;
 * `000B-VOCABULARIO-CORPORATIVO-DO-SIGMUN.md`;

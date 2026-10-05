@@ -1,6 +1,6 @@
-# 012 – Matriz de Rastreabilidade – Desenvolvimento Econômico
+# 012 – Matriz-de-Rastreabilidade – Desenvolvimento Econômico
 
-#### Matriz de Rastreabilidade – Desenvolvimento Econômico
+#### Matriz-de-Rastreabilidade – Desenvolvimento Econômico
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Desenvolvimento Econômico
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,51 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Matriz de Rastreabilidade – Desenvolvimento Econômico** (`DOM-DEC`) tem como finalidade mapear e definir matriz de rastreabilidade do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Desenvolvimento Econômico** (`DOM-DEC`) avance.
+Este artefato descreve **a matriz de rastreabilidade** do domínio Desenvolvimento Econômico (`DOM-DEC`) em caráter **proposto**. O conteúdo técnico e de negócio deverá ser validado antes da implementação.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Caso de uso × história × requisito
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Desenvolvimento Econômico**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
-
----
-
-# 3. Versionamento
-
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+| Caso de uso | Classe | História | Requisito | Regra |
+| --- | --- | --- | --- | --- |
+| CU-DEC-001 | ProgramasdeDesenvolvimento | HU-DEC-001 | RF-DEC-001 | RF-CUM-001 |
+| CU-DEC-002 | Empreendimentos | HU-DEC-002 | RF-DEC-001 | RF-CUM-001 |
+| CU-DEC-003 | ProjetosdeInvestimento | HU-DEC-003 | RF-DEC-001 | RF-CUM-001 |
+| CU-DEC-004 | EmpregoeRenda | HU-DEC-004 | RF-DEC-001 | RF-CUM-001 |
+| CU-DEC-005 | EconomiaLocal | HU-DEC-005 | RF-DEC-001 | RF-CUM-001 |
 
 ---
 
-**Documento:** 012-Matriz-de-Rastreabilidade-Desenvolvimento-Economico.md
+---
 
-**Última atualização:** 2026-08-20
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
+
+---
+
+**Documento:** 012-Desenvolvimento-Economico-Matriz-de-Rastreabilidade.md
+
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.

@@ -13,7 +13,7 @@
 **Documento(s) Relacionado(s):**
 
 * `000-CONSTITUICAO-DO-PROJETO-SIGMUN.md`
-* `Cadeia-de-Valor.md`
+* `Cadeia-de-Valor-v1.1.md`
 * `Mapa-de-Atores.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade.md`
 * `004-Modelo-de-Governanca.md`
@@ -1213,7 +1213,7 @@ Resultados
 
 O documento deverá ser utilizado conjuntamente com:
 
-* `Cadeia-de-Valor.md`;
+* `Cadeia-de-Valor-v1.1.md`;
 * `Mapa-de-Atores.md`;
 * `Modelo-de-Processos.md`;
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade.md`;

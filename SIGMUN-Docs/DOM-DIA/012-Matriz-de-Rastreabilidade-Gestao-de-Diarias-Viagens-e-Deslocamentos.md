@@ -1,6 +1,6 @@
-# 012 – Matriz de Rastreabilidade – Gestão de Diárias, Viagens e Deslocamentos
+# 012 – Matriz-de-Rastreabilidade – Gestão de Diárias, Viagens e Deslocamentos
 
-#### Matriz de Rastreabilidade – Gestão de Diárias, Viagens e Deslocamentos
+#### Matriz-de-Rastreabilidade – Gestão de Diárias, Viagens e Deslocamentos
 
 **Projeto:** SIGMUN – Sistema Integrado de Gestão Municipal
 
@@ -8,9 +8,9 @@
 
 **Domínio:** Gestão de Diárias, Viagens e Deslocamentos
 
-**Versão:** 1.0
+**Versão:** 2.0
 
-**Status:** Em elaboração
+**Status:** Vigente
 
 **Classificação da Informação:** Pública
 
@@ -23,41 +23,65 @@
 * `000D-MODELO-DE-DOCUMENTO.md`
 * `000G-Framework-Corporativo-de-Gestao-de-Requisitos-e-Rastreabilidade-do-SIGMUN.md`
 * `000H-MAPA-MESTRE-DE-ARTEFATOS-E-RASTREABILIDADE.md`
+* `030-Roadmap-de-Implementacao-dos-Dominios.md`
+* `Mapa-de-Dominios.md`
 
 ---
+
 
 # 1. Finalidade
 
-O **Matriz de Rastreabilidade – Gestão de Diárias, Viagens e Deslocamentos** (`DOM-DIA`) tem como finalidade mapear e definir matriz de rastreabilidade do domínio.
-
-Este artefato é um **esboço inicial padronizado** da arquitetura corporativa do SIGMUN. O conteúdo será preenchido progressivamente conforme a modelagem detalhada do domínio **Gestão de Diárias, Viagens e Deslocamentos** (`DOM-DIA`) avance.
+Este artefato detalha **a matriz de rastreabilidade** do domínio Gestão de Diárias, Viagens e Deslocamentos (`DOM-DIA`), com base na implementação material identificada em `src/modules/sigmun_dia` e no conteúdo de negócio declarado no gerador.
 
 ---
 
-# 2. Escopo e Diretrizes
+# 2. Caso de uso × história × requisito
 
-As informações deste documento estão em elaboração e serão atualizadas periodicamente pela Equipe SIGMUN de acordo com o andamento da modelagem do domínio **Gestão de Diárias, Viagens e Deslocamentos**.
-
-Até que o esboço seja substituído por conteúdo específico, considere que:
-
-* a estrutura deste artefato segue o padrão corporativo adotado pelo SIGMUN;
-* as seções aqui apresentadas servirão de guia para a elaboração detalhada;
-* o preenchimento deve observar as convenções definidas em `000A-Padrao-Corporativo-de-Documentacao-do-SIGMUN.md`.
+| Caso de uso | Classe | História | Requisito | Regra |
+| --- | --- | --- | --- | --- |
+| CU-DIA-001 | CriarViagem | HU-DIA-001 | RF-DIA-001 | RF-CUM-001 |
+| CU-DIA-002 | AtualizarViagem | HU-DIA-002 | RF-DIA-002 | RF-CUM-001 |
+| CU-DIA-003 | TramitarViagem | HU-DIA-003 | RF-DIA-003 | RF-CUM-001 |
+| CU-DIA-004 | VisitarViagem | HU-DIA-004 | RF-DIA-004 | RF-CUM-001 |
+| CU-DIA-005 | CriarDiaria | HU-DIA-005 | RF-DIA-005 | RF-CUM-001 |
+| CU-DIA-006 | AtualizarDiaria | HU-DIA-001 | RF-DIA-006 | RF-CUM-001 |
+| CU-DIA-007 | SolicitarDiaria | HU-DIA-002 | RF-DIA-007 | RF-CUM-001 |
+| CU-DIA-008 | CriarPrestacaoContas | HU-DIA-003 | RF-DIA-008 | RF-CUM-001 |
+| CU-DIA-009 | AprovarPrestacao | HU-DIA-004 | RF-DIA-009 | RF-CUM-001 |
+| CU-DIA-010 | GlosarPrestacao | HU-DIA-005 | RF-DIA-010 | RF-CUM-001 |
+| CU-DIA-011 | RestituirPrestacao | HU-DIA-001 | RF-DIA-011 | RF-CUM-001 |
+| CU-DIA-012 | AutorizarDiaria | HU-DIA-002 | RF-DIA-012 | RF-CUM-001 |
+| CU-DIA-013 | CalcularDiaria | HU-DIA-003 | RF-DIA-013 | RF-CUM-001 |
+| CU-DIA-014 | ConcederDiaria | HU-DIA-004 | RF-DIA-014 | RF-CUM-001 |
+| CU-DIA-015 | IniciarPrestacao | HU-DIA-005 | RF-DIA-015 | RF-CUM-001 |
+| CU-DIA-016 | PagarDiaria | HU-DIA-001 | RF-DIA-016 | RF-CUM-001 |
+| CU-DIA-017 | ConfirmarConcessao | HU-DIA-002 | RF-DIA-017 | RF-CUM-001 |
+| CU-DIA-018 | ReverterParaPagamento | HU-DIA-003 | RF-DIA-018 | RF-CUM-001 |
+| CU-DIA-019 | CancelarDiaria | HU-DIA-004 | RF-DIA-019 | RF-CUM-001 |
 
 ---
 
-# 3. Versionamento
+---
 
-| Versão | Data       | Descrição                                           |
-| ------ | ---------- | --------------------------------------------------- |
-| 1.0    | 2026-08-20 | Criação do esboço inicial padronizado do artefato   |
+# Versionamento
+
+| Versão | Data | Descrição |
+| --- | --- | --- |
+| 1.0 | 2026-08-20 | Criação do esboço inicial padronizado do artefato |
+| 2.0 | 2026-09-30 | Artefato atualizado pelo gerador conforme o estado material e o conteúdo declarado do domínio |
 
 ---
 
-**Documento:** 012-Matriz-de-Rastreabilidade-Gestao-de-Diarias-Viagens-e-Deslocamentos.md
+**Documento:** 012-Gestao-de-Diarias-Viagens-e-Deslocamentos-Matriz-de-Rastreabilidade.md
 
-**Última atualização:** 2026-08-20
+**Última atualização:** 2026-09-30
 
 **Responsável:** Equipe SIGMUN
 
-**Status da revisão:** Em elaboração
+**Status da revisão:** Vigente
+
+> Artefato gerado por `scripts/gerar_artefatos_dominio.py` a partir do
+> estado material identificado e do conteúdo de negócio declarado no gerador.
+> Para domínios propostos, o conteúdo representa o modelo previsto e não
+> constitui evidência de implementação. Alterações no código ou no modelo
+> declarado devem ser refletidas reexecutando o gerador.
