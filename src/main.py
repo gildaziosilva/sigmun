@@ -62,6 +62,9 @@ from src.modules.sigmun_gdo.presentation.api import (
 from src.modules.sigmun_geoinformacao.presentation.api import (
     routers as geo_routers,
 )
+from src.modules.sigmun_ate.presentation.api import (
+    router as ate_router,
+)
 from src.modules.sigmun_idn.presentation.api import (
     router as idn_router,
 )
@@ -74,10 +77,14 @@ from src.modules.sigmun_met.presentation.api import (
 from src.modules.sigmun_obras.presentation.api import (
     routers as obr_routers,
 )
+from src.modules.sigmun_orc.presentation.api import routers as orc_routers
 from src.modules.sigmun_patrimonio.presentation.api import (
     routers as pat_routers,
 )
 from src.modules.sigmun_rh.presentation.api import routers as pes_routers
+from src.modules.sigmun_ouvidoria.presentation.api import (
+    router as ouv_router,
+)
 from src.modules.sigmun_saude.presentation.api import (
     routers as sau_routers,
 )
@@ -190,15 +197,13 @@ app = FastAPI(
         {
             "name": "Gestão de Diárias, Viagens e Deslocamentos",
             "description": (
-                "Diárias oficiais, viagens, deslocamentos e prestação de contas "
-                "(DOM-DIA)."
+                "Diárias oficiais, viagens, deslocamentos e prestação de contas (DOM-DIA)."
             ),
         },
         {
             "name": "Gestão de Pessoas",
             "description": (
-                "Servidores, cargos, lotações, folha de pagamento, "
-                "férias e frequência (DOM-PES)."
+                "Servidores, cargos, lotações, folha de pagamento, férias e frequência (DOM-PES)."
             ),
         },
         {
@@ -211,21 +216,17 @@ app = FastAPI(
         {
             "name": "Gestao Patrimonial",
             "description": (
-                "Bens móveis/imóveis, tombamento, depreciação e "
-                "transferências (DOM-PAT)."
+                "Bens móveis/imóveis, tombamento, depreciação e transferências (DOM-PAT)."
             ),
         },
         {
             "name": "Gestao de Frota",
-            "description": (
-                "Veículos, abastecimento, manutenções e rotas (DOM-FRO)."
-            ),
+            "description": ("Veículos, abastecimento, manutenções e rotas (DOM-FRO)."),
         },
         {
             "name": "Saude Municipal",
             "description": (
-                "Pacientes, prontuário, agendamento SUS, regulação e "
-                "farmácia básica (DOM-SAU)."
+                "Pacientes, prontuário, agendamento SUS, regulação e farmácia básica (DOM-SAU)."
             ),
         },
         {
@@ -237,9 +238,7 @@ app = FastAPI(
         },
         {
             "name": "Assistência Social",
-            "description": (
-                "CadÚnico local, benefícios eventuais, CRAS/CREAS (DOM-ASS)."
-            ),
+            "description": ("CadÚnico local, benefícios eventuais, CRAS/CREAS (DOM-ASS)."),
         },
         {
             "name": "Geoinformação Municipal",
@@ -327,6 +326,9 @@ app.include_router(met_router)
 app.include_router(gdo_router)
 app.include_router(int_router)
 app.include_router(dia_router)
+app.include_router(ate_router)
+for _orc_router in orc_routers:
+    app.include_router(_orc_router)
 for _pes_router in pes_routers:
     app.include_router(_pes_router)
 for _tri_router in tri_routers:
@@ -337,6 +339,7 @@ for _fro_router in fro_routers:
     app.include_router(_fro_router)
 for _sau_router in sau_routers:
     app.include_router(_sau_router)
+app.include_router(ouv_router)
 for _edu_router in edu_routers:
     app.include_router(_edu_router)
 for _ass_router in ass_routers:

@@ -130,6 +130,11 @@ class TestConfigCelery:
         assert rotas["sigmun.gdo.despachar_outbox"] == {"queue": "gdo.outbox"}
         assert rotas["sigmun.gdo.expurgar_arquivos"] == {"queue": "gdo.expurgo"}
         beat = celery_app.conf.beat_schedule
-        assert set(beat) == {"healthcheck-5min", "gdo-outbox-1min", "gdo-expurgo-diario-02h"}
+        assert set(beat) == {
+            "healthcheck-5min",
+            "gdo-outbox-1min",
+            "gdo-expurgo-diario-02h",
+            "cum-revisao-cadastral-mensal",
+        }
         assert beat["gdo-outbox-1min"]["task"] == "sigmun.gdo.despachar_outbox"
         assert celery_app.conf.task_acks_late is True

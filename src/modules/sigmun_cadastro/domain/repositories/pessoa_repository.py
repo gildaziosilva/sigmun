@@ -7,6 +7,7 @@ Padrão validado no DOM-COM (FornecedorRepository).
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from datetime import datetime
 from uuid import UUID
 
 from src.modules.sigmun_cadastro.domain.entities.documento import TipoDocumento
@@ -47,6 +48,10 @@ class PessoaRepository(ABC):
     @abstractmethod
     def exists_documento(self, tipo: TipoDocumento, numero: str) -> bool:
         """Verifica se o documento já está registrado (RN-CUM-004)."""
+
+    @abstractmethod
+    def listar_desatualizadas(self, anterior_a: datetime, *, limite: int = 1000) -> list[UUID]:
+        """Pessoas não excluídas sem atualização desde `anterior_a` (ADR-0007)."""
 
 
 __all__ = ["PessoaRepository"]

@@ -38,29 +38,45 @@ modulo/
 
 ## Módulos Disponíveis
 
+> Lista vigente em 2026-10-02 (34 módulos). Detalhes por módulo em
+> `SIGMUN-Docs/05-Modulos/index.md` e correspondência DOM ↔ módulo na matriz 031.
+
 | Módulo | Descrição |
 |--------|-----------|
-| `sigmun_rh` | Recursos Humanos |
-| `sigmun_tributos` | Tributação e arrecadação |
-| `sigmun_contabilidade` | Contabilidade |
-| `sigmun_compras` | Compras e contratações |
-| `sigmun_saude` | Saúde |
-| `sigmun_educacao` | Educação |
-| `sigmun_assistencia_social` | Assistência social |
-| `sigmun_almoxarifado` | Almoxarifado |
-| `sigmun_patrimonio` | Patrimônio |
-| `sigmun_frotas` | Frota |
-| `sigmun_obras` | Obras e engenharia |
-| `sigmun_licitacoes` | Licitações |
 | `sigmun_administracao` | Administração |
 | `sigmun_agricultura` | Agricultura |
+| `sigmun_almoxarifado` | Almoxarifado |
+| `sigmun_assistencia_social` | Assistência social |
+| `sigmun_cadastro` | Cadastro Único Municipal (DOM-CUM) |
+| `sigmun_cadastro_imobiliario` | Cadastro imobiliário (DOM-IMO) |
+| `sigmun_compras` | Compras e contratações (DOM-COM) |
+| `sigmun_con` | Contabilidade pública — Contábil (DOM-CON) |
+| `sigmun_contabilidade` | Contabilidade (scaffold; ver DOM-CON) |
 | `sigmun_controladoria` | Controladoria |
+| `sigmun_dad` | Dados corporativos (DOM-DAD) |
+| `sigmun_dia` | Diárias, viagens e deslocamentos (DOM-DIA) |
+| `sigmun_educacao` | Educação |
+| `sigmun_financas` | Finanças |
+| `sigmun_frotas` | Frota |
 | `sigmun_gabinete` | Gabinete |
+| `sigmun_gdo` | Gestão documental (DOM-GDO) |
+| `sigmun_geoinformacao` | Geoinformação (DOM-GEO) |
+| `sigmun_idn` | Identidade e acesso (DOM-IDN) |
+| `sigmun_int` | Integração e interoperabilidade (DOM-INT) |
+| `sigmun_licitacoes` | Licitações |
+| `sigmun_met` | Metadados e taxonomias (DOM-MET) |
+| `sigmun_obras` | Obras e engenharia |
+| `sigmun_orc` | Orçamento público (DOM-ORC) |
 | `sigmun_ouvidoria` | Ouvidoria |
+| `sigmun_patrimonio` | Patrimônio |
 | `sigmun_planejamento` | Planejamento |
 | `sigmun_procuradoria` | Procuradoria |
+| `sigmun_rh` | Recursos Humanos |
+| `sigmun_saude` | Saúde |
+| `sigmun_seg` | Segurança da informação (DOM-SEG) |
+| `sigmun_territorial` | Gestão territorial |
 | `sigmun_transparencia` | Transparência |
-| `sigmun_financas` | Finanças |
+| `sigmun_tributos` | Tributação e arrecadação |
 
 ## Referências
 

@@ -18,6 +18,7 @@ from __future__ import annotations
 import builtins
 import logging
 import re
+from datetime import datetime
 from uuid import UUID
 
 import sqlalchemy as ja
@@ -305,6 +306,28 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
         )
         return self._session.scalars(stmt).first() is not None
 
+    def listar_desatualizadas(
+        self, anterior_a: datetime, *, limite: int = 1000
+    ) -> builtins.list[UUID]:
+        """Pessoas não excluídas sem atualização desde `anterior_a` (ADR-0007).
+
+        Só a entidade-mestra é consultada: a revisão cadastral não precisa
+        hidratar endereços, documentos e contatos de cada pessoa, o que
+        tornaria a varredura mensal desnecessariamente custosa.
+        `updated_at` é `NOT NULL`, portanto toda pessoa viva tem data de
+        referência.
+        """
+        stmt = (
+            select(PessoaModel.id)
+            .where(
+                PessoaModel.deleted_at.is_(None),
+                PessoaModel.updated_at < anterior_a,
+            )
+            .order_by(PessoaModel.updated_at)
+            .limit(limite)
+        )
+        return builtins.list(self._session.scalars(stmt).all())
+
     # -- Internals -----------------------------------------------------------------
 
     def _salvar_extensao(self, pessoa: Pessoa) -> None:
@@ -517,6 +540,3 @@ class SqlAlchemyPessoaRepository(PessoaRepository):
         for id_existente, m in existentes.items():
             if id_existente not in atuais and m.deleted_at is None:
                 m.deleted_at = func.now()
-
-
-__all__ = ["SqlAlchemyPessoaRepository"]

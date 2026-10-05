@@ -12,6 +12,7 @@ from uuid import UUID
 
 from src.modules.sigmun_idn.application.interfaces import (
     AuditoriaLoginRepositoryInterface,
+    RoleRepositoryInterface,
     SessaoRepositoryInterface,
     UsuarioRepositoryInterface,
 )
@@ -89,10 +90,12 @@ class AutenticarUsuarioJWTUseCase:
         usuario_repo: UsuarioRepositoryInterface,
         sessao_repo: SessaoRepositoryInterface | None = None,
         auditoria_repo: AuditoriaLoginRepositoryInterface | None = None,
+        role_repo: RoleRepositoryInterface | None = None,
     ) -> None:
         self._usuario_repo = usuario_repo
         self._sessao_repo = sessao_repo
         self._auditoria_repo = auditoria_repo
+        self._role_repo = role_repo
 
     def execute(self, command: AutenticarUsuarioJWTCommand) -> AutenticarUsuarioJWTResult:
         """Autentica usuário e retorna JWT token pair."""
@@ -164,13 +167,29 @@ class AutenticarUsuarioJWTUseCase:
         )
 
     def _buscar_roles_usuario(self, usuario: Usuario) -> list[str]:
-        """Busca códigos das roles do usuário.
+        """Busca os **códigos** das roles do usuário (ex.: ``ROLE_OUVIDOR``).
 
-        Nota: implementação simplificada - em produção buscar via RoleRepository.
+        O token precisa carregar o código da role, não o seu UUID: é o
+        código que o RBAC compara (ver ``require_roles_hybrid``). A versão
+        anterior devolvia ``usuario.roles_ids``, que são UUIDs — com isso,
+        nenhuma verificação de papel jamais casava e toda rota protegida
+        respondia 403.
         """
-        # TODO: implementar busca real de roles via repository
-        # Por enquanto retorna roles_ids como códigos (assumindo que são códigos)
-        return list(usuario.roles_ids) if usuario.roles_ids else []
+        if not usuario.roles_ids:
+            return []
+        if self._role_repo is None:
+            # Sem repositório de roles não há como resolver id → código.
+            logger.warning(
+                "Login sem RoleRepository: papéis não serão resolvidos",
+                extra={"extra_data": {"usuario_id": str(usuario.id)}},
+            )
+            return []
+        codigos: list[str] = []
+        for role_id in usuario.roles_ids:
+            role = self._role_repo.get_by_id(str(role_id))
+            if role and role.codigo:
+                codigos.append(role.codigo)
+        return codigos
 
     def _registrar_auditoria(
         self,
@@ -204,9 +223,11 @@ class RenovarTokenUseCase:
         self,
         usuario_repo: UsuarioRepositoryInterface,
         sessao_repo: SessaoRepositoryInterface | None = None,
+        role_repo: RoleRepositoryInterface | None = None,
     ) -> None:
         self._usuario_repo = usuario_repo
         self._sessao_repo = sessao_repo
+        self._role_repo = role_repo
 
     def execute(self, command: RenovarTokenCommand) -> RenovarTokenResult:
         """Renova access token usando refresh token."""
@@ -246,7 +267,26 @@ class RenovarTokenUseCase:
         )
 
     def _buscar_roles_usuario(self, usuario: Usuario) -> list[str]:
-        return list(usuario.roles_ids) if usuario.roles_ids else []
+        """Busca os códigos das roles (ex.: ``ROLE_OUVIDOR``) para o novo token.
+
+        Mesma resolução do login. Sem ela, a rotação emitiria um token sem
+        papéis: o usuário perderia o acesso ao renovar a sessão, e o efeito
+        seria um 403 que aparece só depois de algum tempo logado.
+        """
+        if not usuario.roles_ids:
+            return []
+        if self._role_repo is None:
+            logger.warning(
+                "Renovação sem RoleRepository: papéis não serão resolvidos",
+                extra={"extra_data": {"usuario_id": str(usuario.id)}},
+            )
+            return []
+        codigos: list[str] = []
+        for role_id in usuario.roles_ids:
+            role = self._role_repo.get_by_id(str(role_id))
+            if role and role.codigo:
+                codigos.append(role.codigo)
+        return codigos
 
 
 class LogoutJWTUseCase:

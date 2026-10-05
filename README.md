@@ -46,16 +46,6 @@ sigmun-v1/
 │   │   ├── sigmun_transparencia/
 │   │   └── sigmun_financas/
 │   └── main.py                   # Ponto de entrada da aplicação
-
-## Domínios (Domains / Bounded Contexts)
-
-A arquitetura do SIGMUN inclui os seguintes domínios domain-driven design:
-
-- **DOM-CUM** (Cadastro Único Municipal) — Gestão de cadastro de beneficiários, pessoas físicas e jurídicas, com 15 casos de uso (RN-CUM-001 a 015). Entidades: Pessoa, DadosFisicos, DadosJuridicos, Endereço, Documento, Contato, UnidadeAdministrativa.
-- **DOM-IDN** (Identidade e Acesso) — Gestão de identidade e acesso, autenticação e autorização. Entidades: Usuario, Role, Permissao, Sessao, AuditoriaLogin. Cases de uso: auth flows, JWT, role-based access, session management, login audit.
-- **DOM-DAD** (Dados Corporativos) — Gerenciamento de metadados corporativos, catálogos, linhagens, políticas de qualidade e indicadores. Entidades: Ativos, Catalogos, Linhagens, Politicas, Qualidade. Cases de uso: 22 RN-DAD.
-- **DOM-SEG** (Segurança da Informação) — Segurança da informação com controles, políticas, incidentes e credenciais. Entidades: Controle, Politica, Incidente, ChaveCriptografica, Credencial.
-- **DOM-GDO** (Gestão Documental) — Gestão documental completa com classificação, tramitação, integração e outbox de eventos. 21 artifacts (Cycles 1-5).
 ├── frontend/                     # Aplicações frontend
 │   ├── admin/                    # Aplicação administrativa
 │   ├── portal-cidadao/           # Portal do cidadão
@@ -86,6 +76,16 @@ A arquitetura do SIGMUN inclui os seguintes domínios domain-driven design:
 └── .env.example                  # Template de variáveis de ambiente
 ```
 
+## Domínios (Domains / Bounded Contexts)
+
+A arquitetura do SIGMUN organiza as responsabilidades em domínios (DDD).
+A lista vigente está na matriz de correspondência
+`SIGMUN-Docs/01-Arquitetura-Corporativa/031-Matriz-de-Correspondencia-DOM-MOD.md`
+e no catálogo `SIGMUN-Docs/05-Modulos/index.md`.
+Os domínios incluem, entre outros: DOM-CUM (Cadastro Único Municipal),
+DOM-IDN (Identidade e Acesso), DOM-DAD (Dados Corporativos),
+DOM-SEG (Segurança da Informação) e DOM-GDO (Gestão Documental).
+
 ## Tecnologias
 
 - **Backend:** Python 3.10+, FastAPI, SQLAlchemy, Pydantic, Alembic
@@ -114,4 +114,4 @@ A arquitetura do SIGMUN inclui os seguintes domínios domain-driven design:
 
 ## Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+Este projeto está sob a licença Apache License 2.0. Veja o arquivo `LICENSE` para mais detalhes.

@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from src.modules.sigmun_idn.application.interfaces import PermissaoRepositoryInterface
 from src.modules.sigmun_idn.domain.entities import Permissao, PermissaoEscopo
 from src.modules.sigmun_idn.infrastructure.database.models import PermissaoModel
+from src.modules.sigmun_idn.infrastructure.repositories.uuid_utils import as_uuid
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,10 @@ class SqlAlchemyPermissaoRepository(PermissaoRepositoryInterface):
         self._session = session
 
     def get_by_id(self, permissao_id: str) -> Permissao | None:
-        model = self._session.get(PermissaoModel, UUID(permissao_id))
+        pk = as_uuid(permissao_id)
+        if pk is None:
+            return None
+        model = self._session.get(PermissaoModel, pk)
         if model is None or model.deleted_at is not None:
             return None
         return _to_entity(model)

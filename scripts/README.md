@@ -1,5 +1,10 @@
 # SIGMUN Scripts
 
+> **Nota (2026-10-02):** os scripts `.ps1` de Windows citados abaixo (`setup/create_structure.ps1`,
+> `setup/create_placeholders.ps1`) **não existem** neste repositório Linux. Verificações de
+> documentação: `bash scripts/check_docs.sh`. Automação backend: `Makefile` (`make lint`,
+> `make type-check`, `make test`).
+
 Scripts de automação e utilitários do SIGMUN.
 
 ## Estrutura

@@ -1,0 +1,1 @@
+export default function ATEPage() { return <div>ATE Page</div>; }

@@ -16,6 +16,8 @@ import TelPage from './territorial/TelPage';
 import ImoPage from './territorial/ImoPage';
 import GeoPage from './geo/GeoPage';
 import ObrasPage from './obras/ObrasPage';
+import ATEPage from './ate/ATEPage';
+import OuvPage from './ouv/OuvPage';
 
 const NAV_ITEMS = [
   { id: 'painel', rotulo: 'Painel' },
@@ -33,6 +35,8 @@ const NAV_ITEMS = [
   { id: 'imo', rotulo: 'Cadastro Imobiliário' },
   { id: 'geo', rotulo: 'Geoinformação' },
   { id: 'obras', rotulo: 'Obras' },
+  { id: 'ate', rotulo: 'Atendimento' },
+  { id: 'ouv', rotulo: 'Ouvidoria' },
   { id: 'usuarios', rotulo: 'Usuários' },
 ] as const;
 
@@ -208,6 +212,20 @@ function Dashboard() {
                   </button>
                 </article>
               </div>
+                <article className="card card--modulo">
+                  <h3>Atendimento ao Cidadão</h3>
+                  <p>Triagem, filas, senhas, chamadas, atendimentos e avaliações.</p>
+                  <button type="button" className="link" onClick={() => setAba("ate")}>
+                    Abrir módulo
+                  </button>
+                </article>
+                <article className="card card--modulo">
+                  <h3>Ouvidoria FalaBR / e-OUV</h3>
+                  <p>Manifestações, denúncias, pedidos LAI, prazos e estatísticas.</p>
+                  <button type="button" className="link" onClick={() => setAba("ouv")}>
+                    Abrir módulo
+                  </button>
+                </article>
             </section>
           )}
 
@@ -225,6 +243,8 @@ function Dashboard() {
           {rotaPermitida === 'imo' && <ImoPage />}
           {rotaPermitida === 'geo' && <GeoPage />}
           {rotaPermitida === 'obras' && <ObrasPage />}
+          {rotaPermitida === 'ate' && <ATEPage />}
+          {rotaPermitida === 'ouv' && <OuvPage />}
           {rotaPermitida === 'usuarios' && <IdnPage />}
         </main>
       </div>

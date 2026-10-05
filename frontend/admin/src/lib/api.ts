@@ -605,7 +605,6 @@ export interface ArquivamentoGDO {
   id: string;
   documento_id: string;
   unidade_arquivo_id: string;
-  autor_id: string;
   observacao?: string | null;
   data_arquivamento: string;
   created_at: string;
@@ -613,8 +612,8 @@ export interface ArquivamentoGDO {
 
 export interface ArquivamentoCreateRequest {
   unidade_arquivo_id: string;
-  autor_id: string;
   observacao?: string;
+  autor_id: string;
 }
 
 export interface AssinaturaGDO {
@@ -632,8 +631,8 @@ export interface AssinaturaGDO {
 export interface AssinaturaCreateRequest {
   signatario_id: string;
   conteudo: string;
-  autor_id: string;
   certificado_id?: string;
+  autor_id: string;
 }
 
 export interface TipoDocumentalGDO {
@@ -713,7 +712,6 @@ export interface TabelaTemporalidadeGDO {
 
 export interface DestinacaoRequest {
   tipo_destinacao: 'eliminacao' | 'guarda_permanente';
-  autor_id: string;
   autoridade_homologadora_id?: string;
   justificativa?: string;
 }
@@ -2832,4 +2830,268 @@ export async function concluirEtapaObra(id: string): Promise<EtapaObra> {
 /** Registra uma vistoria fiscalizadora da obra (RN-OBR-008). */
 export async function registrarVistoriaObra(payload: VistoriaObraCreate): Promise<VistoriaObra> {
   return apiPost<VistoriaObra>('/api/v1/obr/vistorias', payload);
+}
+
+// ==================== DOM-OUV - Ouvidoria FalaBR / e-OUV ====================
+
+export interface ProtocoloOuv {
+  numero: string;
+  ano: number;
+}
+
+export interface DadosCidadaoOuv {
+  nome: string;
+  cpf?: string | null;
+  email?: string | null;
+  telefone?: string | null;
+  endereco?: string | null;
+  anonimo: boolean;
+}
+
+export interface PrazoRespostaOuv {
+  data_limite: string;
+  dias_uteis: number;
+  prorrogado: boolean;
+  data_prorrogacao?: string | null;
+  justificativa_prorrogacao: string;
+  vencido: boolean;
+  dias_restantes: number;
+}
+
+export interface AnexoOuv {
+  id: string;
+  nome_arquivo: string;
+  tipo_mime: string;
+  tamanho_bytes: number;
+  url: string;
+  descricao: string;
+  criado_em: string;
+}
+
+export interface TramitacaoOuv {
+  id: string;
+  status_anterior?: string | null;
+  status_novo: string;
+  observacao?: string | null;
+  usuario_id: string;
+  created_at: string;
+}
+
+export interface ManifestacaoOuv {
+  id: string;
+  protocolo?: ProtocoloOuv;
+  tipo: string;
+  status: string;
+  prioridade: string;
+  assunto: string;
+  descricao: string;
+  cidadao?: DadosCidadaoOuv;
+  canal: string;
+  orgao_destino: string;
+  setor_responsavel?: string | null;
+  prazo?: PrazoRespostaOuv;
+  anexos: AnexoOuv[];
+  tramitacoes: TramitacaoOuv[];
+  resposta?: string | null;
+  forma_resposta?: string | null;
+  data_resposta?: string | null;
+  respondido_por?: string | null;
+  avaliacao_cidadao?: number | null;
+  comentario_avaliacao?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+  created_by: string;
+  updated_by?: string | null;
+  is_deleted: boolean;
+}
+
+export interface DenunciaOuv extends ManifestacaoOuv {
+  tipo_denuncia: string;
+  envolve_servidor_publico: boolean;
+  servidor_envolvido?: string | null;
+  valor_envolvido?: number | null;
+  local_fato: string;
+  data_fato: string;
+  sigilo_denunciante: boolean;
+  encaminhada_mp: boolean;
+  encaminhada_pf: boolean;
+  encaminhada_tce: boolean;
+  numero_inquerito?: string | null;
+  resultado_investigacao?: string | null;
+}
+
+export interface PedidoLaiOuv extends ManifestacaoOuv {
+  informacao_solicitada: string;
+  fundamentacao: string;
+  nivel_sigilo: string;
+  fundamentacao_sigilo?: string | null;
+  dados_pessoais_terceiros: boolean;
+  formato_resposta: string;
+  is_recurso: boolean;
+  pedido_original_id?: string | null;
+  decisao_recurso?: string | null;
+  data_decisao_recurso?: string | null;
+}
+
+export interface PageEnvelopeOuv<T> {
+  items: T[];
+  total: number;
+  page: number;
+  page_size: number;
+  pages: number;
+}
+
+export interface EstatisticasOuv {
+  gerais: {
+    total: number;
+    respondidas: number;
+    concluidas: number;
+    vencidas: number;
+    taxa_resposta: number;
+    taxa_conclusao: number;
+  };
+  por_tipo: Record<string, number>;
+  vencendo_5_dias: number;
+  vencendo_10_dias: number;
+}
+
+/** Lista manifestações (sugestão, elogio, reclamação, solicitação). */
+export async function listarManifestacoesOuv(params?: { page?: number; page_size?: number }): Promise<PageEnvelopeOuv<ManifestacaoOuv>> {
+  const p = params?.page ?? 1;
+  const ps = params?.page_size ?? 20;
+  return apiGet<PageEnvelopeOuv<ManifestacaoOuv>>(`/api/v1/ouv/manifestacoes?page=${p}&page_size=${ps}`);
+}
+
+/** Registra nova manifestação. */
+export async function registrarManifestacaoOuv(payload: {
+  tipo: string;
+  assunto: string;
+  descricao: string;
+  cidadao_nome: string;
+  cidadao_cpf: string;
+  cidadao_email: string;
+  cidadao_telefone: string;
+  cidadao_endereco: string;
+  cidadao_anonimo: boolean;
+  canal: string;
+  orgao_destino: string;
+  setor_responsavel: string;
+  prioridade: string;
+  anexos: any[];
+}): Promise<ManifestacaoOuv> {
+  return apiPost<ManifestacaoOuv>('/api/v1/ouv/manifestacoes', payload);
+}
+
+/** Obtém manifestação por ID. */
+export async function obterManifestacaoOuv(id: string): Promise<ManifestacaoOuv> {
+  return apiGet<ManifestacaoOuv>(`/api/v1/ouv/manifestacoes/${encodeURIComponent(id)}`);
+}
+
+/** Responde manifestação. */
+export async function responderManifestacaoOuv(id: string, resposta: string, forma_resposta: string): Promise<ManifestacaoOuv> {
+  return apiPost<ManifestacaoOuv>(`/api/v1/ouv/manifestacoes/${encodeURIComponent(id)}/responder`, { resposta, forma_resposta });
+}
+
+/** Altera status da manifestação. */
+export async function alterarStatusOuv(id: string, novo_status: string, observacao: string): Promise<ManifestacaoOuv> {
+  return apiPost<ManifestacaoOuv>(`/api/v1/ouv/manifestacoes/${encodeURIComponent(id)}/status`, { novo_status, observacao });
+}
+
+/** Prorroga prazo de resposta. */
+export async function prorrogarPrazoOuv(id: string, justificativa: string): Promise<ManifestacaoOuv> {
+  return apiPost<ManifestacaoOuv>(`/api/v1/ouv/manifestacoes/${encodeURIComponent(id)}/prorrogar`, { justificativa });
+}
+
+/** Avalia manifestação (1-5). */
+export async function avaliarManifestacaoOuv(id: string, nota: number, comentario: string): Promise<ManifestacaoOuv> {
+  return apiPost<ManifestacaoOuv>(`/api/v1/ouv/manifestacoes/${encodeURIComponent(id)}/avaliar`, { nota, comentario });
+}
+
+/** Lista denúncias. */
+export async function listarDenunciasOuv(params?: { page?: number; page_size?: number }): Promise<PageEnvelopeOuv<DenunciaOuv>> {
+  const p = params?.page ?? 1;
+  const ps = params?.page_size ?? 20;
+  return apiGet<PageEnvelopeOuv<DenunciaOuv>>(`/api/v1/ouv/denuncias?page=${p}&page_size=${ps}`);
+}
+
+/** Registra nova denúncia. */
+export async function registrarDenunciaOuv(payload: {
+  assunto: string;
+  descricao: string;
+  tipo_denuncia: string;
+  envolve_servidor_publico: boolean;
+  servidor_envolvido: string;
+  valor_envolvido?: number;
+  local_fato: string;
+  data_fato: string;
+  cidadao_nome: string;
+  cidadao_cpf: string;
+  cidadao_email: string;
+  cidadao_telefone: string;
+  cidadao_endereco: string;
+  cidadao_anonimo: boolean;
+  canal: string;
+  orgao_destino: string;
+  setor_responsavel: string;
+  prioridade: string;
+  anexos: any[];
+}): Promise<DenunciaOuv> {
+  return apiPost<DenunciaOuv>('/api/v1/ouv/denuncias', payload);
+}
+
+/** Encaminha denúncia a órgão externo. */
+export async function encaminharDenunciaOuv(id: string, orgao: string, numero_processo: string): Promise<DenunciaOuv> {
+  return apiPost<DenunciaOuv>(`/api/v1/ouv/denuncias/${encodeURIComponent(id)}/encaminhar`, { orgao, numero_processo });
+}
+
+/** Lista pedidos LAI. */
+export async function listarPedidosLaiOuv(params?: { page?: number; page_size?: number }): Promise<PageEnvelopeOuv<PedidoLaiOuv>> {
+  const p = params?.page ?? 1;
+  const ps = params?.page_size ?? 20;
+  return apiGet<PageEnvelopeOuv<PedidoLaiOuv>>(`/api/v1/ouv/pedidos-lai?page=${p}&page_size=${ps}`);
+}
+
+/** Registra novo pedido LAI. */
+export async function registrarPedidoLaiOuv(payload: {
+  assunto: string;
+  descricao: string;
+  informacao_solicitada: string;
+  fundamentacao: string;
+  nivel_sigilo: string;
+  fundamentacao_sigilo: string;
+  dados_pessoais_terceiros: boolean;
+  formato_resposta: string;
+  cidadao_nome: string;
+  cidadao_cpf: string;
+  cidadao_email: string;
+  cidadao_telefone: string;
+  cidadao_endereco: string;
+  canal: string;
+  orgao_destino: string;
+  setor_responsavel: string;
+  prioridade: string;
+  anexos: any[];
+}): Promise<PedidoLaiOuv> {
+  return apiPost<PedidoLaiOuv>('/api/v1/ouv/pedidos-lai', payload);
+}
+
+/** Interpõe recurso LAI. */
+export async function interporRecursoLaiOuv(pedido_original_id: string): Promise<PedidoLaiOuv> {
+  return apiPost<PedidoLaiOuv>(`/api/v1/ouv/pedidos-lai/${encodeURIComponent(pedido_original_id)}/recurso`);
+}
+
+/** Decide recurso LAI. */
+export async function decidirRecursoLaiOuv(recurso_id: string, deferido: boolean, fundamentacao: string): Promise<PedidoLaiOuv> {
+  return apiPost<PedidoLaiOuv>(`/api/v1/ouv/pedidos-lai/${encodeURIComponent(recurso_id)}/decidir-recurso`, { deferido, fundamentacao });
+}
+
+/** Obtém estatísticas da ouvidoria. */
+export async function obterEstatisticasOuv(ano?: number): Promise<EstatisticasOuv> {
+  const url = ano ? `/api/v1/ouv/estatisticas?ano=${ano}` : '/api/v1/ouv/estatisticas';
+  return apiGet<EstatisticasOuv>(url);
+}
+
+/** Lista manifestações com prazo vencendo. */
+export async function manifestacoesVencendoOuv(dias: number = 5): Promise<{ total: number; dias: number; items: any[] }> {
+  return apiGet<{ total: number; dias: number; items: any[] }>(`/api/v1/ouv/manifestacoes-vencendo?dias=${dias}`);
 }

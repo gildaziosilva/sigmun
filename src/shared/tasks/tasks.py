@@ -96,3 +96,39 @@ def expurgar_arquivos_gdo(
 
 
 __all__ = ["healthcheck", "despachar_outbox_gdo", "expurgar_arquivos_gdo"]
+
+
+@celery_app.task(
+    name="sigmun.cum.revisar_cadastral",
+    max_retries=2,
+    default_retry_delay=600,
+)
+def revisar_cadastral_cum(limite_meses: int = 12, dry_run: bool = False) -> dict[str, int]:
+    """Revisão mensal do cadastro (ADR-0007): divulga evento de auditoria."""
+    from src.core.infrastructure.database.session import SessionLocal
+    from src.modules.sigmun_cadastro.application.use_cases.revisar_cadastral import (
+        RevisarCadastralUseCase,
+    )
+    from src.modules.sigmun_cadastro.infrastructure.repositories import (
+        sqlalchemy_pessoa_repository as _repo,
+    )
+
+    session = SessionLocal()
+    try:
+        relatorio = RevisarCadastralUseCase(_repo.SqlAlchemyPessoaRepository(session)).execute(
+            limite_meses=limite_meses
+        )
+        if dry_run:
+            session.rollback()
+        else:
+            session.commit()
+        logger.info(
+            "tarefa.revisao_cadastral concluida: %s pessoa(s) desatualizada(s)",
+            relatorio["total"],
+        )
+        return {"total": int(relatorio["total"])}
+    except Exception:  # pragma: no cover - deja a transação segura
+        session.rollback()
+        raise
+    finally:
+        session.close()

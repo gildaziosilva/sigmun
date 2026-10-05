@@ -23,6 +23,7 @@ from src.modules.sigmun_idn.infrastructure.database.models import (
     UsuarioModel,
     UsuarioRoleModel,
 )
+from src.modules.sigmun_idn.infrastructure.repositories.uuid_utils import as_uuid
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,10 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
         )
 
     def get_by_id(self, usuario_id: str) -> Usuario | None:
-        model = self._session.get(UsuarioModel, UUID(usuario_id))
+        pk = as_uuid(usuario_id)
+        if pk is None:
+            return None
+        model = self._session.get(UsuarioModel, pk)
         if model is None or model.deleted_at is not None:
             return None
         return self._to_entity(model)

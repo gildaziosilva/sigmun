@@ -1,16 +1,26 @@
 #!/usr/bin/env python
-"""Executa o seed de dados DEMO do domínio Identidade e Acesso (DOM-IDN).
+"""Executa o seed de RBAC do domínio Identidade e Acesso (DOM-IDN).
 
 Uso:
     .venv/bin/python scripts/seed_idn.py
     .venv/bin/python scripts/seed_idn.py --dry-run
 
-O seed cria somente dados técnicos de demonstração:
-- permissões COMPRAS.*
-- roles ROLE_DEMO_COMPRAS_*
+O seed cria permissões e roles de dois conjuntos:
+
+- Demonstrativos (validação técnica do mecanismo RBAC):
+  - permissões COMPRAS.*
+  - roles ROLE_DEMO_COMPRAS_*
+
+- Papéis funcionais do DOM-OUV (ADR-0008 — autorização e sigilo de dados):
+  - permissões OUV.*
+  - roles ROLE_OUVIDOR, ROLE_CORREGEDOR, ROLE_AUDITOR, ROLE_ADMIN
+
+  A matriz de papéis reflete decisão de negócio e deve ser revisada pela
+  Ouvidoria antes da promoção a produção.
 
 Não cria usuários, sessões ou auditoria de login.
 O seed é executado sob demanda e não no startup da API.
+É idempotente: reexecutar não duplica registros.
 """
 
 from __future__ import annotations

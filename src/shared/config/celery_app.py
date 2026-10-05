@@ -38,6 +38,12 @@ celery_app.conf.update(
             "schedule": 60.0,
             "options": {"queue": "gdo.outbox"},
         },
+        "cum-revisao-cadastral-mensal": {
+            "task": "sigmun.cum.revisar_cadastral",
+            "schedule": crontab(minute=30, hour=3, day_of_month="1"),
+            "kwargs": {"limite_meses": 12, "dry_run": False},
+            "options": {"queue": "celery"},
+        },
         "gdo-expurgo-diario-02h": {
             "task": "sigmun.gdo.expurgar_arquivos",
             "schedule": crontab(hour=2, minute=0),

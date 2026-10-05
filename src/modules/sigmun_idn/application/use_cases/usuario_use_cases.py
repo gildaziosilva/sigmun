@@ -125,6 +125,15 @@ class BuscarUsuarioUseCase:
     def __init__(self, usuario_repo: UsuarioRepositoryInterface) -> None:
         self._repo = usuario_repo
 
+    def execute(self, usuario_id: str) -> Usuario:
+        """Busca usuário por ID.
+
+        `execute` é o ponto de entrada adotado pelos demais casos de uso e o
+        que a camada de apresentação invoca. `get_by_id` permanece como
+        alias para não quebrar chamadores existentes.
+        """
+        return self.get_by_id(usuario_id)
+
     def get_by_id(self, usuario_id: str) -> Usuario:
         """Busca usuário por ID."""
         usuario = self._repo.get_by_id(usuario_id)

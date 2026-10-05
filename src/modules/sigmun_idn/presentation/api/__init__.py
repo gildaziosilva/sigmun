@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from src.core.infrastructure.database.session import get_db
 from src.modules.sigmun_idn.application.interfaces import (
     AuditoriaLoginRepositoryInterface,
+    RoleRepositoryInterface,
     SessaoRepositoryInterface,
     UsuarioRepositoryInterface,
 )
@@ -43,6 +44,7 @@ from src.modules.sigmun_idn.domain.exceptions import (
 )
 from src.modules.sigmun_idn.infrastructure.repositories import (
     SqlAlchemyAuditoriaLoginRepository,
+    SqlAlchemyRoleRepository,
     SqlAlchemySessaoRepository,
     SqlAlchemyUsuarioRepository,
 )
@@ -85,6 +87,18 @@ def get_auditoria_repository(
 ) -> AuditoriaLoginRepositoryInterface:
     """Fornece o repositório de auditoria concreto por requisição."""
     return SqlAlchemyAuditoriaLoginRepository(session)
+
+
+def get_role_repository(
+    session: Annotated[Session, Depends(get_db)],
+) -> RoleRepositoryInterface:
+    """Fornece o repositório de roles concreto por requisição.
+
+    Necessário no login para resolver `role_id` → código da role, que é o
+    que o RBAC compara. Sem isso o token carrega UUIDs e toda rota
+    protegida responde 403.
+    """
+    return SqlAlchemyRoleRepository(session)
 
 
 # -- Helper functions ----------------------------------------------------------
@@ -165,11 +179,14 @@ def listar_usuarios(
     page_size: int = 20,
 ) -> UsuarioListResponse:
     use_case = ListarUsuariosUseCase(repository)
-    resultado = use_case.execute(page=page, page_size=page_size)
+    # O repositório usa índice base-0 no offset, mas a API expõe páginas
+    # base-1 (padrão HTTP e do restante do sistema). Sem a conversão, `page=1`
+    # — o valor padrão — pulava a primeira página e devolvia lista vazia.
+    resultado = use_case.execute(page=max(page - 1, 0), page_size=page_size)
     return UsuarioListResponse(
         total=resultado.total,
-        page=resultado.page,
-        page_size=resultado.page_size,
+        page=page,
+        page_size=page_size,
         items=[_to_usuario_response(u) for u in resultado.items],
     )
 
@@ -291,6 +308,7 @@ def login_jwt(
     usuario_repo: Annotated[UsuarioRepositoryInterface, Depends(get_usuario_repository)],
     sessao_repo: Annotated[SessaoRepositoryInterface, Depends(get_sessao_repository)],
     auditoria_repo: Annotated[AuditoriaLoginRepositoryInterface, Depends(get_auditoria_repository)],
+    role_repo: Annotated[RoleRepositoryInterface, Depends(get_role_repository)],
 ) -> LoginResponse:
     """Autentica um usuário e retorna JWT access token + refresh token.
 
@@ -301,6 +319,7 @@ def login_jwt(
         usuario_repo=usuario_repo,
         sessao_repo=sessao_repo,
         auditoria_repo=auditoria_repo,
+        role_repo=role_repo,
     )
     command = AutenticarUsuarioJWTCommand(
         login=payload.login,
@@ -320,6 +339,7 @@ def refresh_token(
     payload: RefreshRequest,
     usuario_repo: Annotated[UsuarioRepositoryInterface, Depends(get_usuario_repository)],
     sessao_repo: Annotated[SessaoRepositoryInterface, Depends(get_sessao_repository)],
+    role_repo: Annotated[RoleRepositoryInterface, Depends(get_role_repository)],
 ) -> TokenResponse:
     """Renova access token via refresh token com rotation.
 
@@ -328,6 +348,7 @@ def refresh_token(
     use_case = RenovarTokenUseCase(
         usuario_repo=usuario_repo,
         sessao_repo=sessao_repo,
+        role_repo=role_repo,
     )
     command = RenovarTokenCommand(refresh_token=payload.refresh_token)
     result = use_case.execute(command)

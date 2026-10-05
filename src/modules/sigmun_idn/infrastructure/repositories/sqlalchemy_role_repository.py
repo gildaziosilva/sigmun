@@ -16,6 +16,7 @@ from src.modules.sigmun_idn.infrastructure.database.models import (
     RoleModel,
     RolePermissaoModel,
 )
+from src.modules.sigmun_idn.infrastructure.repositories.uuid_utils import as_uuid
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,10 @@ class SqlAlchemyRoleRepository(RoleRepositoryInterface):
         self._session = session
 
     def get_by_id(self, role_id: str) -> Role | None:
-        model = self._session.get(RoleModel, UUID(role_id))
+        pk = as_uuid(role_id)
+        if pk is None:
+            return None
+        model = self._session.get(RoleModel, pk)
         if model is None or model.deleted_at is not None:
             return None
         return self._to_entity(model)

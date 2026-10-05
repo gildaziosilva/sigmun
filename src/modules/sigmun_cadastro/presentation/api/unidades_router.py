@@ -6,14 +6,14 @@ Baseado em:
   - RN-CUM-009 (unicidade de sigla/códigos IBGE/SIAFI)
 
 Nota: autorização e auditoria estruturadas seguem o padrão do
-DOM-COM (header X-Usuario-Id provisório até o DOM-IDN).
+DOM-CUM (autenticação JWT do DOM-IDN; o header X-Usuario-Id é aceito
+apenas como compatibilidade durante a transição).
 """
 
 from __future__ import annotations
 
 import logging
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -49,7 +49,7 @@ from src.modules.sigmun_cadastro.presentation.schemas.unidade_schemas import (
     UnidadeListResponse,
     UnidadeResponse,
 )
-from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ def get_unidade_repository(
 def registrar_unidade(
     payload: UnidadeCreateRequest,
     repository: Annotated[UnidadeAdministrativaRepository, Depends(get_unidade_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
 ) -> UnidadeAdministrativa:
     """Registra uma unidade administrativa (RN-CUM-008/009)."""
     command = CriarUnidadeCommand(

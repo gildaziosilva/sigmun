@@ -88,3 +88,17 @@ __all__ = [
     "DocumentoAdicionadoEvent",
     "ContatoAdicionadoEvent",
 ]
+
+
+@dataclass(frozen=True)
+class RevisaoCadastralDivulgadaEvent:
+    """Divulgada a lista de pessoas com cadastro desatualizado (ADR-0007).
+
+    Consumidores (DOM-PES, DOM-ASS e DOM-IND) recebem o evento para atualizar
+    suas indicadoras sem consultar o cadastro pessoa a pessoa.
+    """
+
+    event_id: UUID
+    pessoas_desatualizadas: tuple[UUID, ...]
+    limite_meses: int
+    occurred_at: datetime

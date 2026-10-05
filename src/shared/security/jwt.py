@@ -175,6 +175,19 @@ def verify_token_type(token: str, expected_type: str) -> TokenPayload:
 # =============================================================================
 
 
+def _normaliza_papel(papel: str) -> str:
+    """Reduz um papel à forma canônica de comparação.
+
+    O banco grava códigos como ``ROLE_OUVIDOR`` (ver seeds de
+    ``idn.roles``), enquanto as rotas declaram o papel sem prefixo e em
+    minúsculas (``require_roles_hybrid("ouvidor")``). Comparar as duas
+    strings literalmente nunca casa, e o efeito é um 403 para todo usuário
+    legítimo. Normalizar em um único ponto evita que cada módulo precise
+    conhecer a convenção do banco.
+    """
+    return str(papel or "").strip().upper().removeprefix("ROLE_")
+
+
 @dataclass(frozen=True)
 class JWTUsuarioContexto:
     """Contexto de autorização extraído do JWT validado."""
@@ -185,10 +198,14 @@ class JWTUsuarioContexto:
     unidades_ids: tuple[str, ...]
 
     def possui_papel(self, papel: str) -> bool:
-        return papel in self.roles
+        return _normaliza_papel(papel) in self._papeis_normalizados
 
     def possui_algum_papel(self, *papeis: str) -> bool:
-        return bool(set(papeis) & set(self.roles))
+        return bool({_normaliza_papel(p) for p in papeis} & self._papeis_normalizados)
+
+    @property
+    def _papeis_normalizados(self) -> set[str]:
+        return {_normaliza_papel(r) for r in self.roles}
 
 
 def get_current_user_jwt(

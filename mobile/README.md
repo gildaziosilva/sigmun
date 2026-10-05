@@ -1,5 +1,8 @@
 # SIGMUN Mobile
 
+> **Status (2026-10-02):** scaffold — existem apenas `*/src/.gitkeep` para os 4 apps.
+> Nenhum código implementado. Não presumir funcionalidade offline/sync/push até a implementação.
+
 Aplicativos móveis do SIGMUN.
 
 ## Estrutura
