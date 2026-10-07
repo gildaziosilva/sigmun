@@ -1,11 +1,13 @@
 # TODO — Master Backlog e Plano de Tarefas do SIGMUN
 
 > **Projeto:** SIGMUN — Sistema Integrado de Gestão Municipal (Camacan-BA)  
-> **Status Geral do Projeto:** 🟢 Em Desenvolvimento (Ondas 1-4 Concluídas — DOM-SAU, DOM-ASS, DOM-TEL, DOM-IMO, DOM-GEO e DOM-OBR entregues; Onda 5 a iniciar)
-> **Última Atualização:** 2026-09-29
+> **Status Geral do Projeto:** 🟢 Em Desenvolvimento — ondas funcionais avançadas; hardening técnico, segurança, qualidade, CI/CD e fechamento documental em execução.
+> **Última Atualização:** 2026-10-06
 > **Referência Arquitetural:** `SIGMUN-Docs/ROADMAP.md` e `SIGMUN-Docs/Plano-de-Trabalho.md`
 
 Este documento consolida todas as tarefas técnicas, funcionais, documentais e operacionais necessárias para estabilizar o estado atual do projeto, concluir as ondas em andamento e guiar as próximas fases de implementação.
+
+> **Governança dos backlogs:** `TODO.md` é o roadmap mestre funcional e por ondas. `TODO2.md` é o backlog técnico incremental derivado de auditorias e execução. Tarefas técnicas detalhadas devem ser acompanhadas em `TODO2.md` e não duplicadas neste documento.
 
 ---
 
