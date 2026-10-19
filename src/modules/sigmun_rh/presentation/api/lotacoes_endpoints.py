@@ -27,12 +27,14 @@ from .lotacoes import (
     lotacao_to_response,
     router_lotacoes,
 )
+from src.shared.presentation.dependencies import JWTUsuarioContexto, exigir_papeis
 
 router = router_lotacoes
 
 
 @router.post("/lotacoes", status_code=201)
 def lotar_servidor(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     payload: LotacaoCreateRequest,
     lotacoes: Annotated[RepositorioLotacao, Depends(get_lotacao_repo)],
     servidores: Annotated[RepositorioServidor, Depends(get_servidor_repo2)],
@@ -56,6 +58,7 @@ def lotar_servidor(
 
 @router.post("/lotacoes/{lotacao_id}/encerrar")
 def encerrar_lotacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     lotacao_id: str,
     repo: Annotated[RepositorioLotacao, Depends(get_lotacao_repo)],
 ):

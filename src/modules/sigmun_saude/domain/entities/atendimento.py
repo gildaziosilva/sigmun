@@ -54,13 +54,9 @@ class Atendimento:
         from ..exceptions import RegraNegocioError
 
         if not self.paciente_id:
-            raise RegraNegocioError(
-                "Atendimento exige paciente vinculado (RN-SAU-010)"
-            )
+            raise RegraNegocioError("Atendimento exige paciente vinculado (RN-SAU-010)")
         if not self.profissional or not self.estabelecimento:
-            raise RegraNegocioError(
-                "Profissional e estabelecimento são obrigatórios (RN-SAU-010)"
-            )
+            raise RegraNegocioError("Profissional e estabelecimento são obrigatórios (RN-SAU-010)")
 
 
 @dataclass
@@ -86,9 +82,7 @@ class Agendamento:
         if not self.paciente_id:
             raise RegraNegocioError("Agendamento exige paciente vinculado")
         if not self.especialidade or self.data is None:
-            raise RegraNegocioError(
-                "Especialidade e data são obrigatórias no agendamento"
-            )
+            raise RegraNegocioError("Especialidade e data são obrigatórias no agendamento")
 
     def confirmar(self) -> None:
         """Confirma presença prevista."""

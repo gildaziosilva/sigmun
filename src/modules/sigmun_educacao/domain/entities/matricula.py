@@ -52,9 +52,7 @@ class Matricula:
         if not self.aluno_id:
             raise RegraNegocioError("Matrícula exige aluno vinculado (RN-EDU-010)")
         if not self.escola or not self.serie:
-            raise RegraNegocioError(
-                "Escola e série são obrigatórias na matrícula (RN-EDU-010)"
-            )
+            raise RegraNegocioError("Escola e série são obrigatórias na matrícula (RN-EDU-010)")
         if self.ano_letivo < 1:
             raise RegraNegocioError("Ano letivo inválido (RN-EDU-010)")
 

@@ -94,7 +94,11 @@ from src.modules.sigmun_cadastro.presentation.schemas.pessoa_schemas import (
     PessoaListResponse,
     PessoaResponse,
 )
-from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +131,7 @@ def get_pessoa_repository(
 def registrar_pessoa(
     payload: PessoaCreateRequest,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
 ) -> Pessoa:
     """Registra uma pessoa com endereços/documentos/contatos (RN-CUM-001 a 006)."""
     command = CriarPessoaCommand(
@@ -165,6 +169,7 @@ def registrar_pessoa(
 )
 def listar_pessoas(
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
+    usuario: UsuarioOpcional,
     tipo: Annotated[
         TipoPessoa | None, Query(description="Filtro por tipo (FISICA/JURIDICA)")
     ] = None,
@@ -233,6 +238,7 @@ def listar_pessoas(
 def consultar_pessoa(
     pessoa_id: UUID,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
+    usuario: UsuarioOpcional,
     include_deleted: bool = Query(default=False, description="Incluir logicamente excluídas"),
 ) -> Pessoa:
     """Consulta dados cadastrais completos de uma pessoa."""
@@ -261,7 +267,7 @@ def atualizar_dados_fisicos(
     pessoa_id: UUID,
     payload: PessoaFisicaUpdateRequest,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
 ) -> Pessoa:
     """Atualização parcial dos dados físicos (somente tipo FISICA)."""
     if not payload.model_fields_set:
@@ -299,7 +305,7 @@ def atualizar_dados_juridicos(
     pessoa_id: UUID,
     payload: PessoaJuridicaUpdateRequest,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
 ) -> Pessoa:
     """Atualização parcial dos dados jurídicos (somente tipo JURIDICA)."""
     if not payload.model_fields_set:
@@ -334,7 +340,7 @@ def alterar_categoria(
     pessoa_id: UUID,
     payload: CategoriaUpdateRequest,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
 ) -> Pessoa:
     """Altera a categoria (CIDADAO/SERVIDOR/FORNECEDOR/AGENTE_EXTERNO)."""
     use_case = AlterarCategoriaPessoaUseCase(repository)
@@ -361,7 +367,7 @@ def alterar_categoria(
 def excluir_pessoa(
     pessoa_id: UUID,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "cadastro"))],
 ) -> Pessoa:
     """Exclusão lógica da pessoa e de seus filhos (RN-CUM-007)."""
     use_case = ExcluirPessoaUseCase(repository)
@@ -390,7 +396,7 @@ def adicionar_endereco(
     pessoa_id: UUID,
     payload: EnderecoPayload,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
 ) -> Pessoa:
     """Adiciona endereço ao agregado; principal substitui a anterior (RN-CUM-005)."""
     use_case = AdicionarEnderecoUseCase(repository)
@@ -425,7 +431,7 @@ def adicionar_documento(
     pessoa_id: UUID,
     payload: DocumentoPayload,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
 ) -> Pessoa:
     """Adiciona documento com validação de CPF/CNPJ (RN-CUM-002/003/004/006)."""
     use_case = AdicionarDocumentoUseCase(repository)
@@ -459,7 +465,7 @@ def adicionar_contato(
     pessoa_id: UUID,
     payload: ContatoPayload,
     repository: Annotated[PessoaRepository, Depends(get_pessoa_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
 ) -> Pessoa:
     """Adiciona contato (TEL/EMAIL/REDES/WHATSAPP) ao agregado (RN-CUM-006)."""
     use_case = AdicionarContatoUseCase(repository)

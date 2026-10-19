@@ -340,9 +340,7 @@ class PedidoLai(ManifestacaoBase):
         self.data_decisao_recurso = date.today()
         self.updated_at = datetime.utcnow()
         self.updated_by = usuario
-        self.status = (
-            StatusManifestacao.CONCLUIDA if deferido else StatusManifestacao.ARQUIVADA
-        )
+        self.status = StatusManifestacao.CONCLUIDA if deferido else StatusManifestacao.ARQUIVADA
 
     def registrar_resposta(self, resposta: str, forma: FormaResposta, respondido_por: str) -> None:
         """Registra resposta ao solicitante."""

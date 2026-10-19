@@ -17,8 +17,7 @@ class VeiculoCreateRequest(BaseModel):
     renavam: str = ""
     ano_fabricacao: int = 0
     ano_modelo: int = 0
-    tipo: str = Field(default="leve",
-                      pattern="^(leve|pesado|motocicleta|onibus|trator)$")
+    tipo: str = Field(default="leve", pattern="^(leve|pesado|motocicleta|onibus|trator)$")
     combustivel: str = Field(
         default="flex",
         pattern="^(gasolina|alcool|flex|diesel|eletrico|gas)$",

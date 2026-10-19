@@ -14,7 +14,6 @@ from ...domain.exceptions import (
     ViagemSemDiariasError,
 )
 
-
 # =============================================================================
 # Input/Output DTOs
 # =============================================================================
@@ -231,7 +230,7 @@ class RestituicaPrestacaoOutputDTO:
 @dataclass
 class SolicitacaoDiariaInput:
     """DTO de solicitação de diária."""
-    
+
     servidor_id: str = ""
     dota_id: str = ""
     viagem_id: str = ""
@@ -311,7 +310,7 @@ class AtualizarViagemUseCase:
         viagem = self._repo.get_by_id(dto.id)
         if not viagem:
             raise ViagemNaoEncontradaError(f"Viagem {dto.id} não encontrada")
-        
+
         viagem.servidor_id = dto.servidor_id
         viagem.dota_id = dto.dota_id
         viagem.motivo = dto.motivo
@@ -322,7 +321,7 @@ class AtualizarViagemUseCase:
         viagem.data_fim = dto.data_fim
         viagem.destino = dto.destino
         viagem.is_antecipacao = dto.is_antecipacao
-        
+
         viagem_atualizada = self._repo.save(viagem)
         return AtualizarViagemOutputDTO(
             id=viagem_atualizada.id,
@@ -374,7 +373,7 @@ class AtualizarDiariaUseCase:
         diaria = self._repo.get_by_id(dto.id)
         if not diaria:
             raise DiariaNaoEncontradaError(f"Diária {dto.id} não encontrada")
-        
+
         if dto.categoria:
             diaria.categoria = CategoriaDiaria(dto.categoria)
         if dto.descricao:
@@ -385,7 +384,7 @@ class AtualizarDiariaUseCase:
             diaria.data_fim = dto.data_fim
         if dto.valor_diaria:
             diaria.valor_diaria = dto.valor_diaria
-        
+
         diaria_atualizada = self._repo.save(diaria)
         return AtualizarDiariaOutputDTO(
             id=diaria_atualizada.id,
@@ -469,9 +468,7 @@ class AprovarPrestacaoUseCase:
             )
 
         if getattr(diaria, "status", "") != StatusDiaria.PAGA:
-            raise RegraNegocioError(
-                f"Diária deve estar em estado PAGA para aprovar prestação"
-            )
+            raise RegraNegocioError("Diária deve estar em estado PAGA para aprovar prestação")
         if prestacao.status != "aberta":
             raise RegraNegocioError("Apenas prestações abertas podem ser aprovadas")
 
@@ -549,9 +546,7 @@ class RestituirPrestacaoUseCase:
         if getattr(diaria, "status", "") != StatusDiaria.PAGA:
             raise RegraNegocioError("Diária deve estar em estado PAGA para restituir")
         if prestacao.status != "glosa":
-            raise RegraNegocioError(
-                "Apenas prestações em estado 'glosa' podem ser restituídas"
-            )
+            raise RegraNegocioError("Apenas prestações em estado 'glosa' podem ser restituídas")
         if prestacao.valor_glosado <= 0:
             raise RegraNegocioError("Não há valor glosado para restituir")
 
@@ -579,7 +574,13 @@ class ConcederDiariaUseCase:
     def __init__(self, repositorio_diaria):
         self._repo = repositorio_diaria
 
-    def execute(self, diaria_id: str, data_inicio: date | None = None, data_fim: date | None = None, autor_id: str = "") -> Diaria:
+    def execute(
+        self,
+        diaria_id: str,
+        data_inicio: date | None = None,
+        data_fim: date | None = None,
+        autor_id: str = "",
+    ) -> Diaria:
         diaria = self._repo.get_by_id(diaria_id)
         if not diaria:
             raise DiariaNaoEncontradaError(f"Diária {diaria_id} não encontrada")
@@ -702,7 +703,13 @@ class ConfirmarConcessaoUseCase:
     def __init__(self, repositorio_diaria):
         self._repo = repositorio_diaria
 
-    def execute(self, diaria_id: str, data_inicio: date | None = None, data_fim: date | None = None, autor_id: str = "") -> Diaria:
+    def execute(
+        self,
+        diaria_id: str,
+        data_inicio: date | None = None,
+        data_fim: date | None = None,
+        autor_id: str = "",
+    ) -> Diaria:
         """Confirma a concessão da diária."""
         diaria = self._repo.get_by_id(diaria_id)
         if not diaria:

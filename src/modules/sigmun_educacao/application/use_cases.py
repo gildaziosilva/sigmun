@@ -5,12 +5,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
-from . import interfaces as ports
 from ..domain.entities.aluno import Aluno, Sexo
 from ..domain.entities.diario import LancamentoDiario
 from ..domain.entities.matricula import Matricula
 from ..domain.entities.merenda import DistribuicaoMerenda, ItemMerenda
 from ..domain.entities.transporte import PassagemTransporte, RotaTransporte
+from . import interfaces as ports
 
 
 @dataclass
@@ -89,9 +89,7 @@ class RealizarMatriculaUseCase:
         if aluno is None:
             raise AlunoNaoEncontradoError("Aluno nao encontrado para matricula")
         if self._repo.get_ativa_by_aluno(dto.aluno_id) is not None:
-            raise MatriculaJaAtivaError(
-                "Aluno ja possui matricula ativa (RN-EDU-010)"
-            )
+            raise MatriculaJaAtivaError("Aluno ja possui matricula ativa (RN-EDU-010)")
         matricula = Matricula(
             aluno_id=dto.aluno_id,
             escola=dto.escola,
@@ -111,9 +109,7 @@ class TransferirMatriculaUseCase:
     def __init__(self, repo: ports.RepositorioMatricula) -> None:
         self._repo = repo
 
-    def execute(
-        self, matricula_id: str, escola_destino: str, motivo: str = ""
-    ) -> Matricula:
+    def execute(self, matricula_id: str, escola_destino: str, motivo: str = "") -> Matricula:
         """Executa a transferencia."""
         from ..domain.exceptions import MatriculaNaoEncontradaError
 
@@ -190,9 +186,7 @@ class RegistrarLancamentoDiarioUseCase:
 
         matricula = self._matriculas.get_by_id(dto.matricula_id)
         if matricula is None:
-            raise MatriculaNaoEncontradaError(
-                "Matricula nao encontrada para lancamento"
-            )
+            raise MatriculaNaoEncontradaError("Matricula nao encontrada para lancamento")
         if not matricula.esta_ativa:
             raise EstadoMatriculaInvalidoError(
                 "Lancamento no diario exige matricula ativa (RN-EDU-020)"
@@ -275,7 +269,6 @@ class AtivarRotaTransporteUseCase:
         return self._repo.save(rota)
 
 
-
 @dataclass
 class RegistrarPassagemInput:
     """DTO de passagem no transporte escolar."""
@@ -318,9 +311,7 @@ class RegistrarPassagemUseCase:
         if matricula is None:
             raise MatriculaNaoEncontradaError("Matricula nao encontrada para passagem")
         if not matricula.esta_ativa:
-            raise EstadoMatriculaInvalidoError(
-                "Passagem exige matricula ativa (RN-EDU-030)"
-            )
+            raise EstadoMatriculaInvalidoError("Passagem exige matricula ativa (RN-EDU-030)")
         data = dto.data or date.today()
         if self._repo.count_by_rota_data(rota.id, data) >= rota.vagas:
             raise VagaIndisponivelError(
@@ -365,7 +356,6 @@ class CadastrarItemMerendaUseCase:
         )
         item.validar()
         return self._repo.save(item)
-
 
 
 class ReporEstoqueMerendaUseCase:
@@ -420,13 +410,9 @@ class DistribuirMerendaUseCase:
 
         matricula = self._matriculas.get_by_id(dto.matricula_id)
         if matricula is None:
-            raise MatriculaNaoEncontradaError(
-                "Matricula nao encontrada para distribuicao"
-            )
+            raise MatriculaNaoEncontradaError("Matricula nao encontrada para distribuicao")
         if not matricula.esta_ativa:
-            raise EstadoMatriculaInvalidoError(
-                "Distribuicao exige matricula ativa (RN-EDU-040)"
-            )
+            raise EstadoMatriculaInvalidoError("Distribuicao exige matricula ativa (RN-EDU-040)")
         item = self._itens.get_by_id(dto.item_id)
         if item is None:
             raise ItemMerendaNaoEncontradoError("Item de merenda nao encontrado")
@@ -466,4 +452,3 @@ __all__ = [
     "DistribuirMerendaInput",
     "DistribuirMerendaUseCase",
 ]
-

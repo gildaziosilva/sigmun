@@ -34,6 +34,11 @@ from src.modules.sigmun_tributos.presentation.schemas.tri_schemas import (
     ImovelCreateRequest,
     ImovelResponse,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 router = APIRouter(prefix="/api/v1/tri", tags=["Administracao Tributaria"])
 
@@ -50,29 +55,43 @@ def get_imovel_repo(session: Annotated[Session, Depends(get_db)]) -> Repositorio
 
 def _to_contribuinte(contribuinte) -> ContribuinteResponse:
     return ContribuinteResponse(
-        id=contribuinte.id, tipo=contribuinte.tipo.value, nome=contribuinte.nome,
+        id=contribuinte.id,
+        tipo=contribuinte.tipo.value,
+        nome=contribuinte.nome,
         cpf_cnpj=contribuinte.cpf_cnpj,
         inscricao_municipal=contribuinte.inscricao_municipal,
-        email=contribuinte.email, telefone=contribuinte.telefone,
-        endereco=contribuinte.endereco, status=contribuinte.status.value,
-        created_at=contribuinte.created_at, updated_at=contribuinte.updated_at,
+        email=contribuinte.email,
+        telefone=contribuinte.telefone,
+        endereco=contribuinte.endereco,
+        status=contribuinte.status.value,
+        created_at=contribuinte.created_at,
+        updated_at=contribuinte.updated_at,
     )
 
 
 def _to_imovel(imovel) -> ImovelResponse:
     return ImovelResponse(
-        id=imovel.id, contribuinte_id=imovel.contribuinte_id,
+        id=imovel.id,
+        contribuinte_id=imovel.contribuinte_id,
         inscricao_imobiliaria=imovel.inscricao_imobiliaria,
-        logradouro=imovel.logradouro, numero=imovel.numero, bairro=imovel.bairro,
-        cidade=imovel.cidade, uf=imovel.uf, cep=imovel.cep,
-        area_terreno=imovel.area_terreno, area_construida=imovel.area_construida,
-        valor_venal=imovel.valor_venal, aliquota=imovel.aliquota,
-        status=imovel.status.value, created_at=imovel.created_at,
+        logradouro=imovel.logradouro,
+        numero=imovel.numero,
+        bairro=imovel.bairro,
+        cidade=imovel.cidade,
+        uf=imovel.uf,
+        cep=imovel.cep,
+        area_terreno=imovel.area_terreno,
+        area_construida=imovel.area_construida,
+        valor_venal=imovel.valor_venal,
+        aliquota=imovel.aliquota,
+        status=imovel.status.value,
+        created_at=imovel.created_at,
     )
 
 
 @router.post("/contribuintes", status_code=201)
 def cadastrar_contribuinte(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "tributos"))],
     payload: ContribuinteCreateRequest,
     repo: Annotated[RepositorioContribuinte, Depends(get_contribuinte_repo)],
 ):
@@ -80,19 +99,24 @@ def cadastrar_contribuinte(
     try:
         contribuinte = CadastrarContribuinteUseCase(repo).execute(
             CadastrarContribuinteInput(
-                tipo=payload.tipo, nome=payload.nome, cpf_cnpj=payload.cpf_cnpj,
+                tipo=payload.tipo,
+                nome=payload.nome,
+                cpf_cnpj=payload.cpf_cnpj,
                 inscricao_municipal=payload.inscricao_municipal,
-                email=payload.email, telefone=payload.telefone,
-                endereco=payload.endereco, autor_id=payload.created_by,
+                email=payload.email,
+                telefone=payload.telefone,
+                endereco=payload.endereco,
+                autor_id=payload.created_by,
             )
         )
     except DomTriDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_contribuinte(contribuinte)
 
 
 @router.get("/contribuintes")
 def listar_contribuintes(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioContribuinte, Depends(get_contribuinte_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -104,6 +128,7 @@ def listar_contribuintes(
 
 @router.get("/contribuintes/{contribuinte_id}")
 def obter_contribuinte(
+    usuario: UsuarioOpcional,
     contribuinte_id: str,
     repo: Annotated[RepositorioContribuinte, Depends(get_contribuinte_repo)],
 ):
@@ -116,6 +141,7 @@ def obter_contribuinte(
 
 @router.post("/imoveis", status_code=201)
 def cadastrar_imovel(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "tributos"))],
     payload: ImovelCreateRequest,
     repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
     contribuintes: Annotated[RepositorioContribuinte, Depends(get_contribuinte_repo)],
@@ -126,23 +152,29 @@ def cadastrar_imovel(
             CadastrarImovelInput(
                 contribuinte_id=payload.contribuinte_id,
                 inscricao_imobiliaria=payload.inscricao_imobiliaria,
-                logradouro=payload.logradouro, numero=payload.numero,
-                bairro=payload.bairro, cidade=payload.cidade, uf=payload.uf,
-                cep=payload.cep, area_terreno=payload.area_terreno,
+                logradouro=payload.logradouro,
+                numero=payload.numero,
+                bairro=payload.bairro,
+                cidade=payload.cidade,
+                uf=payload.uf,
+                cep=payload.cep,
+                area_terreno=payload.area_terreno,
                 area_construida=payload.area_construida,
-                valor_venal=payload.valor_venal, aliquota=payload.aliquota,
+                valor_venal=payload.valor_venal,
+                aliquota=payload.aliquota,
                 autor_id=payload.created_by,
             )
         )
     except ContribuinteNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomTriDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_imovel(imovel)
 
 
 @router.get("/imoveis")
 def listar_imoveis(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -154,6 +186,7 @@ def listar_imoveis(
 
 @router.get("/imoveis/{imovel_id}")
 def obter_imovel(
+    usuario: UsuarioOpcional,
     imovel_id: str,
     repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
 ):

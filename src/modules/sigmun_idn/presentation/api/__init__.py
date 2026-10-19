@@ -58,6 +58,7 @@ from src.modules.sigmun_idn.presentation.schemas import (
     UsuarioListResponse,
     UsuarioResponse,
 )
+from src.shared.presentation.dependencies import exigir_papeis
 from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid
 
 logger = logging.getLogger(__name__)
@@ -123,7 +124,7 @@ def _to_usuario_response(usuario: Usuario) -> UsuarioResponse:
 def _to_login_response(result: object) -> LoginResponse:
     """Converte resultado de autenticação para LoginResponse (compatível)."""
     # Se é resultado JWT novo, popula campos novos + legacy
-    if hasattr(result, 'access_token') and result.access_token:
+    if hasattr(result, "access_token") and result.access_token:
         return LoginResponse(
             token=result.access_token,  # legacy: token = access_token
             mensagem=result.mensagem,
@@ -150,6 +151,7 @@ def _to_login_response(result: object) -> LoginResponse:
     },
 )
 def criar_usuario(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin"))],
     payload: UsuarioCreateRequest,
     repository: Annotated[UsuarioRepositoryInterface, Depends(get_usuario_repository)],
 ) -> UsuarioResponse:
@@ -174,6 +176,7 @@ def criar_usuario(
     summary="Lista usuários com paginação",
 )
 def listar_usuarios(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin"))],
     repository: Annotated[UsuarioRepositoryInterface, Depends(get_usuario_repository)],
     page: int = 1,
     page_size: int = 20,
@@ -198,6 +201,7 @@ def listar_usuarios(
     responses={404: {"description": "Usuário não encontrado"}},
 )
 def buscar_usuario(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin"))],
     usuario_id: str,
     repository: Annotated[UsuarioRepositoryInterface, Depends(get_usuario_repository)],
 ) -> UsuarioResponse:
@@ -216,6 +220,7 @@ def buscar_usuario(
     responses={404: {"description": "Usuário não encontrado"}},
 )
 def ativar_usuario(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin"))],
     usuario_id: str,
     repository: Annotated[UsuarioRepositoryInterface, Depends(get_usuario_repository)],
 ) -> UsuarioResponse:
@@ -234,6 +239,7 @@ def ativar_usuario(
     responses={404: {"description": "Usuário não encontrado"}},
 )
 def desativar_usuario(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin"))],
     usuario_id: str,
     repository: Annotated[UsuarioRepositoryInterface, Depends(get_usuario_repository)],
 ) -> UsuarioResponse:
@@ -252,6 +258,7 @@ def desativar_usuario(
     responses={404: {"description": "Usuário não encontrado"}},
 )
 def bloquear_usuario(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin"))],
     usuario_id: str,
     repository: Annotated[UsuarioRepositoryInterface, Depends(get_usuario_repository)],
 ) -> UsuarioResponse:
@@ -280,7 +287,7 @@ def login_legacy(
     auditoria_repo: Annotated[AuditoriaLoginRepositoryInterface, Depends(get_auditoria_repository)],
 ) -> LoginResponse:
     """Autentica um usuário e retorna token de sessão (legacy, stateful).
-    
+
     DEPRECADO: Use POST /auth/login/jwt para obter JWT tokens.
     """
     use_case = AutenticarUsuarioUseCase(

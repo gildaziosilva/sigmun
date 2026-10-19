@@ -19,8 +19,8 @@ from src.modules.sigmun_dia.application.use_cases import (
     AprovarPrestacaoUseCase,
     AutorizarDiariaUseCase,
     CalcularDiariaUseCase,
-    ConfirmarConcessaoUseCase,
     ConcederDiariaUseCase,
+    ConfirmarConcessaoUseCase,
     CriarDiariaUseCase,
     CriarPrestacaoContasInputDTO,
     CriarPrestacaoContasUseCase,
@@ -50,6 +50,11 @@ from src.modules.sigmun_dia.presentation.schemas import (
     PrestacaoContasResponse,
     ViagemCreateRequest,
     ViagemResponse,
+)
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
 )
 
 logger = logging.getLogger(__name__)
@@ -93,6 +98,7 @@ def get_prestacao_repository(
     responses={409: {"model": None}},
 )
 def solicitar_viagem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     payload: ViagemCreateRequest,
     repo: Annotated[RepositorioViagem, Depends(get_viagem_repository)],
 ) -> ViagemResponse:
@@ -124,6 +130,7 @@ def solicitar_viagem(
     summary="Tramita uma viagem entre unidades",
 )
 def tramitar_viagem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     viagem_id: str,
     payload: ViagemCreateRequest,
     repo: Annotated[RepositorioViagem, Depends(get_viagem_repository)],
@@ -149,6 +156,7 @@ def tramitar_viagem(
     summary="Visita uma viagem (registra chegada)",
 )
 def visitar_viagem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     viagem_id: str,
     payload: ViagemCreateRequest,
     repo: Annotated[RepositorioViagem, Depends(get_viagem_repository)],
@@ -176,6 +184,7 @@ def visitar_viagem(
     responses={404: {"model": None}},
 )
 def buscar_viagem(
+    usuario: UsuarioOpcional,
     viagem_id: str,
     repo: Annotated[RepositorioViagem, Depends(get_viagem_repository)],
 ) -> ViagemResponse:
@@ -192,6 +201,7 @@ def buscar_viagem(
     summary="Lista viagens de um servidor",
 )
 def viagens_do_servidor(
+    usuario: UsuarioOpcional,
     servidor_id: str,
     repo: Annotated[RepositorioViagem, Depends(get_viagem_repository)],
 ) -> list[ViagemResponse]:
@@ -213,6 +223,7 @@ def viagens_do_servidor(
     responses={409: {"model": None}},
 )
 def solicitar_diaria(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     payload: DiariaCreateRequest,
     repo_diaria: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
     repo_viagem: Annotated[RepositorioViagem, Depends(get_viagem_repository)],
@@ -243,6 +254,7 @@ def solicitar_diaria(
     summary="Autoriza uma diária (RN-DIA-004)",
 )
 def autorizar_diaria(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     diaria_id: str,
     repo: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
 ) -> DiariaResponse:
@@ -261,6 +273,7 @@ def autorizar_diaria(
     summary="Calcula o valor da diária (RN-DIA-005)",
 )
 def calcular_diaria(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     diaria_id: str,
     repo: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
 ) -> DiariaResponse:
@@ -279,6 +292,7 @@ def calcular_diaria(
     summary="Confirma concessão da diária (RN-DIA-006)",
 )
 def conceder_diaria(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     diaria_id: str,
     payload: DiariaCreateRequest,
     repo: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
@@ -298,6 +312,7 @@ def conceder_diaria(
     summary="Inicia a prestação de contas (RN-DIA-007)",
 )
 def iniciar_prestacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     diaria_id: str,
     repo: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
 ) -> DiariaResponse:
@@ -316,6 +331,7 @@ def iniciar_prestacao(
     summary="Registra pagamento da diária (RN-DIA-008)",
 )
 def pagar_diaria(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     diaria_id: str,
     repo: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
 ) -> DiariaResponse:
@@ -335,6 +351,7 @@ def pagar_diaria(
     responses={404: {"model": None}},
 )
 def buscar_diaria(
+    usuario: UsuarioOpcional,
     diaria_id: str,
     repo: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
 ) -> DiariaResponse:
@@ -351,6 +368,7 @@ def buscar_diaria(
     summary="Lista diárias de um servidor",
 )
 def diarias_do_servidor(
+    usuario: UsuarioOpcional,
     servidor_id: str,
     repo: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
 ) -> list[DiariaResponse]:
@@ -365,6 +383,7 @@ def diarias_do_servidor(
     summary="Lista diárias por status",
 )
 def diarias_por_status(
+    usuario: UsuarioOpcional,
     status: str,
     repo: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
 ) -> list[DiariaResponse]:
@@ -385,6 +404,7 @@ def diarias_por_status(
     summary="Abre uma prestação de contas",
 )
 def abrir_prestacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     payload: PrestacaoContasCreateRequest,
     repo_prestacao: Annotated[RepositorioPrestacaoContas, Depends(get_prestacao_repository)],
     repo_diaria: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
@@ -414,6 +434,7 @@ def abrir_prestacao(
     summary="Aprova uma prestação de contas (RN-DIA-011)",
 )
 def aprovar_prestacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     prestacao_id: str,
     repo_prestacao: Annotated[RepositorioPrestacaoContas, Depends(get_prestacao_repository)],
     repo_diaria: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
@@ -443,6 +464,7 @@ def aprovar_prestacao(
     summary="Glosa uma prestação de contas (RN-DIA-012)",
 )
 def glosar_prestacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     prestacao_id: str,
     motivo: str,
     valor_glosado: float,
@@ -477,6 +499,7 @@ def glosar_prestacao(
     responses={404: {"model": None}},
 )
 def buscar_prestacao(
+    usuario: UsuarioOpcional,
     prestacao_id: str,
     repo: Annotated[RepositorioPrestacaoContas, Depends(get_prestacao_repository)],
 ) -> PrestacaoContasResponse:
@@ -487,13 +510,13 @@ def buscar_prestacao(
     return _prestacao_to_response(prestacao)
 
 
-
 @router.post(
     "/prestacoes/{prestacao_id}/restituir",
     response_model=PrestacaoContasResponse,
     summary="Restitui valor glosado de uma prestação (RN-DIA-013)",
 )
 def restituir_prestacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dia"))],
     prestacao_id: str,
     repo_prestacao: Annotated[RepositorioPrestacaoContas, Depends(get_prestacao_repository)],
     repo_diaria: Annotated[RepositorioDiaria, Depends(get_diaria_repository)],
@@ -523,6 +546,7 @@ def restituir_prestacao(
     summary="Lista prestações abertas",
 )
 def prestacoes_abertas(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioPrestacaoContas, Depends(get_prestacao_repository)],
 ) -> list[PrestacaoContasResponse]:
     """Lista prestações abertas."""

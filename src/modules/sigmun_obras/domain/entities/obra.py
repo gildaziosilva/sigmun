@@ -117,8 +117,7 @@ class Obra:
             )
         if self.percentual_fisico < 100.0:
             raise RegraNegocioError(
-                "Obra só pode ser concluída com 100% do avanço físico registrado "
-                "(RN-OBR-005)"
+                "Obra só pode ser concluída com 100% do avanço físico registrado (RN-OBR-005)"
             )
         self.situacao = SituacaoObra.CONCLUIDA
         self.data_fim_real = data or date.today()
@@ -159,13 +158,9 @@ class Obra:
         validar_percentual(self.percentual_financeiro, "Avanço financeiro")
 
         if self.valor_contratado > self.valor_orcado > 0:
-            raise RegraNegocioError(
-                "Valor contratado não pode superar o valor orçado (RN-OBR-004)"
-            )
+            raise RegraNegocioError("Valor contratado não pode superar o valor orçado (RN-OBR-004)")
         if self.valor_pago > self.valor_mediado:
-            raise RegraNegocioError(
-                "Valor pago não pode superar o valor medido (RN-OBR-006)"
-            )
+            raise RegraNegocioError("Valor pago não pode superar o valor medido (RN-OBR-006)")
         if self.percentual_financeiro > self.percentual_fisico + 1e-9:
             raise RegraNegocioError(
                 "Avanço financeiro não pode ultrapassar o avanço físico (RN-OBR-004)"

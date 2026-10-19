@@ -14,7 +14,7 @@ class RepositorioViagem(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[Viagem]:
+    def get_by_id(self, id: str) -> Viagem | None:
         pass
 
     @abstractmethod
@@ -42,11 +42,11 @@ class RepositorioDiaria(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[Diaria]:
+    def get_by_id(self, id: str) -> Diaria | None:
         pass
 
     @abstractmethod
-    def get_by_viagem(self, viagem_id: str) -> Optional[Diaria]:
+    def get_by_viagem(self, viagem_id: str) -> Diaria | None:
         pass
 
     @abstractmethod
@@ -78,11 +78,11 @@ class RepositorioPrestacaoContas(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[PrestacaoContas]:
+    def get_by_id(self, id: str) -> PrestacaoContas | None:
         pass
 
     @abstractmethod
-    def get_by_diaria(self, diaria_id: str) -> Optional[PrestacaoContas]:
+    def get_by_diaria(self, diaria_id: str) -> PrestacaoContas | None:
         pass
 
     @abstractmethod
@@ -95,7 +95,7 @@ class RepositorioPrestacaoContas(ABC):
 
 
 __all__ = [
-    'RepositorioViagem',
-    'RepositorioDiaria',
-    'RepositorioPrestacaoContas',
+    "RepositorioViagem",
+    "RepositorioDiaria",
+    "RepositorioPrestacaoContas",
 ]

@@ -35,6 +35,7 @@ from src.modules.sigmun_rh.presentation.schemas.pes_operacionais_schemas import 
 )
 
 from .operacional import get_ferias_repo, get_freq_repo, get_serv_repo
+from src.shared.presentation.dependencies import JWTUsuarioContexto, exigir_papeis
 
 router = APIRouter(prefix="/api/v1/pes", tags=["Gestao de Pessoas"])
 
@@ -59,6 +60,7 @@ def _freq_to_response(freq) -> FrequenciaResponse:
 
 @router.post("/ferias", status_code=201)
 def planejar_ferias(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     payload: FeriasCreateRequest,
     repo: Annotated[RepositorioFerias, Depends(get_ferias_repo)],
     servidores: Annotated[RepositorioServidor, Depends(get_serv_repo)],
@@ -83,6 +85,7 @@ def planejar_ferias(
 
 @router.post("/ferias/{ferias_id}/aprovar")
 def aprovar_ferias(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     ferias_id: str, repo: Annotated[RepositorioFerias, Depends(get_ferias_repo)]
 ):
     """Aprova ferias."""
@@ -95,6 +98,7 @@ def aprovar_ferias(
 
 @router.post("/ferias/{ferias_id}/concluir")
 def concluir_ferias(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     ferias_id: str, repo: Annotated[RepositorioFerias, Depends(get_ferias_repo)]
 ):
     """Conclui ferias em gozo."""
@@ -107,6 +111,7 @@ def concluir_ferias(
 
 @router.post("/frequencias", status_code=201)
 def registrar_frequencia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     payload: FrequenciaCreateRequest,
     repo: Annotated[RepositorioFrequencia, Depends(get_freq_repo)],
     servidores: Annotated[RepositorioServidor, Depends(get_serv_repo)],
@@ -134,6 +139,7 @@ class JustificativaRequest(BaseModel):
 
 @router.post("/ferias/{ferias_id}/iniciar-gozo")
 def iniciar_gozo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     ferias_id: str, repo: Annotated[RepositorioFerias, Depends(get_ferias_repo)]
 ):
     """Inicia gozo de ferias aprovadas."""
@@ -146,6 +152,7 @@ def iniciar_gozo(
 
 @router.post("/frequencias/{frequencia_id}/justificar")
 def justificar_falta(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     frequencia_id: str,
     payload: JustificativaRequest,
     repo: Annotated[RepositorioFrequencia, Depends(get_freq_repo)],

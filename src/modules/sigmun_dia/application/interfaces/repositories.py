@@ -1,7 +1,6 @@
 """Interfaces de repositório da aplicação de Gestão de Diárias, Viagens e Deslocamentos."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from ...domain.entities import Diaria, PrestacaoContas, Viagem
 
@@ -15,7 +14,7 @@ class RepositorioViagem(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[Viagem]:
+    def get_by_id(self, id: str) -> Viagem | None:
         """Busca viagem por ID."""
         pass
 
@@ -49,12 +48,12 @@ class RepositorioDiaria(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[Diaria]:
+    def get_by_id(self, id: str) -> Diaria | None:
         """Busca diária por ID."""
         pass
 
     @abstractmethod
-    def get_by_viagem(self, viagem_id: str) -> Optional[Diaria]:
+    def get_by_viagem(self, viagem_id: str) -> Diaria | None:
         """Busca diária por ID de viagem."""
         pass
 
@@ -93,12 +92,12 @@ class RepositorioPrestacaoContas(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[PrestacaoContas]:
+    def get_by_id(self, id: str) -> PrestacaoContas | None:
         """Busca prestação de contas por ID."""
         pass
 
     @abstractmethod
-    def get_by_diaria(self, diaria_id: str) -> Optional[PrestacaoContas]:
+    def get_by_diaria(self, diaria_id: str) -> PrestacaoContas | None:
         """Busca prestação de contas por ID de diária."""
         pass
 

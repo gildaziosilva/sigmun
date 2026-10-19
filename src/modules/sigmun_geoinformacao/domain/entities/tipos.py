@@ -130,13 +130,11 @@ def validar_coordenada(latitude: float, longitude: float, rotulo: str) -> None:
 
     if not LATITUDE_MIN <= latitude <= LATITUDE_MAX:
         raise RegraNegocioError(
-            f"{rotulo}: latitude deve estar entre {LATITUDE_MIN} e {LATITUDE_MAX} "
-            "(RN-GEO-003)"
+            f"{rotulo}: latitude deve estar entre {LATITUDE_MIN} e {LATITUDE_MAX} (RN-GEO-003)"
         )
     if not LONGITUDE_MIN <= longitude <= LONGITUDE_MAX:
         raise RegraNegocioError(
-            f"{rotulo}: longitude deve estar entre {LONGITUDE_MIN} e {LONGITUDE_MAX} "
-            "(RN-GEO-003)"
+            f"{rotulo}: longitude deve estar entre {LONGITUDE_MIN} e {LONGITUDE_MAX} (RN-GEO-003)"
         )
 
 

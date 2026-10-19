@@ -5,10 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
-from . import interfaces as ports
 from ..domain.entities.bem import Bem, StatusBem, TipoBem
 from ..domain.entities.depreciacao import Depreciacao
 from ..domain.entities.transferencia import Transferencia
+from . import interfaces as ports
 
 
 @dataclass
@@ -41,9 +41,7 @@ class CadastrarBemUseCase:
         if not dto.codigo or not dto.descricao:
             raise RegraNegocioError("Código e descrição do bem são obrigatórios")
         if self._repo.get_by_codigo(dto.codigo) is not None:
-            raise BemJaExistenteError(
-                "Tombo/código de bem já cadastrado (RN-PAT-001)"
-            )
+            raise BemJaExistenteError("Tombo/código de bem já cadastrado (RN-PAT-001)")
         bem = Bem(
             codigo=dto.codigo,
             tipo=TipoBem(dto.tipo),
@@ -138,9 +136,7 @@ class TransferirBemUseCase:
         bem.transferir(dto.para_localizacao)
         transferencia = Transferencia(
             bem_id=dto.bem_id,
-            de_localizacao=(
-                dto.de_localizacao or bem.localizacao
-            ),
+            de_localizacao=(dto.de_localizacao or bem.localizacao),
             para_localizacao=dto.para_localizacao,
             de_responsavel_id=dto.de_responsavel_id,
             para_responsavel_id=dto.para_responsavel_id,
@@ -173,9 +169,7 @@ class ConcluirTransferenciaUseCase:
 
         transferencia = self._transferencias.get_by_id(transferencia_id)
         if transferencia is None:
-            raise TransferenciaNaoEncontradaError(
-                "Transferência não encontrada"
-            )
+            raise TransferenciaNaoEncontradaError("Transferência não encontrada")
         bem = self._bens.get_by_id(transferencia.bem_id)
         if bem is None:
             raise BemNaoEncontradoError("Bem vinculado à transferência não encontrado")

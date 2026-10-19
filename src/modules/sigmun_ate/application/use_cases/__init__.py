@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 from uuid import uuid4
 
 from src.modules.sigmun_ate.application.interfaces import (
@@ -37,8 +37,8 @@ from src.modules.sigmun_ate.domain.events import (
     AtendimentoConcluido,
     AtendimentoIniciado,
     AvaliacaoRegistrada,
-    EncaminhamentoCriado,
     EncaminhamentoConcluido,
+    EncaminhamentoCriado,
     FilaAberta,
     FilaFechada,
     SenhaAtendida,
@@ -60,8 +60,8 @@ from src.modules.sigmun_ate.domain.exceptions import (
     EncaminhamentoJaConcluidoError,
     FilaFechadaError,
     FilaInvalidaError,
-    GuicheInvalidoError,
     GuicheInativoError,
+    GuicheInvalidoError,
     MaximoRechamadasError,
     OperadorInvalidoError,
     SenhaAtendidaError,
@@ -73,17 +73,27 @@ from src.modules.sigmun_ate.domain.exceptions import (
 )
 from src.modules.sigmun_ate.domain.services import (
     ServicoAtendimento as DomainServicoAtendimento,
+)
+from src.modules.sigmun_ate.domain.services import (
     ServicoAvaliacao as DomainServicoAvaliacao,
+)
+from src.modules.sigmun_ate.domain.services import (
     ServicoEncaminhamento as DomainServicoEncaminhamento,
+)
+from src.modules.sigmun_ate.domain.services import (
     ServicoFila as DomainServicoFila,
+)
+from src.modules.sigmun_ate.domain.services import (
     ServicoSenha as DomainServicoSenha,
+)
+from src.modules.sigmun_ate.domain.services import (
     ServicoTriagem as DomainServicoTriagem,
 )
-
 
 # =============================================================================
 # Triagem
 # =============================================================================
+
 
 @dataclass
 class RealizarTriagemInputDTO:
@@ -146,6 +156,7 @@ class RealizarTriagemUseCase:
 # Fila
 # =============================================================================
 
+
 @dataclass
 class AbrirFilaInputDTO:
     unidade_id: str
@@ -184,9 +195,7 @@ class AbrirFilaUseCase:
         if not servico or not servico.esta_ativo:
             raise ValueError("Serviço inválido ou inativo")
 
-        fila_existente = self._repo_fila.buscar_aberta(
-            input_dto.unidade_id, input_dto.servico_id
-        )
+        fila_existente = self._repo_fila.buscar_aberta(input_dto.unidade_id, input_dto.servico_id)
         if fila_existente:
             raise ValueError("Já existe fila aberta")
 
@@ -207,11 +216,15 @@ class AbrirFilaUseCase:
             )
         )
 
-        return type("AbrirFilaOutputDTO", (), {
-            "fila_id": fila.id,
-            "unidade_id": input_dto.unidade_id,
-            "servico_id": input_dto.servico_id,
-        })()
+        return type(
+            "AbrirFilaOutputDTO",
+            (),
+            {
+                "fila_id": fila.id,
+                "unidade_id": input_dto.unidade_id,
+                "servico_id": input_dto.servico_id,
+            },
+        )()
 
 
 @dataclass
@@ -252,6 +265,7 @@ class FecharFilaUseCase:
 # =============================================================================
 # Senha
 # =============================================================================
+
 
 @dataclass
 class EmitirSenhaInputDTO:
@@ -311,7 +325,6 @@ class EmitirSenhaUseCase:
 
         self._repo_senha.salvar(senha)
 
-        from src.modules.sigmun_ate.domain.events import SenhaEmitida
         self._eventos.publicar(
             SenhaEmitida(
                 aggregate_id=senha.id,
@@ -333,6 +346,7 @@ class EmitirSenhaUseCase:
 # =============================================================================
 # Chamar / Rechamar / Atender Senha
 # =============================================================================
+
 
 @dataclass
 class ChamarSenhaInputDTO:
@@ -398,7 +412,6 @@ class ChamarSenhaUseCase:
         self._repo_senha.salvar(senha)
         self._repo_chamada.salvar(chamada)
 
-        from src.modules.sigmun_ate.domain.events import SenhaChamada
         self._eventos.publicar(
             SenhaChamada(
                 aggregate_id=senha.id,
@@ -461,7 +474,6 @@ class RechamarSenhaUseCase:
         self._repo_senha.salvar(senha)
         self._repo_chamada.salvar(chamada)
 
-        from src.modules.sigmun_ate.domain.events import SenhaRechamada
         self._eventos.publicar(
             SenhaRechamada(
                 aggregate_id=senha.id,
@@ -512,7 +524,6 @@ class MarcarSenhaAtendidaUseCase:
         self._domain.marcar_atendida(senha)
         self._repo_senha.salvar(senha)
 
-        from src.modules.sigmun_ate.domain.events import SenhaAtendida
         self._eventos.publicar(SenhaAtendida(aggregate_id=senha.id))
 
         return type("MarcarSenhaAtendidaOutputDTO", (), {"senha_id": senha.id})()
@@ -521,6 +532,7 @@ class MarcarSenhaAtendidaUseCase:
 # =============================================================================
 # Atendimento
 # =============================================================================
+
 
 @dataclass
 class IniciarAtendimentoInputDTO:
@@ -675,6 +687,7 @@ class CancelarAtendimentoUseCase:
 # Avaliação
 # =============================================================================
 
+
 @dataclass
 class RegistrarAvaliacaoInputDTO:
     atendimento_id: str
@@ -721,7 +734,6 @@ class RegistrarAvaliacaoUseCase:
 
         self._repo_avaliacao.salvar(avaliacao)
 
-        from src.modules.sigmun_ate.domain.events import AvaliacaoRegistrada
         self._eventos.publicar(
             AvaliacaoRegistrada(
                 aggregate_id=avaliacao.id,
@@ -736,6 +748,7 @@ class RegistrarAvaliacaoUseCase:
 # =============================================================================
 # Encaminhamento
 # =============================================================================
+
 
 @dataclass
 class CriarEncaminhamentoInputDTO:
@@ -776,7 +789,6 @@ class CriarEncaminhamentoUseCase:
 
         self._repo_encaminhamento.salvar(encaminhamento)
 
-        from src.modules.sigmun_ate.domain.events import EncaminhamentoCriado
         self._eventos.publicar(
             EncaminhamentoCriado(
                 aggregate_id=encaminhamento.id,
@@ -819,13 +831,15 @@ class ConcluirEncaminhamentoUseCase:
             raise ValueError("Encaminhamento já concluído")
 
         from src.modules.sigmun_ate.domain.services import ServicoEncaminhamento
+
         DomainServicoEncaminhamento().concluir_encaminhamento(encaminhamento)
         self._repo_encaminhamento.salvar(encaminhamento)
 
-        from src.modules.sigmun_ate.domain.events import EncaminhamentoConcluido
         self._eventos.publicar(EncaminhamentoConcluido(aggregate_id=encaminhamento.id))
 
-        return type("ConcluirEncaminhamentoOutputDTO", (), {"encaminhamento_id": encaminhamento.id})()
+        return type(
+            "ConcluirEncaminhamentoOutputDTO", (), {"encaminhamento_id": encaminhamento.id}
+        )()
 
 
 __all__ = [

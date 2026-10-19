@@ -58,9 +58,7 @@ class MedicaoObra:
         from ..exceptions import RegraNegocioError
 
         if self.situacao != SituacaoMedicao.CONFERIDA:
-            raise RegraNegocioError(
-                "Somente medição conferida pode ser aprovada (RN-OBR-005)"
-            )
+            raise RegraNegocioError("Somente medição conferida pode ser aprovada (RN-OBR-005)")
         self.situacao = SituacaoMedicao.APROVADA
         self.updated_at = datetime.utcnow()
 
@@ -104,9 +102,7 @@ class MedicaoObra:
         if not self.numero:
             raise RegraNegocioError("Número da medição é obrigatório (RN-OBR-005)")
         if not self.responsavel_tecnico:
-            raise RegraNegocioError(
-                "Responsável técnico é obrigatório na medição (RN-OBR-005)"
-            )
+            raise RegraNegocioError("Responsável técnico é obrigatório na medição (RN-OBR-005)")
         validar_percentual(self.percentual_fisico, "Percentual físico da medição")
         validar_valor(self.valor_medido, "Valor medido")
 

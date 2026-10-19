@@ -30,12 +30,20 @@ class SQLAlchemyReservaRepository(RepositorioReserva):
             ex.updated_by = res.updated_by
             ex.is_deleted = res.is_deleted
         else:
-            self._session.add(ReservaModel(
-                id=uuid.UUID(res.id), dotacao_id=uuid.UUID(res.dotacao_id),
-                numero=res.numero,
-                valor=res.valor, finalidade=res.finalidade, status=res.status.value,
-                data_reserva=res.data_reserva, created_at=res.created_at,
-                created_by=res.created_by, is_deleted=res.is_deleted))
+            self._session.add(
+                ReservaModel(
+                    id=uuid.UUID(res.id),
+                    dotacao_id=uuid.UUID(res.dotacao_id),
+                    numero=res.numero,
+                    valor=res.valor,
+                    finalidade=res.finalidade,
+                    status=res.status.value,
+                    data_reserva=res.data_reserva,
+                    created_at=res.created_at,
+                    created_by=res.created_by,
+                    is_deleted=res.is_deleted,
+                )
+            )
         self._session.flush()
         return res
 
@@ -47,20 +55,24 @@ class SQLAlchemyReservaRepository(RepositorioReserva):
         return self._to_entity(m)
 
     def _to_entity(self, m: ReservaModel) -> ReservaSaldo:
-        return ReservaSaldo(id=str(m.id),
-                            dotacao_id=str(m.dotacao_id) if m.dotacao_id else "",
-                            numero=m.numero or "", valor=float(m.valor or 0),
-                            finalidade=m.finalidade or "",
-                            status=StatusReserva(m.status or "ativa"),
-                            data_reserva=m.data_reserva,
-                            data_conversao=m.data_conversao,
-                            data_cancelamento=m.data_cancelamento,
-                            motivo_cancelamento=m.motivo_cancelamento or "",
-                            empenho_id=m.empenho_id or "",
-                            created_at=m.created_at, updated_at=m.updated_at,
-                            created_by=m.created_by or "",
-                            updated_by=m.updated_by or "",
-                            is_deleted=bool(m.is_deleted))
+        return ReservaSaldo(
+            id=str(m.id),
+            dotacao_id=str(m.dotacao_id) if m.dotacao_id else "",
+            numero=m.numero or "",
+            valor=float(m.valor or 0),
+            finalidade=m.finalidade or "",
+            status=StatusReserva(m.status or "ativa"),
+            data_reserva=m.data_reserva,
+            data_conversao=m.data_conversao,
+            data_cancelamento=m.data_cancelamento,
+            motivo_cancelamento=m.motivo_cancelamento or "",
+            empenho_id=m.empenho_id or "",
+            created_at=m.created_at,
+            updated_at=m.updated_at,
+            created_by=m.created_by or "",
+            updated_by=m.updated_by or "",
+            is_deleted=bool(m.is_deleted),
+        )
 
 
 __all__ = ["SQLAlchemyReservaRepository"]

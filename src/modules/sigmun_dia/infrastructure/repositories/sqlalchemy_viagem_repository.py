@@ -56,7 +56,7 @@ class SQLAlchemyViagemRepository(RepositorioViagem):
         """Busca viagem por ID."""
         model = (
             self._session.query(ViagemModel)
-            .filter(ViagemModel.id == uuid.UUID(id), ViagemModel.is_deleted == False)
+            .filter(ViagemModel.id == uuid.UUID(id), not ViagemModel.is_deleted)
             .first()
         )
         if not model:
@@ -67,7 +67,7 @@ class SQLAlchemyViagemRepository(RepositorioViagem):
         """Busca viagens por servidor."""
         models = (
             self._session.query(ViagemModel)
-            .filter(ViagemModel.servidor_id == servidor_id, ViagemModel.is_deleted == False)
+            .filter(ViagemModel.servidor_id == servidor_id, not ViagemModel.is_deleted)
             .all()
         )
         return [self._to_entity(m) for m in models]
@@ -76,18 +76,14 @@ class SQLAlchemyViagemRepository(RepositorioViagem):
         """Busca viagens por dotação orçamentária."""
         models = (
             self._session.query(ViagemModel)
-            .filter(ViagemModel.dota_id == dota_id, ViagemModel.is_deleted == False)
+            .filter(ViagemModel.dota_id == dota_id, not ViagemModel.is_deleted)
             .all()
         )
         return [self._to_entity(m) for m in models]
 
     def find_ativos(self) -> list[Viagem]:
         """Lista viagens ativas."""
-        models = (
-            self._session.query(ViagemModel)
-            .filter(ViagemModel.is_deleted == False)
-            .all()
-        )
+        models = self._session.query(ViagemModel).filter(not ViagemModel.is_deleted).all()
         return [self._to_entity(m) for m in models]
 
     def delete(self, id: str) -> None:

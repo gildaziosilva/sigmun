@@ -35,10 +35,10 @@ from src.modules.sigmun_idn.infrastructure.database.models import (
     RolePermissaoModel,
 )
 
-
 # ============================================================================
 # PERMISSÕES DEMONSTRATIVAS
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class PermissaoSeed:
@@ -141,6 +141,7 @@ PERMISSOES_DEMO_COMPRAS: tuple[PermissaoSeed, ...] = (
 # ROLES DEMONSTRATIVAS
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class RoleSeed:
     codigo: str
@@ -154,8 +155,7 @@ ROLES_DEMO_COMPRAS: tuple[RoleSeed, ...] = (
         codigo="ROLE_DEMO_COMPRAS_CONSULTA",
         nome="Consulta de Compras — Demo",
         descricao=(
-            "Role demonstrativa para validação de acesso de consulta "
-            "no domínio de Compras."
+            "Role demonstrativa para validação de acesso de consulta no domínio de Compras."
         ),
         permissoes=(
             "COMPRAS.DEMANDA.CONSULTAR",
@@ -167,8 +167,7 @@ ROLES_DEMO_COMPRAS: tuple[RoleSeed, ...] = (
         codigo="ROLE_DEMO_COMPRAS_OPERADOR",
         nome="Operador de Compras — Demo",
         descricao=(
-            "Role demonstrativa para validação de operações "
-            "de execução no domínio de Compras."
+            "Role demonstrativa para validação de operações de execução no domínio de Compras."
         ),
         permissoes=(
             "COMPRAS.DEMANDA.CRIAR",
@@ -185,8 +184,7 @@ ROLES_DEMO_COMPRAS: tuple[RoleSeed, ...] = (
         codigo="ROLE_DEMO_COMPRAS_GESTOR",
         nome="Gestão de Compras — Demo",
         descricao=(
-            "Role demonstrativa para validação de operações de gestão "
-            "no domínio de Compras."
+            "Role demonstrativa para validação de operações de gestão no domínio de Compras."
         ),
         permissoes=(
             "COMPRAS.DEMANDA.CRIAR",
@@ -377,6 +375,7 @@ ROLES_OUV: tuple[RoleSeed, ...] = (
 # HELPERS
 # ============================================================================
 
+
 def _obter_permissao_model(
     session: Session,
     codigo: str,
@@ -466,14 +465,13 @@ def _sincronizar_permissoes_role(
     Isso evita que um seed demonstrativo apague alterações realizadas
     posteriormente por outro processo.
     """
-    existentes = {
-        permissao_id
-        for permissao_id in session.scalars(
+    existentes = set(
+        session.scalars(
             select(RolePermissaoModel.permissao_id).where(
                 RolePermissaoModel.role_id == role_model.id
             )
         ).all()
-    }
+    )
 
     adicionadas = 0
 
@@ -552,6 +550,7 @@ def _criar_roles(
 # ============================================================================
 # API PÚBLICA DO SEED
 # ============================================================================
+
 
 def popular_seed_idn(session: Session) -> dict[str, int]:
     """

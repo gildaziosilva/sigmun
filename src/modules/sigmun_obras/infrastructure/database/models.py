@@ -28,9 +28,7 @@ class ObraModel(Base):
     descricao: Mapped[str | None] = mapped_column(Text)
     tipo: Mapped[str] = mapped_column(Text, nullable=False, server_default="outro")
     situacao: Mapped[str] = mapped_column(Text, nullable=False, server_default="planejada")
-    tipo_contratacao: Mapped[str] = mapped_column(
-        Text, nullable=False, server_default="licitacao"
-    )
+    tipo_contratacao: Mapped[str] = mapped_column(Text, nullable=False, server_default="licitacao")
     fonte_recurso: Mapped[str] = mapped_column(
         Text, nullable=False, server_default="orcamento_proprio"
     )

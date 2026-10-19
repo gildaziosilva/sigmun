@@ -16,9 +16,21 @@ def seed_categorias(session: Session) -> None:
     categorias_para_criar = [
         {"codigo": "evento", "nome": "Evento", "descricao": "Diária por participação em evento"},
         {"codigo": "reuniao", "nome": "Reunião", "descricao": "Diária por participação em reunião"},
-        {"codigo": "treinamento", "nome": "Treinamento", "descricao": "Diária por participação em treinamento"},
-        {"codigo": "viagem_oficial", "nome": "Viagem Oficial", "descricao": "Diária por viagem oficial"},
-        {"codigo": "servico_consultivo", "nome": "Serviço Consultivo", "descricao": "Diária por serviço consultivo"},
+        {
+            "codigo": "treinamento",
+            "nome": "Treinamento",
+            "descricao": "Diária por participação em treinamento",
+        },
+        {
+            "codigo": "viagem_oficial",
+            "nome": "Viagem Oficial",
+            "descricao": "Diária por viagem oficial",
+        },
+        {
+            "codigo": "servico_consultivo",
+            "nome": "Serviço Consultivo",
+            "descricao": "Diária por serviço consultivo",
+        },
     ]
 
     for cat in categorias_para_criar:

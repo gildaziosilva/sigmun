@@ -68,8 +68,7 @@ class RegistrarDespesaUseCase:
             )
         if dto.valor > obra.saldo_a_pagar:
             raise RegraNegocioError(
-                f"Despesa excede o saldo medido a pagar (R$ {obra.saldo_a_pagar:.2f}) "
-                "(RN-OBR-006)"
+                f"Despesa excede o saldo medido a pagar (R$ {obra.saldo_a_pagar:.2f}) (RN-OBR-006)"
             )
 
         despesa = DespesaObra(

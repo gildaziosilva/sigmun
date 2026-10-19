@@ -65,8 +65,7 @@ class FeatureGeo:
         minimo = VERTICES_MINIMOS[self.geometria]
         if len(self.vertices) < minimo:
             raise RegraNegocioError(
-                f"Geometria {self.geometria.value} exige ao menos {minimo} vértice(s) "
-                "(RN-GEO-003)"
+                f"Geometria {self.geometria.value} exige ao menos {minimo} vértice(s) (RN-GEO-003)"
             )
         for vertice in self.vertices:
             validar_coordenada(

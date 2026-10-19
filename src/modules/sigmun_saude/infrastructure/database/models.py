@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import uuid
 
-from sqlalchemy import Boolean, Column, Date, DateTime, Float, Text
-from sqlalchemy import func
+from sqlalchemy import Boolean, Column, Date, DateTime, Float, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
 
@@ -125,4 +124,12 @@ class DispensacaoModel(Base):
     created_by = Column(Text)
 
 
-__all__ = ["Base", "PacienteModel", "AtendimentoModel", "AgendamentoModel", "RegulacaoModel", "MedicamentoModel", "DispensacaoModel"]
+__all__ = [
+    "Base",
+    "PacienteModel",
+    "AtendimentoModel",
+    "AgendamentoModel",
+    "RegulacaoModel",
+    "MedicamentoModel",
+    "DispensacaoModel",
+]

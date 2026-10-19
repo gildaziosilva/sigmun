@@ -86,9 +86,7 @@ def _criar_camadas(session: Session) -> tuple[dict[str, str], int]:
     return ids, criados
 
 
-def _criar_mapas(
-    session: Session, camadas: dict[str, str]
-) -> tuple[dict[str, str], int, int]:
+def _criar_mapas(session: Session, camadas: dict[str, str]) -> tuple[dict[str, str], int, int]:
     """Cria os mapas e suas composições. Retorna ids, criados e publicados."""
     repo = SQLAlchemyMapaSigRepository(session)
     vinculos = SQLAlchemyMapaCamadaRepository(session)
@@ -247,9 +245,7 @@ def limpar_seed_geo(session: Session) -> dict[str, int]:
     ]
     mapa_ids = [
         str(m.id)
-        for m in session.query(MapaSigModel)
-        .filter(MapaSigModel.codigo.in_(codigos_mapa))
-        .all()
+        for m in session.query(MapaSigModel).filter(MapaSigModel.codigo.in_(codigos_mapa)).all()
     ]
 
     removidos = {

@@ -51,10 +51,7 @@ class SQLAlchemyRotaRepository(RepositorioRota):
     def list_all(self, page: int = 1, page_size: int = 20) -> list:
         """Lista rotas paginadas."""
         models = (
-            self._session.query(RotaModel)
-            .offset((page - 1) * page_size)
-            .limit(page_size)
-            .all()
+            self._session.query(RotaModel).offset((page - 1) * page_size).limit(page_size).all()
         )
         return [self._to_entity(m) for m in models]
 

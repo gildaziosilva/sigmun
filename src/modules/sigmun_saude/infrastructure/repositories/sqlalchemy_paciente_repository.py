@@ -34,7 +34,25 @@ class SQLAlchemyPacienteRepository(RepositorioPaciente):
             existente.updated_at = paciente.updated_at
             existente.is_deleted = paciente.is_deleted
         else:
-            self._session.add(PacienteModel(id=uuid.UUID(paciente.id), nome=paciente.nome, cns=paciente.cns, cpf=paciente.cpf, data_nascimento=paciente.data_nascimento, sexo=paciente.sexo.value, nome_mae=paciente.nome_mae, telefone=paciente.telefone, endereco=paciente.endereco, ubs_referencia=paciente.ubs_referencia, status=paciente.status.value, created_at=paciente.created_at, updated_at=paciente.updated_at, created_by=paciente.created_by, is_deleted=paciente.is_deleted))
+            self._session.add(
+                PacienteModel(
+                    id=uuid.UUID(paciente.id),
+                    nome=paciente.nome,
+                    cns=paciente.cns,
+                    cpf=paciente.cpf,
+                    data_nascimento=paciente.data_nascimento,
+                    sexo=paciente.sexo.value,
+                    nome_mae=paciente.nome_mae,
+                    telefone=paciente.telefone,
+                    endereco=paciente.endereco,
+                    ubs_referencia=paciente.ubs_referencia,
+                    status=paciente.status.value,
+                    created_at=paciente.created_at,
+                    updated_at=paciente.updated_at,
+                    created_by=paciente.created_by,
+                    is_deleted=paciente.is_deleted,
+                )
+            )
         self._session.flush()
         return paciente
 
@@ -47,16 +65,42 @@ class SQLAlchemyPacienteRepository(RepositorioPaciente):
 
     def get_by_cns(self, cns: str) -> Paciente | None:
         """Busca paciente pelo CNS."""
-        model = (self._session.query(PacienteModel).filter(PacienteModel.cns == cns, PacienteModel.is_deleted == False).first())  # noqa: E712
+        model = (
+            self._session.query(PacienteModel)
+            .filter(PacienteModel.cns == cns, not PacienteModel.is_deleted)
+            .first()
+        )  # noqa: E712
         return self._to_entity(model) if model else None
 
     def list_all(self, page: int = 1, page_size: int = 20) -> list:
         """Lista pacientes paginados."""
-        models = (self._session.query(PacienteModel).filter(PacienteModel.is_deleted == False).offset((page - 1) * page_size).limit(page_size).all())  # noqa: E712
+        models = (
+            self._session.query(PacienteModel)
+            .filter(not PacienteModel.is_deleted)
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+            .all()
+        )  # noqa: E712
         return [self._to_entity(m) for m in models]
 
     def _to_entity(self, model: PacienteModel) -> Paciente:
-        return Paciente(id=str(model.id), nome=model.nome or "", cns=model.cns or "", cpf=model.cpf or "", data_nascimento=model.data_nascimento or "", sexo=Sexo(model.sexo or "ignorado"), nome_mae=model.nome_mae or "", telefone=model.telefone or "", endereco=model.endereco or "", ubs_referencia=model.ubs_referencia or "", status=StatusPaciente(model.status or "ativo"), created_at=model.created_at, updated_at=model.updated_at, created_by=model.created_by or "", is_deleted=bool(model.is_deleted))
+        return Paciente(
+            id=str(model.id),
+            nome=model.nome or "",
+            cns=model.cns or "",
+            cpf=model.cpf or "",
+            data_nascimento=model.data_nascimento or "",
+            sexo=Sexo(model.sexo or "ignorado"),
+            nome_mae=model.nome_mae or "",
+            telefone=model.telefone or "",
+            endereco=model.endereco or "",
+            ubs_referencia=model.ubs_referencia or "",
+            status=StatusPaciente(model.status or "ativo"),
+            created_at=model.created_at,
+            updated_at=model.updated_at,
+            created_by=model.created_by or "",
+            is_deleted=bool(model.is_deleted),
+        )
 
 
 __all__ = ["SQLAlchemyPacienteRepository"]

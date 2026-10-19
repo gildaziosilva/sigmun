@@ -7,8 +7,7 @@ from sqlalchemy.orm import Session
 from ...application.interfaces import RepositorioPlantaValores
 from ...domain.entities import PlantaGenericaValores, SituacaoPlantaValores, TipoOcupacaoImovel
 from ..database.models import PlantaGenericaValoresModel
-from .bairro import buscar_ou_um
-from .bairro import to_uuid
+from .bairro import buscar_ou_um, to_uuid
 
 
 class SQLAlchemyPlantaValoresRepository(RepositorioPlantaValores):
@@ -59,9 +58,7 @@ class SQLAlchemyPlantaValoresRepository(RepositorioPlantaValores):
             return None
         return self._to_entity(model)
 
-    def get_vigente(
-        self, ano: int, bairro_id: str, ocupacao: str
-    ) -> PlantaGenericaValores | None:
+    def get_vigente(self, ano: int, bairro_id: str, ocupacao: str) -> PlantaGenericaValores | None:
         """Busca a planta vigente para ano, bairro e ocupação (RN-TEL-003)."""
         model = (
             self._session.query(PlantaGenericaValoresModel)

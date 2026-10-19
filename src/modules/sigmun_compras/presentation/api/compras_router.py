@@ -24,7 +24,6 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
@@ -85,6 +84,10 @@ from src.modules.sigmun_compras.presentation.schemas.compra_schemas import (
     CompraSituacaoRequest,
     CompraUpdateRequest,
 )
+from src.shared.presentation.dependencies import exigir_papeis
+from src.shared.security.jwt import (
+    JWTUsuarioContexto,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +118,7 @@ def get_compra_repository(
 def criar_compra(
     payload: CompraCreateRequest,
     repository: Annotated[CompraRepository, Depends(get_compra_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Compra:
     use_case = RegistrarCompraUseCase(repository)
     try:
@@ -211,7 +214,7 @@ def atualizar_compra(
     compra_id: UUID,
     payload: CompraUpdateRequest,
     repository: Annotated[CompraRepository, Depends(get_compra_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Compra:
     use_case = AtualizarCompraUseCase(repository)
     try:
@@ -247,7 +250,7 @@ def alterar_situacao(
     compra_id: UUID,
     payload: CompraSituacaoRequest,
     repository: Annotated[CompraRepository, Depends(get_compra_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Compra:
     use_case = AlterarSituacaoCompraUseCase(repository)
     try:
@@ -282,7 +285,7 @@ def registrar_pendencias(
     compra_id: UUID,
     payload: CompraPendenciasRequest,
     repository: Annotated[CompraRepository, Depends(get_compra_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Compra:
     use_case = RegistrarPendenciaCompraUseCase(repository)
     try:
@@ -309,12 +312,14 @@ def registrar_pendencias(
 def excluir_compra(
     compra_id: UUID,
     repository: Annotated[CompraRepository, Depends(get_compra_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "compras"))],
 ) -> Compra:
 
     use_case = ExcluirCompraUseCase(repository)
     try:
-        return use_case.execute(ExcluirCompraCommand(compra_id=compra_id, usuario_id=str(usuario.usuario_id)))
+        return use_case.execute(
+            ExcluirCompraCommand(compra_id=compra_id, usuario_id=str(usuario.usuario_id))
+        )
     except CompraNaoEncontradaError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 

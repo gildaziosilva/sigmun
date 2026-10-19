@@ -73,9 +73,7 @@ class RegistrarGeorreferenciaUseCase:
         if dto.bairro_id and self._bairros.get_by_id(dto.bairro_id) is None:
             raise BairroNaoEncontradoError("Bairro não encontrado para a georreferência")
         if dto.logradouro_id and self._logradouros.get_by_id(dto.logradouro_id) is None:
-            raise LogradouroNaoEncontradoError(
-                "Logradouro não encontrado para a georreferência"
-            )
+            raise LogradouroNaoEncontradoError("Logradouro não encontrado para a georreferência")
 
         geometria = _geometria(dto.geometria)
         vertices = list(dto.vertices) if dto.vertices else []

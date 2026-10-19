@@ -1,9 +1,6 @@
 """Comandos CQRS de Atendimento ao Cidadão (DOM-ATE)."""
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Optional
-from uuid import uuid4
 
 
 @dataclass

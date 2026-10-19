@@ -131,10 +131,7 @@ class SQLAlchemyObraRepository(RepositorioObra):
         if situacao:
             query = query.filter(ObraModel.situacao == situacao)
         models = (
-            query.order_by(ObraModel.numero)
-            .offset((page - 1) * page_size)
-            .limit(page_size)
-            .all()
+            query.order_by(ObraModel.numero).offset((page - 1) * page_size).limit(page_size).all()
         )
         return [self._to_entity(m) for m in models]
 

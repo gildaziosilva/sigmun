@@ -11,8 +11,7 @@ from ...domain.entities import (
     TipoGeometria,
 )
 from ..database.models import GeorreferenciaModel
-from .bairro import buscar_ou_um
-from .bairro import to_uuid
+from .bairro import buscar_ou_um, to_uuid
 
 
 class SQLAlchemyGeorreferenciaRepository(RepositorioGeorreferencia):

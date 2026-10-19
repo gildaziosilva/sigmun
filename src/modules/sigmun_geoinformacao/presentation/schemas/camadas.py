@@ -11,9 +11,7 @@ TIPO_CAMADA = (
     "^(ortofoto|hipsometria|hipsografia|topografia|hidrografia|uso_solo|vegetacao"
     "|malha_urbana|infraestrutura|cadastro_territorial|outro)$"
 )
-FORMATO_CAMADA = (
-    "^(geotiff|shapefile|geojson|kml|postgis|wms|wfs|wmts|xyz|vetorial)$"
-)
+FORMATO_CAMADA = "^(geotiff|shapefile|geojson|kml|postgis|wms|wfs|wmts|xyz|vetorial)$"
 SITUACAO_CAMADA = "^(rascunho|ativa|desativada)$"
 ZOOM_MINIMO = 0
 ZOOM_MAXIMO = 24

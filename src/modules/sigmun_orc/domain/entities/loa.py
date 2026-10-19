@@ -75,9 +75,7 @@ class LOA:
         from ...domain.exceptions import RegraNegocioError
 
         if self.valor_despesa_fixada > self.valor_receita_prevista:
-            raise RegraNegocioError(
-                "Despesa fixada não pode exceder receita prevista (RN-ORC-022)"
-            )
+            raise RegraNegocioError("Despesa fixada não pode exceder receita prevista (RN-ORC-022)")
         self._transicao_valida(StatusLOA.APROVADA)
         self.status = StatusLOA.APROVADA
         self.data_aprovacao = datetime.utcnow()

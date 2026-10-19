@@ -29,6 +29,11 @@ from ..schemas import (
 )
 from .deps import get_bairro_repo, get_planta_repo, obter
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 
 def to_planta(p: PlantaGenericaValores) -> PlantaValoresResponse:
@@ -50,6 +55,7 @@ def to_planta(p: PlantaGenericaValores) -> PlantaValoresResponse:
 
 @router.post("/plantas-valores", status_code=201)
 def cadastrar_planta_valores(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     payload: PlantaValoresCreateRequest,
     repo: Annotated[RepositorioPlantaValores, Depends(get_planta_repo)],
     bairros: Annotated[RepositorioBairro, Depends(get_bairro_repo)],
@@ -77,19 +83,20 @@ def cadastrar_planta_valores(
 
 @router.get("/plantas-valores")
 def listar_plantas_valores(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioPlantaValores, Depends(get_planta_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     bairro_id: str | None = None,
 ) -> list[PlantaValoresResponse]:
     return [
-        to_planta(p)
-        for p in repo.list_all(page=page, page_size=page_size, bairro_id=bairro_id)
+        to_planta(p) for p in repo.list_all(page=page, page_size=page_size, bairro_id=bairro_id)
     ]
 
 
 @router.get("/plantas-valores/vigente")
 def obter_planta_vigente(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioPlantaValores, Depends(get_planta_repo)],
     ano: int = Query(..., ge=1900, le=2200),
     bairro_id: str = Query(..., min_length=1),
@@ -103,6 +110,7 @@ def obter_planta_vigente(
 
 @router.get("/plantas-valores/{planta_id}")
 def obter_planta_valores(
+    usuario: UsuarioOpcional,
     planta_id: str, repo: Annotated[RepositorioPlantaValores, Depends(get_planta_repo)]
 ) -> PlantaValoresResponse:
     planta = obter(repo, planta_id)
@@ -113,6 +121,7 @@ def obter_planta_valores(
 
 @router.patch("/plantas-valores/{planta_id}")
 def atualizar_planta_valores(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     planta_id: str,
     payload: PlantaValoresUpdateRequest,
     repo: Annotated[RepositorioPlantaValores, Depends(get_planta_repo)],
@@ -138,6 +147,7 @@ def atualizar_planta_valores(
 
 @router.post("/plantas-valores/{planta_id}/ativar")
 def ativar_planta_valores(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     planta_id: str, repo: Annotated[RepositorioPlantaValores, Depends(get_planta_repo)]
 ) -> PlantaValoresResponse:
     try:
@@ -150,6 +160,7 @@ def ativar_planta_valores(
 
 @router.post("/plantas-valores/{planta_id}/revogar")
 def revogar_planta_valores(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     planta_id: str,
     payload: PlantaValoresRevogarRequest,
     repo: Annotated[RepositorioPlantaValores, Depends(get_planta_repo)],
@@ -161,4 +172,3 @@ def revogar_planta_valores(
     except DomTelDomainError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
     return to_planta(planta)
-

@@ -63,7 +63,10 @@ from src.modules.sigmun_compras.presentation.schemas.item_compra_schemas import 
     ItemCompraResponse,
     ItemCompraUpdateRequest,
 )
-from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
+from src.shared.presentation.dependencies import exigir_papeis
+from src.shared.security.jwt import (
+    JWTUsuarioContexto,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +94,7 @@ def criar_item(
     compra_id: UUID,
     payload: ItemCompraCreateRequest,
     repository: Annotated[ItemCompraRepository, Depends(get_item_compra_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> ItemCompra:
     use_case = RegistrarItemCompraUseCase(repository)
     try:
@@ -172,7 +175,7 @@ def atualizar_item(
     item_id: UUID,
     payload: ItemCompraUpdateRequest,
     repository: Annotated[ItemCompraRepository, Depends(get_item_compra_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> ItemCompra:
     use_case = AtualizarItemCompraUseCase(repository)
     try:
@@ -200,11 +203,13 @@ def atualizar_item(
 def remover_item(
     item_id: UUID,
     repository: Annotated[ItemCompraRepository, Depends(get_item_compra_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "compras"))],
 ) -> ItemCompra:
     use_case = RemoverItemCompraUseCase(repository)
     try:
-        return use_case.execute(RemoverItemCompraCommand(item_id=item_id, usuario_id=usuario.usuario_id))
+        return use_case.execute(
+            RemoverItemCompraCommand(item_id=item_id, usuario_id=usuario.usuario_id)
+        )
     except ItemNaoEncontradoError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 

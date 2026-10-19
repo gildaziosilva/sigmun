@@ -37,9 +37,7 @@ class MapaCamada:
         if self.ordem < 0:
             raise RegraNegocioError("Ordem da camada no mapa não pode ser negativa")
         if not 0.0 <= self.opacidade <= 100.0:
-            raise RegraNegocioError(
-                "Opacidade da camada deve estar entre 0 e 100 (RN-GEO-004)"
-            )
+            raise RegraNegocioError("Opacidade da camada deve estar entre 0 e 100 (RN-GEO-004)")
 
 
 __all__ = ["MapaCamada"]

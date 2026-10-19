@@ -6,11 +6,8 @@ Baseado nas regras de negócio RN-DIA-001 a RN-DIA-004.
 from dataclasses import dataclass
 from datetime import datetime
 
-from ...domain.entities import CategoriaDiaria, Diaria, StatusDiaria, Viagem
+from ...domain.entities import CategoriaDiaria, Diaria, StatusDiaria
 from ...domain.exceptions import (
-    DiariaNaoEncontradaError,
-    DiariaJaTerminadaError,
-    RegraNegocioError,
     ValidacaoDiariaError,
     ViagemNaoEncontradaError,
 )
@@ -74,10 +71,8 @@ class CriarDiariaUseCase:
         # Validar categoria
         try:
             categoria = CategoriaDiaria(dto.categoria)
-        except ValueError:
-            raise ValidacaoDiariaError(
-                f"Categoria inválida: {dto.categoria}"
-            )
+        except ValueError as e:
+            raise ValidacaoDiariaError(f"Categoria inválida: {dto.categoria}") from e
 
         # Criar entidade
         diaria = Diaria(

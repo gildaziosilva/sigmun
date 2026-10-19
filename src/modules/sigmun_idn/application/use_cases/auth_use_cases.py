@@ -17,10 +17,7 @@ from src.modules.sigmun_idn.application.interfaces import (
     UsuarioRepositoryInterface,
 )
 from src.modules.sigmun_idn.domain.entities import (
-    AuditoriaLogin,
-    Sessao,
     Usuario,
-    UsuarioStatus,
 )
 from src.modules.sigmun_idn.domain.exceptions import (
     UsuarioNaoEncontradoError,
@@ -231,7 +228,7 @@ class RenovarTokenUseCase:
 
     def execute(self, command: RenovarTokenCommand) -> RenovarTokenResult:
         """Renova access token usando refresh token."""
-        from src.shared.security.jwt import decode_token, verify_token_type
+        from src.shared.security.jwt import verify_token_type
 
         # Valida refresh token
         payload = verify_token_type(command.refresh_token, "refresh")

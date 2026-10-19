@@ -72,9 +72,7 @@ class Regulacao:
         from ..exceptions import EstadoRegulacaoInvalidoError
 
         if self.status != StatusRegulacao.SOLICITADA:
-            raise EstadoRegulacaoInvalidoError(
-                "Só é possível negar regulação solicitada"
-            )
+            raise EstadoRegulacaoInvalidoError("Só é possível negar regulação solicitada")
         self.status = StatusRegulacao.NEGADA
         self.justificativa = justificativa
         self.updated_at = datetime.utcnow()
@@ -84,9 +82,7 @@ class Regulacao:
         from ..exceptions import EstadoRegulacaoInvalidoError
 
         if self.status != StatusRegulacao.AUTORIZADA:
-            raise EstadoRegulacaoInvalidoError(
-                "Só é possível agendar regulação autorizada"
-            )
+            raise EstadoRegulacaoInvalidoError("Só é possível agendar regulação autorizada")
         self.status = StatusRegulacao.AGENDADA
         self.updated_at = datetime.utcnow()
 
@@ -161,9 +157,7 @@ class Dispensacao:
         from ..exceptions import RegraNegocioError
 
         if not self.paciente_id or not self.medicamento_id:
-            raise RegraNegocioError(
-                "Dispensação exige paciente e medicamento (RN-SAU-040)"
-            )
+            raise RegraNegocioError("Dispensação exige paciente e medicamento (RN-SAU-040)")
         if self.quantidade <= 0:
             raise RegraNegocioError("Quantidade dispensada deve ser positiva")
 

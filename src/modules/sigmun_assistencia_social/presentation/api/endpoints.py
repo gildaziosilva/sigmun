@@ -79,6 +79,11 @@ from ..schemas import (
     UnidadeResponse,
     UnidadeUpdateRequest,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 router = APIRouter(prefix="/api/v1/ass", tags=["Assistência Social"])
 
@@ -206,6 +211,7 @@ def _obter(repo: _Repo, entidade_id: str) -> Any:
 
 @router.post("/familias", status_code=201)
 def cadastrar_familia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     payload: FamiliaCreateRequest, repo: Annotated[RepositorioFamilia, Depends(get_familia_repo)]
 ) -> FamiliaResponse:
     try:
@@ -233,6 +239,7 @@ def cadastrar_familia(
 
 @router.get("/familias")
 def listar_familias(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioFamilia, Depends(get_familia_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -242,6 +249,7 @@ def listar_familias(
 
 @router.get("/familias/nis/{nis}")
 def obter_familia_por_nis(
+    usuario: UsuarioOpcional,
     nis: str, repo: Annotated[RepositorioFamilia, Depends(get_familia_repo)]
 ) -> FamiliaResponse:
     f = repo.get_by_nis(nis)
@@ -252,6 +260,7 @@ def obter_familia_por_nis(
 
 @router.get("/familias/{familia_id}")
 def obter_familia(
+    usuario: UsuarioOpcional,
     familia_id: str, repo: Annotated[RepositorioFamilia, Depends(get_familia_repo)]
 ) -> FamiliaResponse:
     f = _obter(repo, familia_id)
@@ -262,6 +271,7 @@ def obter_familia(
 
 @router.get("/familias/{familia_id}/pessoas")
 def listar_pessoas_da_familia(
+    usuario: UsuarioOpcional,
     familia_id: str,
     familias: Annotated[RepositorioFamilia, Depends(get_familia_repo)],
     pessoas: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)],
@@ -273,6 +283,7 @@ def listar_pessoas_da_familia(
 
 @router.get("/familias/{familia_id}/beneficios")
 def listar_beneficios_da_familia(
+    usuario: UsuarioOpcional,
     familia_id: str,
     familias: Annotated[RepositorioFamilia, Depends(get_familia_repo)],
     beneficios: Annotated[RepositorioBeneficio, Depends(get_beneficio_repo)],
@@ -284,6 +295,7 @@ def listar_beneficios_da_familia(
 
 @router.post("/pessoas", status_code=201)
 def cadastrar_pessoa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     payload: PessoaCreateRequest,
     repo: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)],
     familias: Annotated[RepositorioFamilia, Depends(get_familia_repo)],
@@ -318,6 +330,7 @@ def cadastrar_pessoa(
 
 @router.get("/pessoas")
 def listar_pessoas(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -327,6 +340,7 @@ def listar_pessoas(
 
 @router.get("/pessoas/cpf/{cpf}")
 def obter_pessoa_por_cpf(
+    usuario: UsuarioOpcional,
     cpf: str, repo: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)]
 ) -> PessoaResponse:
     p = repo.get_by_cpf(cpf)
@@ -337,6 +351,7 @@ def obter_pessoa_por_cpf(
 
 @router.get("/pessoas/{pessoa_id}")
 def obter_pessoa(
+    usuario: UsuarioOpcional,
     pessoa_id: str, repo: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)]
 ) -> PessoaResponse:
     p = _obter(repo, pessoa_id)
@@ -347,6 +362,7 @@ def obter_pessoa(
 
 @router.get("/pessoas/{pessoa_id}/atendimentos")
 def listar_atendimentos_da_pessoa(
+    usuario: UsuarioOpcional,
     pessoa_id: str,
     pessoas: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)],
     atendimentos: Annotated[RepositorioAtendimento, Depends(get_atendimento_repo)],
@@ -358,6 +374,7 @@ def listar_atendimentos_da_pessoa(
 
 @router.post("/unidades", status_code=201)
 def cadastrar_unidade(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     payload: UnidadeCreateRequest, repo: Annotated[RepositorioUnidade, Depends(get_unidade_repo)]
 ) -> UnidadeResponse:
     try:
@@ -384,6 +401,7 @@ def cadastrar_unidade(
 
 @router.get("/unidades")
 def listar_unidades(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioUnidade, Depends(get_unidade_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -393,6 +411,7 @@ def listar_unidades(
 
 @router.get("/unidades/{unidade_id}")
 def obter_unidade(
+    usuario: UsuarioOpcional,
     unidade_id: str, repo: Annotated[RepositorioUnidade, Depends(get_unidade_repo)]
 ) -> UnidadeResponse:
     u = _obter(repo, unidade_id)
@@ -403,6 +422,7 @@ def obter_unidade(
 
 @router.get("/unidades/{unidade_id}/atendimentos")
 def listar_atendimentos_da_unidade(
+    usuario: UsuarioOpcional,
     unidade_id: str,
     unidades: Annotated[RepositorioUnidade, Depends(get_unidade_repo)],
     atendimentos: Annotated[RepositorioAtendimento, Depends(get_atendimento_repo)],
@@ -414,6 +434,7 @@ def listar_atendimentos_da_unidade(
 
 @router.post("/beneficios", status_code=201)
 def solicitar_beneficio(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     payload: BeneficioCreateRequest,
     repo: Annotated[RepositorioBeneficio, Depends(get_beneficio_repo)],
     familias: Annotated[RepositorioFamilia, Depends(get_familia_repo)],
@@ -441,6 +462,7 @@ def solicitar_beneficio(
 
 @router.get("/beneficios")
 def listar_beneficios(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioBeneficio, Depends(get_beneficio_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -450,6 +472,7 @@ def listar_beneficios(
 
 @router.get("/beneficios/{beneficio_id}")
 def obter_beneficio(
+    usuario: UsuarioOpcional,
     beneficio_id: str, repo: Annotated[RepositorioBeneficio, Depends(get_beneficio_repo)]
 ) -> BeneficioResponse:
     b = _obter(repo, beneficio_id)
@@ -460,6 +483,7 @@ def obter_beneficio(
 
 @router.post("/beneficios/{beneficio_id}/aprovar")
 def aprovar_beneficio(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     beneficio_id: str, repo: Annotated[RepositorioBeneficio, Depends(get_beneficio_repo)]
 ) -> BeneficioResponse:
     try:
@@ -472,6 +496,7 @@ def aprovar_beneficio(
 
 @router.post("/beneficios/{beneficio_id}/negar")
 def negar_beneficio(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     beneficio_id: str,
     repo: Annotated[RepositorioBeneficio, Depends(get_beneficio_repo)],
     justificativa: str = Query(""),
@@ -486,6 +511,7 @@ def negar_beneficio(
 
 @router.post("/beneficios/{beneficio_id}/entregar")
 def entregar_beneficio(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     beneficio_id: str, repo: Annotated[RepositorioBeneficio, Depends(get_beneficio_repo)]
 ) -> BeneficioResponse:
     try:
@@ -498,6 +524,7 @@ def entregar_beneficio(
 
 @router.post("/beneficios/{beneficio_id}/cancelar")
 def cancelar_beneficio(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     beneficio_id: str, repo: Annotated[RepositorioBeneficio, Depends(get_beneficio_repo)]
 ) -> BeneficioResponse:
     try:
@@ -510,6 +537,7 @@ def cancelar_beneficio(
 
 @router.post("/atendimentos", status_code=201)
 def registrar_atendimento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     payload: AtendimentoCreateRequest,
     repo: Annotated[RepositorioAtendimento, Depends(get_atendimento_repo)],
     pessoas: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)],
@@ -537,6 +565,7 @@ def registrar_atendimento(
 
 @router.get("/atendimentos")
 def listar_atendimentos(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioAtendimento, Depends(get_atendimento_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -546,6 +575,7 @@ def listar_atendimentos(
 
 @router.get("/atendimentos/{atendimento_id}")
 def obter_atendimento(
+    usuario: UsuarioOpcional,
     atendimento_id: str, repo: Annotated[RepositorioAtendimento, Depends(get_atendimento_repo)]
 ) -> AtendimentoResponse:
     a = _obter(repo, atendimento_id)
@@ -556,6 +586,7 @@ def obter_atendimento(
 
 @router.patch("/familias/{familia_id}")
 def atualizar_familia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     familia_id: str,
     payload: FamiliaUpdateRequest,
     repo: Annotated[RepositorioFamilia, Depends(get_familia_repo)],
@@ -584,6 +615,7 @@ def atualizar_familia(
 
 @router.delete("/familias/{familia_id}")
 def excluir_familia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "assistencia"))],
     familia_id: str, repo: Annotated[RepositorioFamilia, Depends(get_familia_repo)]
 ) -> FamiliaResponse:
     try:
@@ -596,6 +628,7 @@ def excluir_familia(
 
 @router.patch("/pessoas/{pessoa_id}")
 def atualizar_pessoa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     pessoa_id: str,
     payload: PessoaUpdateRequest,
     repo: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)],
@@ -627,6 +660,7 @@ def atualizar_pessoa(
 
 @router.delete("/pessoas/{pessoa_id}")
 def excluir_pessoa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "assistencia"))],
     pessoa_id: str, repo: Annotated[RepositorioPessoa, Depends(get_pessoa_repo)]
 ) -> PessoaResponse:
     try:
@@ -639,6 +673,7 @@ def excluir_pessoa(
 
 @router.patch("/unidades/{unidade_id}")
 def atualizar_unidade(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "assistencia"))],
     unidade_id: str,
     payload: UnidadeUpdateRequest,
     repo: Annotated[RepositorioUnidade, Depends(get_unidade_repo)],
@@ -667,6 +702,7 @@ def atualizar_unidade(
 
 @router.delete("/unidades/{unidade_id}")
 def excluir_unidade(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "assistencia"))],
     unidade_id: str, repo: Annotated[RepositorioUnidade, Depends(get_unidade_repo)]
 ) -> UnidadeResponse:
     try:

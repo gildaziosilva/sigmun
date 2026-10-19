@@ -35,6 +35,11 @@ from ..schemas import (
 )
 from .deps import get_bairro_repo, get_logradouro_repo, obter, to_bairro, to_logradouro
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 _CONFLITO_CODIGO_BAIRRO = "Código de bairro já cadastrado para outra divisão (RN-TEL-001)"
 _CONFLITO_CODIGO_LOGRADOURO = "Código de logradouro já cadastrado (RN-TEL-002)"
@@ -42,6 +47,7 @@ _CONFLITO_CODIGO_LOGRADOURO = "Código de logradouro já cadastrado (RN-TEL-002)
 
 @router.post("/bairros", status_code=201)
 def cadastrar_bairro(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     payload: BairroCreateRequest,
     repo: Annotated[RepositorioBairro, Depends(get_bairro_repo)],
 ) -> BairroResponse:
@@ -65,6 +71,7 @@ def cadastrar_bairro(
 
 @router.get("/bairros")
 def listar_bairros(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioBairro, Depends(get_bairro_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -74,6 +81,7 @@ def listar_bairros(
 
 @router.get("/bairros/codigo/{codigo}")
 def obter_bairro_por_codigo(
+    usuario: UsuarioOpcional,
     codigo: str, repo: Annotated[RepositorioBairro, Depends(get_bairro_repo)]
 ) -> BairroResponse:
     bairro = repo.get_by_codigo(codigo)
@@ -84,6 +92,7 @@ def obter_bairro_por_codigo(
 
 @router.get("/bairros/{bairro_id}")
 def obter_bairro(
+    usuario: UsuarioOpcional,
     bairro_id: str, repo: Annotated[RepositorioBairro, Depends(get_bairro_repo)]
 ) -> BairroResponse:
     bairro = obter(repo, bairro_id)
@@ -94,6 +103,7 @@ def obter_bairro(
 
 @router.get("/bairros/{bairro_id}/logradouros")
 def listar_logradouros_do_bairro(
+    usuario: UsuarioOpcional,
     bairro_id: str,
     bairros: Annotated[RepositorioBairro, Depends(get_bairro_repo)],
     logradouros: Annotated[RepositorioLogradouro, Depends(get_logradouro_repo)],
@@ -105,6 +115,7 @@ def listar_logradouros_do_bairro(
 
 @router.patch("/bairros/{bairro_id}")
 def atualizar_bairro(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     bairro_id: str,
     payload: BairroUpdateRequest,
     repo: Annotated[RepositorioBairro, Depends(get_bairro_repo)],
@@ -133,6 +144,7 @@ def atualizar_bairro(
 
 @router.delete("/bairros/{bairro_id}")
 def excluir_bairro(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "territorial"))],
     bairro_id: str,
     repo: Annotated[RepositorioBairro, Depends(get_bairro_repo)],
     logradouros: Annotated[RepositorioLogradouro, Depends(get_logradouro_repo)],
@@ -147,6 +159,7 @@ def excluir_bairro(
 
 @router.post("/logradouros", status_code=201)
 def cadastrar_logradouro(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     payload: LogradouroCreateRequest,
     repo: Annotated[RepositorioLogradouro, Depends(get_logradouro_repo)],
     bairros: Annotated[RepositorioBairro, Depends(get_bairro_repo)],
@@ -175,6 +188,7 @@ def cadastrar_logradouro(
 
 @router.get("/logradouros")
 def listar_logradouros(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioLogradouro, Depends(get_logradouro_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -184,6 +198,7 @@ def listar_logradouros(
 
 @router.get("/logradouros/codigo/{codigo}")
 def obter_logradouro_por_codigo(
+    usuario: UsuarioOpcional,
     codigo: str, repo: Annotated[RepositorioLogradouro, Depends(get_logradouro_repo)]
 ) -> LogradouroResponse:
     logradouro = repo.get_by_codigo(codigo)
@@ -194,6 +209,7 @@ def obter_logradouro_por_codigo(
 
 @router.get("/logradouros/{logradouro_id}")
 def obter_logradouro(
+    usuario: UsuarioOpcional,
     logradouro_id: str, repo: Annotated[RepositorioLogradouro, Depends(get_logradouro_repo)]
 ) -> LogradouroResponse:
     logradouro = obter(repo, logradouro_id)
@@ -202,9 +218,9 @@ def obter_logradouro(
     return to_logradouro(logradouro)
 
 
-
 @router.patch("/logradouros/{logradouro_id}")
 def atualizar_logradouro(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     logradouro_id: str,
     payload: LogradouroUpdateRequest,
     repo: Annotated[RepositorioLogradouro, Depends(get_logradouro_repo)],
@@ -236,6 +252,7 @@ def atualizar_logradouro(
 
 @router.delete("/logradouros/{logradouro_id}")
 def excluir_logradouro(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "territorial"))],
     logradouro_id: str, repo: Annotated[RepositorioLogradouro, Depends(get_logradouro_repo)]
 ) -> LogradouroResponse:
     try:
@@ -244,4 +261,3 @@ def excluir_logradouro(
         raise HTTPException(404, str(exc)) from exc
     except DomTelDomainError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
-

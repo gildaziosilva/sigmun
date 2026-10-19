@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from uuid import uuid4
 
-from . import interfaces as ports
 from ..domain.entities.certidao import Certidao, TipoCertidao
 from ..domain.entities.contribuinte import (
     Contribuinte,
@@ -20,6 +19,7 @@ from ..domain.entities.lancamento import (
     Lancamento,
     TipoTributo,
 )
+from . import interfaces as ports
 
 
 def _gerar_numero(prefixo: str, exercicio: int) -> str:
@@ -55,9 +55,7 @@ class CadastrarContribuinteUseCase:
         )
 
         if not dto.nome or not dto.cpf_cnpj:
-            raise RegraNegocioError(
-                "Nome e CPF/CNPJ são obrigatórios no cadastro (RN-TRI-001)"
-            )
+            raise RegraNegocioError("Nome e CPF/CNPJ são obrigatórios no cadastro (RN-TRI-001)")
         if self._repo.get_by_cpf_cnpj(dto.cpf_cnpj) is not None:
             raise ContribuinteJaExistenteError(
                 "CPF/CNPJ já cadastrado como contribuinte (RN-TRI-001)"
@@ -119,9 +117,7 @@ class CadastrarImovelUseCase:
                 "Contribuinte não encontrado para vinculação do imóvel"
             )
         if self._repo.get_by_inscricao(dto.inscricao_imobiliaria) is not None:
-            raise ImovelJaExistenteError(
-                "Inscrição imobiliária já cadastrada (RN-TRI-010)"
-            )
+            raise ImovelJaExistenteError("Inscrição imobiliária já cadastrada (RN-TRI-010)")
         if dto.valor_venal <= 0:
             raise RegraNegocioError("Valor venal deve ser maior que zero (RN-TRI-011)")
         imovel = Imovel(
@@ -187,9 +183,7 @@ class LancarTributoUseCase:
 
         cont = self._contribuintes.get_by_id(dto.contribuinte_id)
         if cont is None:
-            raise ContribuinteNaoEncontradoError(
-                "Contribuinte não encontrado para lançamento"
-            )
+            raise ContribuinteNaoEncontradoError("Contribuinte não encontrado para lançamento")
         tipo = TipoTributo(dto.tipo_tributo)
         base = dto.base_calculo
         aliquota = dto.aliquota
@@ -199,13 +193,9 @@ class LancarTributoUseCase:
                 raise RegraNegocioError("Lançamento de IPTU exige imóvel")
             imovel = self._imoveis.get_by_id(dto.imovel_id)
             if imovel is None:
-                raise ImovelNaoEncontradoError(
-                    "Imóvel não encontrado para lançamento de IPTU"
-                )
+                raise ImovelNaoEncontradoError("Imóvel não encontrado para lançamento de IPTU")
             if imovel.contribuinte_id != dto.contribuinte_id:
-                raise RegraNegocioError(
-                    "Imóvel não pertence ao contribuinte do lançamento"
-                )
+                raise RegraNegocioError("Imóvel não pertence ao contribuinte do lançamento")
             base = imovel.valor_venal
             aliquota = imovel.aliquota
 
@@ -230,6 +220,8 @@ class LancarTributoUseCase:
         lance.validar()
         lance.recalcular_total()
         return self._repo.save(lance)
+
+
 class PagarLancamentoUseCase:
     """Quita integralmente um lançamento (RN-TRI-022)."""
 
@@ -267,13 +259,9 @@ class InscreverDividaAtivaUseCase:
 
         lance = self._lancamentos.get_by_id(lancamento_id)
         if lance is None:
-            raise LancamentoNaoEncontradoError(
-                "Lançamento não encontrado para inscrição"
-            )
+            raise LancamentoNaoEncontradoError("Lançamento não encontrado para inscrição")
         if not lance.data_vencimento or lance.data_vencimento > date.today():
-            raise RegraNegocioError(
-                "Somente créditos vencidos podem ser inscritos em dívida ativa"
-            )
+            raise RegraNegocioError("Somente créditos vencidos podem ser inscritos em dívida ativa")
         lance.inscrever_em_divida_ativa()
         self._lancamentos.save(lance)
         inscricao = InscricaoDividaAtiva(
@@ -286,6 +274,8 @@ class InscreverDividaAtivaUseCase:
         )
         inscricao.validar()
         return self._repo.save(inscricao)
+
+
 class BaixarDividaAtivaUseCase:
     """Baixa uma inscrição de dívida ativa."""
 
@@ -298,9 +288,7 @@ class BaixarDividaAtivaUseCase:
 
         inscricao = self._repo.get_by_id(inscricao_id)
         if inscricao is None:
-            raise DividaAtivaNaoEncontradaError(
-                "Inscrição de dívida ativa não encontrada"
-            )
+            raise DividaAtivaNaoEncontradaError("Inscrição de dívida ativa não encontrada")
         inscricao.baixar()
         return self._repo.save(inscricao)
 

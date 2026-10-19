@@ -62,9 +62,7 @@ class RepositorioPlantaValores(Protocol):
         """Busca planta genérica de valores por id."""
         ...
 
-    def get_vigente(
-        self, ano: int, bairro_id: str, ocupacao: str
-    ) -> PlantaGenericaValores | None:
+    def get_vigente(self, ano: int, bairro_id: str, ocupacao: str) -> PlantaGenericaValores | None:
         """Busca a planta vigente para ano, bairro e ocupação (RN-TEL-003)."""
         ...
 

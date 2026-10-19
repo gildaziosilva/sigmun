@@ -41,6 +41,7 @@ class SQLAlchemyTipoDocumentalRepository(RepositorioTipoDocumental):
 
     def get_by_id(self, id: str) -> TipoDocumental | None:
         import uuid
+
         try:
             uuid_obj = uuid.UUID(id)
         except ValueError:

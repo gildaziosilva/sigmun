@@ -7,12 +7,9 @@ from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 TIPO_OBRA = (
-    "^(pavimentacao|drenagem|construcao|reforma|iluminacao|saneamento|ponte|praca"
-    "|quadra|outro)$"
+    "^(pavimentacao|drenagem|construcao|reforma|iluminacao|saneamento|ponte|praca|quadra|outro)$"
 )
-SITUACAO_OBRA = (
-    "^(planejada|em_licitacao|contratada|em_execucao|suspensa|concluida|cancelada)$"
-)
+SITUACAO_OBRA = "^(planejada|em_licitacao|contratada|em_execucao|suspensa|concluida|cancelada)$"
 TIPO_CONTRATACAO = "^(licitacao|dispensa|inexigibilidade|convenio|contrato_direto)$"
 FONTE_RECURSO = (
     "^(orcamento_proprio|convenio|convenio_estadual|convenio_federal|transferencia"

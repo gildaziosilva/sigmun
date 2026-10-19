@@ -39,10 +39,16 @@ from .deps import (
     to_servico,
 )
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 
 @router.post("/features", status_code=201)
 def registrar_feature(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     payload: FeatureCreateRequest,
     repo: Annotated[RepositorioFeatureGeo, Depends(get_feature_repo)],
     camadas: Annotated[RepositorioCamadaMapa, Depends(get_camada_repo)],
@@ -70,6 +76,7 @@ def registrar_feature(
 
 @router.get("/features")
 def listar_features(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioFeatureGeo, Depends(get_feature_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -79,6 +86,7 @@ def listar_features(
 
 @router.get("/features/camada/{camada_id}")
 def listar_features_por_camada(
+    usuario: UsuarioOpcional,
     camada_id: str,
     repo: Annotated[RepositorioFeatureGeo, Depends(get_feature_repo)],
 ) -> list[FeatureResponse]:
@@ -88,6 +96,7 @@ def listar_features_por_camada(
 
 @router.get("/features/{feature_id}")
 def obter_feature(
+    usuario: UsuarioOpcional,
     feature_id: str,
     repo: Annotated[RepositorioFeatureGeo, Depends(get_feature_repo)],
 ) -> FeatureResponse:
@@ -99,6 +108,7 @@ def obter_feature(
 
 @router.delete("/features/{feature_id}")
 def excluir_feature(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "geo"))],
     feature_id: str,
     repo: Annotated[RepositorioFeatureGeo, Depends(get_feature_repo)],
 ) -> FeatureResponse:
@@ -110,6 +120,7 @@ def excluir_feature(
 
 @router.post("/servicos", status_code=201)
 def cadastrar_servico(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     payload: ServicoCreateRequest,
     repo: Annotated[RepositorioServicoGeo, Depends(get_servico_repo)],
 ) -> ServicoResponse:
@@ -137,6 +148,7 @@ def cadastrar_servico(
 
 @router.get("/servicos")
 def listar_servicos(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioServicoGeo, Depends(get_servico_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -147,6 +159,7 @@ def listar_servicos(
 
 @router.get("/servicos/{servico_id}")
 def obter_servico(
+    usuario: UsuarioOpcional,
     servico_id: str,
     repo: Annotated[RepositorioServicoGeo, Depends(get_servico_repo)],
 ) -> ServicoResponse:
@@ -158,6 +171,7 @@ def obter_servico(
 
 @router.patch("/servicos/{servico_id}")
 def atualizar_servico(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     servico_id: str,
     payload: ServicoUpdateRequest,
     repo: Annotated[RepositorioServicoGeo, Depends(get_servico_repo)],
@@ -187,6 +201,7 @@ def atualizar_servico(
 
 @router.post("/servicos/{servico_id}/inativar")
 def inativar_servico(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     servico_id: str,
     repo: Annotated[RepositorioServicoGeo, Depends(get_servico_repo)],
     created_by: str = "",
@@ -199,6 +214,7 @@ def inativar_servico(
 
 @router.delete("/servicos/{servico_id}")
 def excluir_servico(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "geo"))],
     servico_id: str,
     repo: Annotated[RepositorioServicoGeo, Depends(get_servico_repo)],
 ) -> ServicoResponse:

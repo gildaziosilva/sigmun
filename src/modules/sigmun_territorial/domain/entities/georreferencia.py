@@ -56,15 +56,12 @@ class Georreferencia:
                 "Georreferência deve estar vinculada a um bairro OU a um logradouro, "
                 "não a ambos (RN-TEL-005)"
             )
-        validar_coordenada(
-            self.latitude, self.longitude, "Coordenada principal da georreferência"
-        )
+        validar_coordenada(self.latitude, self.longitude, "Coordenada principal da georreferência")
 
         minimo = VERTICES_MINIMOS[self.geometria]
         if len(self.vertices) < minimo:
             raise RegraNegocioError(
-                f"Geometria {self.geometria.value} exige ao menos {minimo} vértice(s) "
-                "(RN-TEL-005)"
+                f"Geometria {self.geometria.value} exige ao menos {minimo} vértice(s) (RN-TEL-005)"
             )
         for vertice in self.vertices:
             validar_coordenada(

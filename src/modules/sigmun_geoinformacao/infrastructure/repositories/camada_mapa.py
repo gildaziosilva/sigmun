@@ -94,9 +94,7 @@ class SQLAlchemyCamadaMapaRepository(RepositorioCamadaMapa):
         self, page: int = 1, page_size: int = 20, tipo: str | None = None
     ) -> list[CamadaMapa]:
         """Lista camadas de mapa paginadas, opcionalmente por tipo."""
-        query = self._session.query(CamadaMapaModel).filter(
-            CamadaMapaModel.is_deleted.is_(False)
-        )
+        query = self._session.query(CamadaMapaModel).filter(CamadaMapaModel.is_deleted.is_(False))
         if tipo:
             query = query.filter(CamadaMapaModel.tipo == tipo)
         models = (

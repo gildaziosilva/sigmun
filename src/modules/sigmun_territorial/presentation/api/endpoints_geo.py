@@ -35,6 +35,11 @@ from .deps import (
     obter,
 )
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 
 def to_georreferencia(g: Georreferencia) -> GeorreferenciaResponse:
@@ -57,6 +62,7 @@ def to_georreferencia(g: Georreferencia) -> GeorreferenciaResponse:
 
 @router.post("/georreferencias", status_code=201)
 def registrar_georreferencia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "territorial"))],
     payload: GeorreferenciaCreateRequest,
     repo: Annotated[RepositorioGeorreferencia, Depends(get_georreferencia_repo)],
     bairros: Annotated[RepositorioBairro, Depends(get_bairro_repo)],
@@ -87,6 +93,7 @@ def registrar_georreferencia(
 
 @router.get("/georreferencias")
 def listar_georreferencias(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioGeorreferencia, Depends(get_georreferencia_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -96,6 +103,7 @@ def listar_georreferencias(
 
 @router.get("/georreferencias/referencia")
 def listar_georreferencias_por_referencia(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioGeorreferencia, Depends(get_georreferencia_repo)],
     bairro_id: str | None = None,
     logradouro_id: str | None = None,
@@ -113,6 +121,7 @@ def listar_georreferencias_por_referencia(
 
 @router.get("/georreferencias/{georreferencia_id}")
 def obter_georreferencia(
+    usuario: UsuarioOpcional,
     georreferencia_id: str,
     repo: Annotated[RepositorioGeorreferencia, Depends(get_georreferencia_repo)],
 ) -> GeorreferenciaResponse:
@@ -124,6 +133,7 @@ def obter_georreferencia(
 
 @router.delete("/georreferencias/{georreferencia_id}")
 def excluir_georreferencia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "territorial"))],
     georreferencia_id: str,
     repo: Annotated[RepositorioGeorreferencia, Depends(get_georreferencia_repo)],
 ) -> GeorreferenciaResponse:

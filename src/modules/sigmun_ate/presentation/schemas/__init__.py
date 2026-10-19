@@ -1,21 +1,22 @@
 """Schemas de apresentação (DTOs) de Atendimento ao Cidadão (DOM-ATE)."""
 
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 from uuid import UUID
-from pydantic import BaseModel, Field, validator
 
+from pydantic import BaseModel, Field, validator
 
 # =============================================================================
 # Triagem
 # =============================================================================
+
 
 class TriagemCreateRequest(BaseModel):
     servico_id: UUID
     observacao: str = ""
     prioridade: int = Field(default=2, ge=1, le=4)
 
-    @validator('prioridade')
+    @validator("prioridade")
     def validar_prioridade(cls, v):
         if v < 1 or v > 4:
             raise ValueError("Prioridade deve estar entre 1 e 4")
@@ -40,6 +41,7 @@ class TriagemResponse(BaseModel):
 # Fila
 # =============================================================================
 
+
 class FilaCreateRequest(BaseModel):
     unidade_id: UUID
     servico_id: UUID
@@ -61,6 +63,7 @@ class FilaResponse(BaseModel):
 # =============================================================================
 # Senha
 # =============================================================================
+
 
 class SenhaCreateRequest(BaseModel):
     fila_id: UUID
@@ -126,6 +129,7 @@ class MarcarSenhaAtendidaResponse(BaseModel):
 # Atendimento
 # =============================================================================
 
+
 class AtendimentoIniciarRequest(BaseModel):
     chamada_id: UUID
     canal_id: UUID
@@ -156,13 +160,13 @@ class AtendimentoResponse(BaseModel):
     id: UUID
     chamada_id: UUID
     canal_id: UUID
-    inicio: Optional[datetime]
-    fim: Optional[datetime]
+    inicio: datetime | None
+    fim: datetime | None
     status: str
     descricao: str
     created_at: datetime
-    updated_at: Optional[datetime]
-    duracao_segundos: Optional[int]
+    updated_at: datetime | None
+    duracao_segundos: int | None
     is_active: bool
 
     class Config:
@@ -173,11 +177,12 @@ class AtendimentoResponse(BaseModel):
 # Avaliação
 # =============================================================================
 
+
 class AvaliacaoCreateRequest(BaseModel):
     nota: int = Field(ge=1, le=5)
     comentario: str = ""
 
-    @validator('nota')
+    @validator("nota")
     def validar_nota(cls, v):
         if v < 1 or v > 5:
             raise ValueError("Nota deve estar entre 1 e 5")
@@ -200,6 +205,7 @@ class AvaliacaoResponse(BaseModel):
 # =============================================================================
 # Encaminhamento
 # =============================================================================
+
 
 class EncaminhamentoCreateRequest(BaseModel):
     atendimento_id: UUID
@@ -229,6 +235,7 @@ class EncaminhamentoConcluirResponse(BaseModel):
 # Guichê
 # =============================================================================
 
+
 class GuicheResponse(BaseModel):
     id: UUID
     unidade_id: UUID
@@ -245,6 +252,7 @@ class GuicheResponse(BaseModel):
 # =============================================================================
 # Unidade de Atendimento
 # =============================================================================
+
 
 class UnidadeAtendimentoResponse(BaseModel):
     id: UUID
@@ -263,6 +271,7 @@ class UnidadeAtendimentoResponse(BaseModel):
 # Serviço de Atendimento
 # =============================================================================
 
+
 class ServicoAtendimentoResponse(BaseModel):
     id: UUID
     codigo: str
@@ -279,6 +288,7 @@ class ServicoAtendimentoResponse(BaseModel):
 # =============================================================================
 # Estatísticas
 # =============================================================================
+
 
 class EstatisticasFilaResponse(BaseModel):
     fila_id: UUID
@@ -302,10 +312,11 @@ class EstatisticasUnidadeResponse(BaseModel):
 # Error Response
 # =============================================================================
 
+
 class ErrorResponse(BaseModel):
     error: str
     message: str
-    detail: Optional[str] = None
+    detail: str | None = None
     code: str = "ATE_ERROR"
 
 

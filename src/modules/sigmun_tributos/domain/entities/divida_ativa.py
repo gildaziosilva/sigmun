@@ -74,9 +74,7 @@ class InscricaoDividaAtiva:
         from ..exceptions import EstadoLancamentoInvalidoError
 
         if self.status == StatusDividaAtiva.BAIXADA:
-            raise EstadoLancamentoInvalidoError(
-                "Inscrição baixada não pode ser cancelada"
-            )
+            raise EstadoLancamentoInvalidoError("Inscrição baixada não pode ser cancelada")
         self.status = StatusDividaAtiva.CANCELADA
         self.updated_at = datetime.utcnow()
 

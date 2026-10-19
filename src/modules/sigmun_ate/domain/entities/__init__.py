@@ -8,6 +8,7 @@ from uuid import uuid4
 
 class StatusAtendimento(Enum):
     """Status de um atendimento."""
+
     AGUARDANDO = "aguardando"
     EM_ANDAMENTO = "em_andamento"
     CONCLUIDO = "concluido"
@@ -17,6 +18,7 @@ class StatusAtendimento(Enum):
 
 class StatusSenha(Enum):
     """Status de uma senha de atendimento."""
+
     EMITIDA = "emitida"
     CHAMADA = "chamada"
     ATENDIDA = "atendida"
@@ -27,6 +29,7 @@ class StatusSenha(Enum):
 
 class TipoCanal(Enum):
     """Tipo de canal de atendimento."""
+
     PRESENCIAL = "presencial"
     TELEFONE = "telefone"
     EMAIL = "email"
@@ -37,6 +40,7 @@ class TipoCanal(Enum):
 
 class PrioridadeAtendimento(Enum):
     """Prioridade do atendimento."""
+
     BAIXA = 1
     NORMAL = 2
     ALTA = 3
@@ -46,6 +50,7 @@ class PrioridadeAtendimento(Enum):
 @dataclass
 class ServicoAtendimento:
     """Entidade de Serviço de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     codigo: str = ""
     nome: str = ""
@@ -60,6 +65,7 @@ class ServicoAtendimento:
     @property
     def esta_ativo(self) -> bool:
         return self.ativo and not self.is_deleted
+
     @property
     def is_active(self) -> bool:
         return self.esta_ativo
@@ -68,6 +74,7 @@ class ServicoAtendimento:
 @dataclass
 class CanalAtendimento:
     """Entidade de Canal de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     codigo: str = ""
     nome: str = ""
@@ -82,6 +89,7 @@ class CanalAtendimento:
     @property
     def esta_ativo(self) -> bool:
         return self.ativo and not self.is_deleted
+
     @property
     def is_active(self) -> bool:
         return self.esta_ativo
@@ -90,6 +98,7 @@ class CanalAtendimento:
 @dataclass
 class UnidadeAtendimento:
     """Entidade de Unidade de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     codigo: str = ""
     nome: str = ""
@@ -104,6 +113,7 @@ class UnidadeAtendimento:
     @property
     def esta_ativo(self) -> bool:
         return self.ativo and not self.is_deleted
+
     @property
     def is_active(self) -> bool:
         return self.esta_ativo
@@ -112,6 +122,7 @@ class UnidadeAtendimento:
 @dataclass
 class Guiche:
     """Entidade de Guichê de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     unidade_id: str = ""
     numero: str = ""
@@ -126,6 +137,7 @@ class Guiche:
     @property
     def esta_ativo(self) -> bool:
         return self.ativo and not self.is_deleted
+
     @property
     def is_active(self) -> bool:
         return self.esta_ativo
@@ -134,6 +146,7 @@ class Guiche:
 @dataclass
 class FilaAtendimento:
     """Entidade de Fila de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     unidade_id: str = ""
     servico_id: str = ""
@@ -153,6 +166,7 @@ class FilaAtendimento:
 @dataclass
 class Triagem:
     """Entidade de Triagem de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     servico_id: str = ""
     data_hora: datetime = field(default_factory=datetime.utcnow)
@@ -168,6 +182,7 @@ class Triagem:
     @property
     def esta_ativo(self) -> bool:
         return not self.is_deleted
+
     @property
     def is_active(self) -> bool:
         return self.esta_ativo
@@ -176,6 +191,7 @@ class Triagem:
 @dataclass
 class Senha:
     """Entidade de Senha de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     fila_id: str = ""
     servico_id: str = ""
@@ -192,7 +208,11 @@ class Senha:
 
     @property
     def esta_ativa(self) -> bool:
-        return self.status in (StatusSenha.EMITIDA, StatusSenha.CHAMADA, StatusSenha.RECHAMADA) and not self.is_deleted
+        return (
+            self.status in (StatusSenha.EMITIDA, StatusSenha.CHAMADA, StatusSenha.RECHAMADA)
+            and not self.is_deleted
+        )
+
     @property
     def is_active(self) -> bool:
         return self.esta_ativa
@@ -201,6 +221,7 @@ class Senha:
 @dataclass
 class Chamada:
     """Entidade de Chamada de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     senha_id: str = ""
     guiche_id: str = ""
@@ -219,6 +240,7 @@ class Chamada:
     @property
     def esta_ativa(self) -> bool:
         return not self.is_deleted
+
     @property
     def is_active(self) -> bool:
         return self.esta_ativa
@@ -227,6 +249,7 @@ class Chamada:
 @dataclass
 class Atendimento:
     """Entidade de Atendimento (núcleo do DOM-ATE)."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     chamada_id: str = ""
     canal_id: str = ""
@@ -242,10 +265,14 @@ class Atendimento:
 
     @property
     def esta_ativo(self) -> bool:
-        return self.status in (
-            StatusAtendimento.AGUARDANDO,
-            StatusAtendimento.EM_ANDAMENTO,
-        ) and not self.is_deleted
+        return (
+            self.status
+            in (
+                StatusAtendimento.AGUARDANDO,
+                StatusAtendimento.EM_ANDAMENTO,
+            )
+            and not self.is_deleted
+        )
 
     @property
     def is_active(self) -> bool:
@@ -261,6 +288,7 @@ class Atendimento:
 @dataclass
 class AvaliacaoAtendimento:
     """Entidade de Avaliação de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     atendimento_id: str = ""
     nota: int = 0
@@ -280,200 +308,7 @@ class AvaliacaoAtendimento:
 @dataclass
 class Encaminhamento:
     """Entidade de Encaminhamento de Atendimento."""
-    id: str = field(default_factory=lambda: str(uuid4()))
-    atendimento_id: str = ""
-    data_hora: datetime = field(default_factory=datetime.utcnow)
-    destino: str = ""
-    motivo: str = ""
-    status: str = "pendente"
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime | None = None
-    created_by: str | None = None
-    updated_by: str | None = None
-    is_deleted: bool = False
 
-    @property
-    def esta_ativo(self) -> bool:
-        return self.status == "pendente" and not self.is_deleted
-
-    @property
-    def is_active(self) -> bool:
-        return self.esta_ativo
-
-
-__all__ = [
-    "StatusAtendimento",
-    "StatusSenha",
-    "TipoCanal",
-    "PrioridadeAtendimento",
-    "ServicoAtendimento",
-    "CanalAtendimento",
-    "UnidadeAtendimento",
-    "Guiche",
-    "FilaAtendimento",
-    "Triagem",
-    "Senha",
-    "Chamada",
-    "Atendimento",
-    "AvaliacaoAtendimento",
-    "Encaminhamento",
-]
-
-
-
-@dataclass
-class Atendimento:
-    """Entidade de Atendimento (núcleo do DOM-ATE)."""
-    id: str = field(default_factory=lambda: str(uuid4()))
-    chamada_id: str = ""
-    canal_id: str = ""
-    inicio: datetime | None = None
-    fim: datetime | None = None
-    status: StatusAtendimento = StatusAtendimento.AGUARDANDO
-    descricao: str = ""
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime | None = None
-    created_by: str | None = None
-    updated_by: str | None = None
-    is_deleted: bool = False
-
-    @property
-    def esta_ativo(self) -> bool:
-        return self.status in (
-            StatusAtendimento.AGUARDANDO,
-            StatusAtendimento.EM_ANDAMENTO,
-        ) and not self.is_deleted
-
-    @property
-    def is_active(self) -> bool:
-        return self.esta_ativo
-
-    @property
-    def duracao_segundos(self) -> int | None:
-        if self.inicio and self.fim:
-            return int((self.fim - self.inicio).total_seconds())
-        return None
-
-
-@dataclass
-class AvaliacaoAtendimento:
-    """Entidade de Avaliação de Atendimento."""
-    id: str = field(default_factory=lambda: str(uuid4()))
-    atendimento_id: str = ""
-    nota: int = 0
-    comentario: str = ""
-    data_hora: datetime = field(default_factory=datetime.utcnow)
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime | None = None
-    created_by: str | None = None
-    updated_by: str | None = None
-    is_deleted: bool = False
-
-    @property
-    def esta_valida(self) -> bool:
-        return 1 <= self.nota <= 5 and not self.is_deleted
-
-
-@dataclass
-class Encaminhamento:
-    """Entidade de Encaminhamento de Atendimento."""
-    id: str = field(default_factory=lambda: str(uuid4()))
-    atendimento_id: str = ""
-    data_hora: datetime = field(default_factory=datetime.utcnow)
-    destino: str = ""
-    motivo: str = ""
-    status: str = "pendente"
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime | None = None
-    created_by: str | None = None
-    updated_by: str | None = None
-    is_deleted: bool = False
-
-    @property
-    def esta_ativo(self) -> bool:
-        return self.status == "pendente" and not self.is_deleted
-
-    @property
-    def is_active(self) -> bool:
-        return self.esta_ativo
-
-
-__all__ = [
-    "StatusAtendimento",
-    "StatusSenha",
-    "TipoCanal",
-    "PrioridadeAtendimento",
-    "ServicoAtendimento",
-    "CanalAtendimento",
-    "UnidadeAtendimento",
-    "Guiche",
-    "FilaAtendimento",
-    "Triagem",
-    "Senha",
-    "Chamada",
-    "Atendimento",
-    "AvaliacaoAtendimento",
-    "Encaminhamento",
-]
-
-
-
-@dataclass
-class Atendimento:
-    """Entidade de Atendimento (núcleo do DOM-ATE)."""
-    id: str = field(default_factory=lambda: str(uuid4()))
-    chamada_id: str = ""
-    canal_id: str = ""
-    inicio: datetime | None = None
-    fim: datetime | None = None
-    status: StatusAtendimento = StatusAtendimento.AGUARDANDO
-    descricao: str = ""
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime | None = None
-    created_by: str | None = None
-    updated_by: str | None = None
-    is_deleted: bool = False
-
-    @property
-    def esta_ativo(self) -> bool:
-        return self.status in (
-            StatusAtendimento.AGUARDANDO,
-            StatusAtendimento.EM_ANDAMENTO,
-        ) and not self.is_deleted
-
-    @property
-    def is_active(self) -> bool:
-        return self.esta_ativo
-
-    @property
-    def duracao_segundos(self) -> int | None:
-        if self.inicio and self.fim:
-            return int((self.fim - self.inicio).total_seconds())
-        return None
-
-
-@dataclass
-class AvaliacaoAtendimento:
-    """Entidade de Avaliação de Atendimento."""
-    id: str = field(default_factory=lambda: str(uuid4()))
-    atendimento_id: str = ""
-    nota: int = 0
-    comentario: str = ""
-    data_hora: datetime = field(default_factory=datetime.utcnow)
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime | None = None
-    created_by: str | None = None
-    updated_by: str | None = None
-    is_deleted: bool = False
-
-    @property
-    def esta_valida(self) -> bool:
-        return 1 <= self.nota <= 5 and not self.is_deleted
-
-
-@dataclass
-class Encaminhamento:
-    """Entidade de Encaminhamento de Atendimento."""
     id: str = field(default_factory=lambda: str(uuid4()))
     atendimento_id: str = ""
     data_hora: datetime = field(default_factory=datetime.utcnow)
@@ -517,6 +352,7 @@ __all__ = [
 @dataclass
 class Atendimento:
     """Entidade de Atendimento (núcleo do DOM-ATE)."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     chamada_id: str = ""
     canal_id: str = ""
@@ -532,10 +368,14 @@ class Atendimento:
 
     @property
     def esta_ativo(self) -> bool:
-        return self.status in (
-            StatusAtendimento.AGUARDANDO,
-            StatusAtendimento.EM_ANDAMENTO,
-        ) and not self.is_deleted
+        return (
+            self.status
+            in (
+                StatusAtendimento.AGUARDANDO,
+                StatusAtendimento.EM_ANDAMENTO,
+            )
+            and not self.is_deleted
+        )
 
     @property
     def is_active(self) -> bool:
@@ -551,6 +391,7 @@ class Atendimento:
 @dataclass
 class AvaliacaoAtendimento:
     """Entidade de Avaliação de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     atendimento_id: str = ""
     nota: int = 0
@@ -570,6 +411,7 @@ class AvaliacaoAtendimento:
 @dataclass
 class Encaminhamento:
     """Entidade de Encaminhamento de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     atendimento_id: str = ""
     data_hora: datetime = field(default_factory=datetime.utcnow)
@@ -610,10 +452,10 @@ __all__ = [
 ]
 
 
-
 @dataclass
 class Atendimento:
     """Entidade de Atendimento (núcleo do DOM-ATE)."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     chamada_id: str = ""
     canal_id: str = ""
@@ -629,10 +471,14 @@ class Atendimento:
 
     @property
     def esta_ativo(self) -> bool:
-        return self.status in (
-            StatusAtendimento.AGUARDANDO,
-            StatusAtendimento.EM_ANDAMENTO,
-        ) and not self.is_deleted
+        return (
+            self.status
+            in (
+                StatusAtendimento.AGUARDANDO,
+                StatusAtendimento.EM_ANDAMENTO,
+            )
+            and not self.is_deleted
+        )
 
     @property
     def is_active(self) -> bool:
@@ -648,6 +494,7 @@ class Atendimento:
 @dataclass
 class AvaliacaoAtendimento:
     """Entidade de Avaliação de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     atendimento_id: str = ""
     nota: int = 0
@@ -667,6 +514,213 @@ class AvaliacaoAtendimento:
 @dataclass
 class Encaminhamento:
     """Entidade de Encaminhamento de Atendimento."""
+
+    id: str = field(default_factory=lambda: str(uuid4()))
+    atendimento_id: str = ""
+    data_hora: datetime = field(default_factory=datetime.utcnow)
+    destino: str = ""
+    motivo: str = ""
+    status: str = "pendente"
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime | None = None
+    created_by: str | None = None
+    updated_by: str | None = None
+    is_deleted: bool = False
+
+    @property
+    def esta_ativo(self) -> bool:
+        return self.status == "pendente" and not self.is_deleted
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
+
+
+__all__ = [
+    "StatusAtendimento",
+    "StatusSenha",
+    "TipoCanal",
+    "PrioridadeAtendimento",
+    "ServicoAtendimento",
+    "CanalAtendimento",
+    "UnidadeAtendimento",
+    "Guiche",
+    "FilaAtendimento",
+    "Triagem",
+    "Senha",
+    "Chamada",
+    "Atendimento",
+    "AvaliacaoAtendimento",
+    "Encaminhamento",
+]
+
+
+@dataclass
+class Atendimento:
+    """Entidade de Atendimento (núcleo do DOM-ATE)."""
+
+    id: str = field(default_factory=lambda: str(uuid4()))
+    chamada_id: str = ""
+    canal_id: str = ""
+    inicio: datetime | None = None
+    fim: datetime | None = None
+    status: StatusAtendimento = StatusAtendimento.AGUARDANDO
+    descricao: str = ""
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime | None = None
+    created_by: str | None = None
+    updated_by: str | None = None
+    is_deleted: bool = False
+
+    @property
+    def esta_ativo(self) -> bool:
+        return (
+            self.status
+            in (
+                StatusAtendimento.AGUARDANDO,
+                StatusAtendimento.EM_ANDAMENTO,
+            )
+            and not self.is_deleted
+        )
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
+
+    @property
+    def duracao_segundos(self) -> int | None:
+        if self.inicio and self.fim:
+            return int((self.fim - self.inicio).total_seconds())
+        return None
+
+
+@dataclass
+class AvaliacaoAtendimento:
+    """Entidade de Avaliação de Atendimento."""
+
+    id: str = field(default_factory=lambda: str(uuid4()))
+    atendimento_id: str = ""
+    nota: int = 0
+    comentario: str = ""
+    data_hora: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime | None = None
+    created_by: str | None = None
+    updated_by: str | None = None
+    is_deleted: bool = False
+
+    @property
+    def esta_valida(self) -> bool:
+        return 1 <= self.nota <= 5 and not self.is_deleted
+
+
+@dataclass
+class Encaminhamento:
+    """Entidade de Encaminhamento de Atendimento."""
+
+    id: str = field(default_factory=lambda: str(uuid4()))
+    atendimento_id: str = ""
+    data_hora: datetime = field(default_factory=datetime.utcnow)
+    destino: str = ""
+    motivo: str = ""
+    status: str = "pendente"
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime | None = None
+    created_by: str | None = None
+    updated_by: str | None = None
+    is_deleted: bool = False
+
+    @property
+    def esta_ativo(self) -> bool:
+        return self.status == "pendente" and not self.is_deleted
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
+
+
+__all__ = [
+    "StatusAtendimento",
+    "StatusSenha",
+    "TipoCanal",
+    "PrioridadeAtendimento",
+    "ServicoAtendimento",
+    "CanalAtendimento",
+    "UnidadeAtendimento",
+    "Guiche",
+    "FilaAtendimento",
+    "Triagem",
+    "Senha",
+    "Chamada",
+    "Atendimento",
+    "AvaliacaoAtendimento",
+    "Encaminhamento",
+]
+
+
+@dataclass
+class Atendimento:
+    """Entidade de Atendimento (núcleo do DOM-ATE)."""
+
+    id: str = field(default_factory=lambda: str(uuid4()))
+    chamada_id: str = ""
+    canal_id: str = ""
+    inicio: datetime | None = None
+    fim: datetime | None = None
+    status: StatusAtendimento = StatusAtendimento.AGUARDANDO
+    descricao: str = ""
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime | None = None
+    created_by: str | None = None
+    updated_by: str | None = None
+    is_deleted: bool = False
+
+    @property
+    def esta_ativo(self) -> bool:
+        return (
+            self.status
+            in (
+                StatusAtendimento.AGUARDANDO,
+                StatusAtendimento.EM_ANDAMENTO,
+            )
+            and not self.is_deleted
+        )
+
+    @property
+    def is_active(self) -> bool:
+        return self.esta_ativo
+
+    @property
+    def duracao_segundos(self) -> int | None:
+        if self.inicio and self.fim:
+            return int((self.fim - self.inicio).total_seconds())
+        return None
+
+
+@dataclass
+class AvaliacaoAtendimento:
+    """Entidade de Avaliação de Atendimento."""
+
+    id: str = field(default_factory=lambda: str(uuid4()))
+    atendimento_id: str = ""
+    nota: int = 0
+    comentario: str = ""
+    data_hora: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime | None = None
+    created_by: str | None = None
+    updated_by: str | None = None
+    is_deleted: bool = False
+
+    @property
+    def esta_valida(self) -> bool:
+        return 1 <= self.nota <= 5 and not self.is_deleted
+
+
+@dataclass
+class Encaminhamento:
+    """Entidade de Encaminhamento de Atendimento."""
+
     id: str = field(default_factory=lambda: str(uuid4()))
     atendimento_id: str = ""
     data_hora: datetime = field(default_factory=datetime.utcnow)

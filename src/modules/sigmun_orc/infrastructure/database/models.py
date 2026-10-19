@@ -39,9 +39,11 @@ class LDOModel(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     exercicio = Column(Integer, nullable=False, unique=True)
-    ppa_id = Column(UUID(as_uuid=True),
-                    ForeignKey("orc.ppas.id", onupdate="CASCADE", ondelete="RESTRICT"),
-                    nullable=False)
+    ppa_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("orc.ppas.id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+    )
     descricao = Column(Text)
     status = Column(Text, nullable=False, server_default="elaboracao")
     meta_fiscal_receita = Column(Float, nullable=False, server_default="0")
@@ -63,9 +65,11 @@ class LOAModel(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     exercicio = Column(Integer, nullable=False, unique=True)
-    ldo_id = Column(UUID(as_uuid=True),
-                    ForeignKey("orc.ldos.id", onupdate="CASCADE", ondelete="RESTRICT"),
-                    nullable=False)
+    ldo_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("orc.ldos.id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+    )
     descricao = Column(Text)
     status = Column(Text, nullable=False, server_default="elaboracao")
     valor_receita_prevista = Column(Float, nullable=False, server_default="0")
@@ -86,9 +90,11 @@ class DotacaoModel(Base):
     __table_args__ = {"schema": "orc"}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    loa_id = Column(UUID(as_uuid=True),
-                    ForeignKey("orc.loas.id", onupdate="CASCADE", ondelete="RESTRICT"),
-                    nullable=False)
+    loa_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("orc.loas.id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+    )
     exercicio = Column(Integer, nullable=False)
     codigo = Column(Text, nullable=False)
     unidade_orcamentaria = Column(Text)
@@ -114,9 +120,11 @@ class ReservaModel(Base):
     __table_args__ = {"schema": "orc"}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    dotacao_id = Column(UUID(as_uuid=True),
-                        ForeignKey("orc.dotacoes.id", onupdate="CASCADE", ondelete="RESTRICT"),
-                        nullable=False)
+    dotacao_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("orc.dotacoes.id", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+    )
     numero = Column(Text)
     valor = Column(Float, nullable=False, server_default="0")
     finalidade = Column(Text)

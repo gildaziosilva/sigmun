@@ -49,7 +49,8 @@ from src.modules.sigmun_cadastro.presentation.schemas.unidade_schemas import (
     UnidadeListResponse,
     UnidadeResponse,
 )
-from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid
+from src.shared.presentation.dependencies import exigir_papeis
+from src.shared.security.jwt import JWTUsuarioContexto
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ def get_unidade_repository(
 def registrar_unidade(
     payload: UnidadeCreateRequest,
     repository: Annotated[UnidadeAdministrativaRepository, Depends(get_unidade_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
 ) -> UnidadeAdministrativa:
     """Registra uma unidade administrativa (RN-CUM-008/009)."""
     command = CriarUnidadeCommand(

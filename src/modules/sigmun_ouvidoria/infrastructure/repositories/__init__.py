@@ -848,9 +848,7 @@ class SQLAlchemyPedidoLaiRepository(RepositorioPedidoLai):
                 int(pedido.protocolo.numero),
             )
         if pedido.is_recurso and pedido.pedido_original_id:
-            original = self._session.get(
-                PedidoLaiModel, _como_uuid(pedido.pedido_original_id)
-            )
+            original = self._session.get(PedidoLaiModel, _como_uuid(pedido.pedido_original_id))
             if original:
                 return (
                     f"{original.protocolo}-R",
@@ -870,9 +868,7 @@ class SQLAlchemyPedidoLaiRepository(RepositorioPedidoLai):
             # único, deriva-se o código do pedido original com o sufixo "-R".
             # Sem isso, todo recurso gravaria "" e o segundo interposto
             # violaria a constraint `manifestacoes_protocolo_key`.
-            protocolo_texto, ano_protocolo, numero_protocolo = self._protocolo_do_pedido(
-                pedido
-            )
+            protocolo_texto, ano_protocolo, numero_protocolo = self._protocolo_do_pedido(pedido)
             model = PedidoLaiModel(
                 id=UUID(pedido.id),
                 protocolo=protocolo_texto,

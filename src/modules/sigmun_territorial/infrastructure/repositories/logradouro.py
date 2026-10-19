@@ -7,8 +7,7 @@ from sqlalchemy.orm import Session
 from ...application.interfaces import RepositorioLogradouro
 from ...domain.entities import Logradouro, SituacaoLogradouro, TipoLogradouro
 from ..database.models import LogradouroModel
-from .bairro import buscar_ou_um
-from .bairro import to_uuid
+from .bairro import buscar_ou_um, to_uuid
 
 
 class SQLAlchemyLogradouroRepository(RepositorioLogradouro):

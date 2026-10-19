@@ -40,9 +40,7 @@ class CadastrarLogradouroInput:
 class CadastrarLogradouroUseCase:
     """Cadastra um logradouro público vinculado a bairro (RN-TEL-002)."""
 
-    def __init__(
-        self, repo: ports.RepositorioLogradouro, bairros: ports.RepositorioBairro
-    ) -> None:
+    def __init__(self, repo: ports.RepositorioLogradouro, bairros: ports.RepositorioBairro) -> None:
         self._repo = repo
         self._bairros = bairros
 
@@ -55,9 +53,7 @@ class CadastrarLogradouroUseCase:
         )
 
         if not dto.codigo or not dto.nome:
-            raise RegraNegocioError(
-                "Código e nome do logradouro são obrigatórios (RN-TEL-002)"
-            )
+            raise RegraNegocioError("Código e nome do logradouro são obrigatórios (RN-TEL-002)")
         if self._repo.get_by_codigo(dto.codigo) is not None:
             raise LogradouroJaExistenteError(
                 "Logradouro já cadastrado com este código (RN-TEL-002)"
@@ -99,9 +95,7 @@ class AtualizarLogradouroInput:
 class AtualizarLogradouroUseCase:
     """Atualiza o cadastro de um logradouro público (RN-TEL-002)."""
 
-    def __init__(
-        self, repo: ports.RepositorioLogradouro, bairros: ports.RepositorioBairro
-    ) -> None:
+    def __init__(self, repo: ports.RepositorioLogradouro, bairros: ports.RepositorioBairro) -> None:
         self._repo = repo
         self._bairros = bairros
 

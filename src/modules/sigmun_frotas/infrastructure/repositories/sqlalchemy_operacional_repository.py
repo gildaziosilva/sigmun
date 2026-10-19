@@ -45,9 +45,7 @@ class SQLAlchemyAbastecimentoRepository(RepositorioAbastecimento):
 
     def get_by_id(self, abastecimento_id: str) -> Abastecimento | None:
         """Busca abastecimento por id."""
-        model = self._session.get(
-            AbastecimentoModel, uuid.UUID(abastecimento_id)
-        )
+        model = self._session.get(AbastecimentoModel, uuid.UUID(abastecimento_id))
         return self._to_entity(model) if model else None
 
     def list_by_veiculo(self, veiculo_id: str) -> list:

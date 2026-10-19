@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
-from . import interfaces as ports
 from ..domain.entities.operacional import (
     Abastecimento,
     Manutencao,
@@ -17,6 +16,7 @@ from ..domain.entities.veiculo import (
     TipoVeiculo,
     Veiculo,
 )
+from . import interfaces as ports
 
 
 @dataclass
@@ -49,13 +49,9 @@ class CadastrarVeiculoUseCase:
         from ..domain.exceptions import RegraNegocioError, VeiculoJaExistenteError
 
         if not dto.placa or not dto.marca or not dto.modelo:
-            raise RegraNegocioError(
-                "Placa, marca e modelo são obrigatórios no cadastro"
-            )
+            raise RegraNegocioError("Placa, marca e modelo são obrigatórios no cadastro")
         if self._repo.get_by_placa(dto.placa) is not None:
-            raise VeiculoJaExistenteError(
-                "Placa já cadastrada na frota (RN-FRO-001)"
-            )
+            raise VeiculoJaExistenteError("Placa já cadastrada na frota (RN-FRO-001)")
         veiculo = Veiculo(
             placa=dto.placa,
             chassi=dto.chassi,
@@ -73,6 +69,7 @@ class CadastrarVeiculoUseCase:
         )
         veiculo.validar()
         return self._repo.save(veiculo)
+
 
 @dataclass
 class RegistrarAbastecimentoInput:
@@ -105,9 +102,7 @@ class RegistrarAbastecimentoUseCase:
 
         veiculo = self._veiculos.get_by_id(dto.veiculo_id)
         if veiculo is None:
-            raise VeiculoNaoEncontradoError(
-                "Veículo não encontrado para abastecimento"
-            )
+            raise VeiculoNaoEncontradoError("Veículo não encontrado para abastecimento")
         abastecimento = Abastecimento(
             veiculo_id=dto.veiculo_id,
             data=dto.data or date.today(),
@@ -193,9 +188,7 @@ class ConcluirManutencaoUseCase:
             raise ManutencaoNaoEncontradaError("Manutenção não encontrada")
         veiculo = self._veiculos.get_by_id(manutencao.veiculo_id)
         if veiculo is None:
-            raise VeiculoNaoEncontradoError(
-                "Veículo vinculado à manutenção não encontrado"
-            )
+            raise VeiculoNaoEncontradoError("Veículo vinculado à manutenção não encontrado")
         manutencao.concluir()
         veiculo.concluir_manutencao()
         self._veiculos.save(veiculo)
@@ -271,9 +264,7 @@ class ConcluirRotaUseCase:
             raise RotaNaoEncontradaError("Rota não encontrada")
         veiculo = self._veiculos.get_by_id(rota.veiculo_id)
         if veiculo is None:
-            raise VeiculoNaoEncontradoError(
-                "Veículo vinculado à rota não encontrado"
-            )
+            raise VeiculoNaoEncontradoError("Veículo vinculado à rota não encontrado")
         rota.concluir()
         if rota.km_fim > 0:
             veiculo.atualizar_odometro(rota.km_fim)

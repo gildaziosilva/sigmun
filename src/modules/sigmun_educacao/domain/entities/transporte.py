@@ -87,9 +87,7 @@ class PassagemTransporte:
         from ..exceptions import RegraNegocioError
 
         if not self.rota_id or not self.matricula_id:
-            raise RegraNegocioError(
-                "Passagem exige rota e matrícula vinculadas (RN-EDU-030)"
-            )
+            raise RegraNegocioError("Passagem exige rota e matrícula vinculadas (RN-EDU-030)")
 
 
 __all__ = ["StatusRota", "RotaTransporte", "PassagemTransporte"]

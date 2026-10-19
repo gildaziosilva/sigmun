@@ -302,13 +302,10 @@ def limpar_seed_obr(session: Session) -> dict[str, int]:
 
     numeros = {o.numero for o in OBRAS_DEMO}
     obra_ids = [
-        str(m.id)
-        for m in session.query(ObraModel).filter(ObraModel.numero.in_(numeros)).all()
+        str(m.id) for m in session.query(ObraModel).filter(ObraModel.numero.in_(numeros)).all()
     ]
 
-    def _apagar(
-        model: type[Any], filtro: ColumnElement[bool] | None
-    ) -> int:
+    def _apagar(model: type[Any], filtro: ColumnElement[bool] | None) -> int:
         query = session.query(model)
         if filtro is not None:
             query = query.filter(filtro)

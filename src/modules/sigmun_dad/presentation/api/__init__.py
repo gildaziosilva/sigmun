@@ -93,6 +93,16 @@ from src.modules.sigmun_dad.presentation.schemas import (
     QualidadeResponse,
     QualidadeUpdateRequest,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
+from src.shared.presentation.paginacao import (
+    Pagina,
+    ParametrosPaginacao,
+    criar_pagina,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +170,7 @@ def _to_response(ativo: AtivoDado) -> AtivoResponse:
     summary="Cria um novo ativo de dado",
 )
 def criar_ativo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     payload: AtivoCreateRequest,
     repo: Annotated[AtivoRepositoryInterface, Depends(get_ativo_repository)],
 ) -> AtivoResponse:
@@ -189,6 +200,7 @@ def criar_ativo(
     summary="Busca ativo por ID",
 )
 def buscar_ativo(
+    usuario: UsuarioOpcional,
     ativo_id: str,
     repo: Annotated[AtivoRepositoryInterface, Depends(get_ativo_repository)],
 ) -> AtivoResponse:
@@ -202,23 +214,22 @@ def buscar_ativo(
 
 @router.get(
     "/ativos",
-    response_model=AtivoListResponse,
+    response_model=Pagina[AtivoResponse],
     summary="Lista ativos de dados",
 )
 def listar_ativos(
+    usuario: UsuarioOpcional,
     repo: Annotated[AtivoRepositoryInterface, Depends(get_ativo_repository)],
-    page: int = 0,
-    page_size: int = 50,
+    params: Annotated[ParametrosPaginacao, Depends()],
     tipo: str | None = None,
     status_filter: str | None = None,
-) -> AtivoListResponse:
+) -> Pagina[AtivoResponse]:
     use_case = BuscarAtivoUseCase(repo)
-    ativos, total = use_case.list_all(page, page_size, tipo, status_filter)
-    return AtivoListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_to_response(a) for a in ativos],
+    ativos, total = use_case.list_all(params.page, params.page_size, tipo, status_filter)
+    return criar_pagina(
+        [_to_response(a) for a in ativos],
+        params,
+        total,
     )
 
 
@@ -228,6 +239,7 @@ def listar_ativos(
     summary="Ativa um ativo",
 )
 def ativar_ativo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     ativo_id: str,
     repo: Annotated[AtivoRepositoryInterface, Depends(get_ativo_repository)],
 ) -> AtivoResponse:
@@ -245,6 +257,7 @@ def ativar_ativo(
     summary="Desativa um ativo",
 )
 def desativar_ativo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     ativo_id: str,
     repo: Annotated[AtivoRepositoryInterface, Depends(get_ativo_repository)],
 ) -> AtivoResponse:
@@ -262,6 +275,7 @@ def desativar_ativo(
     summary="Arquiva um ativo",
 )
 def arquivar_ativo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     ativo_id: str,
     repo: Annotated[AtivoRepositoryInterface, Depends(get_ativo_repository)],
 ) -> AtivoResponse:
@@ -297,6 +311,7 @@ def _to_catalogo_response(catalogo: Catalogo) -> CatalogoResponse:
     summary="Cria um novo catálogo",
 )
 def criar_catalogo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     payload: CatalogoCreateRequest,
     repo: Annotated[CatalogoRepositoryInterface, Depends(get_catalogo_repository)],
 ) -> CatalogoResponse:
@@ -318,6 +333,7 @@ def criar_catalogo(
     summary="Busca catálogo por ID",
 )
 def buscar_catalogo(
+    usuario: UsuarioOpcional,
     catalogo_id: str,
     repo: Annotated[CatalogoRepositoryInterface, Depends(get_catalogo_repository)],
 ) -> CatalogoResponse:
@@ -331,21 +347,20 @@ def buscar_catalogo(
 
 @router.get(
     "/catalogos",
-    response_model=CatalogoListResponse,
+    response_model=Pagina[CatalogoResponse],
     summary="Lista catálogos",
 )
 def listar_catalogos(
+    usuario: UsuarioOpcional,
     repo: Annotated[CatalogoRepositoryInterface, Depends(get_catalogo_repository)],
-    page: int = 0,
-    page_size: int = 50,
-) -> CatalogoListResponse:
+    params: Annotated[ParametrosPaginacao, Depends()],
+) -> Pagina[CatalogoResponse]:
     use_case = BuscarCatalogoUseCase(repo)
-    catalogos, total = use_case.list_all(page, page_size)
-    return CatalogoListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_to_catalogo_response(c) for c in catalogos],
+    catalogos, total = use_case.list_all(params.page, params.page_size)
+    return criar_pagina(
+        [_to_catalogo_response(c) for c in catalogos],
+        params,
+        total,
     )
 
 
@@ -355,6 +370,7 @@ def listar_catalogos(
     summary="Atualiza um catálogo",
 )
 def atualizar_catalogo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     catalogo_id: str,
     payload: CatalogoUpdateRequest,
     repo: Annotated[CatalogoRepositoryInterface, Depends(get_catalogo_repository)],
@@ -378,6 +394,7 @@ def atualizar_catalogo(
     summary="Deleta um catálogo",
 )
 def deletar_catalogo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "dados"))],
     catalogo_id: str,
     repo: Annotated[CatalogoRepositoryInterface, Depends(get_catalogo_repository)],
 ) -> None:
@@ -394,6 +411,7 @@ def deletar_catalogo(
     summary="Adiciona ativo ao catálogo",
 )
 def adicionar_ativo_catalogo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     catalogo_id: str,
     ativo_id: str,
     catalogo_repo: Annotated[CatalogoRepositoryInterface, Depends(get_catalogo_repository)],
@@ -413,6 +431,7 @@ def adicionar_ativo_catalogo(
     summary="Remove ativo do catálogo",
 )
 def remover_ativo_catalogo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "dados"))],
     catalogo_id: str,
     ativo_id: str,
     repo: Annotated[CatalogoRepositoryInterface, Depends(get_catalogo_repository)],
@@ -449,6 +468,7 @@ def _to_linhagem_response(linhagem: LinhagemDado) -> LinhagemResponse:
     summary="Cria uma nova linhagem",
 )
 def criar_linhagem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     payload: LinhagemCreateRequest,
     repo: Annotated[LinhagemRepositoryInterface, Depends(get_linhagem_repository)],
 ) -> LinhagemResponse:
@@ -472,6 +492,7 @@ def criar_linhagem(
     summary="Busca linhagem por ID",
 )
 def buscar_linhagem(
+    usuario: UsuarioOpcional,
     linhagem_id: str,
     repo: Annotated[LinhagemRepositoryInterface, Depends(get_linhagem_repository)],
 ) -> LinhagemResponse:
@@ -485,21 +506,20 @@ def buscar_linhagem(
 
 @router.get(
     "/linhagens",
-    response_model=LinhagemListResponse,
+    response_model=Pagina[LinhagemResponse],
     summary="Lista linhagens",
 )
 def listar_linhagens(
+    usuario: UsuarioOpcional,
     repo: Annotated[LinhagemRepositoryInterface, Depends(get_linhagem_repository)],
-    page: int = 0,
-    page_size: int = 50,
-) -> LinhagemListResponse:
+    params: Annotated[ParametrosPaginacao, Depends()],
+) -> Pagina[LinhagemResponse]:
     use_case = BuscarLinhagemUseCase(repo)
-    linhagens, total = use_case.list_all(page, page_size)
-    return LinhagemListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_to_linhagem_response(item) for item in linhagens],
+    linhagens, total = use_case.list_all(params.page, params.page_size)
+    return criar_pagina(
+        [_to_linhagem_response(item) for item in linhagens],
+        params,
+        total,
     )
 
 
@@ -509,6 +529,7 @@ def listar_linhagens(
     summary="Atualiza uma linhagem",
 )
 def atualizar_linhagem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     linhagem_id: str,
     payload: LinhagemUpdateRequest,
     repo: Annotated[LinhagemRepositoryInterface, Depends(get_linhagem_repository)],
@@ -532,6 +553,7 @@ def atualizar_linhagem(
     summary="Deleta uma linhagem",
 )
 def deletar_linhagem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "dados"))],
     linhagem_id: str,
     repo: Annotated[LinhagemRepositoryInterface, Depends(get_linhagem_repository)],
 ) -> None:
@@ -567,6 +589,7 @@ def _to_politica_response(politica: PoliticaDado) -> PoliticaResponse:
     summary="Cria uma nova política",
 )
 def criar_politica(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     payload: PoliticaCreateRequest,
     repo: Annotated[PoliticaRepositoryInterface, Depends(get_politica_repository)],
 ) -> PoliticaResponse:
@@ -590,6 +613,7 @@ def criar_politica(
     summary="Busca política por ID",
 )
 def buscar_politica(
+    usuario: UsuarioOpcional,
     politica_id: str,
     repo: Annotated[PoliticaRepositoryInterface, Depends(get_politica_repository)],
 ) -> PoliticaResponse:
@@ -603,21 +627,20 @@ def buscar_politica(
 
 @router.get(
     "/politicas",
-    response_model=PoliticaListResponse,
+    response_model=Pagina[PoliticaResponse],
     summary="Lista políticas",
 )
 def listar_politicas(
+    usuario: UsuarioOpcional,
     repo: Annotated[PoliticaRepositoryInterface, Depends(get_politica_repository)],
-    page: int = 0,
-    page_size: int = 50,
-) -> PoliticaListResponse:
+    params: Annotated[ParametrosPaginacao, Depends()],
+) -> Pagina[PoliticaResponse]:
     use_case = BuscarPoliticaUseCase(repo)
-    politicas, total = use_case.list_all(page, page_size)
-    return PoliticaListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_to_politica_response(p) for p in politicas],
+    politicas, total = use_case.list_all(params.page, params.page_size)
+    return criar_pagina(
+        [_to_politica_response(p) for p in politicas],
+        params,
+        total,
     )
 
 
@@ -627,6 +650,7 @@ def listar_politicas(
     summary="Atualiza uma política",
 )
 def atualizar_politica(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     politica_id: str,
     payload: PoliticaUpdateRequest,
     repo: Annotated[PoliticaRepositoryInterface, Depends(get_politica_repository)],
@@ -650,6 +674,7 @@ def atualizar_politica(
     summary="Deleta uma política",
 )
 def deletar_politica(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "dados"))],
     politica_id: str,
     repo: Annotated[PoliticaRepositoryInterface, Depends(get_politica_repository)],
 ) -> None:
@@ -666,6 +691,7 @@ def deletar_politica(
     summary="Adiciona regra à política",
 )
 def adicionar_regra_politica(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     politica_id: str,
     regra: str,
     repo: Annotated[PoliticaRepositoryInterface, Depends(get_politica_repository)],
@@ -703,6 +729,7 @@ def _to_qualidade_response(qualidade: QualidadeDado) -> QualidadeResponse:
     summary="Avalia qualidade de um ativo",
 )
 def avaliar_qualidade(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     payload: QualidadeCreateRequest,
     repo: Annotated[QualidadeRepositoryInterface, Depends(get_qualidade_repository)],
 ) -> QualidadeResponse:
@@ -725,6 +752,7 @@ def avaliar_qualidade(
     summary="Busca registro de qualidade por ID",
 )
 def buscar_qualidade(
+    usuario: UsuarioOpcional,
     qualidade_id: str,
     repo: Annotated[QualidadeRepositoryInterface, Depends(get_qualidade_repository)],
 ) -> QualidadeResponse:
@@ -738,21 +766,20 @@ def buscar_qualidade(
 
 @router.get(
     "/qualidade",
-    response_model=QualidadeListResponse,
+    response_model=Pagina[QualidadeResponse],
     summary="Lista registros de qualidade",
 )
 def listar_qualidade(
+    usuario: UsuarioOpcional,
     repo: Annotated[QualidadeRepositoryInterface, Depends(get_qualidade_repository)],
-    page: int = 0,
-    page_size: int = 50,
-) -> QualidadeListResponse:
+    params: Annotated[ParametrosPaginacao, Depends()],
+) -> Pagina[QualidadeResponse]:
     use_case = BuscarQualidadeUseCase(repo)
-    registros, total = use_case.list_all(page, page_size)
-    return QualidadeListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_to_qualidade_response(r) for r in registros],
+    registros, total = use_case.list_all(params.page, params.page_size)
+    return criar_pagina(
+        [_to_qualidade_response(r) for r in registros],
+        params,
+        total,
     )
 
 
@@ -762,6 +789,7 @@ def listar_qualidade(
     summary="Atualiza registro de qualidade",
 )
 def atualizar_qualidade(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "dados"))],
     qualidade_id: str,
     payload: QualidadeUpdateRequest,
     repo: Annotated[QualidadeRepositoryInterface, Depends(get_qualidade_repository)],
@@ -786,6 +814,7 @@ def atualizar_qualidade(
     summary="Deleta registro de qualidade",
 )
 def deletar_qualidade(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "dados"))],
     qualidade_id: str,
     repo: Annotated[QualidadeRepositoryInterface, Depends(get_qualidade_repository)],
 ) -> None:

@@ -89,6 +89,16 @@ from src.modules.sigmun_met.presentation.schemas import (
     ValorMetadadoResponse,
     ValorMetadadoUpdateRequest,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
+from src.shared.presentation.paginacao import (
+    Pagina,
+    ParametrosPaginacao,
+    criar_pagina,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +170,7 @@ def _metadado_to_response(m: Metadado) -> MetadadoResponse:
     responses={409: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def criar_metadado(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     payload: MetadadoCreateRequest,
     repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
 ) -> MetadadoResponse:
@@ -182,20 +193,19 @@ def criar_metadado(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
 
-@router.get("/metadados", response_model=MetadadoListResponse, summary="Lista metadados")
+@router.get("/metadados", response_model=Pagina[MetadadoResponse], summary="Lista metadados")
 def listar_metadados(
+    usuario: UsuarioOpcional,
     repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
-    page: int = 0,
-    page_size: int = 50,
+    params: Annotated[ParametrosPaginacao, Depends()],
     tipo_dado: str | None = None,
-) -> MetadadoListResponse:
+) -> Pagina[MetadadoResponse]:
     use_case = BuscarMetadadoUseCase(repo)
-    items, total = use_case.list_all(page=page, page_size=page_size, tipo_dado=tipo_dado)
-    return MetadadoListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_metadado_to_response(m) for m in items],
+    items, total = use_case.list_all(page=params.page, page_size=params.page_size, tipo_dado=tipo_dado)
+    return criar_pagina(
+        [_metadado_to_response(m) for m in items],
+        params,
+        total,
     )
 
 
@@ -206,6 +216,7 @@ def listar_metadados(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_metadado(
+    usuario: UsuarioOpcional,
     metadado_id: str,
     repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
 ) -> MetadadoResponse:
@@ -223,6 +234,7 @@ def buscar_metadado(
     responses={404: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def atualizar_metadado(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     metadado_id: str,
     payload: MetadadoUpdateRequest,
     repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
@@ -253,6 +265,7 @@ def atualizar_metadado(
     responses={404: {"model": ErrorResponse}},
 )
 def ativar_metadado(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     metadado_id: str,
     repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
 ) -> MetadadoResponse:
@@ -270,6 +283,7 @@ def ativar_metadado(
     responses={404: {"model": ErrorResponse}},
 )
 def desativar_metadado(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     metadado_id: str,
     repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
 ) -> MetadadoResponse:
@@ -287,6 +301,7 @@ def desativar_metadado(
     responses={404: {"model": ErrorResponse}},
 )
 def deletar_metadado(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "metas"))],
     metadado_id: str,
     repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
 ) -> None:
@@ -322,6 +337,7 @@ def _valor_to_response(v: ValorMetadado) -> ValorMetadadoResponse:
     responses={404: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def atribuir_valor(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     payload: ValorMetadadoCreateRequest,
     repo: Annotated[ValorMetadadoRepositoryInterface, Depends(get_valor_metadado_repository)],
     metadado_repo: Annotated[MetadadoRepositoryInterface, Depends(get_metadado_repository)],
@@ -343,20 +359,19 @@ def atribuir_valor(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
 
-@router.get("/valores", response_model=ValorMetadadoListResponse, summary="Lista valores")
+@router.get("/valores", response_model=Pagina[ValorMetadadoResponse], summary="Lista valores")
 def listar_valores(
+    usuario: UsuarioOpcional,
     repo: Annotated[ValorMetadadoRepositoryInterface, Depends(get_valor_metadado_repository)],
-    page: int = 0,
-    page_size: int = 50,
+    params: Annotated[ParametrosPaginacao, Depends()],
     entidade_tipo: str | None = None,
-) -> ValorMetadadoListResponse:
+) -> Pagina[ValorMetadadoResponse]:
     use_case = BuscarValorMetadadoUseCase(repo)
-    items, total = use_case.list_all(page=page, page_size=page_size, entidade_tipo=entidade_tipo)
-    return ValorMetadadoListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_valor_to_response(v) for v in items],
+    items, total = use_case.list_all(page=params.page, page_size=params.page_size, entidade_tipo=entidade_tipo)
+    return criar_pagina(
+        [_valor_to_response(v) for v in items],
+        params,
+        total,
     )
 
 
@@ -367,6 +382,7 @@ def listar_valores(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_valor(
+    usuario: UsuarioOpcional,
     valor_id: str,
     repo: Annotated[ValorMetadadoRepositoryInterface, Depends(get_valor_metadado_repository)],
 ) -> ValorMetadadoResponse:
@@ -383,6 +399,7 @@ def buscar_valor(
     summary="Busca todos os valores de metadados de uma entidade",
 )
 def valores_da_entidade(
+    usuario: UsuarioOpcional,
     entidade_tipo: str,
     entidade_id: str,
     repo: Annotated[ValorMetadadoRepositoryInterface, Depends(get_valor_metadado_repository)],
@@ -398,6 +415,7 @@ def valores_da_entidade(
     responses={404: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def atualizar_valor(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     valor_id: str,
     payload: ValorMetadadoUpdateRequest,
     repo: Annotated[ValorMetadadoRepositoryInterface, Depends(get_valor_metadado_repository)],
@@ -430,6 +448,7 @@ def atualizar_valor(
     responses={404: {"model": ErrorResponse}},
 )
 def deletar_valor(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "metas"))],
     valor_id: str,
     repo: Annotated[ValorMetadadoRepositoryInterface, Depends(get_valor_metadado_repository)],
 ) -> None:
@@ -467,6 +486,7 @@ def _classificacao_to_response(c: Classificacao) -> ClassificacaoResponse:
     responses={409: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def criar_classificacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     payload: ClassificacaoCreateRequest,
     repo: Annotated[ClassificacaoRepositoryInterface, Depends(get_classificacao_repository)],
 ) -> ClassificacaoResponse:
@@ -488,21 +508,20 @@ def criar_classificacao(
 
 
 @router.get(
-    "/classificacoes", response_model=ClassificacaoListResponse, summary="Lista classificações"
+    "/classificacoes", response_model=Pagina[ClassificacaoResponse], summary="Lista classificações"
 )
 def listar_classificacoes(
+    usuario: UsuarioOpcional,
     repo: Annotated[ClassificacaoRepositoryInterface, Depends(get_classificacao_repository)],
-    page: int = 0,
-    page_size: int = 50,
+    params: Annotated[ParametrosPaginacao, Depends()],
     tipo: str | None = None,
-) -> ClassificacaoListResponse:
+) -> Pagina[ClassificacaoResponse]:
     use_case = BuscarClassificacaoUseCase(repo)
-    items, total = use_case.list_all(page=page, page_size=page_size, tipo=tipo)
-    return ClassificacaoListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_classificacao_to_response(c) for c in items],
+    items, total = use_case.list_all(page=params.page, page_size=params.page_size, tipo=tipo)
+    return criar_pagina(
+        [_classificacao_to_response(c) for c in items],
+        params,
+        total,
     )
 
 
@@ -513,6 +532,7 @@ def listar_classificacoes(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_classificacao(
+    usuario: UsuarioOpcional,
     classificacao_id: str,
     repo: Annotated[ClassificacaoRepositoryInterface, Depends(get_classificacao_repository)],
 ) -> ClassificacaoResponse:
@@ -530,6 +550,7 @@ def buscar_classificacao(
     responses={404: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def atualizar_classificacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     classificacao_id: str,
     payload: ClassificacaoUpdateRequest,
     repo: Annotated[ClassificacaoRepositoryInterface, Depends(get_classificacao_repository)],
@@ -558,6 +579,7 @@ def atualizar_classificacao(
     responses={404: {"model": ErrorResponse}},
 )
 def deletar_classificacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "metas"))],
     classificacao_id: str,
     repo: Annotated[ClassificacaoRepositoryInterface, Depends(get_classificacao_repository)],
 ) -> None:
@@ -593,6 +615,7 @@ def _taxonomia_to_response(t: Taxonomia) -> TaxonomiaResponse:
     responses={409: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def criar_taxonomia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     payload: TaxonomiaCreateRequest,
     repo: Annotated[TaxonomiaRepositoryInterface, Depends(get_taxonomia_repository)],
 ) -> TaxonomiaResponse:
@@ -610,19 +633,18 @@ def criar_taxonomia(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
 
-@router.get("/taxonomias", response_model=TaxonomiaListResponse, summary="Lista taxonomias")
+@router.get("/taxonomias", response_model=Pagina[TaxonomiaResponse], summary="Lista taxonomias")
 def listar_taxonomias(
+    usuario: UsuarioOpcional,
     repo: Annotated[TaxonomiaRepositoryInterface, Depends(get_taxonomia_repository)],
-    page: int = 0,
-    page_size: int = 50,
-) -> TaxonomiaListResponse:
+    params: Annotated[ParametrosPaginacao, Depends()],
+) -> Pagina[TaxonomiaResponse]:
     use_case = BuscarTaxonomiaUseCase(repo)
-    items, total = use_case.list_all(page=page, page_size=page_size)
-    return TaxonomiaListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_taxonomia_to_response(t) for t in items],
+    items, total = use_case.list_all(page=params.page, page_size=params.page_size)
+    return criar_pagina(
+        [_taxonomia_to_response(t) for t in items],
+        params,
+        total,
     )
 
 
@@ -633,6 +655,7 @@ def listar_taxonomias(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_taxonomia(
+    usuario: UsuarioOpcional,
     taxonomia_id: str,
     repo: Annotated[TaxonomiaRepositoryInterface, Depends(get_taxonomia_repository)],
 ) -> TaxonomiaResponse:
@@ -650,6 +673,7 @@ def buscar_taxonomia(
     responses={404: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def atualizar_taxonomia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     taxonomia_id: str,
     payload: TaxonomiaUpdateRequest,
     repo: Annotated[TaxonomiaRepositoryInterface, Depends(get_taxonomia_repository)],
@@ -675,6 +699,7 @@ def atualizar_taxonomia(
     responses={404: {"model": ErrorResponse}},
 )
 def deletar_taxonomia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "metas"))],
     taxonomia_id: str,
     repo: Annotated[TaxonomiaRepositoryInterface, Depends(get_taxonomia_repository)],
 ) -> None:
@@ -713,6 +738,7 @@ def _termo_to_response(t: TermoTaxonomia) -> TermoResponse:
     responses={404: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def criar_termo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     payload: TermoCreateRequest,
     repo: Annotated[TermoTaxonomiaRepositoryInterface, Depends(get_termo_repository)],
     taxonomia_repo: Annotated[TaxonomiaRepositoryInterface, Depends(get_taxonomia_repository)],
@@ -737,20 +763,19 @@ def criar_termo(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
 
-@router.get("/termos", response_model=TermoListResponse, summary="Lista termos de taxonomia")
+@router.get("/termos", response_model=Pagina[TermoResponse], summary="Lista termos de taxonomia")
 def listar_termos(
+    usuario: UsuarioOpcional,
     repo: Annotated[TermoTaxonomiaRepositoryInterface, Depends(get_termo_repository)],
-    page: int = 0,
-    page_size: int = 50,
+    params: Annotated[ParametrosPaginacao, Depends()],
     taxonomia_id: str | None = None,
-) -> TermoListResponse:
+) -> Pagina[TermoResponse]:
     use_case = BuscarTermoUseCase(repo)
-    items, total = use_case.list_all(page=page, page_size=page_size, taxonomia_id=taxonomia_id)
-    return TermoListResponse(
-        total=total,
-        page=page,
-        page_size=page_size,
-        items=[_termo_to_response(t) for t in items],
+    items, total = use_case.list_all(page=params.page, page_size=params.page_size, taxonomia_id=taxonomia_id)
+    return criar_pagina(
+        [_termo_to_response(t) for t in items],
+        params,
+        total,
     )
 
 
@@ -761,6 +786,7 @@ def listar_termos(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_termo(
+    usuario: UsuarioOpcional,
     termo_id: str,
     repo: Annotated[TermoTaxonomiaRepositoryInterface, Depends(get_termo_repository)],
 ) -> TermoResponse:
@@ -777,6 +803,7 @@ def buscar_termo(
     summary="Busca todos os termos de uma taxonomia",
 )
 def termos_da_taxonomia(
+    usuario: UsuarioOpcional,
     taxonomia_id: str,
     repo: Annotated[TermoTaxonomiaRepositoryInterface, Depends(get_termo_repository)],
 ) -> list[TermoResponse]:
@@ -790,6 +817,7 @@ def termos_da_taxonomia(
     summary="Busca os termos filhos diretos de um termo",
 )
 def filhos_do_termo(
+    usuario: UsuarioOpcional,
     termo_id: str,
     repo: Annotated[TermoTaxonomiaRepositoryInterface, Depends(get_termo_repository)],
 ) -> list[TermoResponse]:
@@ -804,6 +832,7 @@ def filhos_do_termo(
     responses={404: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
 )
 def atualizar_termo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "metas"))],
     termo_id: str,
     payload: TermoUpdateRequest,
     repo: Annotated[TermoTaxonomiaRepositoryInterface, Depends(get_termo_repository)],
@@ -831,6 +860,7 @@ def atualizar_termo(
     responses={404: {"model": ErrorResponse}},
 )
 def deletar_termo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "metas"))],
     termo_id: str,
     repo: Annotated[TermoTaxonomiaRepositoryInterface, Depends(get_termo_repository)],
 ) -> None:

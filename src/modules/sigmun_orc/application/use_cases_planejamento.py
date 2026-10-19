@@ -34,8 +34,12 @@ class CriarPPAUseCase:
             raise RegraNegocioError("PPA deve cobrir um quadriênio (RN-ORC-001)")
         if self._repo.get_by_quadrienio(dto.ano_inicial, dto.ano_final) is not None:
             raise RegraNegocioError("PPA já existe para este quadriênio (RN-ORC-001)")
-        ppa = PPA(ano_inicial=dto.ano_inicial, ano_final=dto.ano_final,
-                  descricao=dto.descricao, created_by=dto.autor_id)
+        ppa = PPA(
+            ano_inicial=dto.ano_inicial,
+            ano_final=dto.ano_final,
+            descricao=dto.descricao,
+            created_by=dto.autor_id,
+        )
         return self._repo.save(ppa)
 
 
@@ -90,9 +94,14 @@ class CriarLDOUseCase:
             raise RegraNegocioError("LDO exige PPA vigente (RN-ORC-011)")
         if not (ppa.ano_inicial <= dto.exercicio <= ppa.ano_final):
             raise RegraNegocioError("Exercício fora do quadriênio do PPA")
-        ldo = LDO(exercicio=dto.exercicio, ppa_id=dto.ppa_id,
-                  descricao=dto.descricao, meta_fiscal_receita=dto.meta_receita,
-                  meta_fiscal_despesa=dto.meta_despesa, created_by=dto.autor_id)
+        ldo = LDO(
+            exercicio=dto.exercicio,
+            ppa_id=dto.ppa_id,
+            descricao=dto.descricao,
+            meta_fiscal_receita=dto.meta_receita,
+            meta_fiscal_despesa=dto.meta_despesa,
+            created_by=dto.autor_id,
+        )
         return self._ldos.save(ldo)
 
 
@@ -149,9 +158,14 @@ class CriarLOAUseCase:
             raise RegraNegocioError("LOA exige LDO sancionada (RN-ORC-021)")
         if ldo.exercicio != dto.exercicio:
             raise RegraNegocioError("LOA e LDO devem ter mesmo exercício")
-        loa = LOA(exercicio=dto.exercicio, ldo_id=dto.ldo_id,
-                  descricao=dto.descricao, valor_receita_prevista=dto.receita,
-                  valor_despesa_fixada=dto.despesa, created_by=dto.autor_id)
+        loa = LOA(
+            exercicio=dto.exercicio,
+            ldo_id=dto.ldo_id,
+            descricao=dto.descricao,
+            valor_receita_prevista=dto.receita,
+            valor_despesa_fixada=dto.despesa,
+            created_by=dto.autor_id,
+        )
         return self._loas.save(loa)
 
 
@@ -175,7 +189,13 @@ class PublicarLOAUseCase:
 
 
 __all__ = [
-    "CriarPPAInput", "CriarPPAUseCase", "PublicarPPAUseCase",
-    "CriarLDOInput", "CriarLDOUseCase", "SancionarLDOUseCase",
-    "CriarLOAInput", "CriarLOAUseCase", "PublicarLOAUseCase",
+    "CriarPPAInput",
+    "CriarPPAUseCase",
+    "PublicarPPAUseCase",
+    "CriarLDOInput",
+    "CriarLDOUseCase",
+    "SancionarLDOUseCase",
+    "CriarLOAInput",
+    "CriarLOAUseCase",
+    "PublicarLOAUseCase",
 ]

@@ -35,12 +35,15 @@ from .base import (
     get_conta_repo,
     get_lancamento_repo,
 )
+from src.shared.presentation.dependencies import JWTUsuarioContexto, exigir_papeis
 
 router = APIRouter(prefix="/api/v1/con", tags=["Contabilidade Pública"])
 
 
 @router.post("/contas", status_code=201)
-def criar_conta(payload: ContaCreateRequest,
+def criar_conta(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "contabilidade"))],
+    payload: ContaCreateRequest,
                 repo: Annotated[RepositorioContaContabil, Depends(get_conta_repo)]):
     """Cria conta PCASP."""
     try:
@@ -56,7 +59,9 @@ def criar_conta(payload: ContaCreateRequest,
 
 
 @router.post("/lancamentos", status_code=201)
-def lancar(payload: LancamentoCreateRequest,
+def lancar(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "contabilidade"))],
+    payload: LancamentoCreateRequest,
            lancs: Annotated[RepositorioLancamento, Depends(get_lancamento_repo)],
            contas: Annotated[RepositorioContaContabil, Depends(get_conta_repo)]):
     """Registra lançamento por partidas dobradas."""
@@ -79,7 +84,9 @@ def lancar(payload: LancamentoCreateRequest,
 
 
 @router.post("/conciliacoes", status_code=201)
-def conciliar(payload: ConciliacaoCreateRequest,
+def conciliar(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "contabilidade"))],
+    payload: ConciliacaoCreateRequest,
               repo: Annotated[RepositorioConciliacao, Depends(get_conciliacao_repo)]):
     """Concilia conta (saldo contábil × extrato)."""
     try:

@@ -98,7 +98,10 @@ from src.modules.sigmun_compras.presentation.schemas.contrato_schemas import (
     ContratoUpdateRequest,
     FormalizarContratacaoRequest,
 )
-from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
+from src.shared.presentation.dependencies import exigir_papeis
+from src.shared.security.jwt import (
+    JWTUsuarioContexto,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -166,7 +169,7 @@ def criar_contrato(
     payload: ContratoCreateRequest,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Contrato:
     use_case = RegistrarContratoUseCase(repository)
     try:
@@ -231,7 +234,7 @@ def criar_contrato(
 def formalizar_contratacao(
     compra_id: Annotated[UUID, Query(description="Compra (processo) a formalizar")],
     payload: FormalizarContratacaoRequest,
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
     contratos_repo: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     compras_repo: Annotated[CompraRepository, Depends(get_compra_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
@@ -362,7 +365,7 @@ def atualizar_contrato(
     payload: ContratoUpdateRequest,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Contrato:
     use_case = AtualizarContratoUseCase(repository)
     try:
@@ -422,7 +425,7 @@ def alterar_situacao(
     payload: ContratoSituacaoRequest,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Contrato:
     use_case = AlterarSituacaoContratoUseCase(repository)
     try:
@@ -469,7 +472,7 @@ def excluir_contrato(
     contrato_id: UUID,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
     auditoria: Annotated[ServicoDeAuditoria, Depends(get_servico_de_auditoria)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "compras"))],
 ) -> Contrato:
     use_case = ExcluirContratoUseCase(repository)
     try:

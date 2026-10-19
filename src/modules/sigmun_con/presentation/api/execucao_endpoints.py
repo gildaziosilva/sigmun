@@ -36,6 +36,7 @@ from .base import (
     get_liquidacao_repo,
     get_pagamento_repo,
 )
+from src.shared.presentation.dependencies import JWTUsuarioContexto, exigir_papeis
 
 router = APIRouter(prefix="/api/v1/con", tags=["Contabilidade Pública"])
 
@@ -49,7 +50,9 @@ def _to_empenho(emp) -> EmpenhoResponse:  # type: ignore[no-untyped-def]
 
 
 @router.post("/empenhos", status_code=201)
-def emitir_empenho(payload: EmpenhoCreateRequest,
+def emitir_empenho(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "contabilidade"))],
+    payload: EmpenhoCreateRequest,
                    emps: Annotated[RepositorioEmpenho, Depends(get_empenho_repo)],
                    dots: Annotated[RepositorioDotacao, Depends(get_dotacao_repo_con)]):
     """Emite empenho com baixa no saldo da dotação."""
@@ -71,7 +74,9 @@ def emitir_empenho(payload: EmpenhoCreateRequest,
 
 
 @router.post("/empenhos/{empenho_id}/liquidar")
-def liquidar(empenho_id: str, payload: EmpenhoValorRequest,
+def liquidar(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "contabilidade"))],
+    empenho_id: str, payload: EmpenhoValorRequest,
              emps: Annotated[RepositorioEmpenho, Depends(get_empenho_repo)],
              liqs: Annotated[RepositorioLiquidacao, Depends(get_liquidacao_repo)]):
     """Registra liquidação do empenho."""
@@ -85,7 +90,9 @@ def liquidar(empenho_id: str, payload: EmpenhoValorRequest,
 
 
 @router.post("/empenhos/{empenho_id}/anular")
-def anular_empenho(empenho_id: str, payload: EmpenhoValorRequest,
+def anular_empenho(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "contabilidade"))],
+    empenho_id: str, payload: EmpenhoValorRequest,
                    emps: Annotated[RepositorioEmpenho, Depends(get_empenho_repo)],
                    dots: Annotated[RepositorioDotacao, Depends(get_dotacao_repo_con)]):
     """Anula parcial/total do empenho (devolve saldo)."""
@@ -106,7 +113,9 @@ def anular_empenho(empenho_id: str, payload: EmpenhoValorRequest,
 
 
 @router.post("/pagamentos", status_code=201)
-def pagar(payload: PagamentoCreateRequest,
+def pagar(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "contabilidade"))],
+    payload: PagamentoCreateRequest,
           emps: Annotated[RepositorioEmpenho, Depends(get_empenho_repo)],
           liqs: Annotated[RepositorioLiquidacao, Depends(get_liquidacao_repo)],
           pags: Annotated[RepositorioPagamento, Depends(get_pagamento_repo)]):

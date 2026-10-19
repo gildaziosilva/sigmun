@@ -38,6 +38,11 @@ from src.modules.sigmun_tributos.presentation.schemas.tri_schemas import (
     LancamentoResponse,
     PagarLancamentoRequest,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 router = APIRouter(prefix="/api/v1/tri", tags=["Administracao Tributaria"])
 
@@ -59,20 +64,29 @@ def get_imovel_repo(session: Annotated[Session, Depends(get_db)]) -> Repositorio
 
 def _to_lancamento(lancamento) -> LancamentoResponse:
     return LancamentoResponse(
-        id=lancamento.id, contribuinte_id=lancamento.contribuinte_id,
-        imovel_id=lancamento.imovel_id, tipo_tributo=lancamento.tipo_tributo.value,
-        exercicio=lancamento.exercicio, numero_lancamento=lancamento.numero_lancamento,
-        descricao=lancamento.descricao, base_calculo=lancamento.base_calculo,
-        aliquota=lancamento.aliquota, valor_tributo=lancamento.valor_tributo,
-        juros=lancamento.juros, multa=lancamento.multa,
-        valor_total=lancamento.valor_total, data_vencimento=lancamento.data_vencimento,
-        status=lancamento.status.value, data_pagamento=lancamento.data_pagamento,
+        id=lancamento.id,
+        contribuinte_id=lancamento.contribuinte_id,
+        imovel_id=lancamento.imovel_id,
+        tipo_tributo=lancamento.tipo_tributo.value,
+        exercicio=lancamento.exercicio,
+        numero_lancamento=lancamento.numero_lancamento,
+        descricao=lancamento.descricao,
+        base_calculo=lancamento.base_calculo,
+        aliquota=lancamento.aliquota,
+        valor_tributo=lancamento.valor_tributo,
+        juros=lancamento.juros,
+        multa=lancamento.multa,
+        valor_total=lancamento.valor_total,
+        data_vencimento=lancamento.data_vencimento,
+        status=lancamento.status.value,
+        data_pagamento=lancamento.data_pagamento,
         created_at=lancamento.created_at,
     )
 
 
 @router.post("/lancamentos", status_code=201)
 def lancar_tributo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "tributos"))],
     payload: LancamentoCreateRequest,
     repo: Annotated[RepositorioLancamento, Depends(get_lancamento_repo)],
     contribuintes: Annotated[RepositorioContribuinte, Depends(get_contribuinte_repo)],
@@ -89,20 +103,22 @@ def lancar_tributo(
                 aliquota=payload.aliquota,
                 imovel_id=payload.imovel_id,
                 descricao=payload.descricao,
-                juros=payload.juros, multa=payload.multa,
+                juros=payload.juros,
+                multa=payload.multa,
                 data_vencimento=payload.data_vencimento,
                 autor_id=payload.created_by,
             )
         )
     except (ContribuinteNaoEncontradoError, ImovelNaoEncontradoError) as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomTriDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_lancamento(lance)
 
 
 @router.get("/lancamentos")
 def listar_lancamentos(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioLancamento, Depends(get_lancamento_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -114,6 +130,7 @@ def listar_lancamentos(
 
 @router.get("/lancamentos/{lancamento_id}")
 def obter_lancamento(
+    usuario: UsuarioOpcional,
     lancamento_id: str,
     repo: Annotated[RepositorioLancamento, Depends(get_lancamento_repo)],
 ):
@@ -126,19 +143,18 @@ def obter_lancamento(
 
 @router.post("/lancamentos/{lancamento_id}/pagar")
 def pagar_lancamento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "tributos"))],
     lancamento_id: str,
     payload: PagarLancamentoRequest,
     repo: Annotated[RepositorioLancamento, Depends(get_lancamento_repo)],
 ):
     """Quita integralmente um lançamento."""
     try:
-        lance = PagarLancamentoUseCase(repo).execute(
-            lancamento_id, payload.data_pagamento
-        )
+        lance = PagarLancamentoUseCase(repo).execute(lancamento_id, payload.data_pagamento)
     except LancamentoNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomTriDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_lancamento(lance)
 
 

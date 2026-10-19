@@ -37,12 +37,8 @@ class DocumentoModel(GdoBase):
     data_encerramento: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     data_eliminacao: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     unidade_autor_id: Mapped[str] = mapped_column(Text, nullable=False)
-    unidade_arquivo_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True)
-    )
-    processo_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True)
-    )
+    unidade_arquivo_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    processo_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
     status: Mapped[str] = mapped_column(Text, nullable=False, default="rascunho")
     is_sigiloso: Mapped[bool] = mapped_column(nullable=False, default=False)
     conteudo_ref: Mapped[str | None] = mapped_column(Text)

@@ -41,17 +41,18 @@ class SQLAlchemyDepreciacaoRepository(RepositorioDepreciacao):
     def list_by_bem(self, bem_id: str) -> list:
         """Lista depreciações de um bem."""
         models = (
-            self._session.query(DepreciacaoModel)
-            .filter(DepreciacaoModel.bem_id == bem_id)
-            .all()
+            self._session.query(DepreciacaoModel).filter(DepreciacaoModel.bem_id == bem_id).all()
         )
         return [
             Depreciacao(
-                id=str(m.id), bem_id=m.bem_id, data=m.data,
+                id=str(m.id),
+                bem_id=m.bem_id,
+                data=m.data,
                 valor_depreciado=float(m.valor_depreciado or 0),
                 valor_acumulado=float(m.valor_acumulado or 0),
                 valor_liquido=float(m.valor_liquido or 0),
-                created_at=m.created_at, created_by=m.created_by or "",
+                created_at=m.created_at,
+                created_by=m.created_by or "",
             )
             for m in models
         ]
@@ -65,9 +66,7 @@ class SQLAlchemyTransferenciaRepository(RepositorioTransferencia):
 
     def save(self, transferencia: Transferencia) -> Transferencia:
         """Persiste uma transferência."""
-        existente = self._session.get(
-            TransferenciaModel, uuid.UUID(transferencia.id)
-        )
+        existente = self._session.get(TransferenciaModel, uuid.UUID(transferencia.id))
         if existente is not None:
             existente.status = transferencia.status.value
             existente.para_localizacao = transferencia.para_localizacao
@@ -92,9 +91,7 @@ class SQLAlchemyTransferenciaRepository(RepositorioTransferencia):
 
     def get_by_id(self, transferencia_id: str) -> Transferencia | None:
         """Busca transferência por id."""
-        model = self._session.get(
-            TransferenciaModel, uuid.UUID(transferencia_id)
-        )
+        model = self._session.get(TransferenciaModel, uuid.UUID(transferencia_id))
         return self._to_entity(model) if model else None
 
     def list_all(self, page: int = 1, page_size: int = 20) -> list:

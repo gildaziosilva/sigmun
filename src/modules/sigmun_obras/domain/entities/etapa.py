@@ -58,8 +58,7 @@ class EtapaObra:
             raise RegraNegocioError("Etapa já está concluída (RN-OBR-007)")
         if self.percentual_realizado < 100.0:
             raise RegraNegocioError(
-                "Etapa só pode ser concluída com 100% do percentual previsto "
-                "realizado (RN-OBR-007)"
+                "Etapa só pode ser concluída com 100% do percentual previsto realizado (RN-OBR-007)"
             )
         self.situacao = SituacaoEtapa.CONCLUIDA
         self.data_conclusao = data or date.today()

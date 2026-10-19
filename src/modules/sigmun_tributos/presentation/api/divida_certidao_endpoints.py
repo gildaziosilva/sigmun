@@ -41,6 +41,11 @@ from src.modules.sigmun_tributos.presentation.schemas.tri_schemas import (
     CertidaoResponse,
     DividaAtivaResponse,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 router = APIRouter(prefix="/api/v1/tri", tags=["Administracao Tributaria"])
 
@@ -67,45 +72,51 @@ def get_contribuinte_repo(session: Annotated[Session, Depends(get_db)]) -> Repos
 
 def _to_divida(inscricao) -> DividaAtivaResponse:
     return DividaAtivaResponse(
-        id=inscricao.id, lancamento_id=inscricao.lancamento_id,
+        id=inscricao.id,
+        lancamento_id=inscricao.lancamento_id,
         numero_inscricao=inscricao.numero_inscricao,
         data_inscricao=inscricao.data_inscricao,
         valor_original=inscricao.valor_original,
         valor_atualizado=inscricao.valor_atualizado,
-        status=inscricao.status.value, created_at=inscricao.created_at,
+        status=inscricao.status.value,
+        created_at=inscricao.created_at,
     )
 
 
 def _to_certidao(certidao) -> CertidaoResponse:
     return CertidaoResponse(
-        id=certidao.id, contribuinte_id=certidao.contribuinte_id,
-        tipo=certidao.tipo.value, numero=certidao.numero,
-        data_emissao=certidao.data_emissao, valido_ate=certidao.valido_ate,
-        observacao=certidao.observacao, status=certidao.status.value,
+        id=certidao.id,
+        contribuinte_id=certidao.contribuinte_id,
+        tipo=certidao.tipo.value,
+        numero=certidao.numero,
+        data_emissao=certidao.data_emissao,
+        valido_ate=certidao.valido_ate,
+        observacao=certidao.observacao,
+        status=certidao.status.value,
         created_at=certidao.created_at,
     )
 
 
 @router.post("/lancamentos/{lancamento_id}/inscrever-divida-ativa", status_code=201)
 def inscrever_divida_ativa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "tributos"))],
     lancamento_id: str,
     repo: Annotated[RepositorioDividaAtiva, Depends(get_divida_repo)],
     lancamentos: Annotated[RepositorioLancamento, Depends(get_lancamento_repo)],
 ):
     """Inscreve crédito vencido em dívida ativa."""
     try:
-        inscricao = InscreverDividaAtivaUseCase(repo, lancamentos).execute(
-            lancamento_id
-        )
+        inscricao = InscreverDividaAtivaUseCase(repo, lancamentos).execute(lancamento_id)
     except (LancamentoNaoEncontradoError, DividaAtivaNaoEncontradaError) as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomTriDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_divida(inscricao)
 
 
 @router.get("/divida-ativa")
 def listar_divida_ativa(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioDividaAtiva, Depends(get_divida_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -117,6 +128,7 @@ def listar_divida_ativa(
 
 @router.get("/divida-ativa/{inscricao_id}")
 def obter_divida_ativa(
+    usuario: UsuarioOpcional,
     inscricao_id: str,
     repo: Annotated[RepositorioDividaAtiva, Depends(get_divida_repo)],
 ):
@@ -129,6 +141,7 @@ def obter_divida_ativa(
 
 @router.post("/divida-ativa/{inscricao_id}/baixar")
 def baixar_divida_ativa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "tributos"))],
     inscricao_id: str,
     repo: Annotated[RepositorioDividaAtiva, Depends(get_divida_repo)],
 ):
@@ -136,14 +149,15 @@ def baixar_divida_ativa(
     try:
         inscricao = BaixarDividaAtivaUseCase(repo).execute(inscricao_id)
     except DividaAtivaNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomTriDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_divida(inscricao)
 
 
 @router.post("/certidoes", status_code=201)
 def emitir_certidao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "tributos"))],
     contribuinte_id: str,
     repo: Annotated[RepositorioCertidao, Depends(get_certidao_repo)],
     lancamentos: Annotated[RepositorioLancamento, Depends(get_lancamento_repo)],
@@ -151,18 +165,17 @@ def emitir_certidao(
 ):
     """Emite certidão de regularidade fiscal."""
     try:
-        certidao = EmitirCertidaoUseCase(repo, lancamentos, contribuintes).execute(
-            contribuinte_id
-        )
+        certidao = EmitirCertidaoUseCase(repo, lancamentos, contribuintes).execute(contribuinte_id)
     except ContribuinteNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomTriDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_certidao(certidao)
 
 
 @router.get("/certidoes/{certidao_id}")
 def obter_certidao(
+    usuario: UsuarioOpcional,
     certidao_id: str,
     repo: Annotated[RepositorioCertidao, Depends(get_certidao_repo)],
 ):

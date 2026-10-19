@@ -62,5 +62,11 @@ def get_reserva_repo(session: Annotated[Session, Depends(get_db)]) -> Repositori
     return SQLAlchemyReservaRepository(session)
 
 
-__all__ = ["router_orc", "get_ppa_repo", "get_ldo_repo", "get_loa_repo",
-           "get_dotacao_repo", "get_reserva_repo"]
+__all__ = [
+    "router_orc",
+    "get_ppa_repo",
+    "get_ldo_repo",
+    "get_loa_repo",
+    "get_dotacao_repo",
+    "get_reserva_repo",
+]

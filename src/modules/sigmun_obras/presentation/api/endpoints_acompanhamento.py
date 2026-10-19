@@ -57,6 +57,11 @@ from .deps import (
     to_vistoria,
 )
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 # Repositórios injetados na visão consolidada do acompanhamento.
 _DetalheDeps = Annotated[
@@ -70,6 +75,7 @@ _DetalheDeps = Annotated[
 
 @router.get("/obras/{obra_id}/acompanhamento")
 def obter_acompanhamento_obra(
+    usuario: UsuarioOpcional,
     obra_id: str,
     obras: Annotated[RepositorioObra, Depends(get_obra_repo)],
     medicoes: Annotated[RepositorioMedicao, Depends(get_medicao_repo)],
@@ -92,6 +98,7 @@ def obter_acompanhamento_obra(
 
 @router.post("/medicoes", status_code=201)
 def registrar_medicao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     payload: MedicaoCreateRequest,
     repo: Annotated[RepositorioMedicao, Depends(get_medicao_repo)],
     obras: Annotated[RepositorioObra, Depends(get_obra_repo)],
@@ -118,6 +125,7 @@ def registrar_medicao(
 
 @router.get("/obras/{obra_id}/medicoes")
 def listar_medicoes_da_obra(
+    usuario: UsuarioOpcional,
     obra_id: str,
     repo: Annotated[RepositorioMedicao, Depends(get_medicao_repo)],
 ) -> list[MedicaoResponse]:
@@ -127,21 +135,21 @@ def listar_medicoes_da_obra(
 
 @router.post("/medicoes/{medicao_id}/aprovar")
 def aprovar_medicao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     medicao_id: str,
     repo: Annotated[RepositorioMedicao, Depends(get_medicao_repo)],
     obras: Annotated[RepositorioObra, Depends(get_obra_repo)],
     despesas: Annotated[RepositorioDespesa, Depends(get_despesa_repo)],
 ) -> MedicaoResponse:
     try:
-        return to_medicao(
-            AprovarMedicaoUseCase(repo, obras, despesas).execute(medicao_id)
-        )
+        return to_medicao(AprovarMedicaoUseCase(repo, obras, despesas).execute(medicao_id))
     except DomObrDomainError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
 
 
 @router.post("/medicoes/{medicao_id}/glosar")
 def glosar_medicao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     medicao_id: str,
     payload: MedicaoGlosaRequest,
     repo: Annotated[RepositorioMedicao, Depends(get_medicao_repo)],
@@ -156,6 +164,7 @@ def glosar_medicao(
 
 @router.post("/medicoes/{medicao_id}/cancelar")
 def cancelar_medicao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     medicao_id: str,
     repo: Annotated[RepositorioMedicao, Depends(get_medicao_repo)],
 ) -> MedicaoResponse:
@@ -167,6 +176,7 @@ def cancelar_medicao(
 
 @router.post("/despesas", status_code=201)
 def registrar_despesa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     payload: DespesaCreateRequest,
     repo: Annotated[RepositorioDespesa, Depends(get_despesa_repo)],
     obras: Annotated[RepositorioObra, Depends(get_obra_repo)],
@@ -194,6 +204,7 @@ def registrar_despesa(
 
 @router.get("/obras/{obra_id}/despesas")
 def listar_despesas_da_obra(
+    usuario: UsuarioOpcional,
     obra_id: str,
     repo: Annotated[RepositorioDespesa, Depends(get_despesa_repo)],
 ) -> list[DespesaResponse]:
@@ -203,21 +214,21 @@ def listar_despesas_da_obra(
 
 @router.delete("/despesas/{despesa_id}")
 def excluir_despesa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "obras"))],
     despesa_id: str,
     repo: Annotated[RepositorioDespesa, Depends(get_despesa_repo)],
     obras: Annotated[RepositorioObra, Depends(get_obra_repo)],
     medicoes: Annotated[RepositorioMedicao, Depends(get_medicao_repo)],
 ) -> DespesaResponse:
     try:
-        return to_despesa(
-            ExcluirDespesaUseCase(repo, obras, medicoes).execute(despesa_id)
-        )
+        return to_despesa(ExcluirDespesaUseCase(repo, obras, medicoes).execute(despesa_id))
     except DomObrDomainError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
 
 
 @router.post("/etapas", status_code=201)
 def cadastrar_etapa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     payload: EtapaCreateRequest,
     repo: Annotated[RepositorioEtapa, Depends(get_etapa_repo)],
     obras: Annotated[RepositorioObra, Depends(get_obra_repo)],
@@ -243,6 +254,7 @@ def cadastrar_etapa(
 
 @router.get("/obras/{obra_id}/etapas")
 def listar_etapas_da_obra(
+    usuario: UsuarioOpcional,
     obra_id: str,
     repo: Annotated[RepositorioEtapa, Depends(get_etapa_repo)],
 ) -> list[EtapaResponse]:
@@ -252,6 +264,7 @@ def listar_etapas_da_obra(
 
 @router.patch("/etapas/{etapa_id}")
 def atualizar_etapa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     etapa_id: str,
     payload: EtapaUpdateRequest,
     repo: Annotated[RepositorioEtapa, Depends(get_etapa_repo)],
@@ -268,6 +281,7 @@ def atualizar_etapa(
 
 @router.post("/etapas/{etapa_id}/concluir")
 def concluir_etapa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     etapa_id: str,
     repo: Annotated[RepositorioEtapa, Depends(get_etapa_repo)],
 ) -> EtapaResponse:
@@ -279,6 +293,7 @@ def concluir_etapa(
 
 @router.post("/vistorias", status_code=201)
 def registrar_vistoria(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     payload: VistoriaCreateRequest,
     repo: Annotated[RepositorioVistoria, Depends(get_vistoria_repo)],
     obras: Annotated[RepositorioObra, Depends(get_obra_repo)],
@@ -303,6 +318,7 @@ def registrar_vistoria(
 
 @router.get("/obras/{obra_id}/vistorias")
 def listar_vistorias_da_obra(
+    usuario: UsuarioOpcional,
     obra_id: str,
     repo: Annotated[RepositorioVistoria, Depends(get_vistoria_repo)],
 ) -> list[VistoriaResponse]:

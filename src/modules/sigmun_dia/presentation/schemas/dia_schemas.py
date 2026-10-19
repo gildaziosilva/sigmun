@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
-
 
 # =============================================================================
 # Schemas de Viagem
@@ -283,4 +281,3 @@ __all__ = [
     # Schemas de Auditoria
     "EventoDiariaResponse",
 ]
-

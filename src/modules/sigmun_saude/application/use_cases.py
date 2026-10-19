@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
-from . import interfaces as ports
 from ..domain.entities.atendimento import (
     Agendamento,
     Atendimento,
@@ -18,6 +17,7 @@ from ..domain.entities.farmacia_regulacao import (
     Regulacao,
 )
 from ..domain.entities.paciente import Paciente, Sexo
+from . import interfaces as ports
 
 
 @dataclass
@@ -51,10 +51,15 @@ class CadastrarPacienteUseCase:
         if self._repo.get_by_cns(dto.cns) is not None:
             raise PacienteJaExistenteError("CNS ja cadastrado (RN-SAU-001)")
         paciente = Paciente(
-            nome=dto.nome, cns=dto.cns, cpf=dto.cpf,
-            data_nascimento=dto.data_nascimento, sexo=Sexo(dto.sexo),
-            nome_mae=dto.nome_mae, telefone=dto.telefone,
-            endereco=dto.endereco, ubs_referencia=dto.ubs_referencia,
+            nome=dto.nome,
+            cns=dto.cns,
+            cpf=dto.cpf,
+            data_nascimento=dto.data_nascimento,
+            sexo=Sexo(dto.sexo),
+            nome_mae=dto.nome_mae,
+            telefone=dto.telefone,
+            endereco=dto.endereco,
+            ubs_referencia=dto.ubs_referencia,
             created_by=dto.autor_id,
         )
         paciente.validar()
@@ -79,7 +84,9 @@ class RegistrarAtendimentoInput:
 class RegistrarAtendimentoUseCase:
     """Registra atendimento no prontuario (RN-SAU-010)."""
 
-    def __init__(self, repo: ports.RepositorioAtendimento, pacientes: ports.RepositorioPaciente) -> None:
+    def __init__(
+        self, repo: ports.RepositorioAtendimento, pacientes: ports.RepositorioPaciente
+    ) -> None:
         self._repo = repo
         self._pacientes = pacientes
 
@@ -90,10 +97,15 @@ class RegistrarAtendimentoUseCase:
         if self._pacientes.get_by_id(dto.paciente_id) is None:
             raise PacienteNaoEncontradoError("Paciente nao encontrado para atendimento")
         atendimento = Atendimento(
-            paciente_id=dto.paciente_id, data=dto.data or date.today(),
-            tipo=TipoAtendimento(dto.tipo), profissional=dto.profissional,
-            estabelecimento=dto.estabelecimento, queixa=dto.queixa,
-            conduta=dto.conduta, cid10=dto.cid10, created_by=dto.autor_id,
+            paciente_id=dto.paciente_id,
+            data=dto.data or date.today(),
+            tipo=TipoAtendimento(dto.tipo),
+            profissional=dto.profissional,
+            estabelecimento=dto.estabelecimento,
+            queixa=dto.queixa,
+            conduta=dto.conduta,
+            cid10=dto.cid10,
+            created_by=dto.autor_id,
         )
         atendimento.validar()
         return self._repo.save(atendimento)
@@ -114,7 +126,9 @@ class AgendarConsultaInput:
 class AgendarConsultaUseCase:
     """Agenda consulta/exame SUS (RN-SAU-020)."""
 
-    def __init__(self, repo: ports.RepositorioAgendamento, pacientes: ports.RepositorioPaciente) -> None:
+    def __init__(
+        self, repo: ports.RepositorioAgendamento, pacientes: ports.RepositorioPaciente
+    ) -> None:
         self._repo = repo
         self._pacientes = pacientes
 
@@ -125,9 +139,12 @@ class AgendarConsultaUseCase:
         if self._pacientes.get_by_id(dto.paciente_id) is None:
             raise PacienteNaoEncontradoError("Paciente nao encontrado para agendamento")
         agendamento = Agendamento(
-            paciente_id=dto.paciente_id, especialidade=dto.especialidade,
-            data=dto.data or date.today(), hora=dto.hora,
-            estabelecimento=dto.estabelecimento, created_by=dto.autor_id,
+            paciente_id=dto.paciente_id,
+            especialidade=dto.especialidade,
+            data=dto.data or date.today(),
+            hora=dto.hora,
+            estabelecimento=dto.estabelecimento,
+            created_by=dto.autor_id,
         )
         agendamento.validar()
         return self._repo.save(agendamento)
@@ -198,7 +215,9 @@ class SolicitarRegulacaoInput:
 class SolicitarRegulacaoUseCase:
     """Abre solicitacao na central (RN-SAU-030)."""
 
-    def __init__(self, repo: ports.RepositorioRegulacao, pacientes: ports.RepositorioPaciente) -> None:
+    def __init__(
+        self, repo: ports.RepositorioRegulacao, pacientes: ports.RepositorioPaciente
+    ) -> None:
         self._repo = repo
         self._pacientes = pacientes
 
@@ -209,9 +228,12 @@ class SolicitarRegulacaoUseCase:
         if self._pacientes.get_by_id(dto.paciente_id) is None:
             raise PacienteNaoEncontradoError("Paciente nao encontrado para regulacao")
         regulacao = Regulacao(
-            paciente_id=dto.paciente_id, procedimento=dto.procedimento,
-            prioridade=PrioridadeRegulacao(dto.prioridade), solicitante=dto.solicitante,
-            data_solicitacao=date.today(), created_by=dto.autor_id,
+            paciente_id=dto.paciente_id,
+            procedimento=dto.procedimento,
+            prioridade=PrioridadeRegulacao(dto.prioridade),
+            solicitante=dto.solicitante,
+            data_solicitacao=date.today(),
+            created_by=dto.autor_id,
         )
         regulacao.validar()
         return self._repo.save(regulacao)
@@ -271,8 +293,10 @@ class CadastrarMedicamentoUseCase:
     def execute(self, dto: CadastrarMedicamentoInput) -> Medicamento:
         """Executa o cadastro."""
         medicamento = Medicamento(
-            nome=dto.nome, apresentacao=dto.apresentacao,
-            estoque=dto.estoque, estoque_minimo=dto.estoque_minimo,
+            nome=dto.nome,
+            apresentacao=dto.apresentacao,
+            estoque=dto.estoque,
+            estoque_minimo=dto.estoque_minimo,
             created_by=dto.autor_id,
         )
         medicamento.validar()
@@ -310,7 +334,12 @@ class DispensarMedicamentoInput:
 class DispensarMedicamentoUseCase:
     """Dispensa medicamento com baixa atomica (RN-SAU-040)."""
 
-    def __init__(self, dispensacoes: ports.RepositorioDispensacao, medicamentos: ports.RepositorioMedicamento, pacientes: ports.RepositorioPaciente) -> None:
+    def __init__(
+        self,
+        dispensacoes: ports.RepositorioDispensacao,
+        medicamentos: ports.RepositorioMedicamento,
+        pacientes: ports.RepositorioPaciente,
+    ) -> None:
         self._dispensacoes = dispensacoes
         self._medicamentos = medicamentos
         self._pacientes = pacientes
@@ -327,9 +356,12 @@ class DispensarMedicamentoUseCase:
         medicamento.dispensar(dto.quantidade)
         self._medicamentos.save(medicamento)
         dispensacao = Dispensacao(
-            paciente_id=dto.paciente_id, medicamento_id=dto.medicamento_id,
-            quantidade=dto.quantidade, data=date.today(),
-            receita=dto.receita, created_by=dto.autor_id,
+            paciente_id=dto.paciente_id,
+            medicamento_id=dto.medicamento_id,
+            quantidade=dto.quantidade,
+            data=date.today(),
+            receita=dto.receita,
+            created_by=dto.autor_id,
         )
         dispensacao.validar()
         return self._dispensacoes.save(dispensacao)

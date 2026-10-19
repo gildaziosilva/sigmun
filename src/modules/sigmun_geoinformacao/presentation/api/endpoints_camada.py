@@ -51,10 +51,16 @@ from .deps import (
     to_vinculo,
 )
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 
 @router.post("/camadas", status_code=201)
 def cadastrar_camada(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     payload: CamadaCreateRequest,
     repo: Annotated[RepositorioCamadaMapa, Depends(get_camada_repo)],
 ) -> CamadaResponse:
@@ -84,6 +90,7 @@ def cadastrar_camada(
 
 @router.get("/camadas")
 def listar_camadas(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioCamadaMapa, Depends(get_camada_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -94,6 +101,7 @@ def listar_camadas(
 
 @router.get("/camadas/{camada_id}")
 def obter_camada(
+    usuario: UsuarioOpcional,
     camada_id: str,
     repo: Annotated[RepositorioCamadaMapa, Depends(get_camada_repo)],
 ) -> CamadaResponse:
@@ -105,6 +113,7 @@ def obter_camada(
 
 @router.patch("/camadas/{camada_id}")
 def atualizar_camada(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     camada_id: str,
     payload: CamadaUpdateRequest,
     repo: Annotated[RepositorioCamadaMapa, Depends(get_camada_repo)],
@@ -136,6 +145,7 @@ def atualizar_camada(
 
 @router.post("/camadas/{camada_id}/ativar")
 def ativar_camada(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     camada_id: str,
     repo: Annotated[RepositorioCamadaMapa, Depends(get_camada_repo)],
     created_by: str = "",
@@ -148,6 +158,7 @@ def ativar_camada(
 
 @router.post("/camadas/{camada_id}/desativar")
 def desativar_camada(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     camada_id: str,
     repo: Annotated[RepositorioCamadaMapa, Depends(get_camada_repo)],
     created_by: str = "",
@@ -160,6 +171,7 @@ def desativar_camada(
 
 @router.delete("/camadas/{camada_id}")
 def excluir_camada(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "geo"))],
     camada_id: str,
     repo: Annotated[RepositorioCamadaMapa, Depends(get_camada_repo)],
     vinculos: Annotated[RepositorioMapaCamada, Depends(get_vinculo_repo)],
@@ -173,6 +185,7 @@ def excluir_camada(
 
 @router.post("/mapas", status_code=201)
 def cadastrar_mapa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     payload: MapaCreateRequest,
     repo: Annotated[RepositorioMapaSig, Depends(get_mapa_repo)],
 ) -> MapaResponse:
@@ -203,6 +216,7 @@ def cadastrar_mapa(
 
 @router.get("/mapas")
 def listar_mapas(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioMapaSig, Depends(get_mapa_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -213,6 +227,7 @@ def listar_mapas(
 
 @router.get("/mapas/{mapa_id}")
 def obter_mapa(
+    usuario: UsuarioOpcional,
     mapa_id: str,
     repo: Annotated[RepositorioMapaSig, Depends(get_mapa_repo)],
 ) -> MapaResponse:
@@ -224,6 +239,7 @@ def obter_mapa(
 
 @router.patch("/mapas/{mapa_id}")
 def atualizar_mapa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     mapa_id: str,
     payload: MapaUpdateRequest,
     repo: Annotated[RepositorioMapaSig, Depends(get_mapa_repo)],
@@ -256,6 +272,7 @@ def atualizar_mapa(
 
 @router.delete("/mapas/{mapa_id}")
 def excluir_mapa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "geo"))],
     mapa_id: str,
     repo: Annotated[RepositorioMapaSig, Depends(get_mapa_repo)],
     vinculos: Annotated[RepositorioMapaCamada, Depends(get_vinculo_repo)],
@@ -268,6 +285,7 @@ def excluir_mapa(
 
 @router.post("/mapas/{mapa_id}/publicar")
 def publicar_mapa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     mapa_id: str,
     repo: Annotated[RepositorioMapaSig, Depends(get_mapa_repo)],
     vinculos: Annotated[RepositorioMapaCamada, Depends(get_vinculo_repo)],
@@ -282,6 +300,7 @@ def publicar_mapa(
 
 @router.post("/mapas/{mapa_id}/arquivar")
 def arquivar_mapa(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     mapa_id: str,
     repo: Annotated[RepositorioMapaSig, Depends(get_mapa_repo)],
     created_by: str = "",
@@ -294,6 +313,7 @@ def arquivar_mapa(
 
 @router.get("/mapas/{mapa_id}/composicao")
 def listar_composicao(
+    usuario: UsuarioOpcional,
     mapa_id: str,
     repo: Annotated[RepositorioMapaCamada, Depends(get_vinculo_repo)],
 ) -> list[MapaCamadaResponse]:
@@ -303,6 +323,7 @@ def listar_composicao(
 
 @router.post("/mapas/{mapa_id}/composicao", status_code=201)
 def compor_camada(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "geo"))],
     mapa_id: str,
     payload: MapaComposicaoRequest,
     vinculos: Annotated[RepositorioMapaCamada, Depends(get_vinculo_repo)],
@@ -328,6 +349,7 @@ def compor_camada(
 
 @router.delete("/mapas/{mapa_id}/composicao/{vinculo_id}")
 def remover_composicao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "geo"))],
     mapa_id: str,
     vinculo_id: str,
     vinculos: Annotated[RepositorioMapaCamada, Depends(get_vinculo_repo)],

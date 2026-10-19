@@ -43,9 +43,7 @@ class PlantaGenericaValores:
         from ..exceptions import RegraNegocioError
 
         if self.situacao != SituacaoPlantaValores.RASCUNHO:
-            raise RegraNegocioError(
-                "Somente planta em rascunho pode ser ativada (RN-TEL-004)"
-            )
+            raise RegraNegocioError("Somente planta em rascunho pode ser ativada (RN-TEL-004)")
         self.validar()
         self.situacao = SituacaoPlantaValores.VIGENTE
         self.updated_at = datetime.utcnow()

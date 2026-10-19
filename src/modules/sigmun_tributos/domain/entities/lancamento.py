@@ -111,9 +111,7 @@ class Lancamento:
         from ..exceptions import EstadoLancamentoInvalidoError
 
         if self.status == StatusLancamento.PAGO:
-            raise EstadoLancamentoInvalidoError(
-                "Lançamento pago não pode ser cancelado"
-            )
+            raise EstadoLancamentoInvalidoError("Lançamento pago não pode ser cancelado")
         self.status = StatusLancamento.CANCELADO
         self.updated_at = datetime.utcnow()
 

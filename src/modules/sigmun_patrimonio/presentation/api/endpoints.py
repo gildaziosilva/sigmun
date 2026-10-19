@@ -42,6 +42,11 @@ from src.modules.sigmun_patrimonio.presentation.schemas.pat_schemas import (
     TransferenciaCreateRequest,
     TransferenciaResponse,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 router = APIRouter(prefix="/api/v1/pat", tags=["Gestao Patrimonial"])
 
@@ -65,38 +70,53 @@ def get_transferencia_repo(
 
 def _to_bem(bem) -> BemResponse:
     return BemResponse(
-        id=bem.id, codigo=bem.codigo, tipo=bem.tipo.value,
-        descricao=bem.descricao, categoria=bem.categoria,
-        valor_aquisicao=bem.valor_aquisicao, data_aquisicao=bem.data_aquisicao,
-        valor_residual=bem.valor_residual, vida_util_anos=bem.vida_util_anos,
-        valor_contabil=bem.valor_contabil, status=bem.status.value,
-        localizacao=bem.localizacao, responsavel_id=bem.responsavel_id,
+        id=bem.id,
+        codigo=bem.codigo,
+        tipo=bem.tipo.value,
+        descricao=bem.descricao,
+        categoria=bem.categoria,
+        valor_aquisicao=bem.valor_aquisicao,
+        data_aquisicao=bem.data_aquisicao,
+        valor_residual=bem.valor_residual,
+        vida_util_anos=bem.vida_util_anos,
+        valor_contabil=bem.valor_contabil,
+        status=bem.status.value,
+        localizacao=bem.localizacao,
+        responsavel_id=bem.responsavel_id,
         created_at=bem.created_at,
     )
 
 
 def _to_depreciacao(dep) -> DepreciacaoResponse:
     return DepreciacaoResponse(
-        id=dep.id, bem_id=dep.bem_id, data=dep.data,
+        id=dep.id,
+        bem_id=dep.bem_id,
+        data=dep.data,
         valor_depreciado=dep.valor_depreciado,
-        valor_acumulado=dep.valor_acumulado, valor_liquido=dep.valor_liquido,
+        valor_acumulado=dep.valor_acumulado,
+        valor_liquido=dep.valor_liquido,
         created_at=dep.created_at,
     )
 
 
 def _to_transferencia(t) -> TransferenciaResponse:
     return TransferenciaResponse(
-        id=t.id, bem_id=t.bem_id, de_localizacao=t.de_localizacao,
+        id=t.id,
+        bem_id=t.bem_id,
+        de_localizacao=t.de_localizacao,
         para_localizacao=t.para_localizacao,
         de_responsavel_id=t.de_responsavel_id,
         para_responsavel_id=t.para_responsavel_id,
-        data_transferencia=t.data_transferencia, motivo=t.motivo,
-        status=t.status.value, created_at=t.created_at,
+        data_transferencia=t.data_transferencia,
+        motivo=t.motivo,
+        status=t.status.value,
+        created_at=t.created_at,
     )
 
 
 @router.post("/bens", status_code=201)
 def cadastrar_bem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "patrimonio"))],
     payload: BemCreateRequest,
     repo: Annotated[RepositorioBem, Depends(get_bem_repo)],
 ):
@@ -104,8 +124,10 @@ def cadastrar_bem(
     try:
         bem = CadastrarBemUseCase(repo).execute(
             CadastrarBemInput(
-                codigo=payload.codigo, tipo=payload.tipo,
-                descricao=payload.descricao, categoria=payload.categoria,
+                codigo=payload.codigo,
+                tipo=payload.tipo,
+                descricao=payload.descricao,
+                categoria=payload.categoria,
                 valor_aquisicao=payload.valor_aquisicao,
                 data_aquisicao=payload.data_aquisicao,
                 valor_residual=payload.valor_residual,
@@ -116,12 +138,13 @@ def cadastrar_bem(
             )
         )
     except DomPatDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_bem(bem)
 
 
 @router.get("/bens")
 def listar_bens(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioBem, Depends(get_bem_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -133,6 +156,7 @@ def listar_bens(
 
 @router.get("/bens/{bem_id}")
 def obter_bem(
+    usuario: UsuarioOpcional,
     bem_id: str,
     repo: Annotated[RepositorioBem, Depends(get_bem_repo)],
 ):
@@ -145,6 +169,7 @@ def obter_bem(
 
 @router.post("/bens/{bem_id}/depreciar")
 def depreciar_bem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "patrimonio"))],
     bem_id: str,
     payload: DepreciacaoCreateRequest,
     bens: Annotated[RepositorioBem, Depends(get_bem_repo)],
@@ -154,14 +179,15 @@ def depreciar_bem(
     try:
         dep = DepreciarBemUseCase(bens, depreciacoes).execute(bem_id, payload.data)
     except BemNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomPatDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_depreciacao(dep)
 
 
 @router.get("/bens/{bem_id}/depreciacoes")
 def listar_depreciacoes(
+    usuario: UsuarioOpcional,
     bem_id: str,
     repo: Annotated[RepositorioDepreciacao, Depends(get_depreciacao_repo)],
 ):
@@ -172,6 +198,7 @@ def listar_depreciacoes(
 
 @router.post("/transferencias", status_code=201)
 def transferir_bem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "patrimonio"))],
     payload: TransferenciaCreateRequest,
     bens: Annotated[RepositorioBem, Depends(get_bem_repo)],
     transferencias: Annotated[RepositorioTransferencia, Depends(get_transferencia_repo)],
@@ -185,18 +212,20 @@ def transferir_bem(
                 de_localizacao=payload.de_localizacao,
                 de_responsavel_id=payload.de_responsavel_id,
                 para_responsavel_id=payload.para_responsavel_id,
-                motivo=payload.motivo, autor_id=payload.created_by,
+                motivo=payload.motivo,
+                autor_id=payload.created_by,
             )
         )
     except BemNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomPatDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_transferencia(t)
 
 
 @router.post("/transferencias/{transferencia_id}/concluir")
 def concluir_transferencia(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "patrimonio"))],
     transferencia_id: str,
     transferencias: Annotated[RepositorioTransferencia, Depends(get_transferencia_repo)],
     bens: Annotated[RepositorioBem, Depends(get_bem_repo)],
@@ -205,14 +234,15 @@ def concluir_transferencia(
     try:
         t = ConcluirTransferenciaUseCase(transferencias, bens).execute(transferencia_id)
     except (TransferenciaNaoEncontradaError, BemNaoEncontradoError) as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomPatDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_transferencia(t)
 
 
 @router.post("/bens/{bem_id}/baixar")
 def baixar_bem(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "patrimonio"))],
     bem_id: str,
     repo: Annotated[RepositorioBem, Depends(get_bem_repo)],
 ):
@@ -220,9 +250,9 @@ def baixar_bem(
     try:
         bem = BaixarBemUseCase(repo).execute(bem_id)
     except BemNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomPatDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_bem(bem)
 
 

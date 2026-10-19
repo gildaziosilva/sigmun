@@ -22,10 +22,16 @@ from ...domain.exceptions import DomObrDomainError
 from ..schemas import ObraAcaoRequest, ObraCreateRequest, ObraResponse, ObraUpdateRequest
 from .deps import get_despesa_repo, get_medicao_repo, get_obra_repo, obter, to_obra
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 
 @router.post("/obras", status_code=201)
 def cadastrar_obra(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     payload: ObraCreateRequest,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
 ) -> ObraResponse:
@@ -57,6 +63,7 @@ def cadastrar_obra(
 
 @router.get("/obras")
 def listar_obras(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -67,6 +74,7 @@ def listar_obras(
 
 @router.get("/obras/{obra_id}")
 def obter_obra(
+    usuario: UsuarioOpcional,
     obra_id: str,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
 ) -> ObraResponse:
@@ -78,6 +86,7 @@ def obter_obra(
 
 @router.patch("/obras/{obra_id}")
 def atualizar_obra(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     obra_id: str,
     payload: ObraUpdateRequest,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
@@ -111,15 +120,14 @@ def atualizar_obra(
 
 @router.post("/obras/{obra_id}/iniciar-execucao")
 def iniciar_execucao_obra(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     obra_id: str,
     payload: ObraAcaoRequest,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
 ) -> ObraResponse:
     try:
         return to_obra(
-            IniciarExecucaoObraUseCase(repo).execute(
-                obra_id, payload.data, payload.created_by
-            )
+            IniciarExecucaoObraUseCase(repo).execute(obra_id, payload.data, payload.created_by)
         )
     except DomObrDomainError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
@@ -127,6 +135,7 @@ def iniciar_execucao_obra(
 
 @router.post("/obras/{obra_id}/suspender")
 def suspender_obra(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     obra_id: str,
     payload: ObraAcaoRequest,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
@@ -141,20 +150,20 @@ def suspender_obra(
 
 @router.post("/obras/{obra_id}/concluir")
 def concluir_obra(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     obra_id: str,
     payload: ObraAcaoRequest,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
 ) -> ObraResponse:
     try:
-        return to_obra(
-            ConcluirObraUseCase(repo).execute(obra_id, payload.data, payload.created_by)
-        )
+        return to_obra(ConcluirObraUseCase(repo).execute(obra_id, payload.data, payload.created_by))
     except DomObrDomainError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
 
 
 @router.post("/obras/{obra_id}/cancelar")
 def cancelar_obra(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "obras"))],
     obra_id: str,
     payload: ObraAcaoRequest,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
@@ -169,6 +178,7 @@ def cancelar_obra(
 
 @router.delete("/obras/{obra_id}")
 def excluir_obra(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "obras"))],
     obra_id: str,
     repo: Annotated[RepositorioObra, Depends(get_obra_repo)],
     medicoes: Annotated[RepositorioMedicao, Depends(get_medicao_repo)],

@@ -76,8 +76,7 @@ class ServicoGeo:
                 )
             if not url.startswith(("http://", "https://")):
                 raise RegraNegocioError(
-                    "URL do serviço geoespacial deve iniciar com http:// ou https:// "
-                    "(RN-GEO-007)"
+                    "URL do serviço geoespacial deve iniciar com http:// ou https:// (RN-GEO-007)"
                 )
             if self.tipo in (TipoServicoGeo.WMS, TipoServicoGeo.WFS) and not self.camada.strip():
                 raise RegraNegocioError(

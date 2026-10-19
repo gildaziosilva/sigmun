@@ -412,6 +412,12 @@ def registrar_manifestacao(
         )
     except (RegraNegocioError, ProtocoloJaExistenteError) as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except ValueError as exc:
+        # Validação do domínio (ex.: nome obrigatório p/ não anônimo) → 422,
+        # nunca 500. Mesmo padrão de sigmun_ate/sigmun_seg.
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
     # O autor acabou de registrar: devolve os próprios dados mascarados.
     return _to_manifestacao_response(m, usuario_autorizado=True)
 
@@ -617,6 +623,10 @@ def registrar_denuncia(
         d = RegistrarDenunciaUseCase(repo, protocolo_repo, anexo_repo, tramitacao_repo).execute(dto)
     except (RegraNegocioError, ProtocoloJaExistenteError) as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
     # O autor acabou de registrar: devolve os proprios dados mascarados.
     return _to_denuncia_response(d, usuario_autorizado=True)
 
@@ -725,6 +735,10 @@ def registrar_pedido_lai(
         )
     except (RegraNegocioError, ProtocoloJaExistenteError) as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
     return _to_pedido_lai_response(p, usuario_autorizado=True)
 
 

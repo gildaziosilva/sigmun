@@ -30,14 +30,20 @@ class SQLAlchemyLDORepository(RepositorioLDO):
             ex.updated_by = ldo.updated_by
             ex.is_deleted = ldo.is_deleted
         else:
-            self._session.add(LDOModel(
-                id=uuid.UUID(ldo.id), exercicio=ldo.exercicio,
-                ppa_id=uuid.UUID(ldo.ppa_id),
-                descricao=ldo.descricao, status=ldo.status.value,
-                meta_fiscal_receita=ldo.meta_fiscal_receita,
-                meta_fiscal_despesa=ldo.meta_fiscal_despesa,
-                created_at=ldo.created_at, created_by=ldo.created_by,
-                is_deleted=ldo.is_deleted))
+            self._session.add(
+                LDOModel(
+                    id=uuid.UUID(ldo.id),
+                    exercicio=ldo.exercicio,
+                    ppa_id=uuid.UUID(ldo.ppa_id),
+                    descricao=ldo.descricao,
+                    status=ldo.status.value,
+                    meta_fiscal_receita=ldo.meta_fiscal_receita,
+                    meta_fiscal_despesa=ldo.meta_fiscal_despesa,
+                    created_at=ldo.created_at,
+                    created_by=ldo.created_by,
+                    is_deleted=ldo.is_deleted,
+                )
+            )
         self._session.flush()
         return ldo
 
@@ -50,21 +56,30 @@ class SQLAlchemyLDORepository(RepositorioLDO):
 
     def get_by_exercicio(self, exercicio: int) -> LDO | None:
         """Busca LDO pelo exercício."""
-        m = (self._session.query(LDOModel).filter(
-            LDOModel.exercicio == exercicio,
-            LDOModel.is_deleted == False).first())  # noqa: E712
+        m = (
+            self._session.query(LDOModel)
+            .filter(LDOModel.exercicio == exercicio, not LDOModel.is_deleted)
+            .first()
+        )  # noqa: E712
         return self._to_entity(m) if m else None
 
     def _to_entity(self, m: LDOModel) -> LDO:
-        return LDO(id=str(m.id), exercicio=int(m.exercicio or 0),
-                   ppa_id=str(m.ppa_id) if m.ppa_id else "", descricao=m.descricao or "",
-                   status=StatusLDO(m.status or "elaboracao"),
-                   meta_fiscal_receita=float(m.meta_fiscal_receita or 0),
-                   meta_fiscal_despesa=float(m.meta_fiscal_despesa or 0),
-                   data_aprovacao=m.data_aprovacao, data_sancao=m.data_sancao,
-                   created_at=m.created_at, updated_at=m.updated_at,
-                   created_by=m.created_by or "", updated_by=m.updated_by or "",
-                   is_deleted=bool(m.is_deleted))
+        return LDO(
+            id=str(m.id),
+            exercicio=int(m.exercicio or 0),
+            ppa_id=str(m.ppa_id) if m.ppa_id else "",
+            descricao=m.descricao or "",
+            status=StatusLDO(m.status or "elaboracao"),
+            meta_fiscal_receita=float(m.meta_fiscal_receita or 0),
+            meta_fiscal_despesa=float(m.meta_fiscal_despesa or 0),
+            data_aprovacao=m.data_aprovacao,
+            data_sancao=m.data_sancao,
+            created_at=m.created_at,
+            updated_at=m.updated_at,
+            created_by=m.created_by or "",
+            updated_by=m.updated_by or "",
+            is_deleted=bool(m.is_deleted),
+        )
 
 
 __all__ = ["SQLAlchemyLDORepository"]

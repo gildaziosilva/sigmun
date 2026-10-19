@@ -241,14 +241,10 @@ class Diaria:
         atual_valor = self.status.value
 
         if atual_valor not in TRANSICOES_VALIDAS:
-            raise RegraNegocioError(
-                f"Estado atual '{atual_valor}' não possui transições definidas"
-            )
+            raise RegraNegocioError(f"Estado atual '{atual_valor}' não possui transições definidas")
 
         if novo_valor not in TRANSICOES_VALIDAS[atual_valor]:
-            raise RegraNegocioError(
-                f"Transição inválida: {atual_valor} → {novo_valor}"
-            )
+            raise RegraNegocioError(f"Transição inválida: {atual_valor} → {novo_valor}")
 
     def solicitar(self) -> None:
         """RN-DIA-001: Solicitação inicial da diária."""

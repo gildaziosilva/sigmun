@@ -128,7 +128,16 @@ class ReservaResponse(BaseModel):
     created_at: datetime
 
 
-__all__ = ["PPACreateRequest", "PPAResponse", "LDOCreateRequest", "LDOResponse",
-           "LOACreateRequest", "LOAResponse", "DotacaoCreateRequest",
-           "DotacaoValorRequest", "DotacaoResponse", "ReservaCreateRequest",
-           "ReservaResponse"]
+__all__ = [
+    "PPACreateRequest",
+    "PPAResponse",
+    "LDOCreateRequest",
+    "LDOResponse",
+    "LOACreateRequest",
+    "LOAResponse",
+    "DotacaoCreateRequest",
+    "DotacaoValorRequest",
+    "DotacaoResponse",
+    "ReservaCreateRequest",
+    "ReservaResponse",
+]

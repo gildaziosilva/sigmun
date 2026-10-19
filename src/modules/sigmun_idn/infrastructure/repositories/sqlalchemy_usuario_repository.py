@@ -70,9 +70,7 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
     def _buscar_role_ids(self, usuario_id: UUID) -> list[str]:
         """Busca as roles do usuário pela relação N:N normalizada."""
         role_ids = self._session.scalars(
-            select(UsuarioRoleModel.role_id).where(
-                UsuarioRoleModel.usuario_id == usuario_id
-            )
+            select(UsuarioRoleModel.role_id).where(UsuarioRoleModel.usuario_id == usuario_id)
         ).all()
 
         return [str(role_id) for role_id in role_ids]
@@ -171,9 +169,7 @@ class SqlAlchemyUsuarioRepository(UsuarioRepositoryInterface):
 
         roles_atuais = set(
             self._session.scalars(
-                select(UsuarioRoleModel.role_id).where(
-                    UsuarioRoleModel.usuario_id == usuario_uuid
-                )
+                select(UsuarioRoleModel.role_id).where(UsuarioRoleModel.usuario_id == usuario_uuid)
             ).all()
         )
 

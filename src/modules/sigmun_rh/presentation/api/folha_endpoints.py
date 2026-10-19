@@ -25,6 +25,7 @@ from src.modules.sigmun_rh.presentation.schemas.pes_operacionais_schemas import 
 )
 
 from .operacional import get_folha_repo, router_operacional
+from src.shared.presentation.dependencies import JWTUsuarioContexto, exigir_papeis
 
 router = router_operacional
 
@@ -42,6 +43,7 @@ def _to_response(folha) -> FolhaResponse:
 
 @router.post("/folhas", status_code=201)
 def abrir_folha(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     payload: FolhaCreateRequest,
     repo: Annotated[RepositorioFolha, Depends(get_folha_repo)],
 ):
@@ -62,6 +64,7 @@ def abrir_folha(
 
 @router.post("/folhas/{folha_id}/consolidar")
 def consolidar_folha(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     folha_id: str,
     payload: FolhaConsolidarRequest,
     repo: Annotated[RepositorioFolha, Depends(get_folha_repo)],
@@ -82,6 +85,7 @@ def consolidar_folha(
 
 @router.post("/folhas/{folha_id}/fechar")
 def fechar_folha(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     folha_id: str, repo: Annotated[RepositorioFolha, Depends(get_folha_repo)]
 ):
     """Fecha folha aberta."""
@@ -94,6 +98,7 @@ def fechar_folha(
 
 @router.post("/folhas/{folha_id}/reabrir")
 def reabrir_folha(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     folha_id: str, repo: Annotated[RepositorioFolha, Depends(get_folha_repo)]
 ):
     """Reabre folha fechada."""
@@ -106,6 +111,7 @@ def reabrir_folha(
 
 @router.post("/folhas/{folha_id}/homologar")
 def homologar_folha(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     folha_id: str, repo: Annotated[RepositorioFolha, Depends(get_folha_repo)]
 ):
     """Homologa folha fechada."""
@@ -118,6 +124,7 @@ def homologar_folha(
 
 @router.post("/folhas/{folha_id}/pagar")
 def pagar_folha(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     folha_id: str, repo: Annotated[RepositorioFolha, Depends(get_folha_repo)]
 ):
     """Paga folha homologada."""

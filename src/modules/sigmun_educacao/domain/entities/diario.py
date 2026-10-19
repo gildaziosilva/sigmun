@@ -29,13 +29,9 @@ class LancamentoDiario:
         from ..exceptions import RegraNegocioError
 
         if not self.matricula_id:
-            raise RegraNegocioError(
-                "Lançamento no diário exige matrícula vinculada (RN-EDU-020)"
-            )
+            raise RegraNegocioError("Lançamento no diário exige matrícula vinculada (RN-EDU-020)")
         if self.nota is not None and not (0.0 <= self.nota <= 10.0):
-            raise RegraNegocioError(
-                f"Nota fora da escala 0-10: {self.nota} (RN-EDU-020)"
-            )
+            raise RegraNegocioError(f"Nota fora da escala 0-10: {self.nota} (RN-EDU-020)")
 
 
 __all__ = ["LancamentoDiario"]

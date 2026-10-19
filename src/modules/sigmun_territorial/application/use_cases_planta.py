@@ -61,8 +61,7 @@ class CadastrarPlantaValoresUseCase:
             vigente = self._repo.get_vigente(dto.ano, dto.bairro_id, ocupacao.value)
             if vigente is not None:
                 raise PlantaValoresJaExistenteError(
-                    "Já existe planta vigente para o ano, bairro e ocupação informados "
-                    "(RN-TEL-003)"
+                    "Já existe planta vigente para o ano, bairro e ocupação informados (RN-TEL-003)"
                 )
 
         planta = PlantaGenericaValores(
@@ -180,4 +179,3 @@ class AtualizarPlantaValoresUseCase:
         planta.validar()
         planta.updated_at = datetime.utcnow()
         return self._repo.save(planta)
-

@@ -91,9 +91,7 @@ class SQLAlchemyMapaCamadaRepository(RepositorioMapaCamada):
         """Lista os mapas que referenciam uma camada."""
         models = (
             self._session.query(MapaCamadaModel)
-            .filter(
-                MapaCamadaModel.camada_id == camada_id, MapaCamadaModel.is_deleted.is_(False)
-            )
+            .filter(MapaCamadaModel.camada_id == camada_id, MapaCamadaModel.is_deleted.is_(False))
             .all()
         )
         return [self._to_entity(m) for m in models]
@@ -190,9 +188,7 @@ class SQLAlchemyFeatureGeoRepository(RepositorioFeatureGeo):
         """Lista elementos geoespaciais de uma camada."""
         models = (
             self._session.query(FeatureGeoModel)
-            .filter(
-                FeatureGeoModel.camada_id == camada_id, FeatureGeoModel.is_deleted.is_(False)
-            )
+            .filter(FeatureGeoModel.camada_id == camada_id, FeatureGeoModel.is_deleted.is_(False))
             .order_by(FeatureGeoModel.codigo)
             .all()
         )
@@ -300,9 +296,7 @@ class SQLAlchemyServicoGeoRepository(RepositorioServicoGeo):
         self, page: int = 1, page_size: int = 20, tipo: str | None = None
     ) -> list[ServicoGeo]:
         """Lista serviços geoespaciais paginados, opcionalmente por tipo."""
-        query = self._session.query(ServicoGeoModel).filter(
-            ServicoGeoModel.is_deleted.is_(False)
-        )
+        query = self._session.query(ServicoGeoModel).filter(ServicoGeoModel.is_deleted.is_(False))
         if tipo:
             query = query.filter(ServicoGeoModel.tipo == tipo)
         models = (

@@ -96,6 +96,16 @@ from src.modules.sigmun_gdo.presentation.schemas import (
     VersaoCreateRequest,
     VersaoDocumentoResponse,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
+from src.shared.presentation.paginacao import (
+    Pagina,
+    ParametrosPaginacao,
+    criar_pagina,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -248,6 +258,7 @@ def _publicar_documento_vinculado_processo(
     responses={400: {"model": ErrorResponse}, 409: {"model": ErrorResponse}},
 )
 def criar_documento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     payload: DocumentoCreateRequest,
     repo: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
     repo_tipo: Annotated[RepositorioTipoDocumental, Depends(get_tipo_documental_repository)],
@@ -306,24 +317,24 @@ def criar_documento(
 
 @router.get(
     "/documentos",
-    response_model=DocumentoListResponse,
+    response_model=Pagina[DocumentoResponse],
     summary="Lista documentos",
 )
 def listar_documentos(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
-    page: int = 0,
-    page_size: int = 50,
-) -> DocumentoListResponse:
+    params: Annotated[ParametrosPaginacao, Depends()],
+) -> Pagina[DocumentoResponse]:
     """Lista documentos ativos."""
     documentos = repo.find_ativos()
-    start = page * page_size
-    end = start + page_size
+    total = len(documentos)
+    start = params.offset()
+    end = start + params.limit()
     items = documentos[start:end]
-    return DocumentoListResponse(
-        total=len(documentos),
-        page=page,
-        page_size=page_size,
-        items=[_documento_to_response(d) for d in items],
+    return criar_pagina(
+        [_documento_to_response(d) for d in items],
+        params,
+        total,
     )
 
 
@@ -334,6 +345,7 @@ def listar_documentos(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_documento(
+    usuario: UsuarioOpcional,
     documento_id: str,
     repo: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
 ) -> DocumentoResponse:
@@ -352,6 +364,7 @@ def buscar_documento(
     summary="Lista documentos de um processo",
 )
 def documentos_do_processo(
+    usuario: UsuarioOpcional,
     processo_id: str,
     repo: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
 ) -> list[DocumentoResponse]:
@@ -373,6 +386,7 @@ def documentos_do_processo(
     responses={404: {"model": ErrorResponse}},
 )
 def tramitar_documento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     documento_id: str,
     payload: TramitacaoCreateRequest,
     repo_doc: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
@@ -424,6 +438,7 @@ def tramitar_documento(
     summary="Lista tramitações de um documento",
 )
 def listar_tramitacoes(
+    usuario: UsuarioOpcional,
     documento_id: str,
     repo: Annotated[RepositorioTramitacao, Depends(get_tramitacao_repository)],
 ) -> list[TramitacaoResponse]:
@@ -439,24 +454,24 @@ def listar_tramitacoes(
 
 @router.get(
     "/classificacoes",
-    response_model=ClassificacaoListResponse,
+    response_model=Pagina[ClassificacaoResponse],
     summary="Lista classificações documentais",
 )
 def listar_classificacoes(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioClassificacaoDocumental, Depends(get_classificacao_repository)],
-    page: int = 0,
-    page_size: int = 50,
-) -> ClassificacaoListResponse:
+    params: Annotated[ParametrosPaginacao, Depends()],
+) -> Pagina[ClassificacaoResponse]:
     """Lista classificações documentais."""
     classificacoes = repo.find_all()
-    start = page * page_size
-    end = start + page_size
+    total = len(classificacoes)
+    start = params.offset()
+    end = start + params.limit()
     items = classificacoes[start:end]
-    return ClassificacaoListResponse(
-        total=len(classificacoes),
-        page=page,
-        page_size=page_size,
-        items=[_classificacao_to_response(c) for c in items],
+    return criar_pagina(
+        [_classificacao_to_response(c) for c in items],
+        params,
+        total,
     )
 
 
@@ -467,6 +482,7 @@ def listar_classificacoes(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_classificacao(
+    usuario: UsuarioOpcional,
     classificacao_id: str,
     repo: Annotated[RepositorioClassificacaoDocumental, Depends(get_classificacao_repository)],
 ) -> ClassificacaoResponse:
@@ -491,6 +507,7 @@ def buscar_classificacao(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_processo(
+    usuario: UsuarioOpcional,
     processo_id: str,
     repo: Annotated[RepositorioProcessoDocumento, Depends(get_processo_repository)],
 ) -> ProcessoDocumentoResponse:
@@ -515,6 +532,7 @@ def buscar_processo(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_temporalidade(
+    usuario: UsuarioOpcional,
     codigo: str,
     repo: Annotated[RepositorioTabelaTemporalidade, Depends(get_temporalidade_repository)],
 ) -> TabelaTemporalidadeResponse:
@@ -551,6 +569,7 @@ def buscar_temporalidade(
     responses={404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}},
 )
 def arquivar_documento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     documento_id: str,
     payload: ArquivamentoCreateRequest,
     repo_doc: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
@@ -604,6 +623,7 @@ def arquivar_documento(
     responses={404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}},
 )
 def assinar_documento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     documento_id: str,
     payload: AssinaturaCreateRequest,
     repo_doc: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
@@ -657,6 +677,7 @@ def assinar_documento(
     responses={404: {"model": ErrorResponse}},
 )
 def criar_versao_documento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     documento_id: str,
     payload: VersaoCreateRequest,
     repo_doc: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
@@ -685,6 +706,7 @@ def criar_versao_documento(
     responses={404: {"model": ErrorResponse}},
 )
 def listar_versoes_documento(
+    usuario: UsuarioOpcional,
     documento_id: str,
     repo_doc: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
     repo_ver: Annotated[RepositorioVersaoDocumento, Depends(get_versao_repository)],
@@ -710,6 +732,7 @@ def listar_versoes_documento(
     },
 )
 def aplicar_destinacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     documento_id: str,
     payload: DestinacaoRequest,
     repo_doc: Annotated[RepositorioDocumento, Depends(get_documento_repository)],
@@ -768,6 +791,7 @@ def aplicar_destinacao(
     responses={409: {"model": ErrorResponse}},
 )
 def criar_tipo_documento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     payload: TipoDocumentoCreateRequest,
     repo: Annotated[RepositorioTipoDocumental, Depends(get_tipo_documental_repository)],
 ) -> TipoDocumentoResponse:
@@ -792,6 +816,7 @@ def criar_tipo_documento(
     summary="Lista tipos documentais ativos",
 )
 def listar_tipos_documento(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioTipoDocumental, Depends(get_tipo_documental_repository)],
 ) -> list[TipoDocumentoResponse]:
     """Lista todos os tipos documentais ativos."""
@@ -806,6 +831,7 @@ def listar_tipos_documento(
     responses={404: {"model": ErrorResponse}},
 )
 def buscar_tipo_documento(
+    usuario: UsuarioOpcional,
     codigo: str,
     repo: Annotated[RepositorioTipoDocumental, Depends(get_tipo_documental_repository)],
 ) -> TipoDocumentoResponse:
@@ -825,6 +851,7 @@ def buscar_tipo_documento(
     responses={404: {"model": ErrorResponse}},
 )
 def ativar_tipo_documento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     codigo: str,
     repo: Annotated[RepositorioTipoDocumental, Depends(get_tipo_documental_repository)],
 ) -> TipoDocumentoResponse:
@@ -844,6 +871,7 @@ def ativar_tipo_documento(
     responses={404: {"model": ErrorResponse}},
 )
 def inativar_tipo_documento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "gdo"))],
     codigo: str,
     repo: Annotated[RepositorioTipoDocumental, Depends(get_tipo_documental_repository)],
 ) -> TipoDocumentoResponse:

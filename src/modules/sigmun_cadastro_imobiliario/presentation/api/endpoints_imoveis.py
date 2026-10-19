@@ -34,12 +34,18 @@ from ..schemas import (
 )
 from .deps import get_imovel_repo, get_proprietario_repo, obter, to_imovel, to_proprietario
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 _CONFLITO_INSCRICAO = "Inscrição imobiliária já cadastrada para outro imóvel (RN-IMO-001)"
 
 
 @router.post("/imoveis", status_code=201)
 def cadastrar_imovel(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     payload: ImovelCreateRequest,
     repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
 ) -> ImovelResponse:
@@ -68,6 +74,7 @@ def cadastrar_imovel(
 
 @router.get("/imoveis")
 def listar_imoveis(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -78,6 +85,7 @@ def listar_imoveis(
 
 @router.get("/imoveis/inscricao/{inscricao}")
 def obter_imovel_por_inscricao(
+    usuario: UsuarioOpcional,
     inscricao: str, repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)]
 ) -> ImovelResponse:
     imovel = repo.get_by_inscricao(inscricao)
@@ -88,6 +96,7 @@ def obter_imovel_por_inscricao(
 
 @router.get("/imoveis/logradouro/{logradouro_id}")
 def listar_imoveis_do_logradouro(
+    usuario: UsuarioOpcional,
     logradouro_id: str, repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)]
 ) -> list[ImovelResponse]:
     return [to_imovel(i) for i in repo.list_by_logradouro(logradouro_id)]
@@ -95,6 +104,7 @@ def listar_imoveis_do_logradouro(
 
 @router.get("/imoveis/bairro/{bairro_id}")
 def listar_imoveis_do_bairro(
+    usuario: UsuarioOpcional,
     bairro_id: str, repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)]
 ) -> list[ImovelResponse]:
     return [to_imovel(i) for i in repo.list_by_bairro(bairro_id)]
@@ -102,6 +112,7 @@ def listar_imoveis_do_bairro(
 
 @router.get("/imoveis/{imovel_id}")
 def obter_imovel(
+    usuario: UsuarioOpcional,
     imovel_id: str, repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)]
 ) -> ImovelResponse:
     imovel = obter(repo, imovel_id)
@@ -112,6 +123,7 @@ def obter_imovel(
 
 @router.patch("/imoveis/{imovel_id}")
 def atualizar_imovel(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     imovel_id: str,
     payload: ImovelUpdateRequest,
     repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
@@ -139,6 +151,7 @@ def atualizar_imovel(
 
 @router.post("/imoveis/{imovel_id}/situacao")
 def alterar_situacao_imovel(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     imovel_id: str,
     payload: ImovelSituacaoRequest,
     repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
@@ -153,6 +166,7 @@ def alterar_situacao_imovel(
 
 @router.delete("/imoveis/{imovel_id}")
 def excluir_imovel(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "cadastro"))],
     imovel_id: str, repo: Annotated[RepositorioImovel, Depends(get_imovel_repo)]
 ) -> ImovelResponse:
     try:
@@ -165,6 +179,7 @@ def excluir_imovel(
 
 @router.get("/imoveis/{imovel_id}/proprietarios")
 def listar_proprietarios_do_imovel(
+    usuario: UsuarioOpcional,
     imovel_id: str,
     imoveis: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
     proprietarios: Annotated[RepositorioProprietario, Depends(get_proprietario_repo)],
@@ -176,6 +191,7 @@ def listar_proprietarios_do_imovel(
 
 @router.post("/proprietarios", status_code=201)
 def vincular_proprietario(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     payload: ProprietarioCreateRequest,
     repo: Annotated[RepositorioProprietario, Depends(get_proprietario_repo)],
     imoveis: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
@@ -201,6 +217,7 @@ def vincular_proprietario(
 
 @router.get("/proprietarios")
 def listar_proprietarios(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioProprietario, Depends(get_proprietario_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -210,6 +227,7 @@ def listar_proprietarios(
 
 @router.delete("/proprietarios/{vinculo_id}")
 def remover_proprietario(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "cadastro"))],
     vinculo_id: str, repo: Annotated[RepositorioProprietario, Depends(get_proprietario_repo)]
 ) -> ProprietarioResponse:
     try:

@@ -98,6 +98,11 @@ from src.modules.sigmun_int.presentation.schemas import (
     WebhookPayload,
     WebhookResponse,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -292,6 +297,7 @@ def _error_http(exc: Exception, default: int = status.HTTP_400_BAD_REQUEST) -> H
 
 @router.get("/apis", response_model=list[ApiResponse], summary="Lista APIs externas do catálogo")
 def listar_apis(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
@@ -309,6 +315,7 @@ def listar_apis(
     summary="Registra uma API externa no catálogo",
 )
 def criar_api(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     payload: ApiPayload,
 ) -> ApiResponse:
@@ -333,6 +340,7 @@ def criar_api(
 
 @router.get("/apis/{api_id}", response_model=ApiResponse, summary="Busca uma API externa por ID")
 def obter_api(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     api_id: str,
 ) -> ApiResponse:
@@ -345,6 +353,7 @@ def obter_api(
 
 @router.patch("/apis/{api_id}", response_model=ApiResponse, summary="Atualiza uma API externa")
 def atualizar_api(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     api_id: str,
     payload: ApiPayload,
@@ -371,6 +380,7 @@ def atualizar_api(
     "/apis/{api_id}/estado", response_model=ApiResponse, summary="Muda o estado de uma API"
 )
 def mudar_estado_api(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     api_id: str,
     estado: str,
@@ -388,6 +398,7 @@ def mudar_estado_api(
     summary="Exclui (exclusão lógica) uma API externa",
 )
 def deletar_api(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "integracao"))],
     repo: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     api_id: str,
 ) -> None:
@@ -408,6 +419,7 @@ def deletar_api(
     summary="Lista contratos de integração",
 )
 def listar_contratos(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
@@ -427,6 +439,7 @@ def listar_contratos(
     summary="Crea um contrato de integração",
 )
 def criar_contrato(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     repo_apis: Annotated[SqlAlchemyApiExternaRepository, Depends(get_api_repo)],
     payload: ContratoPayload,
@@ -452,6 +465,7 @@ def criar_contrato(
     summary="Busca um contrato por ID",
 )
 def obter_contrato(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
 ) -> ContratoResponse:
@@ -468,6 +482,7 @@ def obter_contrato(
     summary="Atualiza um contrato de integração",
 )
 def atualizar_contrato(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
     payload: ContratoPayload,
@@ -491,6 +506,7 @@ def atualizar_contrato(
     summary="Aprova um contrato (rascunho -> vigente)",
 )
 def aprovar_contrato(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
 ) -> ContratoResponse:
@@ -507,6 +523,7 @@ def aprovar_contrato(
     summary="Retira um contrato (vigente -> retirado)",
 )
 def retirar_contrato(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
 ) -> ContratoResponse:
@@ -523,6 +540,7 @@ def retirar_contrato(
     summary="Exclui (exclusão lógica) um contrato",
 )
 def deletar_contrato(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "integracao"))],
     repo: Annotated[SqlAlchemyContratoIntegracaoRepository, Depends(get_contrato_repo)],
     contrato_id: str,
 ) -> None:
@@ -541,6 +559,7 @@ def deletar_contrato(
     "/conectores", response_model=list[ConectorResponse], summary="Lista conectores oficiais"
 )
 def listar_conectores(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
@@ -557,6 +576,7 @@ def listar_conectores(
     summary="Registra um conector oficial",
 )
 def criar_conector(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     payload: ConectorPayload,
 ) -> ConectorResponse:
@@ -579,6 +599,7 @@ def criar_conector(
     "/conectores/{conector_id}", response_model=ConectorResponse, summary="Busca um conector por ID"
 )
 def obter_conector(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     conector_id: str,
 ) -> ConectorResponse:
@@ -593,6 +614,7 @@ def obter_conector(
     "/conectores/{conector_id}", response_model=ConectorResponse, summary="Atualiza um conector"
 )
 def atualizar_conector(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     conector_id: str,
     payload: ConectorPayload,
@@ -618,6 +640,7 @@ def atualizar_conector(
     summary="Muda o estado de um conector (RN-INT-004)",
 )
 def mudar_estado_conector(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     conector_id: str,
     payload: ConectorEstadoPayload,
@@ -635,6 +658,7 @@ def mudar_estado_conector(
     summary="Exclui (exclusão lógica) um conector",
 )
 def deletar_conector(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "integracao"))],
     repo: Annotated[SqlAlchemyConectorRepository, Depends(get_conector_repo)],
     conector_id: str,
 ) -> None:
@@ -651,6 +675,7 @@ def deletar_conector(
 
 @router.get("/webhooks", response_model=list[WebhookResponse], summary="Lista webhooks")
 def listar_webhooks(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
@@ -667,6 +692,7 @@ def listar_webhooks(
     summary="Registra um webhook inscrito no barramento",
 )
 def registrar_webhook(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     payload: WebhookPayload,
 ) -> WebhookResponse:
@@ -689,6 +715,7 @@ def registrar_webhook(
     "/webhooks/{webhook_id}", response_model=WebhookResponse, summary="Busca um webhook por ID"
 )
 def obter_webhook(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     webhook_id: str,
 ) -> WebhookResponse:
@@ -703,6 +730,7 @@ def obter_webhook(
     "/webhooks/{webhook_id}", response_model=WebhookResponse, summary="Atualiza um webhook"
 )
 def atualizar_webhook(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     webhook_id: str,
     payload: WebhookPayload,
@@ -728,6 +756,7 @@ def atualizar_webhook(
     summary="Ativa ou desativa um webhook",
 )
 def mudar_estado_webhook(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     webhook_id: str,
     payload: WebhookEstadoPayload,
@@ -745,6 +774,7 @@ def mudar_estado_webhook(
     summary="Exclui (exclusão lógica) um webhook",
 )
 def deletar_webhook(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "integracao"))],
     repo: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     webhook_id: str,
 ) -> None:
@@ -763,6 +793,7 @@ def deletar_webhook(
     "/entregas", response_model=list[EntregaResponse], summary="Lista entregas de mensagens"
 )
 def listar_entregas(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
@@ -778,6 +809,7 @@ def listar_entregas(
     summary="Lista entregas de um webhook",
 )
 def listar_entregas_por_webhook(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     webhook_id: str,
     page: int = Query(default=0, ge=0),
@@ -791,6 +823,7 @@ def listar_entregas_por_webhook(
     "/entregas/{entrega_id}", response_model=EntregaResponse, summary="Busca uma entrega por ID"
 )
 def obter_entrega(
+    usuario: UsuarioOpcional,
     repo: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     entrega_id: str,
 ) -> EntregaResponse:
@@ -807,6 +840,7 @@ def obter_entrega(
     summary="Reenfileira uma entrega da fila de mensagens mortas",
 )
 def reenfileirar_entrega(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     entrega_id: str,
     payload: ReenfileirarPayload,
@@ -843,10 +877,13 @@ def get_transporte_webhook() -> TransporteWebhookHTTP:
     ),
 )
 def consumir_outbox(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     outbox: Annotated[OutboxSQLAlchemySource, Depends(get_outbox_source)],
     repo_webhooks: Annotated[SqlAlchemyWebhookRepository, Depends(get_webhook_repo)],
     repo_entregas: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
-    repo_eventos: Annotated[SqlAlchemyEventoProcessadoRepository, Depends(get_evento_processado_repo)],
+    repo_eventos: Annotated[
+        SqlAlchemyEventoProcessadoRepository, Depends(get_evento_processado_repo)
+    ],
     payload: ConsumirOutboxPayload,
 ) -> dict:
     try:
@@ -869,6 +906,7 @@ def consumir_outbox(
     ),
 )
 def despachar_webhooks(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "integracao"))],
     repo_entregas: Annotated[SqlAlchemyEntregaWebhookRepository, Depends(get_entrega_repo)],
     transporte: Annotated[TransporteWebhookHTTP, Depends(get_transporte_webhook)],
     payload: DespacharPayload,

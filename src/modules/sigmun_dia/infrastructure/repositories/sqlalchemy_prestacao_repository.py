@@ -70,7 +70,10 @@ class SQLAlchemyPrestacaoContasRepository(RepositorioPrestacaoContas):
         """Busca prestação por ID de diária."""
         model = (
             self._session.query(PrestacaoContasModel)
-            .filter(PrestacaoContasModel.diaria_id == diaria_id, PrestacaoContasModel.is_deleted == False)
+            .filter(
+                PrestacaoContasModel.diaria_id == diaria_id,
+                PrestacaoContasModel.is_deleted == False,
+            )
             .first()
         )
         if not model:
@@ -88,9 +91,9 @@ class SQLAlchemyPrestacaoContasRepository(RepositorioPrestacaoContas):
 
     def delete(self, id: str) -> None:
         """Remove logicamente uma prestação."""
-        self._session.query(PrestacaoContasModel).filter(PrestacaoContasModel.id == uuid.UUID(id)).update(
-            {PrestacaoContasModel.is_deleted: True}
-        )
+        self._session.query(PrestacaoContasModel).filter(
+            PrestacaoContasModel.id == uuid.UUID(id)
+        ).update({PrestacaoContasModel.is_deleted: True})
         self._session.flush()
 
     def _to_entity(self, model: PrestacaoContasModel) -> PrestacaoContas:

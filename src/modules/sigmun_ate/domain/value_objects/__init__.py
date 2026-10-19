@@ -64,7 +64,7 @@ class PeriodoAtendimento:
         if self.abertura >= self.fechamento:
             raise ValueError("Horário de abertura deve ser anterior ao de fechamento")
 
-    def esta_aberto(self, momento: Optional[datetime] = None) -> bool:
+    def esta_aberto(self, momento: datetime | None = None) -> bool:
         """Verifica se a unidade está aberta no momento dado."""
         if momento is None:
             momento = datetime.utcnow()

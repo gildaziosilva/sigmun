@@ -47,10 +47,16 @@ from .deps import (
     to_geometria,
 )
 from .router import router
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 
 @router.post("/avaliacoes", status_code=201)
 def avaliar_imovel(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     payload: AvaliacaoCreateRequest,
     repo: Annotated[RepositorioAvaliacao, Depends(get_avaliacao_repo)],
     imoveis: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
@@ -77,6 +83,7 @@ def avaliar_imovel(
 
 @router.get("/avaliacoes")
 def listar_avaliacoes(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioAvaliacao, Depends(get_avaliacao_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -86,6 +93,7 @@ def listar_avaliacoes(
 
 @router.get("/avaliacoes/imovel/{imovel_id}")
 def listar_avaliacoes_do_imovel(
+    usuario: UsuarioOpcional,
     imovel_id: str,
     imoveis: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
     repo: Annotated[RepositorioAvaliacao, Depends(get_avaliacao_repo)],
@@ -97,6 +105,7 @@ def listar_avaliacoes_do_imovel(
 
 @router.get("/avaliacoes/{avaliacao_id}")
 def obter_avaliacao(
+    usuario: UsuarioOpcional,
     avaliacao_id: str, repo: Annotated[RepositorioAvaliacao, Depends(get_avaliacao_repo)]
 ) -> AvaliacaoResponse:
     avaliacao = obter(repo, avaliacao_id)
@@ -107,6 +116,7 @@ def obter_avaliacao(
 
 @router.post("/avaliacoes/{avaliacao_id}/concluir")
 def concluir_avaliacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     avaliacao_id: str, repo: Annotated[RepositorioAvaliacao, Depends(get_avaliacao_repo)]
 ) -> AvaliacaoResponse:
     try:
@@ -119,6 +129,7 @@ def concluir_avaliacao(
 
 @router.post("/avaliacoes/{avaliacao_id}/cancelar")
 def cancelar_avaliacao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     avaliacao_id: str,
     payload: AvaliacaoCancelarRequest,
     repo: Annotated[RepositorioAvaliacao, Depends(get_avaliacao_repo)],
@@ -133,6 +144,7 @@ def cancelar_avaliacao(
 
 @router.post("/caracteristicas", status_code=201)
 def registrar_caracteristica(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     payload: CaracteristicaCreateRequest,
     repo: Annotated[RepositorioCaracteristica, Depends(get_caracteristica_repo)],
     imoveis: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
@@ -157,6 +169,7 @@ def registrar_caracteristica(
 
 @router.get("/caracteristicas/imovel/{imovel_id}")
 def obter_caracteristica_do_imovel(
+    usuario: UsuarioOpcional,
     imovel_id: str,
     imoveis: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
     repo: Annotated[RepositorioCaracteristica, Depends(get_caracteristica_repo)],
@@ -171,6 +184,7 @@ def obter_caracteristica_do_imovel(
 
 @router.get("/caracteristicas")
 def listar_caracteristicas(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioCaracteristica, Depends(get_caracteristica_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -180,6 +194,7 @@ def listar_caracteristicas(
 
 @router.post("/geometrias", status_code=201)
 def registrar_geometria(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "cadastro"))],
     payload: GeometriaCreateRequest,
     repo: Annotated[RepositorioGeometria, Depends(get_geometria_repo)],
     imoveis: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
@@ -207,6 +222,7 @@ def registrar_geometria(
 
 @router.get("/geometrias")
 def listar_geometrias(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioGeometria, Depends(get_geometria_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -216,6 +232,7 @@ def listar_geometrias(
 
 @router.get("/geometrias/imovel/{imovel_id}")
 def obter_geometria_do_imovel(
+    usuario: UsuarioOpcional,
     imovel_id: str,
     imoveis: Annotated[RepositorioImovel, Depends(get_imovel_repo)],
     repo: Annotated[RepositorioGeometria, Depends(get_geometria_repo)],

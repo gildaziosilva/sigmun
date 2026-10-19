@@ -20,6 +20,7 @@ from src.modules.sigmun_rh.application.use_cases_cargos_servidores import (
 )
 from src.modules.sigmun_rh.domain.exceptions import DomPesDomainError
 from src.modules.sigmun_rh.presentation.schemas.pes_schemas import ServidorCreateRequest
+from src.shared.presentation.dependencies import JWTUsuarioContexto, exigir_papeis
 
 from .servidores import get_cargo_repo2, get_servidor_repo, servidor_to_response
 from .servidores import router_servidores
@@ -29,6 +30,7 @@ router = router_servidores
 
 @router.post("/servidores", status_code=201)
 def admitir_servidor(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     payload: ServidorCreateRequest,
     repo: Annotated[RepositorioServidor, Depends(get_servidor_repo)],
     cargos: Annotated[RepositorioCargo, Depends(get_cargo_repo2)],
@@ -51,6 +53,7 @@ def admitir_servidor(
 
 @router.post("/servidores/{servidor_id}/afastar")
 def afastar_servidor(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     servidor_id: str,
     repo: Annotated[RepositorioServidor, Depends(get_servidor_repo)],
 ):
@@ -64,6 +67,7 @@ def afastar_servidor(
 
 @router.post("/servidores/{servidor_id}/reativar")
 def reativar_servidor(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     servidor_id: str,
     repo: Annotated[RepositorioServidor, Depends(get_servidor_repo)],
 ):
@@ -77,6 +81,7 @@ def reativar_servidor(
 
 @router.post("/servidores/{servidor_id}/desligar")
 def desligar_servidor(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     servidor_id: str,
     repo: Annotated[RepositorioServidor, Depends(get_servidor_repo)],
 ):

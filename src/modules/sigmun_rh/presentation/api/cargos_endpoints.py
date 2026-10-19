@@ -13,12 +13,14 @@ from src.modules.sigmun_rh.application.use_cases_cargos_servidores import (
 )
 from src.modules.sigmun_rh.domain.exceptions import DomPesDomainError
 from src.modules.sigmun_rh.presentation.schemas.pes_schemas import CargoCreateRequest
+from src.shared.presentation.dependencies import JWTUsuarioContexto, exigir_papeis
 
 from .cargos import cargo_to_response, get_cargo_repo, router_cargos
 
 
 @router_cargos.post("/cargos", status_code=201)
 def criar_cargo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "rh"))],
     payload: CargoCreateRequest,
     repo: Annotated[RepositorioCargo, Depends(get_cargo_repo)],
 ):

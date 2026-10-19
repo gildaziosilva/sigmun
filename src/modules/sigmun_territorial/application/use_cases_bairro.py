@@ -96,9 +96,7 @@ class AtualizarBairroUseCase:
         if dto.codigo is not None and dto.codigo != bairro.codigo:
             outro = self._repo.get_by_codigo(dto.codigo)
             if outro is not None and outro.id != bairro.id:
-                raise BairroJaExistenteError(
-                    "Bairro já cadastrado com este código (RN-TEL-001)"
-                )
+                raise BairroJaExistenteError("Bairro já cadastrado com este código (RN-TEL-001)")
             bairro.codigo = dto.codigo
         if dto.nome is not None:
             bairro.nome = dto.nome

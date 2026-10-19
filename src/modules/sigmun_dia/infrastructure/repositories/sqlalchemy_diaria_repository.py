@@ -95,16 +95,14 @@ class SQLAlchemyDiariaRepository(RepositorioDiaria):
             return None
         return self._to_entity(model)
 
-    def get_by_viagem(self, viagem_id: str) -> Diaria | None:
-        """Busca diária por ID de viagem."""
-        model = (
+    def get_by_viagem(self, viagem_id: str) -> list[Diaria]:
+        """Busca diárias por ID de viagem."""
+        models = (
             self._session.query(DiariaModel)
             .filter(DiariaModel.viagem_id == viagem_id, DiariaModel.is_deleted == False)
-            .first()
+            .all()
         )
-        if not model:
-            return None
-        return self._to_entity(model)
+        return [self._to_entity(m) for m in models]
 
     def find_by_servidor(self, servidor_id: str) -> list[Diaria]:
         """Busca diárias por servidor."""
@@ -135,11 +133,7 @@ class SQLAlchemyDiariaRepository(RepositorioDiaria):
 
     def find_ativas(self) -> list[Diaria]:
         """Lista diárias ativas."""
-        models = (
-            self._session.query(DiariaModel)
-            .filter(DiariaModel.is_deleted == False)
-            .all()
-        )
+        models = self._session.query(DiariaModel).filter(DiariaModel.is_deleted == False).all()
         return [self._to_entity(m) for m in models]
 
     def delete(self, id: str) -> None:

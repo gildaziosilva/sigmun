@@ -33,9 +33,7 @@ def _valida_cns(cns: str) -> None:
     from ..exceptions import RegraNegocioError
 
     if not cns or not cns.isdigit() or len(cns) != 15:
-        raise RegraNegocioError(
-            "CNS inválido: informe 15 dígitos numéricos (RN-SAU-001)"
-        )
+        raise RegraNegocioError("CNS inválido: informe 15 dígitos numéricos (RN-SAU-001)")
 
 
 @dataclass

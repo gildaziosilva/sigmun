@@ -105,9 +105,7 @@ class SQLAlchemyMedicaoRepository(RepositorioMedicao):
         """Lista as medições de uma obra."""
         models = (
             self._session.query(MedicaoObraModel)
-            .filter(
-                MedicaoObraModel.obra_id == obra_id, MedicaoObraModel.is_deleted.is_(False)
-            )
+            .filter(MedicaoObraModel.obra_id == obra_id, MedicaoObraModel.is_deleted.is_(False))
             .order_by(MedicaoObraModel.data, MedicaoObraModel.numero)
             .all()
         )

@@ -32,15 +32,15 @@ from src.modules.sigmun_frotas.domain.exceptions import (
     RotaNaoEncontradaError,
     VeiculoNaoEncontradoError,
 )
-from src.modules.sigmun_frotas.infrastructure.repositories.sqlalchemy_veiculo_repository import (
-    SQLAlchemyVeiculoRepository,
+from src.modules.sigmun_frotas.infrastructure.repositories.sqlalchemy_operacional_repository import (
+    SQLAlchemyAbastecimentoRepository,
+    SQLAlchemyManutencaoRepository,
 )
 from src.modules.sigmun_frotas.infrastructure.repositories.sqlalchemy_rota_repository import (
     SQLAlchemyRotaRepository,
 )
-from src.modules.sigmun_frotas.infrastructure.repositories.sqlalchemy_operacional_repository import (
-    SQLAlchemyAbastecimentoRepository,
-    SQLAlchemyManutencaoRepository,
+from src.modules.sigmun_frotas.infrastructure.repositories.sqlalchemy_veiculo_repository import (
+    SQLAlchemyVeiculoRepository,
 )
 from src.modules.sigmun_frotas.presentation.schemas.fro_schemas import (
     AbastecimentoCreateRequest,
@@ -51,6 +51,11 @@ from src.modules.sigmun_frotas.presentation.schemas.fro_schemas import (
     RotaResponse,
     VeiculoCreateRequest,
     VeiculoResponse,
+)
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
 )
 
 router = APIRouter(prefix="/api/v1/fro", tags=["Gestao de Frota"])
@@ -82,44 +87,73 @@ def get_rota_repo(session: Annotated[Session, Depends(get_db)]) -> RepositorioRo
 
 def _to_veiculo(v) -> VeiculoResponse:
     return VeiculoResponse(
-        id=v.id, placa=v.placa, chassi=v.chassi, renavam=v.renavam,
-        marca=v.marca, modelo=v.modelo, ano_fabricacao=v.ano_fabricacao,
-        ano_modelo=v.ano_modelo, tipo=v.tipo.value,
-        combustivel=v.combustivel.value, capacidade=v.capacidade,
-        odometro_atual=v.odometro_atual, status=v.status.value,
-        unidade_id=v.unidade_id, created_at=v.created_at,
+        id=v.id,
+        placa=v.placa,
+        chassi=v.chassi,
+        renavam=v.renavam,
+        marca=v.marca,
+        modelo=v.modelo,
+        ano_fabricacao=v.ano_fabricacao,
+        ano_modelo=v.ano_modelo,
+        tipo=v.tipo.value,
+        combustivel=v.combustivel.value,
+        capacidade=v.capacidade,
+        odometro_atual=v.odometro_atual,
+        status=v.status.value,
+        unidade_id=v.unidade_id,
+        created_at=v.created_at,
     )
 
 
 def _to_abastecimento(a) -> AbastecimentoResponse:
     return AbastecimentoResponse(
-        id=a.id, veiculo_id=a.veiculo_id, data=a.data,
+        id=a.id,
+        veiculo_id=a.veiculo_id,
+        data=a.data,
         quantidade_litros=a.quantidade_litros,
-        valor_unitario=a.valor_unitario, valor_total=a.valor_total,
-        odometro=a.odometro, posto=a.posto,
-        tipo_combustivel=a.tipo_combustivel.value, created_at=a.created_at,
+        valor_unitario=a.valor_unitario,
+        valor_total=a.valor_total,
+        odometro=a.odometro,
+        posto=a.posto,
+        tipo_combustivel=a.tipo_combustivel.value,
+        created_at=a.created_at,
     )
 
 
 def _to_manutencao(m) -> ManutencaoResponse:
     return ManutencaoResponse(
-        id=m.id, veiculo_id=m.veiculo_id, data_entrada=m.data_entrada,
-        data_saida=m.data_saida, tipo=m.tipo.value, descricao=m.descricao,
-        oficina=m.oficina, valor=m.valor, status=m.status.value,
+        id=m.id,
+        veiculo_id=m.veiculo_id,
+        data_entrada=m.data_entrada,
+        data_saida=m.data_saida,
+        tipo=m.tipo.value,
+        descricao=m.descricao,
+        oficina=m.oficina,
+        valor=m.valor,
+        status=m.status.value,
         created_at=m.created_at,
     )
 
 
 def _to_rota(r) -> RotaResponse:
     return RotaResponse(
-        id=r.id, veiculo_id=r.veiculo_id, data=r.data, origem=r.origem,
-        destino=r.destino, km_inicio=r.km_inicio, km_fim=r.km_fim,
-        distancia_km=r.distancia_km, descricao=r.descricao,
-        status=r.status.value, created_at=r.created_at,
+        id=r.id,
+        veiculo_id=r.veiculo_id,
+        data=r.data,
+        origem=r.origem,
+        destino=r.destino,
+        km_inicio=r.km_inicio,
+        km_fim=r.km_fim,
+        distancia_km=r.distancia_km,
+        descricao=r.descricao,
+        status=r.status.value,
+        created_at=r.created_at,
     )
+
 
 @router.post("/veiculos", status_code=201)
 def cadastrar_veiculo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "frotas"))],
     payload: VeiculoCreateRequest,
     repo: Annotated[RepositorioVeiculo, Depends(get_veiculo_repo)],
 ):
@@ -127,22 +161,29 @@ def cadastrar_veiculo(
     try:
         veiculo = CadastrarVeiculoUseCase(repo).execute(
             CadastrarVeiculoInput(
-                placa=payload.placa, chassi=payload.chassi,
-                renavam=payload.renavam, marca=payload.marca,
-                modelo=payload.modelo, ano_fabricacao=payload.ano_fabricacao,
-                ano_modelo=payload.ano_modelo, tipo=payload.tipo,
-                combustivel=payload.combustivel, capacidade=payload.capacidade,
+                placa=payload.placa,
+                chassi=payload.chassi,
+                renavam=payload.renavam,
+                marca=payload.marca,
+                modelo=payload.modelo,
+                ano_fabricacao=payload.ano_fabricacao,
+                ano_modelo=payload.ano_modelo,
+                tipo=payload.tipo,
+                combustivel=payload.combustivel,
+                capacidade=payload.capacidade,
                 odometro_atual=payload.odometro_atual,
-                unidade_id=payload.unidade_id, autor_id=payload.created_by,
+                unidade_id=payload.unidade_id,
+                autor_id=payload.created_by,
             )
         )
     except DomFroDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_veiculo(veiculo)
 
 
 @router.get("/veiculos")
 def listar_veiculos(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioVeiculo, Depends(get_veiculo_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -154,6 +195,7 @@ def listar_veiculos(
 
 @router.get("/veiculos/{veiculo_id}")
 def obter_veiculo(
+    usuario: UsuarioOpcional,
     veiculo_id: str,
     repo: Annotated[RepositorioVeiculo, Depends(get_veiculo_repo)],
 ):
@@ -166,6 +208,7 @@ def obter_veiculo(
 
 @router.post("/veiculos/{veiculo_id}/baixar")
 def baixar_veiculo(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "frotas"))],
     veiculo_id: str,
     repo: Annotated[RepositorioVeiculo, Depends(get_veiculo_repo)],
 ):
@@ -173,14 +216,15 @@ def baixar_veiculo(
     try:
         veiculo = BaixarVeiculoUseCase(repo).execute(veiculo_id)
     except VeiculoNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomFroDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_veiculo(veiculo)
 
 
 @router.post("/veiculos/{veiculo_id}/abastecimentos", status_code=201)
 def registrar_abastecimento(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "frotas"))],
     veiculo_id: str,
     payload: AbastecimentoCreateRequest,
     repo: Annotated[RepositorioAbastecimento, Depends(get_abastecimento_repo)],
@@ -193,21 +237,23 @@ def registrar_abastecimento(
                 veiculo_id=veiculo_id,
                 quantidade_litros=payload.quantidade_litros,
                 valor_unitario=payload.valor_unitario,
-                data=payload.data, odometro=payload.odometro,
+                data=payload.data,
+                odometro=payload.odometro,
                 posto=payload.posto,
                 tipo_combustivel=payload.tipo_combustivel,
                 autor_id=payload.created_by,
             )
         )
     except VeiculoNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomFroDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_abastecimento(ab)
 
 
 @router.get("/abastecimentos")
 def listar_abastecimentos(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioAbastecimento, Depends(get_abastecimento_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -219,6 +265,7 @@ def listar_abastecimentos(
 
 @router.get("/veiculos/{veiculo_id}/abastecimentos")
 def listar_abastecimentos_veiculo(
+    usuario: UsuarioOpcional,
     veiculo_id: str,
     repo: Annotated[RepositorioAbastecimento, Depends(get_abastecimento_repo)],
 ):
@@ -229,6 +276,7 @@ def listar_abastecimentos_veiculo(
 
 @router.post("/veiculos/{veiculo_id}/manutencoes", status_code=201)
 def abrir_manutencao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "frotas"))],
     veiculo_id: str,
     payload: ManutencaoCreateRequest,
     repo: Annotated[RepositorioManutencao, Depends(get_manutencao_repo)],
@@ -237,19 +285,24 @@ def abrir_manutencao(
     """Abre manutenção e marca o veículo em manutenção."""
     try:
         m = AbrirManutencaoUseCase(repo, veiculos).execute(
-            veiculo_id, descricao=payload.descricao, tipo=payload.tipo,
-            oficina=payload.oficina, valor=payload.valor,
-            data_entrada=payload.data_entrada, autor_id=payload.created_by,
+            veiculo_id,
+            descricao=payload.descricao,
+            tipo=payload.tipo,
+            oficina=payload.oficina,
+            valor=payload.valor,
+            data_entrada=payload.data_entrada,
+            autor_id=payload.created_by,
         )
     except VeiculoNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomFroDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_manutencao(m)
 
 
 @router.get("/manutencoes")
 def listar_manutencoes(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioManutencao, Depends(get_manutencao_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -261,6 +314,7 @@ def listar_manutencoes(
 
 @router.post("/manutencoes/{manutencao_id}/concluir")
 def concluir_manutencao(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "frotas"))],
     manutencao_id: str,
     repo: Annotated[RepositorioManutencao, Depends(get_manutencao_repo)],
     veiculos: Annotated[RepositorioVeiculo, Depends(get_veiculo_repo)],
@@ -269,14 +323,15 @@ def concluir_manutencao(
     try:
         m = ConcluirManutencaoUseCase(repo, veiculos).execute(manutencao_id)
     except ManutencaoNaoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomFroDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_manutencao(m)
 
 
 @router.post("/veiculos/{veiculo_id}/rotas", status_code=201)
 def registrar_rota(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "frotas"))],
     veiculo_id: str,
     payload: RotaCreateRequest,
     repo: Annotated[RepositorioRota, Depends(get_rota_repo)],
@@ -286,21 +341,26 @@ def registrar_rota(
     try:
         r = RegistrarRotaUseCase(repo, veiculos).execute(
             RegistrarRotaInput(
-                veiculo_id=veiculo_id, origem=payload.origem,
-                destino=payload.destino, data=payload.data,
-                km_inicio=payload.km_inicio, km_fim=payload.km_fim,
-                descricao=payload.descricao, autor_id=payload.created_by,
+                veiculo_id=veiculo_id,
+                origem=payload.origem,
+                destino=payload.destino,
+                data=payload.data,
+                km_inicio=payload.km_inicio,
+                km_fim=payload.km_fim,
+                descricao=payload.descricao,
+                autor_id=payload.created_by,
             )
         )
     except VeiculoNaoEncontradoError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomFroDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_rota(r)
 
 
 @router.get("/rotas")
 def listar_rotas(
+    usuario: UsuarioOpcional,
     repo: Annotated[RepositorioRota, Depends(get_rota_repo)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -312,6 +372,7 @@ def listar_rotas(
 
 @router.post("/rotas/{rota_id}/concluir")
 def concluir_rota(
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "frotas"))],
     rota_id: str,
     repo: Annotated[RepositorioRota, Depends(get_rota_repo)],
     veiculos: Annotated[RepositorioVeiculo, Depends(get_veiculo_repo)],
@@ -320,9 +381,9 @@ def concluir_rota(
     try:
         r = ConcluirRotaUseCase(repo, veiculos).execute(rota_id)
     except (RotaNaoEncontradaError, VeiculoNaoEncontradoError) as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except DomFroDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return _to_rota(r)
 
 

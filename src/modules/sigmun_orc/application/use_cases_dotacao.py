@@ -26,8 +26,7 @@ class CriarDotacaoInput:
 class CriarDotacaoUseCase:
     """Cria dotação vinculada à LOA (RN-ORC-030)."""
 
-    def __init__(self, dotacoes: ports.RepositorioDotacao,
-                 loas: ports.RepositorioLOA) -> None:
+    def __init__(self, dotacoes: ports.RepositorioDotacao, loas: ports.RepositorioLOA) -> None:
         self._dotacoes = dotacoes
         self._loas = loas
 
@@ -47,11 +46,16 @@ class CriarDotacaoUseCase:
             raise RegraNegocioError("Dotação exige LOA aprovada/publicada")
         if self._dotacoes.get_by_codigo_exercicio(dto.codigo, dto.exercicio) is not None:
             raise RegraNegocioError("Dotação já existe (RN-ORC-030)")
-        dot = Dotacao(loa_id=dto.loa_id, exercicio=dto.exercicio, codigo=dto.codigo,
-                      unidade_orcamentaria=dto.unidade_orcamentaria,
-                      natureza_despesa=dto.natureza_despesa,
-                      fonte_recursos=dto.fonte_recursos,
-                      valor_inicial=dto.valor_inicial, created_by=dto.autor_id)
+        dot = Dotacao(
+            loa_id=dto.loa_id,
+            exercicio=dto.exercicio,
+            codigo=dto.codigo,
+            unidade_orcamentaria=dto.unidade_orcamentaria,
+            natureza_despesa=dto.natureza_despesa,
+            fonte_recursos=dto.fonte_recursos,
+            valor_inicial=dto.valor_inicial,
+            created_by=dto.autor_id,
+        )
         return self._dotacoes.save(dot)
 
 
@@ -103,8 +107,9 @@ class ReservarSaldoInput:
 class ReservarSaldoUseCase:
     """Reserva saldo da dotação (RN-ORC-040)."""
 
-    def __init__(self, reservas: ports.RepositorioReserva,
-                 dotacoes: ports.RepositorioDotacao) -> None:
+    def __init__(
+        self, reservas: ports.RepositorioReserva, dotacoes: ports.RepositorioDotacao
+    ) -> None:
         self._reservas = reservas
         self._dotacoes = dotacoes
 
@@ -117,17 +122,22 @@ class ReservarSaldoUseCase:
             raise DotacaoNaoEncontradaError("Dotação não encontrada")
         dot.reservar(dto.valor)
         self._dotacoes.save(dot)
-        reserva = ReservaSaldo(dotacao_id=dto.dotacao_id, numero=dto.numero,
-                               valor=dto.valor, finalidade=dto.finalidade,
-                               created_by=dto.autor_id)
+        reserva = ReservaSaldo(
+            dotacao_id=dto.dotacao_id,
+            numero=dto.numero,
+            valor=dto.valor,
+            finalidade=dto.finalidade,
+            created_by=dto.autor_id,
+        )
         return self._reservas.save(reserva)
 
 
 class CancelarReservaUseCase:
     """Cancela reserva ativa (devolve saldo)."""
 
-    def __init__(self, reservas: ports.RepositorioReserva,
-                 dotacoes: ports.RepositorioDotacao) -> None:
+    def __init__(
+        self, reservas: ports.RepositorioReserva, dotacoes: ports.RepositorioDotacao
+    ) -> None:
         self._reservas = reservas
         self._dotacoes = dotacoes
 
@@ -148,7 +158,11 @@ class CancelarReservaUseCase:
 
 
 __all__ = [
-    "CriarDotacaoInput", "CriarDotacaoUseCase",
-    "SuplementarDotacaoUseCase", "AnularDotacaoUseCase",
-    "ReservarSaldoInput", "ReservarSaldoUseCase", "CancelarReservaUseCase",
+    "CriarDotacaoInput",
+    "CriarDotacaoUseCase",
+    "SuplementarDotacaoUseCase",
+    "AnularDotacaoUseCase",
+    "ReservarSaldoInput",
+    "ReservarSaldoUseCase",
+    "CancelarReservaUseCase",
 ]

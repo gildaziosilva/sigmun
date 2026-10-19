@@ -44,9 +44,7 @@ class ItemMerenda:
         from ..exceptions import EstoqueInsuficienteError, RegraNegocioError
 
         if quantidade <= 0:
-            raise RegraNegocioError(
-                f"Distribuição exige quantidade positiva (RN-EDU-040)"
-            )
+            raise RegraNegocioError("Distribuição exige quantidade positiva (RN-EDU-040)")
         if quantidade > self.estoque:
             raise EstoqueInsuficienteError(
                 f"Estoque insuficiente: solicitado {quantidade}, "
@@ -83,9 +81,7 @@ class DistribuicaoMerenda:
         from ..exceptions import RegraNegocioError
 
         if not self.matricula_id or not self.item_id:
-            raise RegraNegocioError(
-                "Distribuição exige matrícula e item (RN-EDU-040)"
-            )
+            raise RegraNegocioError("Distribuição exige matrícula e item (RN-EDU-040)")
         if self.quantidade <= 0:
             raise RegraNegocioError("Quantidade distribuída deve ser positiva")
 

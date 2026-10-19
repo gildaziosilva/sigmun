@@ -18,7 +18,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.core.infrastructure.database.session import get_db
@@ -106,6 +106,11 @@ from src.modules.sigmun_seg.presentation.schemas.politica_schemas import (
     PoliticaPayload,
     PoliticaResponse,
 )
+from src.shared.presentation.dependencies import (
+    JWTUsuarioContexto,
+    UsuarioOpcional,
+    exigir_papeis,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -145,18 +150,6 @@ def get_credencial_repo(
     return SqlAlchemyCredencialRepository(session)
 
 
-def _usuario_id_header(
-    x_usuario_id: Annotated[
-        str | None,
-        Header(
-            alias="X-Usuario-Id",
-            description="Identificador do usuário autenticado (provisório).",
-        ),
-    ] = None,
-) -> str | None:
-    return x_usuario_id
-
-
 def obj_to_dict(instance: object) -> dict:
     """Converte entidade (dataclass) em dict serializável (Enums e datetime)."""
     out = {}
@@ -180,6 +173,7 @@ def obj_to_dict(instance: object) -> dict:
 )
 def listar_controles(
     repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
+    usuario: UsuarioOpcional,
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     status: str | None = Query(default=None),
@@ -201,6 +195,7 @@ def listar_controles(
 def criar_controle(
     repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     payload: ControlePayload,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> ControleResponse:
     try:
         controle = CriarControleSegurancaUseCase(repo).execute(
@@ -225,6 +220,7 @@ def criar_controle(
 )
 def obter_controle(
     repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
+    usuario: UsuarioOpcional,
     controle_id: UUID,
 ) -> ControleResponse:
     try:
@@ -243,6 +239,7 @@ def atualizar_controle(
     repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
     payload: ControlePayload,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> ControleResponse:
     try:
         controle = AtualizarControleSegurancaUseCase(repo).execute(
@@ -267,6 +264,7 @@ def atualizar_controle(
 def implementar_controle(
     repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> ControleResponse:
     try:
         controle = ImplementarControleSegurancaUseCase(repo).execute(str(controle_id))
@@ -283,6 +281,7 @@ def implementar_controle(
 def parcial_controle(
     repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> ControleResponse:
     try:
         controle = ParcialmenteImplementadoUseCase(repo).execute(str(controle_id))
@@ -299,6 +298,7 @@ def parcial_controle(
 def deletar_controle(
     repo: Annotated[ControleSegurancaRepositoryInterface, Depends(get_controle_repo)],
     controle_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "seguranca"))],
 ) -> None:
     try:
         DeletarControleSegurancaUseCase(repo).execute(str(controle_id))
@@ -316,6 +316,7 @@ def deletar_controle(
 )
 def listar_politicas(
     repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
+    usuario: UsuarioOpcional,
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     ativa: bool | None = Query(default=None),
@@ -333,6 +334,7 @@ def listar_politicas(
 def criar_politica(
     repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     payload: PoliticaPayload,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> PoliticaResponse:
     try:
         politica = CriarPoliticaSegurancaUseCase(repo).execute(
@@ -355,6 +357,7 @@ def criar_politica(
 )
 def obter_politica(
     repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
+    usuario: UsuarioOpcional,
     politica_id: UUID,
 ) -> PoliticaResponse:
     try:
@@ -373,6 +376,7 @@ def atualizar_politica(
     repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     politica_id: UUID,
     payload: PoliticaPayload,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> PoliticaResponse:
     try:
         politica = AtualizarPoliticaSegurancaUseCase(repo).execute(
@@ -391,11 +395,11 @@ def atualizar_politica(
 def aprovar_politica(
     repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     politica_id: UUID,
-    usuario_id: str = Depends(_usuario_id_header),
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> PoliticaResponse:
     try:
         politica = AprovarPoliticaSegurancaUseCase(repo).execute(
-            str(politica_id), aprovador_id=usuario_id or "sistema"
+            str(politica_id), aprovador_id=usuario.usuario_id
         )
     except PoliticaNaoEncontradaError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -410,6 +414,7 @@ def aprovar_politica(
 def deletar_politica(
     repo: Annotated[PoliticaSegurancaRepositoryInterface, Depends(get_politica_repo)],
     politica_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "seguranca"))],
 ) -> None:
     try:
         DeletarPoliticaSegurancaUseCase(repo).execute(str(politica_id))
@@ -427,6 +432,7 @@ def deletar_politica(
 )
 def listar_incidentes(
     repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
+    usuario: UsuarioOpcional,
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     severidade: str | None = Query(default=None),
@@ -445,7 +451,7 @@ def listar_incidentes(
 def registrar_incidente(
     repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     payload: IncidentePayload,
-    usuario_id: str = Depends(_usuario_id_header),
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> IncidenteResponse:
     try:
         incidente = RegistrarIncidenteSegurancaUseCase(repo).execute(
@@ -454,7 +460,7 @@ def registrar_incidente(
             severidade=payload.severidade,
             impacto=payload.impacto,
             categoria=payload.categoria,
-            relator_id=usuario_id or payload.relator_id,
+            relator_id=usuario.usuario_id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -468,6 +474,7 @@ def registrar_incidente(
 )
 def obter_incidente(
     repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
+    usuario: UsuarioOpcional,
     incidente_id: UUID,
 ) -> IncidenteResponse:
     try:
@@ -485,6 +492,7 @@ def obter_incidente(
 def escalar_incidente(
     repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
     atribuido_a: str = Query(..., description="Responsável pelo incidente"),
 ) -> IncidenteResponse:
     try:
@@ -502,6 +510,7 @@ def escalar_incidente(
 def mitigar_incidente(
     repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> IncidenteResponse:
     try:
         incidente = MitigarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
@@ -518,6 +527,7 @@ def mitigar_incidente(
 def resolver_incidente(
     repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> IncidenteResponse:
     try:
         incidente = ResolverIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
@@ -536,6 +546,7 @@ def resolver_incidente(
 def encerrar_incidente(
     repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> IncidenteResponse:
     try:
         incidente = EncerrarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
@@ -552,6 +563,7 @@ def encerrar_incidente(
 def deletar_incidente(
     repo: Annotated[IncidenteSegurancaRepositoryInterface, Depends(get_incidente_repo)],
     incidente_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "seguranca"))],
 ) -> None:
     try:
         DeletarIncidenteSegurancaUseCase(repo).execute(str(incidente_id))
@@ -569,6 +581,7 @@ def deletar_incidente(
 )
 def listar_chaves(
     repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
+    usuario: UsuarioOpcional,
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     status: str | None = Query(default=None),
@@ -586,6 +599,7 @@ def listar_chaves(
 def criar_chave(
     repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     payload: ChavePayload,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> ChaveResponse:
     try:
         chave = CriarChaveUseCase(repo).execute(
@@ -607,6 +621,7 @@ def criar_chave(
 )
 def obter_chave(
     repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
+    usuario: UsuarioOpcional,
     chave_id: UUID,
 ) -> ChaveResponse:
     try:
@@ -624,6 +639,7 @@ def obter_chave(
 def revogar_chave(
     repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     chave_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> ChaveResponse:
     try:
         chave = RevogarChaveUseCase(repo).execute(str(chave_id))
@@ -642,6 +658,7 @@ def revogar_chave(
 def expirar_chave(
     repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     chave_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> ChaveResponse:
     try:
         chave = ExpirarChaveUseCase(repo).execute(str(chave_id))
@@ -658,6 +675,7 @@ def expirar_chave(
 def deletar_chave(
     repo: Annotated[ChaveCriptograficaRepositoryInterface, Depends(get_chave_repo)],
     chave_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "seguranca"))],
 ) -> None:
     try:
         DeletarChaveUseCase(repo).execute(str(chave_id))
@@ -675,6 +693,7 @@ def deletar_chave(
 )
 def listar_credenciais(
     repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
+    usuario: UsuarioOpcional,
     page: int = Query(default=0, ge=0),
     page_size: int = Query(default=50, ge=1, le=200),
     status: str | None = Query(default=None),
@@ -693,6 +712,7 @@ def listar_credenciais(
 def criar_credencial(
     repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
     payload: CredencialPayload,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> CredencialResponse:
     try:
         credencial = CriarCredencialUseCase(repo).execute(
@@ -712,6 +732,7 @@ def criar_credencial(
 )
 def obter_credencial(
     repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
+    usuario: UsuarioOpcional,
     credencial_id: UUID,
 ) -> CredencialResponse:
     try:
@@ -729,6 +750,7 @@ def obter_credencial(
 def suspender_credencial(
     repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
     credencial_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> CredencialResponse:
     try:
         credencial = SuspenderCredencialUseCase(repo).execute(str(credencial_id))
@@ -745,6 +767,7 @@ def suspender_credencial(
 def revogar_credencial(
     repo: Annotated[CredencialRepositoryInterface, Depends(get_credencial_repo)],
     credencial_id: UUID,
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "seguranca"))],
 ) -> CredencialResponse:
     try:
         credencial = RevogarCredencialUseCase(repo).execute(str(credencial_id))

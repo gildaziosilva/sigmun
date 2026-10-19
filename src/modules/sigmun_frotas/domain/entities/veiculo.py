@@ -100,9 +100,7 @@ class Veiculo:
         from ..exceptions import RegraNegocioError
 
         if self.status != StatusVeiculo.MANUTENCAO:
-            raise RegraNegocioError(
-                "Veículo não está em manutenção para concluir"
-            )
+            raise RegraNegocioError("Veículo não está em manutenção para concluir")
         self.status = StatusVeiculo.ATIVO
         self.updated_at = datetime.utcnow()
 

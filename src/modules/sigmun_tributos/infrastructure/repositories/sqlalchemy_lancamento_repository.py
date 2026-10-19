@@ -110,8 +110,7 @@ class SQLAlchemyLancamentoRepository(RepositorioLancamento):
                 LancamentoModel.is_deleted == False,  # noqa: E712
                 or_(
                     LancamentoModel.status == StatusLancamento.LANCADO.value,
-                    LancamentoModel.status
-                    == StatusLancamento.INSCRITO_EM_DIVIDA_ATIVA.value,
+                    LancamentoModel.status == StatusLancamento.INSCRITO_EM_DIVIDA_ATIVA.value,
                 ),
             )
             .all()

@@ -33,8 +33,7 @@ def _valida_cpf_cnpj(documento: str) -> None:
 
     if not documento or not documento.isdigit() or len(documento) not in (11, 14):
         raise RegraNegocioError(
-            "CPF/CNPJ inválido: informe somente dígitos (11 para CPF, 14 para CNPJ) "
-            "(RN-TRI-001)"
+            "CPF/CNPJ inválido: informe somente dígitos (11 para CPF, 14 para CNPJ) (RN-TRI-001)"
         )
 
 
@@ -84,13 +83,9 @@ class Contribuinte:
             raise RegraNegocioError("Nome/Razão social do contribuinte é obrigatório")
         _valida_cpf_cnpj(self.cpf_cnpj)
         if self.tipo == TipoContribuinte.PESSOA_JURIDICA and len(self.cpf_cnpj) != 14:
-            raise RegraNegocioError(
-                "Pessoa jurídica exige CNPJ com 14 dígitos (RN-TRI-001)"
-            )
+            raise RegraNegocioError("Pessoa jurídica exige CNPJ com 14 dígitos (RN-TRI-001)")
         if self.tipo == TipoContribuinte.PESSOA_FISICA and len(self.cpf_cnpj) != 11:
-            raise RegraNegocioError(
-                "Pessoa física exige CPF com 11 dígitos (RN-TRI-001)"
-            )
+            raise RegraNegocioError("Pessoa física exige CPF com 11 dígitos (RN-TRI-001)")
 
 
 __all__ = ["TipoContribuinte", "StatusContribuinte", "Contribuinte"]

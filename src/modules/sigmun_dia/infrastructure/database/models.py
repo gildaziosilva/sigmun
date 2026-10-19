@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, Integer, Text, func
+from sqlalchemy import DateTime, Float, Text, func
 from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -27,7 +27,9 @@ class ViagemModel(DiaBase):
     __tablename__ = "viagens"
     __table_args__ = {"schema": "dia"}
 
-    id: Mapped[uuid.UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     servidor_id: Mapped[str] = mapped_column(Text, nullable=False)
     dota_id: Mapped[str] = mapped_column(Text, nullable=False)
     motivo: Mapped[str] = mapped_column(Text, nullable=False)
@@ -60,7 +62,9 @@ class DiariaModel(DiaBase):
     __tablename__ = "diarias"
     __table_args__ = {"schema": "dia"}
 
-    id: Mapped[uuid.UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     viagem_id: Mapped[str] = mapped_column(Text, nullable=False)
     servidor_id: Mapped[str] = mapped_column(Text, nullable=False)
     dota_id: Mapped[str] = mapped_column(Text, nullable=False)
@@ -111,7 +115,9 @@ class PrestacaoContasModel(DiaBase):
     __tablename__ = "prestacoes_contas"
     __table_args__ = {"schema": "dia"}
 
-    id: Mapped[uuid.UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     diaria_id: Mapped[str] = mapped_column(Text, nullable=False)
     servidor_id: Mapped[str] = mapped_column(Text, nullable=False)
     dota_id: Mapped[str] = mapped_column(Text, nullable=False)
@@ -148,7 +154,9 @@ class EventoDiariaModel(DiaBase):
     __tablename__ = "eventos_diarias"
     __table_args__ = {"schema": "dia"}
 
-    id: Mapped[uuid.UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     diaria_id: Mapped[str] = mapped_column(Text, nullable=False)
     status_anterior: Mapped[str] = mapped_column(Text, nullable=False)
     status_posterior: Mapped[str] = mapped_column(Text, nullable=False)

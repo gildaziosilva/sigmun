@@ -59,7 +59,10 @@ from src.modules.sigmun_compras.presentation.schemas.processo_documental_schemas
     ProcessoDocumentalResponse,
     ProcessoDocumentalUpdateRequest,
 )
-from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
+from src.shared.presentation.dependencies import exigir_papeis
+from src.shared.security.jwt import (
+    JWTUsuarioContexto,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +98,7 @@ def criar_processo(
     repository: Annotated[
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> ProcessoDocumental:
     use_case = RegistrarProcessoDocumentalUseCase(repository)
     try:
@@ -190,7 +193,7 @@ def atualizar_processo(
     repository: Annotated[
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> ProcessoDocumental:
     use_case = AtualizarProcessoDocumentalUseCase(repository)
     try:
@@ -223,7 +226,7 @@ def excluir_processo(
     repository: Annotated[
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "compras"))],
 ) -> ProcessoDocumental:
     use_case = ExcluirProcessoDocumentalUseCase(repository)
     try:

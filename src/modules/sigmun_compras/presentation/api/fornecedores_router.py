@@ -68,7 +68,10 @@ from src.modules.sigmun_compras.presentation.schemas.fornecedor_schemas import (
     FornecedorResponse,
     FornecedorUpdateRequest,
 )
-from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_hybrid, get_current_user_hybrid_optional
+from src.shared.presentation.dependencies import exigir_papeis
+from src.shared.security.jwt import (
+    JWTUsuarioContexto,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +101,7 @@ def get_fornecedor_repository(
 def criar_fornecedor(
     payload: FornecedorCreateRequest,
     repository: Annotated[FornecedorRepository, Depends(get_fornecedor_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Fornecedor:
     """Cadastra um fornecedor (UC-COMPRAS-019)."""
     use_case = RegistrarFornecedorUseCase(repository)
@@ -200,7 +203,7 @@ def atualizar_fornecedor(
     fornecedor_id: UUID,
     payload: FornecedorUpdateRequest,
     repository: Annotated[FornecedorRepository, Depends(get_fornecedor_repository)],
-    usuario: Annotated[JWTUsuarioContexto | None, Depends(get_current_user_hybrid_optional)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Fornecedor:
     """Atualiza situação cadastral e/ou macro categoria (RN-COMPRAS-033)."""
     if payload.situacao_cadastro is None and payload.macro_categoria is None:
@@ -239,7 +242,7 @@ def atualizar_fornecedor(
 def inativar_fornecedor(
     fornecedor_id: UUID,
     repository: Annotated[FornecedorRepository, Depends(get_fornecedor_repository)],
-    usuario: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("admin", "compras"))],
 ) -> Fornecedor:
     """Inativa um fornecedor preservando histórico (UC-COMPRAS-021)."""
     use_case = InativarFornecedorUseCase(repository)
