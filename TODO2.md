@@ -1105,9 +1105,13 @@ O SIGMUN está **apto a produção** quando **todos** os itens forem verdadeiros
 
 #### P0 — Desbloquear o pipeline (1-2 dias)
 
-- [ ] **T-NEW-0 — Organizar a arvore suja (305 entradas, 260 no diff).** Commits
+- [x] **T-NEW-0 — Organizar a arvore suja (305 entradas, 260 no diff).** Commits
   tematicos (codigo x testes x frontend x docs), descartar `.bak`/lixo.
   Verificacao: `git status --short | wc -l` → <= 5 intencionais.
+  **DONE 2026-10-19:** 6 commits (`4aa975d` seguranca, `d739038` dominios,
+  `58e6601` testes, `7f91524` frontend, `2a9c195` docs+TODO2, `bac9e6e` openapi);
+  `git status --short | wc -l` → **0**; `git ls-files | grep -E '\.bak$|scan_final'` → vazio;
+  `.env` nunca no diff; `TODO*.bak` em disco preservados (ignorados) p/ T-NEW-12.
 - [ ] **T-NEW-1 — Destravar a coleta do pytest (e2e).** `test_compras_e2e.py:7`
   importa `...sigmun_compras...seeds` que nao existe — criar modulo, corrigir
   import ou `pytestmark = skip` com issue. Verificacao:
