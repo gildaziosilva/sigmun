@@ -1,0 +1,407 @@
+O DOM-DIA — Gestão de Diárias, Viagens e Deslocamentos é o domínio do SIGMUN responsável por controlar o ciclo administrativo dos afastamentos a serviço, desde o planejamento/registro da viagem até a concessão de diárias, acompanhamento dos eventos e prestação de contas.
+
+A ideia central é que viagem, diária e prestação de contas não sejam processos isolados: o DOM-DIA mantém a relação entre eles e registra os acontecimentos necessários para garantir rastreabilidade, controle administrativo, documentos e indicadores.
+
+1. O que o DOM-DIA representa
+
+Em termos de negócio:
+
+DOM-DIA transforma um deslocamento a serviço em um processo administrativo rastreável.
+
+Ele organiza principalmente quatro conceitos:
+
+Entidade	Papel
+Viagem	Representa o afastamento/deslocamento planejado ou realizado
+Diária	Representa a concessão/controle financeira associada ao afastamento
+Prestação de Contas	Representa a comprovação e encerramento administrativo da viagem
+Evento da Diária	Registra acontecimentos/mudanças relevantes no ciclo da diária
+
+A estrutura física atualmente estabelecida utiliza o schema PostgreSQL dia, com:
+
+dia.viagens
+dia.diarias
+dia.prestacoes_contas
+dia.eventos_diarias
+
+O schema histórico dom_dia não é o contrato atual do domínio.
+
+2. Fluxo de negócio
+
+O fluxo pode ser entendido assim:
+
+                DOM-IDN / servidor
+                       │
+                       ▼
+              ┌─────────────────┐
+              │     VIAGEM      │
+              │ planejamento /  │
+              │   deslocamento  │
+              └────────┬────────┘
+                       │
+                       ▼
+              ┌─────────────────┐
+              │     DIÁRIA      │
+              │ concessão /     │
+              │ acompanhamento  │
+              └────────┬────────┘
+                       │
+                       ▼
+              ┌─────────────────┐
+              │    EVENTOS      │
+              │ alterações /    │
+              │ ocorrências /   │
+              │ histórico       │
+              └────────┬────────┘
+                       │
+                       ▼
+              ┌─────────────────┐
+              │ PRESTAÇÃO DE    │
+              │     CONTAS      │
+              │ comprovação /   │
+              │ encerramento    │
+              └─────────────────┘
+
+Portanto, o domínio não deve ser entendido simplesmente como um "cadastro de diárias".
+
+Ele é um processo de gestão do ciclo completo da viagem administrativa.
+
+Esse desenho é coerente também com a forma como sistemas públicos de diárias e viagens normalmente estruturam o processo: planejamento, execução, controle, prestação de contas e geração de informações gerenciais.
+
+3. Viagem é o elemento central
+
+A Viagem funciona como o eixo do processo.
+
+Ela permite representar o deslocamento a serviço e seus principais atributos administrativos, como:
+
+servidor/pessoa relacionada;
+origem;
+destino;
+período;
+finalidade;
+situação da viagem;
+informações necessárias à tramitação;
+relacionamento com as diárias;
+relacionamento posterior com a prestação de contas.
+
+Assim, conceitualmente:
+
+VIAGEM
+   │
+   ├── 1:N ── DIÁRIAS
+   │
+   ├── 1:N ── EVENTOS
+   │
+   └── 1:1/N ── PRESTAÇÃO DE CONTAS
+
+A cardinalidade exata de cada relação depende das regras do modelo, mas essa é a visão de negócio.
+
+4. Diária representa a consequência financeira do deslocamento
+
+A Diária não é a própria viagem.
+
+Ela representa a obrigação/concessão financeira relacionada ao afastamento.
+
+Isso é importante porque uma viagem pode possuir diferentes componentes de diária e sofrer alterações durante seu ciclo.
+
+O domínio, portanto, separa:
+
+"Vou viajar"
+       ≠
+"Tenho uma diária concedida"
+
+Essa separação permite que o SIGMUN controle o processo administrativo e financeiro sem transformar a entidade Viagem em uma entidade excessivamente carregada.
+
+Em sistemas públicos de referência, a diária é normalmente relacionada às despesas extraordinárias decorrentes do afastamento, enquanto passagem/deslocamento e demais componentes podem possuir tratamento próprio.
+
+5. Eventos dão rastreabilidade ao processo
+
+evento_diaria tem uma função especialmente importante na arquitetura.
+
+Em vez de simplesmente alterar o estado atual de uma diária e perder o histórico, o domínio pode registrar os eventos ocorridos ao longo do ciclo.
+
+A ideia é:
+
+DIÁRIA
+  │
+  ├── criada
+  ├── submetida
+  ├── autorizada
+  ├── alterada
+  ├── paga
+  ├── ajustada
+  ├── devolvida
+  └── encerrada
+
+Os eventos permitem reconstruir o que aconteceu, e não apenas saber como está agora.
+
+Isso é particularmente importante para um ERP público porque o objetivo do DOM-DIA inclui justamente rastreabilidade e controle.
+
+6. Prestação de contas fecha o ciclo
+
+Depois da realização do deslocamento, entra a Prestação de Contas.
+
+Ela transforma:
+
+viagem planejada
+       ↓
+viagem realizada
+       ↓
+comprovação
+       ↓
+análise
+       ↓
+encerramento
+
+em um processo administrativamente concluído.
+
+A prestação pode envolver documentação comprobatória, informações sobre a realização da viagem e eventuais ajustes/devoluções.
+
+Isso não é apenas uma funcionalidade documental: a prestação de contas é o mecanismo que permite ao SIGMUN saber que aquela viagem foi efetivamente encerrada do ponto de vista administrativo.
+
+Sistemas públicos de referência também tratam a aprovação da prestação de contas como etapa de encerramento da viagem.
+
+7. Máquina de estados
+
+Uma característica importante do DOM-DIA é que ele possui uma máquina de estados.
+
+Isso significa que o domínio não deve permitir transições arbitrárias como:
+
+criada → encerrada
+
+sem respeitar as regras intermediárias.
+
+A lógica é aproximadamente:
+
+        ┌──────────────┐
+        │   VIAGEM     │
+        │   criada     │
+        └──────┬───────┘
+               ↓
+        ┌──────────────┐
+        │ em análise / │
+        │ tramitação   │
+        └──────┬───────┘
+               ↓
+        ┌──────────────┐
+        │ autorizada   │
+        └──────┬───────┘
+               ↓
+        ┌──────────────┐
+        │   realizada  │
+        └──────┬───────┘
+               ↓
+        ┌──────────────┐
+        │ prestação de │
+        │    contas    │
+        └──────┬───────┘
+               ↓
+        ┌──────────────┐
+        │  encerrada   │
+        └──────────────┘
+
+Há também estados e transições específicos para situações como cancelamento, rejeição, devolução ou ajustes.
+
+O ponto arquitetural importante é:
+
+o estado atual é consequência das regras do domínio; não deve ser simplesmente um campo que qualquer camada altera livremente.
+
+8. API do DOM-DIA
+
+O backend expõe o domínio em:
+
+/api/v1/dia
+
+Na implementação conhecida, o DOM-DIA chegou a aproximadamente 20 endpoints, abrangendo operações sobre:
+
+viagens;
+diárias;
+prestações de contas;
+consultas;
+transições de estado;
+informações relacionadas ao servidor.
+
+Entre as consultas previstas/encontradas estão, por exemplo:
+
+viagens por servidor
+diárias por servidor
+diárias por status
+prestações de contas abertas
+
+Isso permite que outros módulos e interfaces consumam o DOM-DIA sem acessar diretamente suas tabelas.
+
+9. Relação com outros domínios
+
+O DOM-DIA não deve funcionar como um domínio isolado.
+
+Ele depende principalmente de informações de identidade e contexto organizacional.
+
+Uma visão simplificada:
+
+                 DOM-IDN
+             usuários / servidores
+                     │
+                     ▼
+                ┌─────────┐
+                │ DOM-DIA │
+                └────┬────┘
+                     │
+          ┌──────────┼──────────┐
+          ▼          ▼          ▼
+       Viagens    Diárias    Prestação
+                              de contas
+
+Também existe potencial de integração com domínios relacionados a:
+
+orçamento/finanças;
+documentos;
+pessoas/servidores;
+auditoria;
+indicadores;
+autenticação/autorização.
+
+Mas uma regra arquitetural importante é não transferir para o DOM-DIA responsabilidades que pertencem a outros domínios.
+
+Por exemplo:
+
+DOM-DIA administra o processo de viagem e diária; não deve transformar-se no domínio responsável por toda a contabilidade, recursos humanos ou gestão documental do SIGMUN.
+
+10. Casos de uso
+
+O backend chegou a uma estrutura com 19 casos de uso para o domínio.
+
+Isso é significativo porque mostra que a intenção arquitetural não é colocar a regra de negócio diretamente nos endpoints.
+
+O fluxo pretendido é:
+
+HTTP
+ │
+ ▼
+Router / Handler
+ │
+ ▼
+Caso de Uso
+ │
+ ▼
+Regra de negócio
+ │
+ ▼
+Interface de repositório
+ │
+ ▼
+Persistência
+
+Assim, por exemplo:
+
+POST /api/v1/dia/...
+        │
+        ▼
+   handler DIA
+        │
+        ▼
+ caso de uso
+        │
+        ▼
+ validações/
+ transição de estado
+        │
+        ▼
+ repository
+        │
+        ▼
+ dia.viagens
+
+Essa separação é importante para que as regras do DOM-DIA possam ser testadas independentemente do FastAPI e do PostgreSQL.
+
+11. Persistência
+
+A arquitetura física atual consolidada é:
+
+PostgreSQL
+└── schema dia
+    ├── viagens
+    ├── diarias
+    ├── prestacoes_contas
+    └── eventos_diarias
+
+A migration que materializou/corrigiu essa estrutura estabeleceu as tabelas no schema dia, enquanto o antigo dom_dia.* foi preservado sem migração de dados.
+
+Esse ponto é importante porque houve anteriormente uma divergência entre o contrato lógico e o banco físico: a aplicação esperava dia.*, enquanto determinadas versões do banco ainda não possuíam essas tabelas.
+
+A correção posterior alinhou a estrutura física ao contrato:
+
+Contrato:
+    schema = dia
+
+       ↓
+
+PostgreSQL:
+    dia.viagens
+    dia.diarias
+    dia.prestacoes_contas
+    dia.eventos_diarias
+12. Documentação do domínio
+
+A documentação vigente define o DOM-DIA como:
+
+Gestão de Diárias, Viagens e Deslocamentos
+
+e estabelece como objetivos gerais:
+
+organizar processos e informações;
+garantir rastreabilidade;
+produzir indicadores;
+organizar documentos relacionados;
+permitir integração com outros componentes do SIGMUN.
+
+Existe uma família de artefatos documentais do DOM-DIA, numerados de 000 a 026, mas, no estado anteriormente levantado, grande parte ainda estava marcada como "Em elaboração".
+
+Portanto, há uma distinção importante:
+
+DOCUMENTAÇÃO CONCEITUAL
+        │
+        ├── visão de negócio
+        ├── processos
+        ├── regras
+        └── arquitetura pretendida
+
+IMPLEMENTAÇÃO
+        │
+        ├── modelos
+        ├── casos de uso
+        ├── repositories
+        ├── API
+        └── PostgreSQL
+
+Não se deve interpretar automaticamente a existência de um documento como evidência de que aquela capacidade já esteja 100% implementada.
+
+13. Em uma frase
+
+Se eu tivesse que resumir o DOM-DIA para alguém entrando agora no projeto:
+
+O DOM-DIA é o domínio do SIGMUN que controla o ciclo de vida dos deslocamentos a serviço do município, conectando viagem, concessão e acompanhamento de diárias, eventos e prestação de contas em um processo rastreável e integrado aos demais domínios.
+
+E, arquiteturalmente, sua espinha dorsal é:
+
+                SERVIDOR / CONTEXTO
+                       │
+                       ▼
+                 ┌───────────┐
+                 │  VIAGEM   │
+                 └─────┬─────┘
+                       │
+              ┌────────┴────────┐
+              ▼                 ▼
+        ┌───────────┐     ┌────────────┐
+        │  DIÁRIA   │     │  EVENTOS   │
+        └─────┬─────┘     └────────────┘
+              │
+              ▼
+       ┌────────────────┐
+       │ PRESTAÇÃO DE   │
+       │    CONTAS      │
+       └───────┬────────┘
+               │
+               ▼
+          ENCERRAMENTO
+
+Em termos de arquitetura SIGMUN, o DOM-DIA é, portanto, um domínio de processo: ele não apenas armazena dados de viagens; ele governa o ciclo de vida administrativo da viagem e da diária, preservando estado, eventos, relacionamentos e evidências necessárias ao controle público.
