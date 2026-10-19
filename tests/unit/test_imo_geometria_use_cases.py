@@ -42,9 +42,7 @@ class TestGeometria:
         assert len(result.vertices) == 3
 
     def test_ponto_adota_vertice_como_coordenada(self) -> None:
-        result = _registrar(
-            geometria="ponto", vertices=[{"latitude": -13.5, "longitude": -39.9}]
-        )
+        result = _registrar(geometria="ponto", vertices=[{"latitude": -13.5, "longitude": -39.9}])
         assert result.latitude == pytest.approx(-13.5)
         assert result.longitude == pytest.approx(-39.9)
 
@@ -123,29 +121,24 @@ class TestCaracteristica:
 
     def test_exige_imovel_existente(self) -> None:
         with pytest.raises(ImovelNaoEncontradoError):
-            RegistrarCaracteristicaUseCase(
-                repo_caracteristica(), repo_imovel()
-            ).execute(RegistrarCaracteristicaInput(imovel_id="imovel-9"))
+            RegistrarCaracteristicaUseCase(repo_caracteristica(), repo_imovel()).execute(
+                RegistrarCaracteristicaInput(imovel_id="imovel-9")
+            )
 
     def test_obra_invalida_rejeitada(self) -> None:
         with pytest.raises(RegraNegocioError):
-            RegistrarCaracteristicaUseCase(
-                repo_caracteristica(), repo_imovel(imovel())
-            ).execute(RegistrarCaracteristicaInput(imovel_id="imovel-1", obra="castelo"))
+            RegistrarCaracteristicaUseCase(repo_caracteristica(), repo_imovel(imovel())).execute(
+                RegistrarCaracteristicaInput(imovel_id="imovel-1", obra="castelo")
+            )
 
     def test_pavimentos_invalidos_rejeitados(self) -> None:
         with pytest.raises(RegraNegocioError):
-            RegistrarCaracteristicaUseCase(
-                repo_caracteristica(), repo_imovel(imovel())
-            ).execute(
+            RegistrarCaracteristicaUseCase(repo_caracteristica(), repo_imovel(imovel())).execute(
                 RegistrarCaracteristicaInput(imovel_id="imovel-1", numero_pavimentos=0)
             )
 
     def test_ano_renovacao_invalido_rejeitado(self) -> None:
         with pytest.raises(RegraNegocioError):
-            RegistrarCaracteristicaUseCase(
-                repo_caracteristica(), repo_imovel(imovel())
-            ).execute(
+            RegistrarCaracteristicaUseCase(repo_caracteristica(), repo_imovel(imovel())).execute(
                 RegistrarCaracteristicaInput(imovel_id="imovel-1", ano_renovacao=1500)
             )
-

@@ -47,9 +47,7 @@ class TestVeiculo:
         novo.id = "v-1"
         repo.save = MagicMock(return_value=novo)
         result = CadastrarVeiculoUseCase(repo).execute(
-            CadastrarVeiculoInput(
-                placa="ABC-1234", marca="Fiat", modelo="Uno"
-            )
+            CadastrarVeiculoInput(placa="ABC-1234", marca="Fiat", modelo="Uno")
         )
         assert result.placa == "ABC-1234"
         assert result.status == StatusVeiculo.ATIVO
@@ -77,8 +75,10 @@ class TestAbastecimento:
         abast.save = MagicMock(side_effect=lambda a: a)
         result = RegistrarAbastecimentoUseCase(abast, veiculos).execute(
             RegistrarAbastecimentoInput(
-                veiculo_id="v-1", quantidade_litros=50.0,
-                valor_unitario=6.0, odometro=1500.0,
+                veiculo_id="v-1",
+                quantidade_litros=50.0,
+                valor_unitario=6.0,
+                odometro=1500.0,
             )
         )
         assert result.valor_total == 300.0
@@ -107,9 +107,7 @@ class TestManutencao:
         m.id = "m-1"
         m.veiculo_id = "v-1"
         manut.save = MagicMock(side_effect=lambda x: x)
-        aberta = AbrirManutencaoUseCase(manut, veiculos).execute(
-            "v-1", descricao="Troca de óleo"
-        )
+        aberta = AbrirManutencaoUseCase(manut, veiculos).execute("v-1", descricao="Troca de óleo")
         assert veiculo.status == StatusVeiculo.MANUTENCAO
 
         manut.get_by_id = MagicMock(return_value=aberta)
@@ -130,8 +128,11 @@ class TestRota:
         rotas.get_by_id = MagicMock()
         rota_criada = RegistrarRotaUseCase(rotas, veiculos).execute(
             RegistrarRotaInput(
-                veiculo_id="v-1", origem="Sede", destino="Distrito",
-                km_inicio=1000.0, km_fim=1050.0,
+                veiculo_id="v-1",
+                origem="Sede",
+                destino="Distrito",
+                km_inicio=1000.0,
+                km_fim=1050.0,
             )
         )
         assert rota_criada.distancia_km == 50.0

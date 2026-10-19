@@ -84,9 +84,7 @@ class TestGeorreferencia:
     def test_exige_bairro_ou_logradouro(self) -> None:
         """RN-TEL-005: georreferência exige referência territorial."""
         with pytest.raises(RegraNegocioError):
-            _use_case().execute(
-                RegistrarGeorreferenciaInput(latitude=-13.13, longitude=-39.49)
-            )
+            _use_case().execute(RegistrarGeorreferenciaInput(latitude=-13.13, longitude=-39.49))
 
     def test_recusa_bairro_e_logradouro_simultaneos(self) -> None:
         with pytest.raises(RegraNegocioError):
@@ -110,9 +108,7 @@ class TestGeorreferencia:
         """Sem vértices, a coordenada principal é validada (RN-TEL-005)."""
         with pytest.raises(RegraNegocioError):
             _use_case().execute(
-                RegistrarGeorreferenciaInput(
-                    bairro_id="bairro-1", latitude=95.0, longitude=-39.49
-                )
+                RegistrarGeorreferenciaInput(bairro_id="bairro-1", latitude=95.0, longitude=-39.49)
             )
 
     def test_longitude_fora_de_faixa_rejeitada(self) -> None:
@@ -135,7 +131,6 @@ class TestGeorreferencia:
                     vertices=[{"latitude": 95.0, "longitude": -39.49}],
                 )
             )
-
 
     def test_poligono_exige_tres_vertices(self) -> None:
         with pytest.raises(RegraNegocioError):
@@ -200,4 +195,3 @@ class TestGeorreferencia:
     def test_exclui_georreferencia_inexistente(self) -> None:
         with pytest.raises(GeorreferenciaNaoEncontradaError):
             ExcluirGeorreferenciaUseCase(repo_geo()).execute("geo-9")
-

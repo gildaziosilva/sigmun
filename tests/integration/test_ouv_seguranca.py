@@ -70,14 +70,8 @@ def _limpar_registros_de_teste() -> None:
                     "(SELECT id FROM ouv.manifestacoes WHERE protocolo > '2026-000003')"
                 )
             )
-            sessao.execute(
-                text(
-                    "DELETE FROM ouv.manifestacoes WHERE protocolo > '2026-000003'"
-                )
-            )
-            sessao.execute(
-                text("UPDATE ouv.protocolos SET sequencial = 3 WHERE ano = 2026")
-            )
+            sessao.execute(text("DELETE FROM ouv.manifestacoes WHERE protocolo > '2026-000003'"))
+            sessao.execute(text("UPDATE ouv.protocolos SET sequencial = 3 WHERE ano = 2026"))
             sessao.commit()
     except Exception:  # noqa: BLE001, S110 — limpeza é best-effort
         pass
@@ -127,6 +121,8 @@ def test_rota_protegida_sem_token_responde_401(client: TestClient, metodo, rota)
     """ADR-0008 §2.1 — sem Authorization, a resposta deve ser 401."""
     resposta = client.request(metodo, rota)
     assert resposta.status_code == 401, resposta.text
+
+
 # -- Critério 2: criação anônima é permitida (ADR §2.2) ----------------------
 
 
@@ -224,6 +220,4 @@ def test_campos_de_identidade_sao_ignorados_no_corpo(client: TestClient):
     )
     assert resposta.status_code == 201, resposta.text
     corpo = resposta.json()
-    assert corpo.get("created_by", "") != "USUARIO_FALSO", (
-        "created_by nao pode vir do corpo (C2)"
-    )
+    assert corpo.get("created_by", "") != "USUARIO_FALSO", "created_by nao pode vir do corpo (C2)"

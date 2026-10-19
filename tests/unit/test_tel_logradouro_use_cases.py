@@ -34,9 +34,7 @@ class TestLogradouro:
         result = CadastrarLogradouroUseCase(
             repo_logradouro(), repo_bairro(_bairro_cadastrado())
         ).execute(
-            CadastrarLogradouroInput(
-                codigo="LG-01", nome="Rua da Matriz", bairro_id="bairro-1"
-            )
+            CadastrarLogradouroInput(codigo="LG-01", nome="Rua da Matriz", bairro_id="bairro-1")
         )
         assert result.codigo == "LG-01"
         assert result.esta_ativo
@@ -47,9 +45,7 @@ class TestLogradouro:
         with pytest.raises(LogradouroJaExistenteError):
             CadastrarLogradouroUseCase(
                 repo_logradouro(logradouro()), repo_bairro(_bairro_cadastrado())
-            ).execute(
-                CadastrarLogradouroInput(codigo="LG-01", nome="Outra", bairro_id="bairro-1")
-            )
+            ).execute(CadastrarLogradouroInput(codigo="LG-01", nome="Outra", bairro_id="bairro-1"))
 
     def test_exige_bairro_existente(self) -> None:
         """RN-TEL-002: todo logradouro pertence a um bairro cadastrado."""
@@ -69,9 +65,7 @@ class TestLogradouro:
             CadastrarLogradouroUseCase(
                 repo_logradouro(), repo_bairro(_bairro_cadastrado())
             ).execute(
-                CadastrarLogradouroInput(
-                    codigo="LG-01", nome="Rua", bairro_id="bairro-1", tipo="x"
-                )
+                CadastrarLogradouroInput(codigo="LG-01", nome="Rua", bairro_id="bairro-1", tipo="x")
             )
 
     def test_numero_final_menor_que_inicial_rejeitado(self) -> None:

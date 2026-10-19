@@ -69,9 +69,12 @@ class TestBairro:
         alvo = bairro()
         alvo.id = "bairro-1"
         use_case = AtualizarBairroUseCase(repo_bairro(alvo))
-        assert use_case.execute(
-            AtualizarBairroInput(bairro_id="bairro-1", situacao="inativo")
-        ).situacao == SituacaoBairro.INATIVO
+        assert (
+            use_case.execute(
+                AtualizarBairroInput(bairro_id="bairro-1", situacao="inativo")
+            ).situacao
+            == SituacaoBairro.INATIVO
+        )
         assert use_case.execute(
             AtualizarBairroInput(bairro_id="bairro-1", situacao="ativo")
         ).esta_ativo
@@ -103,9 +106,7 @@ class TestBairro:
     def test_exclui_logicamente(self) -> None:
         alvo = bairro()
         alvo.id = "bairro-1"
-        result = ExcluirBairroUseCase(repo_bairro(alvo), repo_logradouro()).execute(
-            "bairro-1"
-        )
+        result = ExcluirBairroUseCase(repo_bairro(alvo), repo_logradouro()).execute("bairro-1")
         assert result.is_deleted is True
 
     def test_bairro_com_logradouro_ativo_bloqueia_exclusao(self) -> None:
@@ -113,18 +114,16 @@ class TestBairro:
         alvo = bairro()
         alvo.id = "bairro-1"
         with pytest.raises(BairroComDependenciasError):
-            ExcluirBairroUseCase(
-                repo_bairro(alvo), repo_logradouro(logradouro())
-            ).execute("bairro-1")
+            ExcluirBairroUseCase(repo_bairro(alvo), repo_logradouro(logradouro())).execute(
+                "bairro-1"
+            )
 
     def test_bairro_com_logradouro_inativo_pode_ser_excluido(self) -> None:
         alvo = bairro()
         alvo.id = "bairro-1"
         lg = logradouro()
         lg.inativar()
-        result = ExcluirBairroUseCase(repo_bairro(alvo), repo_logradouro(lg)).execute(
-            "bairro-1"
-        )
+        result = ExcluirBairroUseCase(repo_bairro(alvo), repo_logradouro(lg)).execute("bairro-1")
         assert result.is_deleted is True
 
     def test_exclui_bairro_inexistente(self) -> None:

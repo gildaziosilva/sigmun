@@ -48,9 +48,7 @@ class TestPlantaValores:
     def test_cadastra_ja_vigente(self) -> None:
         result = CadastrarPlantaValoresUseCase(
             repo_planta(), repo_bairro(_bairro_cadastrado())
-        ).execute(
-            CadastrarPlantaValoresInput(ano=2026, bairro_id="bairro-1", ativar=True)
-        )
+        ).execute(CadastrarPlantaValoresInput(ano=2026, bairro_id="bairro-1", ativar=True))
         assert result.esta_vigente
 
     def test_nao_duplica_planta_vigente(self) -> None:
@@ -59,9 +57,7 @@ class TestPlantaValores:
         repo.get_vigente.return_value = planta(SituacaoPlantaValores.VIGENTE)
         with pytest.raises(PlantaValoresJaExistenteError):
             CadastrarPlantaValoresUseCase(repo, repo_bairro(_bairro_cadastrado())).execute(
-                CadastrarPlantaValoresInput(
-                    ano=2026, bairro_id="bairro-1", ativar=True
-                )
+                CadastrarPlantaValoresInput(ano=2026, bairro_id="bairro-1", ativar=True)
             )
 
     def test_exige_bairro(self) -> None:
@@ -78,38 +74,27 @@ class TestPlantaValores:
 
     def test_ocupacao_invalida_rejeitada(self) -> None:
         with pytest.raises(RegraNegocioError):
-            CadastrarPlantaValoresUseCase(
-                repo_planta(), repo_bairro(_bairro_cadastrado())
-            ).execute(
+            CadastrarPlantaValoresUseCase(repo_planta(), repo_bairro(_bairro_cadastrado())).execute(
                 CadastrarPlantaValoresInput(ano=2026, bairro_id="bairro-1", ocupacao="x")
             )
 
     def test_ano_invalido_rejeitado(self) -> None:
         with pytest.raises(RegraNegocioError):
-            CadastrarPlantaValoresUseCase(
-                repo_planta(), repo_bairro(_bairro_cadastrado())
-            ).execute(CadastrarPlantaValoresInput(ano=1800, bairro_id="bairro-1"))
+            CadastrarPlantaValoresUseCase(repo_planta(), repo_bairro(_bairro_cadastrado())).execute(
+                CadastrarPlantaValoresInput(ano=1800, bairro_id="bairro-1")
+            )
 
     def test_valor_negativo_rejeitado(self) -> None:
         with pytest.raises(RegraNegocioError):
-            CadastrarPlantaValoresUseCase(
-                repo_planta(), repo_bairro(_bairro_cadastrado())
-            ).execute(
-                CadastrarPlantaValoresInput(
-                    ano=2026, bairro_id="bairro-1", valor_terreno_m2=-1.0
-                )
+            CadastrarPlantaValoresUseCase(repo_planta(), repo_bairro(_bairro_cadastrado())).execute(
+                CadastrarPlantaValoresInput(ano=2026, bairro_id="bairro-1", valor_terreno_m2=-1.0)
             )
 
     def test_aliquota_fora_de_faixa_rejeitada(self) -> None:
         with pytest.raises(RegraNegocioError):
-            CadastrarPlantaValoresUseCase(
-                repo_planta(), repo_bairro(_bairro_cadastrado())
-            ).execute(
-                CadastrarPlantaValoresInput(
-                    ano=2026, bairro_id="bairro-1", aliquota_percent=150.0
-                )
+            CadastrarPlantaValoresUseCase(repo_planta(), repo_bairro(_bairro_cadastrado())).execute(
+                CadastrarPlantaValoresInput(ano=2026, bairro_id="bairro-1", aliquota_percent=150.0)
             )
-
 
     def test_ativa_planta(self) -> None:
         alvo = planta()
@@ -179,4 +164,3 @@ class TestPlantaValores:
             AtualizarPlantaValoresUseCase(repo_planta()).execute(
                 AtualizarPlantaValoresInput(planta_id="planta-9")
             )
-

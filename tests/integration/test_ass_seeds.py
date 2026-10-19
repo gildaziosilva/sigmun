@@ -97,10 +97,7 @@ def test_seed_cobre_todos_os_status_de_beneficio():
         popular_seed_ass(session)
         session.commit()
 
-        status = {
-            b.status
-            for b in session.scalars(select(BeneficioEventualModel)).all()
-        }
+        status = {b.status for b in session.scalars(select(BeneficioEventualModel)).all()}
 
     assert {"solicitado", "aprovado", "entregue", "negado", "cancelado"} <= status
 

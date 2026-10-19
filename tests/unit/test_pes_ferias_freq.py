@@ -32,9 +32,14 @@ from src.modules.sigmun_rh.domain.entities.servidor import Servidor
 
 
 def _servidor() -> Servidor:
-    return Servidor(id="s1", matricula="001", cpf="12345678901",
-                    nome="Ana", cargo_id="c1",
-                    data_admissao=date(2024, 1, 1))
+    return Servidor(
+        id="s1",
+        matricula="001",
+        cpf="12345678901",
+        nome="Ana",
+        cargo_id="c1",
+        data_admissao=date(2024, 1, 1),
+    )
 
 
 class TestFerias:
@@ -67,29 +72,29 @@ class TestFrequencia:
         servidores.get_by_id = MagicMock(return_value=_servidor())
         repo = MagicMock(spec=RepositorioFrequencia)
         repo.get_por_servidor_data = MagicMock(return_value=None)
-        freq = Frequencia(id="fr1", servidor_id="s1",
-                          data=date(2024, 3, 1),
-                          tipo=TipoFrequencia.FALTA)
+        freq = Frequencia(
+            id="fr1", servidor_id="s1", data=date(2024, 3, 1), tipo=TipoFrequencia.FALTA
+        )
         freq.marcar_desconto()
         repo.save = MagicMock(return_value=freq)
         result = RegistrarFrequenciaUseCase(repo, servidores).execute(
-            RegistrarFrequenciaInput(servidor_id="s1",
-                                     data=date(2024, 3, 1),
-                                     tipo="falta")
+            RegistrarFrequenciaInput(servidor_id="s1", data=date(2024, 3, 1), tipo="falta")
         )
         assert result.desconto_folha is True
 
     def test_justificar(self) -> None:
         """Justificativa remove desconto."""
         repo = MagicMock(spec=RepositorioFrequencia)
-        freq = Frequencia(id="fr1", servidor_id="s1",
-                          data=date(2024, 3, 1),
-                          tipo=TipoFrequencia.FALTA,
-                          desconto_folha=True)
+        freq = Frequencia(
+            id="fr1",
+            servidor_id="s1",
+            data=date(2024, 3, 1),
+            tipo=TipoFrequencia.FALTA,
+            desconto_folha=True,
+        )
         repo.get_by_id = MagicMock(return_value=freq)
         repo.save = MagicMock(return_value=freq)
         result = JustificarFaltaUseCase(repo).execute(
-            JustificarFaltaInput(frequencia_id="fr1",
-                                 justificativa="atestado")
+            JustificarFaltaInput(frequencia_id="fr1", justificativa="atestado")
         )
         assert result.tipo == TipoFrequencia.FALTA_JUSTIFICADA

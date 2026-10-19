@@ -38,9 +38,7 @@ def _camada_ativa(codigo: str = "CAM-01") -> CamadaMapa:
     return _camada(codigo, SituacaoCamadaMapa.ATIVA)
 
 
-def _mapa(
-    codigo: str = "MAP-01", situacao: SituacaoMapaSig = SituacaoMapaSig.RASCUNHO
-) -> MapaSig:
+def _mapa(codigo: str = "MAP-01", situacao: SituacaoMapaSig = SituacaoMapaSig.RASCUNHO) -> MapaSig:
     return MapaSig(codigo=codigo, nome="Mapa de uso do solo", situacao=situacao)
 
 

@@ -17,8 +17,8 @@ from src.modules.sigmun_rh.application.use_cases_cargos_servidores import (
     AfastarServidorUseCase,
     CriarCargoInput,
     CriarCargoUseCase,
-    DesligarServidorUseCase,
     DesligarServidorInput,
+    DesligarServidorUseCase,
     ReativarServidorUseCase,
 )
 from src.modules.sigmun_rh.domain.entities.cargo import Cargo
@@ -30,15 +30,20 @@ from src.modules.sigmun_rh.domain.entities.servidor import (
 
 
 def _cargo() -> Cargo:
-    return Cargo(id="cargo-1", codigo="ANL", nome="Analista",
-                 salario_base=3000.0)
+    return Cargo(id="cargo-1", codigo="ANL", nome="Analista", salario_base=3000.0)
 
 
 def _servidor(status=StatusServidor.ATIVO) -> Servidor:
     return Servidor(
-        id="serv-1", matricula="001", cpf="12345678901", nome="Maria",
-        cargo_id="cargo-1", tipo_vinculo=TipoVinculo.EFETIVO,
-        status=status, data_admissao=date(2024, 1, 10), salario=3000.0,
+        id="serv-1",
+        matricula="001",
+        cpf="12345678901",
+        nome="Maria",
+        cargo_id="cargo-1",
+        tipo_vinculo=TipoVinculo.EFETIVO,
+        status=status,
+        data_admissao=date(2024, 1, 10),
+        salario=3000.0,
     )
 
 
@@ -51,8 +56,7 @@ class TestCargo:
         repo.get_by_codigo = MagicMock(return_value=None)
         repo.save = MagicMock(return_value=_cargo())
         uc = CriarCargoUseCase(repo)
-        dto = CriarCargoInput(codigo="ANL", nome="Analista",
-                              salario_base=3000.0)
+        dto = CriarCargoInput(codigo="ANL", nome="Analista", salario_base=3000.0)
         result = uc.execute(dto)
         assert result.codigo == "ANL"
         repo.save.assert_called_once()
@@ -63,8 +67,7 @@ class TestCargo:
         repo.get_by_codigo = MagicMock(return_value=_cargo())
         uc = CriarCargoUseCase(repo)
         with pytest.raises(Exception):
-            uc.execute(CriarCargoInput(codigo="ANL", nome="X",
-                                       salario_base=100.0))
+            uc.execute(CriarCargoInput(codigo="ANL", nome="X", salario_base=100.0))
 
 
 class TestServidor:
@@ -80,8 +83,11 @@ class TestServidor:
         cargos.get_by_id = MagicMock(return_value=_cargo())
         uc = AdmitirServidorUseCase(repo, cargos)
         dto = AdmitirServidorInput(
-            matricula="001", cpf="12345678901", nome="Maria",
-            cargo_id="cargo-1", data_admissao=date(2024, 1, 10),
+            matricula="001",
+            cpf="12345678901",
+            nome="Maria",
+            cargo_id="cargo-1",
+            data_admissao=date(2024, 1, 10),
         )
         result = uc.execute(dto)
         assert result.matricula == "001"
@@ -105,7 +111,6 @@ class TestServidor:
         repo.get_by_id = MagicMock(return_value=serv)
         repo.save = MagicMock(return_value=serv)
         result = DesligarServidorUseCase(repo).execute(
-            DesligarServidorInput(servidor_id="serv-1",
-                                  data_desligamento=date(2024, 6, 1))
+            DesligarServidorInput(servidor_id="serv-1", data_desligamento=date(2024, 6, 1))
         )
         assert result.status == StatusServidor.EXONERADO

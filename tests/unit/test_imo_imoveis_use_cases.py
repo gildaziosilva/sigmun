@@ -149,7 +149,6 @@ class TestImovel:
                 AtualizarImovelInput(imovel_id="imovel-9", numero="1")
             )
 
-
     def test_altera_situacao_permitida(self) -> None:
         """RN-IMO-004: transições da máquina de estados do imóvel."""
         alvo = imovel()
@@ -202,9 +201,7 @@ class TestImovel:
 
 class TestProprietario:
     def test_vincula_titular_principal(self) -> None:
-        result = VincularProprietarioUseCase(
-            repo_proprietario(), repo_imovel(imovel())
-        ).execute(
+        result = VincularProprietarioUseCase(repo_proprietario(), repo_imovel(imovel())).execute(
             VincularProprietarioInput(
                 imovel_id="imovel-1", nome="Maria Souza", cpf="12345678909", principal=True
             )
@@ -215,9 +212,7 @@ class TestProprietario:
     def test_exige_imovel_existente(self) -> None:
         with pytest.raises(ImovelNaoEncontradoError):
             VincularProprietarioUseCase(repo_proprietario(), repo_imovel()).execute(
-                VincularProprietarioInput(
-                    imovel_id="imovel-9", nome="Maria", cpf="12345678909"
-                )
+                VincularProprietarioInput(imovel_id="imovel-9", nome="Maria", cpf="12345678909")
             )
 
     def test_nao_duplica_pessoa_no_imovel(self) -> None:
@@ -261,29 +256,19 @@ class TestProprietario:
     def test_cpf_invalido_rejeitado(self) -> None:
         """RN-IMO-006: o CPF do proprietário deve ter 11 dígitos."""
         with pytest.raises(RegraNegocioError):
-            VincularProprietarioUseCase(
-                repo_proprietario(), repo_imovel(imovel())
-            ).execute(
-                VincularProprietarioInput(
-                    imovel_id="imovel-1", nome="Maria", cpf="123"
-                )
+            VincularProprietarioUseCase(repo_proprietario(), repo_imovel(imovel())).execute(
+                VincularProprietarioInput(imovel_id="imovel-1", nome="Maria", cpf="123")
             )
 
     def test_nome_obrigatorio(self) -> None:
         with pytest.raises(RegraNegocioError):
-            VincularProprietarioUseCase(
-                repo_proprietario(), repo_imovel(imovel())
-            ).execute(
-                VincularProprietarioInput(
-                    imovel_id="imovel-1", nome="", cpf="12345678909"
-                )
+            VincularProprietarioUseCase(repo_proprietario(), repo_imovel(imovel())).execute(
+                VincularProprietarioInput(imovel_id="imovel-1", nome="", cpf="12345678909")
             )
 
     def test_vinculo_invalido_rejeitado(self) -> None:
         with pytest.raises(RegraNegocioError):
-            VincularProprietarioUseCase(
-                repo_proprietario(), repo_imovel(imovel())
-            ).execute(
+            VincularProprietarioUseCase(repo_proprietario(), repo_imovel(imovel())).execute(
                 VincularProprietarioInput(
                     imovel_id="imovel-1",
                     nome="Maria",
@@ -301,4 +286,3 @@ class TestProprietario:
     def test_remove_vinculo_inexistente(self) -> None:
         with pytest.raises(ProprietarioNaoEncontradoError):
             RemoverProprietarioUseCase(repo_proprietario()).execute("vinculo-9")
-

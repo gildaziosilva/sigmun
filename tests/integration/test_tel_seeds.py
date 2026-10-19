@@ -84,9 +84,7 @@ def test_seed_cobre_todos_os_status_da_planta():
         popular_seed_tel(session)
         session.commit()
 
-        situacoes = {
-            p.situacao for p in session.scalars(select(PlantaGenericaValoresModel)).all()
-        }
+        situacoes = {p.situacao for p in session.scalars(select(PlantaGenericaValoresModel)).all()}
 
     assert {"rascunho", "vigente", "revogada"} <= situacoes
 
@@ -107,9 +105,7 @@ def test_seed_respeita_regras_de_negocio():
     # Todo logradouro referencia um bairro cadastrado (RN-TEL-002).
     assert all(lg.bairro_id in bairros_ids for lg in logradouros)
     # Toda georreferencia esta vinculada a um bairro, nunca a ambos (RN-TEL-005).
-    assert all(
-        bool(g.bairro_id) != bool(g.logradouro_id) for g in georreferencias
-    )
+    assert all(bool(g.bairro_id) != bool(g.logradouro_id) for g in georreferencias)
 
 
 def test_limpar_seed_remove_os_dados():

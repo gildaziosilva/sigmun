@@ -14,6 +14,7 @@ from src.main import app
 from src.modules.sigmun_compras.presentation.api.compras_router import (
     get_compra_repository,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_jwt
 from tests.unit.test_compra_use_cases import InMemoryCompraRepository
 
 
@@ -29,6 +30,10 @@ def repository() -> InMemoryCompraRepository:
 @pytest.fixture()
 def client(repository: InMemoryCompraRepository) -> TestClient:
     app.dependency_overrides[get_compra_repository] = lambda: repository
+    ctx = JWTUsuarioContexto(
+        usuario_id=uuid4(), login="teste.admin", roles=("admin",), unidades_ids=()
+    )
+    app.dependency_overrides[get_current_user_jwt] = lambda: ctx
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
@@ -161,7 +166,7 @@ def test_transicao_invalida_retorna_400(client: TestClient, repository):
     )
 
     assert response.status_code == 400
-    assert "RN-COMPRAS-026" in response.json()["detail"]
+    assert "RN-COMPRAS-026" in response.json()["error"]["message"]
 
 
 def test_fluxo_completo_via_api_ate_contratado(client: TestClient, repository):
@@ -210,6 +215,7 @@ def test_delete_exclui_logicamente(client: TestClient, repository):
 def test_delete_sem_usuario_retorna_401(client: TestClient, repository):
     criada = client.post("/api/v1/compras", json=_payload(repository)).json()
 
+    app.dependency_overrides.pop(get_current_user_jwt, None)
     response = client.delete(f"/api/v1/compras/{criada['id']}")
 
     assert response.status_code == 401

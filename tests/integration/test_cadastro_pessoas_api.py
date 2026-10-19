@@ -95,9 +95,7 @@ class TestListarDesatualizadas:
         assert type(repo).__abstractmethods__ == frozenset()
 
     def test_retorna_lista_de_uuid(self, repo):
-        resultado = repo.listar_desatualizadas(
-            datetime.now(timezone.utc) - timedelta(days=365)
-        )
+        resultado = repo.listar_desatualizadas(datetime.now(timezone.utc) - timedelta(days=365))
         assert isinstance(resultado, list)
         assert all(isinstance(p, UUID) for p in resultado)
 
@@ -113,15 +111,11 @@ class TestListarDesatualizadas:
         A pessoa só é considerada desatualizada se `updated_at` for **anterior**
         ao corte, então um corte no futuro inclui todo mundo vivo.
         """
-        assert repo.listar_desatualizadas(
-            datetime.now(timezone.utc) + timedelta(days=1)
-        ) != []
+        assert repo.listar_desatualizadas(datetime.now(timezone.utc) + timedelta(days=1)) != []
 
     def test_corte_anterior_ao_cadastro_nao_traz_nada(self, repo):
         """Nada é anterior a uma data que precede o próprio cadastro."""
-        assert repo.listar_desatualizadas(
-            datetime(2000, 1, 1, tzinfo=timezone.utc)
-        ) == []
+        assert repo.listar_desatualizadas(datetime(2000, 1, 1, tzinfo=timezone.utc)) == []
 
     def test_use_case_revisao_consome_o_metodo(self, repo):
         """O use case de revisão (ADR-0007) funciona com o repositório real."""

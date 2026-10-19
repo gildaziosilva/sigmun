@@ -101,17 +101,21 @@ class TestSqlAlchemyUsuarioRepository:
         usuario.roles_ids = [role_a, role_c]
         repo.save(usuario)
 
-        rows = session.execute(
-            text(
-                """
+        rows = (
+            session.execute(
+                text(
+                    """
                 SELECT role_id
                 FROM idn.usuario_roles
                 WHERE usuario_id = :usuario_id
                 ORDER BY role_id
                 """
-            ),
-            {"usuario_id": usuario.id},
-        ).scalars().all()
+                ),
+                {"usuario_id": usuario.id},
+            )
+            .scalars()
+            .all()
+        )
 
         assert {str(role_id) for role_id in rows} == {
             role_a,
@@ -132,7 +136,6 @@ class TestSqlAlchemyUsuarioRepository:
         ).scalar_one()
 
         assert total == 2
-
 
     def test_get_by_id_reconstroi_roles_a_partir_da_relacao_normalizada(
         self,
@@ -185,7 +188,6 @@ class TestSqlAlchemyUsuarioRepository:
         assert recuperado is not None
         assert set(recuperado.roles_ids) == {role_a, role_b}
 
-
     def test_save_persiste_usuario_e_associacoes_de_roles(
         self,
         session: Session,
@@ -209,33 +211,41 @@ class TestSqlAlchemyUsuarioRepository:
         assert salvo.id == usuario.id
         assert salvo.roles_ids == [role_id]
 
-        row_usuario = session.execute(
-            text(
-                """
+        row_usuario = (
+            session.execute(
+                text(
+                    """
                 SELECT id
                 FROM idn.usuarios
                 WHERE id = :usuario_id
                 """
-            ),
-            {"usuario_id": usuario.id},
-        ).mappings().one()
+                ),
+                {"usuario_id": usuario.id},
+            )
+            .mappings()
+            .one()
+        )
 
         assert str(row_usuario["id"]) == usuario.id
 
-        row_relacao = session.execute(
-            text(
-                """
+        row_relacao = (
+            session.execute(
+                text(
+                    """
                 SELECT usuario_id, role_id
                 FROM idn.usuario_roles
                 WHERE usuario_id = :usuario_id
                   AND role_id = :role_id
                 """
-            ),
-            {
-                "usuario_id": usuario.id,
-                "role_id": role_id,
-            },
-        ).mappings().one()
+                ),
+                {
+                    "usuario_id": usuario.id,
+                    "role_id": role_id,
+                },
+            )
+            .mappings()
+            .one()
+        )
 
         assert str(row_relacao["usuario_id"]) == usuario.id
         assert str(row_relacao["role_id"]) == role_id
@@ -316,8 +326,11 @@ def test_usuario_recarregado_da_relacao_normalizada_mantem_autorizacao(
         permissoes=[permissao_recarregada],
     )
 
-    assert AutorizacaoService.verificar_permissao(
-        recuperado,
-        permissao.codigo,
-        [role_recarregada],
-    ) is True
+    assert (
+        AutorizacaoService.verificar_permissao(
+            recuperado,
+            permissao.codigo,
+            [role_recarregada],
+        )
+        is True
+    )

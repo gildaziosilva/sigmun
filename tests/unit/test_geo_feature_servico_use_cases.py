@@ -148,9 +148,7 @@ class TestServicosGeoespaciais:
     def test_codigo_duplicado_rejeitado(self) -> None:
         with pytest.raises(ServicoGeoJaExistenteError):
             CadastrarServicoUseCase(repo_servico(_servico())).execute(
-                CadastrarServicoInput(
-                    codigo="WMS-01", nome="X", url="https://x.gov.br", camada="c"
-                )
+                CadastrarServicoInput(codigo="WMS-01", nome="X", url="https://x.gov.br", camada="c")
             )
 
     def test_servico_ativo_sem_url_rejeitado(self) -> None:
@@ -172,17 +170,13 @@ class TestServicosGeoespaciais:
         """RN-GEO-007: WMS/WFS exigem a camada publicada."""
         with pytest.raises(RegraNegocioError):
             CadastrarServicoUseCase(repo_servico()).execute(
-                CadastrarServicoInput(
-                    codigo="WMS-9", nome="X", tipo="wms", url="https://x.gov.br"
-                )
+                CadastrarServicoInput(codigo="WMS-9", nome="X", tipo="wms", url="https://x.gov.br")
             )
 
     def test_tipo_invalido_rejeitado(self) -> None:
         with pytest.raises(RegraNegocioError):
             CadastrarServicoUseCase(repo_servico()).execute(
-                CadastrarServicoInput(
-                    codigo="S-9", nome="X", tipo="soap", url="https://x.gov.br"
-                )
+                CadastrarServicoInput(codigo="S-9", nome="X", tipo="soap", url="https://x.gov.br")
             )
 
     def test_zoom_invertido_rejeitado(self) -> None:

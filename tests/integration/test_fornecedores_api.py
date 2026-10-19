@@ -14,7 +14,12 @@ from src.modules.sigmun_compras.domain.entities.fornecedor import Fornecedor
 from src.modules.sigmun_compras.presentation.api.fornecedores_router import (
     get_fornecedor_repository,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_jwt
 from tests.unit.test_fornecedor_use_cases import InMemoryFornecedorRepository
+
+CTX_ADMIN = JWTUsuarioContexto(
+    usuario_id=uuid4(), login="teste.admin", roles=("admin",), unidades_ids=()
+)
 
 
 @pytest.fixture()
@@ -25,6 +30,7 @@ def repository() -> InMemoryFornecedorRepository:
 @pytest.fixture()
 def client(repository: InMemoryFornecedorRepository) -> TestClient:
     app.dependency_overrides[get_fornecedor_repository] = lambda: repository
+    app.dependency_overrides[get_current_user_jwt] = lambda: CTX_ADMIN
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
@@ -59,7 +65,7 @@ def test_post_fornecedor_duplicado_retorna_409(client: TestClient, repository):
     duplicada = client.post("/api/v1/fornecedores", json={"pessoa_juridica_id": pessoa_juridica_id})
 
     assert duplicada.status_code == 409
-    assert "RN-COMPRAS-031" in duplicada.json()["detail"]
+    assert "RN-COMPRAS-031" in duplicada.json()["error"]["message"]
 
 
 # -- GET /api/v1/fornecedores ----------------------------------------------------
@@ -131,7 +137,8 @@ def test_patch_atualiza_situacao(client: TestClient, repository):
 
     assert response.status_code == 200, response.text
     assert response.json()["situacao_cadastro"] == "SUSPENSO"
-    assert repository._data[criado.id].updated_by == usuario  # noqa: SLF001
+    # ADR-0009: identidade vem do JWT autenticado; o header legado é ignorado.
+    assert repository._data[criado.id].updated_by == CTX_ADMIN.usuario_id  # noqa: SLF001
 
 
 def test_patch_sem_campos_retorna_400(client: TestClient, repository):
@@ -171,6 +178,7 @@ def test_delete_inativa_fornecedor(client: TestClient, repository):
 def test_delete_sem_usuario_retorna_401(client: TestClient, repository):
     criado = _semente(repository)
 
+    app.dependency_overrides.pop(get_current_user_jwt, None)
     response = client.delete(f"/api/v1/fornecedores/{criado.id}")
 
     assert response.status_code == 401

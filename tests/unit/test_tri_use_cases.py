@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
-
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
+
 from src.modules.sigmun_tributos.application.interfaces import (
+    RepositorioCertidao,
     RepositorioContribuinte,
+    RepositorioDividaAtiva,
     RepositorioImovel,
     RepositorioLancamento,
-    RepositorioDividaAtiva,
-    RepositorioCertidao,
 )
 from src.modules.sigmun_tributos.application.use_cases import (
     BaixarDividaAtivaUseCase,
@@ -47,14 +47,16 @@ from src.modules.sigmun_tributos.domain.exceptions import (
 
 
 def _contribuinte(cpf: str = "11122233344") -> Contribuinte:
-    return Contribuinte(cpf_cnpj=cpf, nome="Maria Silva",
-                        tipo=TipoContribuinte.PESSOA_FISICA)
+    return Contribuinte(cpf_cnpj=cpf, nome="Maria Silva", tipo=TipoContribuinte.PESSOA_FISICA)
 
 
 def _imovel(contribuinte_id: str = "c-1") -> Imovel:
-    return Imovel(contribuinte_id=contribuinte_id,
-                  inscricao_imobiliaria="INS-001", valor_venal=100000.0,
-                  aliquota=0.01)
+    return Imovel(
+        contribuinte_id=contribuinte_id,
+        inscricao_imobiliaria="INS-001",
+        valor_venal=100000.0,
+        aliquota=0.01,
+    )
 
 
 def _lancamento(contribuinte_id: str = "c-1") -> Lancamento:
@@ -64,7 +66,8 @@ def _lancamento(contribuinte_id: str = "c-1") -> Lancamento:
         exercicio=2026,
         numero_lancamento="2026IPTUABC123",
         valor_tributo=1000.0,
-        juros=0.0, multa=0.0,
+        juros=0.0,
+        multa=0.0,
         data_vencimento=date.today() - timedelta(days=30),
     )
 
@@ -79,9 +82,7 @@ class TestContribuinte:
         novo.id = "c-1"
         repo.save = MagicMock(return_value=novo)
         result = CadastrarContribuinteUseCase(repo).execute(
-            CadastrarContribuinteInput(
-                tipo="pf", nome="Maria Silva", cpf_cnpj="11122233344"
-            )
+            CadastrarContribuinteInput(tipo="pf", nome="Maria Silva", cpf_cnpj="11122233344")
         )
         assert result.cpf_cnpj == "11122233344"
         assert result.esta_ativo
@@ -91,9 +92,7 @@ class TestContribuinte:
         repo.get_by_cpf_cnpj = MagicMock(return_value=_contribuinte())
         with pytest.raises(ContribuinteJaExistenteError):
             CadastrarContribuinteUseCase(repo).execute(
-                CadastrarContribuinteInput(
-                    tipo="pf", nome="Maria", cpf_cnpj="11122233344"
-                )
+                CadastrarContribuinteInput(tipo="pf", nome="Maria", cpf_cnpj="11122233344")
             )
 
 
@@ -110,8 +109,10 @@ class TestImovel:
         imoveis.save = MagicMock(return_value=imovel)
         result = CadastrarImovelUseCase(imoveis, cont).execute(
             CadastrarImovelInput(
-                contribuinte_id="c-1", inscricao_imobiliaria="INS-001",
-                valor_venal=100000.0, aliquota=0.01,
+                contribuinte_id="c-1",
+                inscricao_imobiliaria="INS-001",
+                valor_venal=100000.0,
+                aliquota=0.01,
             )
         )
         assert result.inscricao_imobiliaria == "INS-001"
@@ -124,7 +125,8 @@ class TestImovel:
         with pytest.raises(ContribuinteNaoEncontradoError):
             CadastrarImovelUseCase(imoveis, cont).execute(
                 CadastrarImovelInput(
-                    contribuinte_id="x", inscricao_imobiliaria="INS-001",
+                    contribuinte_id="x",
+                    inscricao_imobiliaria="INS-001",
                     valor_venal=100000.0,
                 )
             )
@@ -137,7 +139,8 @@ class TestImovel:
         with pytest.raises(ImovelJaExistenteError):
             CadastrarImovelUseCase(imoveis, cont).execute(
                 CadastrarImovelInput(
-                    contribuinte_id="c-1", inscricao_imobiliaria="INS-001",
+                    contribuinte_id="c-1",
+                    inscricao_imobiliaria="INS-001",
                     valor_venal=100000.0,
                 )
             )
@@ -154,8 +157,11 @@ class TestLancamento:
         repo.save = MagicMock(side_effect=lambda l: l)
         result = LancarTributoUseCase(repo, cont, imoveis).execute(
             LancarTributoInput(
-                contribuinte_id="c-1", tipo_tributo="issqn", exercicio=2026,
-                base_calculo=10000.0, aliquota=0.05,
+                contribuinte_id="c-1",
+                tipo_tributo="issqn",
+                exercicio=2026,
+                base_calculo=10000.0,
+                aliquota=0.05,
             )
         )
         assert result.tipo_tributo == TipoTributo.ISSQN
@@ -169,7 +175,9 @@ class TestLancamento:
         with pytest.raises(RegraNegocioError):
             LancarTributoUseCase(repo, cont, imoveis).execute(
                 LancarTributoInput(
-                    contribuinte_id="c-1", tipo_tributo="iptu", exercicio=2026,
+                    contribuinte_id="c-1",
+                    tipo_tributo="iptu",
+                    exercicio=2026,
                     base_calculo=100000.0,
                 )
             )
@@ -244,9 +252,7 @@ class TestCertidao:
     def test_emite_positiva_com_debitos(self) -> None:
         certidoes = MagicMock(spec=RepositorioCertidao)
         lancamentos = MagicMock(spec=RepositorioLancamento)
-        lancamentos.list_abertos_por_contribuinte = MagicMock(
-            return_value=[_lancamento()]
-        )
+        lancamentos.list_abertos_por_contribuinte = MagicMock(return_value=[_lancamento()])
         cont = MagicMock(spec=RepositorioContribuinte)
         cont.get_by_id = MagicMock(return_value=_contribuinte())
         certidoes.save = MagicMock(side_effect=lambda c: c)

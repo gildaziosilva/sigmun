@@ -17,6 +17,7 @@ from src.modules.sigmun_compras.presentation.api.contratos_router import (
     get_contrato_repository,
     get_servico_de_auditoria,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_jwt
 from tests.unit.test_contrato_use_cases import InMemoryContratoRepository
 from tests.unit.test_registro_auditoria import InMemoryTrilhaAuditoriaRepository
 
@@ -39,6 +40,10 @@ def trilha() -> InMemoryTrilhaAuditoriaRepository:
 def client(repository, trilha) -> TestClient:
     app.dependency_overrides[get_contrato_repository] = lambda: repository
     app.dependency_overrides[get_servico_de_auditoria] = lambda: ServicoDeAuditoria(trilha)
+    ctx = JWTUsuarioContexto(
+        usuario_id=uuid4(), login="teste.admin", roles=("admin",), unidades_ids=()
+    )
+    app.dependency_overrides[get_current_user_jwt] = lambda: ctx
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
@@ -273,6 +278,7 @@ def test_delete_exclui_logicamente(client: TestClient, repository):
 def test_delete_sem_usuario_retorna_401(client: TestClient, repository):
     criado = client.post("/api/v1/contratos", json=_payload(repository)).json()
 
+    app.dependency_overrides.pop(get_current_user_jwt, None)
     response = client.delete(f"/api/v1/contratos/{criado['id']}")
 
     assert response.status_code == 401

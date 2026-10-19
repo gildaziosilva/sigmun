@@ -352,9 +352,7 @@ class TestRegistrarManifestacaoUseCase:
         self, repo_m, repo_protocolo, repo_anexo, repo_tramitacao
     ):
         """RN-OUV-001 — o primeiro protocolo do ano é 2026-000001."""
-        uc = RegistrarManifestacaoUseCase(
-            repo_m, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+        uc = RegistrarManifestacaoUseCase(repo_m, repo_protocolo, repo_anexo, repo_tramitacao)
         m = uc.execute(_dto_manifestacao())
         assert m.protocolo.codigo == f"{date.today().year}-000001"
         assert m.status is StatusManifestacao.REGISTRADA
@@ -363,29 +361,19 @@ class TestRegistrarManifestacaoUseCase:
     def test_segundo_registro_incrementa_sequencial(
         self, repo_m, repo_protocolo, repo_anexo, repo_tramitacao
     ):
-        uc = RegistrarManifestacaoUseCase(
-            repo_m, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+        uc = RegistrarManifestacaoUseCase(repo_m, repo_protocolo, repo_anexo, repo_tramitacao)
         uc.execute(_dto_manifestacao())
         segundo = uc.execute(_dto_manifestacao())
         assert segundo.protocolo.codigo == f"{date.today().year}-000002"
 
-    def test_gera_prazo_conforme_tipo(
-        self, repo_m, repo_protocolo, repo_anexo, repo_tramitacao
-    ):
+    def test_gera_prazo_conforme_tipo(self, repo_m, repo_protocolo, repo_anexo, repo_tramitacao):
         """RN-OUV-020 — reclamação tem prazo de 30 dias."""
-        uc = RegistrarManifestacaoUseCase(
-            repo_m, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+        uc = RegistrarManifestacaoUseCase(repo_m, repo_protocolo, repo_anexo, repo_tramitacao)
         m = uc.execute(_dto_manifestacao(tipo="sugestao"))
         assert m.prazo.dias_uteis == 20
 
-    def test_anexos_sao_convertidos(
-        self, repo_m, repo_protocolo, repo_anexo, repo_tramitacao
-    ):
-        uc = RegistrarManifestacaoUseCase(
-            repo_m, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+    def test_anexos_sao_convertidos(self, repo_m, repo_protocolo, repo_anexo, repo_tramitacao):
+        uc = RegistrarManifestacaoUseCase(repo_m, repo_protocolo, repo_anexo, repo_tramitacao)
         anexos = [
             {
                 "nome_arquivo": "foto.jpg",
@@ -403,9 +391,7 @@ class TestRegistrarManifestacaoUseCase:
         self, tipo, repo_m, repo_protocolo, repo_anexo, repo_tramitacao
     ):
         """Denúncia e LAI têm casos de uso dedicados."""
-        uc = RegistrarManifestacaoUseCase(
-            repo_m, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+        uc = RegistrarManifestacaoUseCase(repo_m, repo_protocolo, repo_anexo, repo_tramitacao)
         with pytest.raises(RegraNegocioError, match="Use Registrar"):
             uc.execute(_dto_manifestacao(tipo=tipo))
 
@@ -413,12 +399,8 @@ class TestRegistrarManifestacaoUseCase:
         self, repo_m, repo_protocolo, repo_anexo, repo_tramitacao
     ):
         """RN-OUV-002 — manifestação genérica exige identificação."""
-        uc = RegistrarManifestacaoUseCase(
-            repo_m, repo_protocolo, repo_anexo, repo_tramitacao
-        )
-        dto = _dto_manifestacao(
-            cidadao_nome="", cidadao_cpf="", cidadao_anonimo=True
-        )
+        uc = RegistrarManifestacaoUseCase(repo_m, repo_protocolo, repo_anexo, repo_tramitacao)
+        dto = _dto_manifestacao(cidadao_nome="", cidadao_cpf="", cidadao_anonimo=True)
         with pytest.raises(RegraNegocioError):
             uc.execute(dto)
 
@@ -429,13 +411,9 @@ class TestRegistrarManifestacaoUseCase:
 
 
 class TestRegistrarDenunciaUseCase:
-    def test_registra_denuncia_anonima(
-        self, repo_d, repo_protocolo, repo_anexo, repo_tramitacao
-    ):
+    def test_registra_denuncia_anonima(self, repo_d, repo_protocolo, repo_anexo, repo_tramitacao):
         """RN-OUV-002 — denúncia anônima é o padrão e é aceita."""
-        uc = RegistrarDenunciaUseCase(
-            repo_d, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+        uc = RegistrarDenunciaUseCase(repo_d, repo_protocolo, repo_anexo, repo_tramitacao)
         d = uc.execute(_dto_denuncia())
         assert d.tipo_denuncia is not None
         assert d.local_fato == "Prefeitura"
@@ -445,18 +423,14 @@ class TestRegistrarDenunciaUseCase:
         self, repo_d, repo_protocolo, repo_anexo, repo_tramitacao
     ):
         """Denúncias recebem prioridade alta por padrão."""
-        uc = RegistrarDenunciaUseCase(
-            repo_d, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+        uc = RegistrarDenunciaUseCase(repo_d, repo_protocolo, repo_anexo, repo_tramitacao)
         d = uc.execute(_dto_denuncia())
         assert d.prioridade.value == "alta"
 
     def test_denuncia_sem_local_rejeitada(
         self, repo_d, repo_protocolo, repo_anexo, repo_tramitacao
     ):
-        uc = RegistrarDenunciaUseCase(
-            repo_d, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+        uc = RegistrarDenunciaUseCase(repo_d, repo_protocolo, repo_anexo, repo_tramitacao)
         with pytest.raises(RegraNegocioError, match="Local do fato"):
             uc.execute(_dto_denuncia(local_fato=""))
 
@@ -471,19 +445,13 @@ class TestRegistrarPedidoLaiUseCase:
         self, repo_l, repo_protocolo, repo_anexo, repo_tramitacao
     ):
         """Lei 12.527/2011 art. 11 — LAI tem prazo de 20 dias."""
-        uc = RegistrarPedidoLaiUseCase(
-            repo_l, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+        uc = RegistrarPedidoLaiUseCase(repo_l, repo_protocolo, repo_anexo, repo_tramitacao)
         p = uc.execute(_dto_lai())
         assert p.prazo.dias_uteis == 20
         assert str(p.id) in repo_l.itens
 
-    def test_sem_fundamentacao_rejeitado(
-        self, repo_l, repo_protocolo, repo_anexo, repo_tramitacao
-    ):
-        uc = RegistrarPedidoLaiUseCase(
-            repo_l, repo_protocolo, repo_anexo, repo_tramitacao
-        )
+    def test_sem_fundamentacao_rejeitado(self, repo_l, repo_protocolo, repo_anexo, repo_tramitacao):
+        uc = RegistrarPedidoLaiUseCase(repo_l, repo_protocolo, repo_anexo, repo_tramitacao)
         with pytest.raises(RegraNegocioError, match="Fundamentação"):
             uc.execute(_dto_lai(fundamentacao=""))
 
@@ -530,9 +498,7 @@ class TestResponderManifestacaoUseCase:
     def test_manifestacao_inexistente(self, repo_m, repo_d, repo_l):
         uc = ResponderManifestacaoUseCase(repo_m, repo_d, repo_l)
         with pytest.raises(ManifestacaoNaoEncontradaError):
-            uc.execute(
-                ResponderManifestacaoInput(manifestacao_id="inexistente", resposta="X")
-            )
+            uc.execute(ResponderManifestacaoInput(manifestacao_id="inexistente", resposta="X"))
 
     def test_status_invalido_para_responder(self, repo_m, repo_d, repo_l):
         m = repo_m.save(_entidade_manifestacao_em_tratamento())
@@ -541,9 +507,7 @@ class TestResponderManifestacaoUseCase:
         uc = ResponderManifestacaoUseCase(repo_m, repo_d, repo_l)
         with pytest.raises(RegraNegocioError, match="responder"):
             uc.execute(
-                ResponderManifestacaoInput(
-                    manifestacao_id=m.id, resposta="X", respondido_por="u"
-                )
+                ResponderManifestacaoInput(manifestacao_id=m.id, resposta="X", respondido_por="u")
             )
 
 
@@ -586,9 +550,7 @@ class TestAlterarStatusUseCase:
         d = repo_d.save(_entidade_denuncia_em_tratamento())
         uc = AlterarStatusUseCase(repo_m, repo_d, repo_l)
         resultado = uc.execute(
-            AlterarStatusInput(
-                manifestacao_id=d.id, novo_status="respondida", usuario_id="u"
-            )
+            AlterarStatusInput(manifestacao_id=d.id, novo_status="respondida", usuario_id="u")
         )
         assert resultado.status is StatusManifestacao.RESPONDIDA
 
@@ -596,28 +558,20 @@ class TestAlterarStatusUseCase:
         p = repo_l.save(_entidade_lai_em_tratamento())
         uc = AlterarStatusUseCase(repo_m, repo_d, repo_l)
         resultado = uc.execute(
-            AlterarStatusInput(
-                manifestacao_id=p.id, novo_status="respondida", usuario_id="u"
-            )
+            AlterarStatusInput(manifestacao_id=p.id, novo_status="respondida", usuario_id="u")
         )
         assert resultado.status is StatusManifestacao.RESPONDIDA
 
     def test_inexistente(self, repo_m, repo_d, repo_l):
         uc = AlterarStatusUseCase(repo_m, repo_d, repo_l)
         with pytest.raises(ManifestacaoNaoEncontradaError):
-            uc.execute(
-                AlterarStatusInput(
-                    manifestacao_id="inexistente", novo_status="em_analise"
-                )
-            )
+            uc.execute(AlterarStatusInput(manifestacao_id="inexistente", novo_status="em_analise"))
 
     def test_status_invalido_rejeitado(self, repo_m, repo_d, repo_l):
         m = repo_m.save(_entidade_manifestacao_em_tratamento())
         uc = AlterarStatusUseCase(repo_m, repo_d, repo_l)
         with pytest.raises(ValueError):
-            uc.execute(
-                AlterarStatusInput(manifestacao_id=m.id, novo_status="inexistente")
-            )
+            uc.execute(AlterarStatusInput(manifestacao_id=m.id, novo_status="inexistente"))
 
 
 # ===========================================================================
@@ -644,25 +598,19 @@ class TestProrrogarPrazoUseCase:
     def test_prorroga_denuncia(self, repo_m, repo_d, repo_l):
         d = repo_d.save(_entidade_denuncia_em_tratamento())
         uc = ProrrogarPrazoUseCase(repo_m, repo_d, repo_l)
-        resultado = uc.execute(
-            ProrrogarPrazoInput(manifestacao_id=d.id, justificativa="motivo")
-        )
+        resultado = uc.execute(ProrrogarPrazoInput(manifestacao_id=d.id, justificativa="motivo"))
         assert resultado.prazo.prorrogado is True
 
     def test_prorroga_pedido_lai(self, repo_m, repo_d, repo_l):
         p = repo_l.save(_entidade_lai_em_tratamento())
         uc = ProrrogarPrazoUseCase(repo_m, repo_d, repo_l)
-        resultado = uc.execute(
-            ProrrogarPrazoInput(manifestacao_id=p.id, justificativa="motivo")
-        )
+        resultado = uc.execute(ProrrogarPrazoInput(manifestacao_id=p.id, justificativa="motivo"))
         assert resultado.prazo.prorrogado is True
 
     def test_inexistente(self, repo_m, repo_d, repo_l):
         uc = ProrrogarPrazoUseCase(repo_m, repo_d, repo_l)
         with pytest.raises(ManifestacaoNaoEncontradaError):
-            uc.execute(
-                ProrrogarPrazoInput(manifestacao_id="x", justificativa="y")
-            )
+            uc.execute(ProrrogarPrazoInput(manifestacao_id="x", justificativa="y"))
 
 
 # ===========================================================================
@@ -681,9 +629,7 @@ class TestAvaliarManifestacaoUseCase:
         m = self._manifestacao_respondida(repo_m)
         uc = AvaliarManifestacaoUseCase(repo_m)
         resultado = uc.execute(
-            AvaliarManifestacaoInput(
-                manifestacao_id=m.id, nota=5, comentario="Ótimo atendimento"
-            )
+            AvaliarManifestacaoInput(manifestacao_id=m.id, nota=5, comentario="Ótimo atendimento")
         )
         assert resultado.avaliacao_cidadao == 5
         assert resultado.comentario_avaliacao == "Ótimo atendimento"
@@ -727,20 +673,12 @@ class TestEncaminharDenunciaUseCase:
         d = repo_d.save(_entidade_denuncia_em_tratamento())
         uc = EncaminharDenunciaUseCase(repo_d)
         with pytest.raises(RegraNegocioError, match="não reconhecido"):
-            uc.execute(
-                EncaminharDenunciaInput(
-                    denuncia_id=d.id, orgao="X", numero_processo="1"
-                )
-            )
+            uc.execute(EncaminharDenunciaInput(denuncia_id=d.id, orgao="X", numero_processo="1"))
 
     def test_denuncia_inexistente(self, repo_d):
         uc = EncaminharDenunciaUseCase(repo_d)
         with pytest.raises(DenunciaNaoEncontradaError):
-            uc.execute(
-                EncaminharDenunciaInput(
-                    denuncia_id="x", orgao="MP", numero_processo="1"
-                )
-            )
+            uc.execute(EncaminharDenunciaInput(denuncia_id="x", orgao="MP", numero_processo="1"))
 
 
 # ===========================================================================
@@ -800,20 +738,12 @@ class TestRecursoLaiUseCase:
         p = repo_l.save(_entidade_lai_em_tratamento())
         uc = DecidirRecursoLaiUseCase(repo_l)
         with pytest.raises(RegraNegocioError, match="não é um recurso"):
-            uc.execute(
-                DecidirRecursoLaiInput(
-                    recurso_id=p.id, deferido=True, fundamentacao="x"
-                )
-            )
+            uc.execute(DecidirRecursoLaiInput(recurso_id=p.id, deferido=True, fundamentacao="x"))
 
     def test_decidir_recurso_inexistente(self, repo_l):
         uc = DecidirRecursoLaiUseCase(repo_l)
         with pytest.raises(PedidoLaiNaoEncontradoError):
-            uc.execute(
-                DecidirRecursoLaiInput(
-                    recurso_id="x", deferido=True, fundamentacao="y"
-                )
-            )
+            uc.execute(DecidirRecursoLaiInput(recurso_id="x", deferido=True, fundamentacao="y"))
 
 
 # ===========================================================================
@@ -834,9 +764,7 @@ class TestListagemEEstatisticas:
         assert resultado["pages"] == 2
 
     def test_lista_vazia(self, repo_m, repo_d, repo_l):
-        resultado = ListarManifestacoesUseCase(repo_m).execute(
-            ListarManifestacoesInput()
-        )
+        resultado = ListarManifestacoesUseCase(repo_m).execute(ListarManifestacoesInput())
         assert resultado["total"] == 0
         assert resultado["items"] == []
 

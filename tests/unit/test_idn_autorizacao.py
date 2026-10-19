@@ -16,7 +16,6 @@ from src.modules.sigmun_idn.domain.services.auth_service import (
     AutorizacaoService,
 )
 
-
 PERMISSAO_CONSULTAR = "COMPRAS.DEMANDA.CONSULTAR"
 
 
@@ -70,11 +69,14 @@ def test_usuario_com_role_e_permissao_deve_ser_autorizado():
     role = criar_role(permissao=permissao)
     usuario = criar_usuario(role_ids=[role.id])
 
-    assert AutorizacaoService.verificar_permissao(
-        usuario,
-        PERMISSAO_CONSULTAR,
-        [role],
-    ) is True
+    assert (
+        AutorizacaoService.verificar_permissao(
+            usuario,
+            PERMISSAO_CONSULTAR,
+            [role],
+        )
+        is True
+    )
 
 
 def test_usuario_sem_role_deve_ser_negado():
@@ -82,22 +84,28 @@ def test_usuario_sem_role_deve_ser_negado():
     role = criar_role(permissao=permissao)
     usuario = criar_usuario(role_ids=[])
 
-    assert AutorizacaoService.verificar_permissao(
-        usuario,
-        PERMISSAO_CONSULTAR,
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_permissao(
+            usuario,
+            PERMISSAO_CONSULTAR,
+            [role],
+        )
+        is False
+    )
 
 
 def test_role_sem_permissao_deve_ser_negada():
     role = criar_role()
     usuario = criar_usuario(role_ids=[role.id])
 
-    assert AutorizacaoService.verificar_permissao(
-        usuario,
-        PERMISSAO_CONSULTAR,
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_permissao(
+            usuario,
+            PERMISSAO_CONSULTAR,
+            [role],
+        )
+        is False
+    )
 
 
 def test_role_excluida_nao_deve_conceder_permissao():
@@ -107,11 +115,14 @@ def test_role_excluida_nao_deve_conceder_permissao():
 
     usuario = criar_usuario(role_ids=[role.id])
 
-    assert AutorizacaoService.verificar_permissao(
-        usuario,
-        PERMISSAO_CONSULTAR,
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_permissao(
+            usuario,
+            PERMISSAO_CONSULTAR,
+            [role],
+        )
+        is False
+    )
 
 
 def test_usuario_inativo_nao_deve_ser_autorizado():
@@ -122,11 +133,14 @@ def test_usuario_inativo_nao_deve_ser_autorizado():
         status=UsuarioStatus.INATIVO,
     )
 
-    assert AutorizacaoService.verificar_permissao(
-        usuario,
-        PERMISSAO_CONSULTAR,
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_permissao(
+            usuario,
+            PERMISSAO_CONSULTAR,
+            [role],
+        )
+        is False
+    )
 
 
 def test_usuario_bloqueado_nao_deve_ser_autorizado():
@@ -137,11 +151,14 @@ def test_usuario_bloqueado_nao_deve_ser_autorizado():
         status=UsuarioStatus.BLOQUEADO,
     )
 
-    assert AutorizacaoService.verificar_permissao(
-        usuario,
-        PERMISSAO_CONSULTAR,
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_permissao(
+            usuario,
+            PERMISSAO_CONSULTAR,
+            [role],
+        )
+        is False
+    )
 
 
 def test_usuario_pendente_nao_deve_ser_autorizado():
@@ -152,11 +169,14 @@ def test_usuario_pendente_nao_deve_ser_autorizado():
         status=UsuarioStatus.PENDENTE,
     )
 
-    assert AutorizacaoService.verificar_permissao(
-        usuario,
-        PERMISSAO_CONSULTAR,
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_permissao(
+            usuario,
+            PERMISSAO_CONSULTAR,
+            [role],
+        )
+        is False
+    )
 
 
 def test_usuario_excluido_nao_deve_ser_autorizado():
@@ -167,33 +187,42 @@ def test_usuario_excluido_nao_deve_ser_autorizado():
         is_deleted=True,
     )
 
-    assert AutorizacaoService.verificar_permissao(
-        usuario,
-        PERMISSAO_CONSULTAR,
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_permissao(
+            usuario,
+            PERMISSAO_CONSULTAR,
+            [role],
+        )
+        is False
+    )
 
 
 def test_verificar_role_deve_reconhecer_role_do_usuario():
     role = criar_role()
     usuario = criar_usuario(role_ids=[role.id])
 
-    assert AutorizacaoService.verificar_role(
-        usuario,
-        "ROLE_TESTE_COMPRAS",
-        [role],
-    ) is True
+    assert (
+        AutorizacaoService.verificar_role(
+            usuario,
+            "ROLE_TESTE_COMPRAS",
+            [role],
+        )
+        is True
+    )
 
 
 def test_verificar_role_deve_negar_role_que_usuario_nao_possui():
     role = criar_role()
     usuario = criar_usuario(role_ids=[])
 
-    assert AutorizacaoService.verificar_role(
-        usuario,
-        "ROLE_TESTE_COMPRAS",
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_role(
+            usuario,
+            "ROLE_TESTE_COMPRAS",
+            [role],
+        )
+        is False
+    )
 
 
 def test_verificar_role_deve_negar_role_excluida():
@@ -202,20 +231,26 @@ def test_verificar_role_deve_negar_role_excluida():
 
     usuario = criar_usuario(role_ids=[role.id])
 
-    assert AutorizacaoService.verificar_role(
-        usuario,
-        "ROLE_TESTE_COMPRAS",
-        [role],
-    ) is False
+    assert (
+        AutorizacaoService.verificar_role(
+            usuario,
+            "ROLE_TESTE_COMPRAS",
+            [role],
+        )
+        is False
+    )
 
 
 def test_usuario_sem_unidades_deve_ter_acesso_global():
     usuario = criar_usuario(unidades_ids=[])
 
-    assert AutorizacaoService.pode_acessar_unidade(
-        usuario,
-        "unidade-qualquer",
-    ) is True
+    assert (
+        AutorizacaoService.pode_acessar_unidade(
+            usuario,
+            "unidade-qualquer",
+        )
+        is True
+    )
 
 
 def test_usuario_deve_acessar_unidade_explicitamente_associada():
@@ -223,10 +258,13 @@ def test_usuario_deve_acessar_unidade_explicitamente_associada():
         unidades_ids=["unidade-01", "unidade-02"],
     )
 
-    assert AutorizacaoService.pode_acessar_unidade(
-        usuario,
-        "unidade-02",
-    ) is True
+    assert (
+        AutorizacaoService.pode_acessar_unidade(
+            usuario,
+            "unidade-02",
+        )
+        is True
+    )
 
 
 def test_usuario_nao_deve_acessar_unidade_nao_associada():
@@ -234,10 +272,13 @@ def test_usuario_nao_deve_acessar_unidade_nao_associada():
         unidades_ids=["unidade-01"],
     )
 
-    assert AutorizacaoService.pode_acessar_unidade(
-        usuario,
-        "unidade-02",
-    ) is False
+    assert (
+        AutorizacaoService.pode_acessar_unidade(
+            usuario,
+            "unidade-02",
+        )
+        is False
+    )
 
 
 def test_usuario_inativo_nao_deve_acessar_unidade():
@@ -246,10 +287,13 @@ def test_usuario_inativo_nao_deve_acessar_unidade():
         unidades_ids=[],
     )
 
-    assert AutorizacaoService.pode_acessar_unidade(
-        usuario,
-        "unidade-01",
-    ) is False
+    assert (
+        AutorizacaoService.pode_acessar_unidade(
+            usuario,
+            "unidade-01",
+        )
+        is False
+    )
 
 
 def test_usuario_excluido_nao_deve_acessar_unidade():
@@ -258,7 +302,10 @@ def test_usuario_excluido_nao_deve_acessar_unidade():
         unidades_ids=[],
     )
 
-    assert AutorizacaoService.pode_acessar_unidade(
-        usuario,
-        "unidade-01",
-    ) is False
+    assert (
+        AutorizacaoService.pode_acessar_unidade(
+            usuario,
+            "unidade-01",
+        )
+        is False
+    )

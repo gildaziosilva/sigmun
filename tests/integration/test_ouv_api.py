@@ -83,9 +83,7 @@ def _limpar() -> None:
                     ("ouv.denuncias", "id"),
                     ("ouv.manifestacoes", "id"),
                 ):
-                    sessao.execute(
-                        text(f"DELETE FROM {tabela} WHERE {coluna} IN ({lista})")
-                    )
+                    sessao.execute(text(f"DELETE FROM {tabela} WHERE {coluna} IN ({lista})"))
             # Reverte o contador do FalaBR para o valor do seed, para que a
             # próxima execução comece do mesmo ponto. A linha do seed é
             # preservada: apagá-la faria o registro seguinte reutilizar o
@@ -229,6 +227,25 @@ class TestRegistro:
         r = client.post(f"{R}/manifestacoes", json={"tipo": "reclamacao"})
         assert r.status_code == 422
 
+    def test_manifestacao_sem_nome_retorna_422_e_nao_500(self, client: TestClient):
+        """Regressão — `DadosCidadao` levantava ValueError solto → HTTP 500.
+
+        A validação do domínio (nome obrigatório p/ manifestação não anônima)
+        agora é traduzida para 422 pelo endpoint, nunca 500.
+        """
+        r = client.post(
+            f"{R}/manifestacoes",
+            json={
+                "tipo": "reclamacao",
+                "assunto": "Buraco na rua",
+                "descricao": "Buraco sem correção há semanas.",
+                "orgao_destino": "Obras",
+                "cidadao_anonimo": False,
+            },
+        )
+        assert r.status_code == 422, r.text
+        assert "Nome" in r.json()["error"]["message"]
+
 
 # ===========================================================================
 # Ciclo de tratamento — RN-OUV-010
@@ -318,9 +335,7 @@ class TestCicloDeTratamento:
     def test_avaliacao_fora_da_faixa_retorna_422(self, client: TestClient, nota):
         """A faixa 1–5 é validada no schema (422), antes do domínio."""
         criada = _criar_manifestacao(client)
-        r = client.post(
-            f"{R}/manifestacoes/{criada['id']}/avaliar", json={"nota": nota}
-        )
+        r = client.post(f"{R}/manifestacoes/{criada['id']}/avaliar", json={"nota": nota})
         assert r.status_code == 422
 
     def test_manifestacao_inexistente_retorna_404(self, client: TestClient):
@@ -422,16 +437,10 @@ class TestRecursoLai:
     def _arquivar(self, client: TestClient, pedido: dict) -> dict:
         """Leva o pedido a RESPONDIDA e depois ARQUIVADO (negado)."""
         pid = pedido["id"]
-        client.post(
-            f"{R}/manifestacoes/{pid}/status", json={"novo_status": "em_analise"}
-        )
-        client.post(
-            f"{R}/manifestacoes/{pid}/status", json={"novo_status": "em_tratamento"}
-        )
+        client.post(f"{R}/manifestacoes/{pid}/status", json={"novo_status": "em_analise"})
+        client.post(f"{R}/manifestacoes/{pid}/status", json={"novo_status": "em_tratamento"})
         client.post(f"{R}/manifestacoes/{pid}/responder", json={"resposta": "Negado"})
-        r = client.post(
-            f"{R}/manifestacoes/{pid}/status", json={"novo_status": "arquivada"}
-        )
+        r = client.post(f"{R}/manifestacoes/{pid}/status", json={"novo_status": "arquivada"})
         assert r.status_code == 200, r.text
         return r.json()
 

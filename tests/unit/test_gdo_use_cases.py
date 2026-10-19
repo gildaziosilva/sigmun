@@ -128,6 +128,7 @@ class TestCriarDocumentoUseCase:
         repo_tipo = FakeTipoDocumentalRepository()
         # Add a tipo document to the fake repository
         from src.modules.sigmun_gdo.domain.entities import TipoDocumental
+
         tipo = TipoDocumental(id="tipo-001", codigo="TD-TEST", nome="Teste", is_ativo=True)
         repo_tipo.save(tipo)
         uc = CriarDocumentoUseCase(repo, repo_tipo)
@@ -176,6 +177,7 @@ class TestCriarDocumentoUseCase:
         repo = FakeDocumentoRepository()
         repo_tipo = FakeTipoDocumentalRepository()
         from src.modules.sigmun_gdo.domain.entities import TipoDocumental
+
         tipo = TipoDocumental(id="t1", codigo="TD-TEST", nome="Teste", is_ativo=True)
         repo_tipo.save(tipo)
         uc = CriarDocumentoUseCase(repo, repo_tipo)
@@ -197,6 +199,7 @@ class TestCriarDocumentoUseCase:
         repo = FakeDocumentoRepository()
         repo_tipo = FakeTipoDocumentalRepository()
         from src.modules.sigmun_gdo.domain.entities import TipoDocumental
+
         tipo = TipoDocumental(id="t1", codigo="TD-TEST", nome="Teste", is_ativo=True)
         repo_tipo.save(tipo)
         uc = CriarDocumentoUseCase(repo, repo_tipo)
@@ -219,6 +222,7 @@ class TestCriarDocumentoUseCase:
         repo = FakeDocumentoRepository()
         repo_tipo = FakeTipoDocumentalRepository()
         from src.modules.sigmun_gdo.domain.entities import TipoDocumental
+
         tipo = TipoDocumental(id="t1", codigo="TD-TEST", nome="Teste", is_ativo=True)
         repo_tipo.save(tipo)
         uc = CriarDocumentoUseCase(repo, repo_tipo)

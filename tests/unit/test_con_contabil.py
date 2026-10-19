@@ -39,11 +39,15 @@ class TestContabil:
         lancs = MagicMock(spec=RepositorioLancamento)
         lancs.save = MagicMock(side_effect=lambda x: x)
         lanc = LancarContabilUseCase(lancs, contas).execute(
-            LancarInput(exercicio=2026, historico="Empenho",
-                        partidas=[PartidaInput(conta_id="a", codigo_conta="a",
-                                               tipo="debito", valor=100.0),
-                                  PartidaInput(conta_id="b", codigo_conta="b",
-                                               tipo="credito", valor=100.0)]))
+            LancarInput(
+                exercicio=2026,
+                historico="Empenho",
+                partidas=[
+                    PartidaInput(conta_id="a", codigo_conta="a", tipo="debito", valor=100.0),
+                    PartidaInput(conta_id="b", codigo_conta="b", tipo="credito", valor=100.0),
+                ],
+            )
+        )
         assert lanc.status == StatusLancamento.LANCADO
 
     def test_desequilibrado(self) -> None:
@@ -53,23 +57,33 @@ class TestContabil:
         lancs = MagicMock(spec=RepositorioLancamento)
         with pytest.raises(LancamentoDesequilibradoError):
             LancarContabilUseCase(lancs, contas).execute(
-                LancarInput(exercicio=2026, historico="X",
-                            partidas=[PartidaInput(conta_id="a", codigo_conta="a",
-                                                   tipo="debito", valor=100.0),
-                                      PartidaInput(conta_id="b", codigo_conta="b",
-                                                   tipo="credito", valor=50.0)]))
+                LancarInput(
+                    exercicio=2026,
+                    historico="X",
+                    partidas=[
+                        PartidaInput(conta_id="a", codigo_conta="a", tipo="debito", valor=100.0),
+                        PartidaInput(conta_id="b", codigo_conta="b", tipo="credito", valor=50.0),
+                    ],
+                )
+            )
 
     def test_conta_e_conciliacao(self) -> None:
         """Cria conta e concilia sem divergência."""
         contas = MagicMock(spec=RepositorioContaContabil)
         contas.get_by_codigo = MagicMock(return_value=None)
         contas.save = MagicMock(return_value=_conta("1.1.1"))
-        conta = CriarContaUseCase(contas).execute(
-            CriarContaInput(codigo="1.1.1", nome="Caixa"))
+        conta = CriarContaUseCase(contas).execute(CriarContaInput(codigo="1.1.1", nome="Caixa"))
         assert conta.codigo == "1.1.1"
         concs = MagicMock(spec=RepositorioConciliacao)
         concs.save = MagicMock(side_effect=lambda c: c)
         conc = ConciliarContaUseCase(concs).execute(
-            ConciliarInput(conta_id="x", codigo_conta="1.1.1", ano=2026, mes=1,
-                           saldo_contabil=100.0, saldo_extrato=100.0))
+            ConciliarInput(
+                conta_id="x",
+                codigo_conta="1.1.1",
+                ano=2026,
+                mes=1,
+                saldo_contabil=100.0,
+                saldo_extrato=100.0,
+            )
+        )
         assert conc.status.value == "conciliada"

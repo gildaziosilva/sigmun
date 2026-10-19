@@ -127,9 +127,7 @@ class TestComposicao:
         with pytest.raises(RegraNegocioError):
             ComporCamadaUseCase(
                 repo_vinculo(), repo_mapa(_mapa_cadastrado()), repo_camada(_camada_cadastrada())
-            ).execute(
-                ComporCamadaInput(mapa_id="mapa-1", camada_id="camada-1", opacidade=150.0)
-            )
+            ).execute(ComporCamadaInput(mapa_id="mapa-1", camada_id="camada-1", opacidade=150.0))
 
     def test_remove_composicao_de_mapa_rascunho(self) -> None:
         vinculo = _vinculo()
@@ -215,9 +213,9 @@ class TestAtualizacaoEExclusaoMapa:
     def test_codigo_de_mapa_publicado_e_imutavel(self) -> None:
         """RN-GEO-004: após a publicação o código identifica o mapa publicado."""
         with pytest.raises(MapaNaoEditavelError):
-            AtualizarMapaUseCase(
-                repo_mapa(_mapa_cadastrado(SituacaoMapaSig.PUBLICADO))
-            ).execute(AtualizarMapaInput(mapa_id="mapa-1", codigo="MAP-NOVO"))
+            AtualizarMapaUseCase(repo_mapa(_mapa_cadastrado(SituacaoMapaSig.PUBLICADO))).execute(
+                AtualizarMapaInput(mapa_id="mapa-1", codigo="MAP-NOVO")
+            )
 
     def test_exclui_mapa_rascunho(self) -> None:
         resultado = ExcluirMapaUseCase(repo_mapa(_mapa_cadastrado()), repo_vinculo()).execute(

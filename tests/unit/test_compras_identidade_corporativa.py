@@ -17,21 +17,15 @@ def test_openapi_identifica_compras_com_codigo_corporativo(app_instance):
 def test_documentacao_corporativa_usa_identidade_canonica():
     """Referências correntes devem identificar Compras como DOM-COM."""
     paths = (
-        DOCS / "01-Arquitetura-Corporativa"
-        / "030-Roadmap-de-Implementacao-dos-Dominios.md",
-        DOCS / "02-Modelo-de-Negocio"
-        / "Mapa-de-Dominios.md",
-        DOCS / "DOM-COMPRAS-001"
-        / "000-Dominio-Gestao-de-Compras-e-Contratacoes.md",
-        DOCS / "DOM-COMPRAS-001"
-        / "001-Mapa-de-Atores-Gestao-de-Compras-e-Contratacoes.md",
-        DOCS / "DOM-COMPRAS-001"
-        / "002-Mapa-de-Capacidades-Gestao-de-Compras-e-Contratacoes.md",
-        DOCS / "DOM-COMPRAS-001"
-        / "003-Mapa-de-Processos-Gestao-de-Compras-e-Contratacoes.md",
-        DOCS / "DOM-COMPRAS-001"
-        / "004-Mapa-de-Servicos-Gestao-de-Compras-e-Contratacoes.md",
-        DOCS / "DOM-COMPRAS-001"
+        DOCS / "01-Arquitetura-Corporativa" / "030-Roadmap-de-Implementacao-dos-Dominios.md",
+        DOCS / "02-Modelo-de-Negocio" / "Mapa-de-Dominios.md",
+        DOCS / "DOM-COMPRAS-001" / "000-Dominio-Gestao-de-Compras-e-Contratacoes.md",
+        DOCS / "DOM-COMPRAS-001" / "001-Mapa-de-Atores-Gestao-de-Compras-e-Contratacoes.md",
+        DOCS / "DOM-COMPRAS-001" / "002-Mapa-de-Capacidades-Gestao-de-Compras-e-Contratacoes.md",
+        DOCS / "DOM-COMPRAS-001" / "003-Mapa-de-Processos-Gestao-de-Compras-e-Contratacoes.md",
+        DOCS / "DOM-COMPRAS-001" / "004-Mapa-de-Servicos-Gestao-de-Compras-e-Contratacoes.md",
+        DOCS
+        / "DOM-COMPRAS-001"
         / "012-Matriz-de-Rastreabilidade-Gestao-de-Compras-e-Contratacoes.md",
     )
 
@@ -43,25 +37,20 @@ def test_documentacao_corporativa_usa_identidade_canonica():
 def test_scripts_preservam_localizacao_fisica_das_evidencias():
     """Inspeciona caminhos sem importar scripts de deploy ou monitoramento."""
     for name in ("deploy_controlled_env.py", "operations_monitor.py"):
-        tree = ast.parse(
-            (ROOT / "scripts" / name).read_text(encoding="utf-8")
-        )
+        tree = ast.parse((ROOT / "scripts" / name).read_text(encoding="utf-8"))
         assignments = [
             node
             for node in tree.body
             if isinstance(node, ast.Assign)
             and any(
-                isinstance(target, ast.Name)
-                and target.id == "EVIDENCE_DIR"
+                isinstance(target, ast.Name) and target.id == "EVIDENCE_DIR"
                 for target in node.targets
             )
         ]
         assert len(assignments) == 1
 
         values = [
-            node.value
-            for node in ast.walk(assignments[0].value)
-            if isinstance(node, ast.Constant)
+            node.value for node in ast.walk(assignments[0].value) if isinstance(node, ast.Constant)
         ]
 
         assert "DOM-COMPRAS-001" in values

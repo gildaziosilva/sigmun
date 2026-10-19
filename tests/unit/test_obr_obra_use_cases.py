@@ -168,9 +168,9 @@ class TestAtualizacaoEExclusaoObra:
             )
 
     def test_exclui_obra_sem_dependencias(self) -> None:
-        resultado = ExcluirObraUseCase(
-            repo_obra(_obra()), repo_medicao(), repo_despesa()
-        ).execute("obra-1")
+        resultado = ExcluirObraUseCase(repo_obra(_obra()), repo_medicao(), repo_despesa()).execute(
+            "obra-1"
+        )
         assert resultado.is_deleted is True
 
     def test_exclui_obra_com_mediacao_rejeitado(self) -> None:

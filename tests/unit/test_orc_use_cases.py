@@ -53,14 +53,20 @@ def _ldo(status=StatusLDO.ELABORACAO) -> LDO:
 
 
 def _loa(status=StatusLOA.ELABORACAO) -> LOA:
-    return LOA(id="loa-1", exercicio=2026, ldo_id="ldo-1",
-               valor_receita_prevista=1000.0, valor_despesa_fixada=900.0,
-               status=status)
+    return LOA(
+        id="loa-1",
+        exercicio=2026,
+        ldo_id="ldo-1",
+        valor_receita_prevista=1000.0,
+        valor_despesa_fixada=900.0,
+        status=status,
+    )
 
 
 def _dotacao() -> Dotacao:
-    return Dotacao(id="dot-1", loa_id="loa-1", exercicio=2026,
-                   codigo="01.01.01", valor_inicial=1000.0)
+    return Dotacao(
+        id="dot-1", loa_id="loa-1", exercicio=2026, codigo="01.01.01", valor_inicial=1000.0
+    )
 
 
 class TestPlanejamento:
@@ -80,8 +86,7 @@ class TestPlanejamento:
         ldos = MagicMock(spec=RepositorioLDO)
         ldos.get_by_exercicio = MagicMock(return_value=None)
         ldos.save = MagicMock(return_value=_ldo())
-        ldo = CriarLDOUseCase(ldos, ppas).execute(
-            CriarLDOInput(exercicio=2026, ppa_id="ppa-1"))
+        ldo = CriarLDOUseCase(ldos, ppas).execute(CriarLDOInput(exercicio=2026, ppa_id="ppa-1"))
         assert ldo.exercicio == 2026
         ldos.get_by_id = MagicMock(return_value=ldo)
         SancionarLDOUseCase(ldos).execute("ldo-1", sancionar=True)
@@ -91,8 +96,8 @@ class TestPlanejamento:
         loas.get_by_exercicio = MagicMock(return_value=None)
         loas.save = MagicMock(return_value=_loa())
         loa = CriarLOAUseCase(loas, ldos).execute(
-            CriarLOAInput(exercicio=2026, ldo_id="ldo-1",
-                          receita=1000.0, despesa=900.0))
+            CriarLOAInput(exercicio=2026, ldo_id="ldo-1", receita=1000.0, despesa=900.0)
+        )
         loas.get_by_id = MagicMock(return_value=loa)
         PublicarLOAUseCase(loas).execute("loa-1", publicar=True)
         assert loa.status == StatusLOA.PUBLICADA
@@ -116,16 +121,20 @@ class TestDotacao:
         loas = MagicMock(spec=RepositorioLOA)
         loas.get_by_id = MagicMock(return_value=_loa(StatusLOA.PUBLICADA))
         CriarDotacaoUseCase(dots, loas).execute(
-            CriarDotacaoInput(loa_id="loa-1", exercicio=2026,
-                              codigo="01.01.01", valor_inicial=1000.0))
+            CriarDotacaoInput(
+                loa_id="loa-1", exercicio=2026, codigo="01.01.01", valor_inicial=1000.0
+            )
+        )
         dots.get_by_id = MagicMock(return_value=dot)
         SuplementarDotacaoUseCase(dots).execute("dot-1", 200.0)
         assert dot.valor_atualizado == 1200.0
         res_repo = MagicMock(spec=RepositorioReserva)
         res_repo.save = MagicMock(
-            return_value=ReservaSaldo(id="r1", dotacao_id="dot-1", valor=300.0))
+            return_value=ReservaSaldo(id="r1", dotacao_id="dot-1", valor=300.0)
+        )
         ReservarSaldoUseCase(res_repo, dots).execute(
-            ReservarSaldoInput(dotacao_id="dot-1", valor=300.0))
+            ReservarSaldoInput(dotacao_id="dot-1", valor=300.0)
+        )
         assert dot.saldo_disponivel == 900.0
 
     def test_reserva_sem_saldo(self) -> None:
@@ -136,7 +145,8 @@ class TestDotacao:
         res_repo = MagicMock(spec=RepositorioReserva)
         with pytest.raises(DotacaoSemSaldoError):
             ReservarSaldoUseCase(res_repo, dots).execute(
-                ReservarSaldoInput(dotacao_id="dot-1", valor=5000.0))
+                ReservarSaldoInput(dotacao_id="dot-1", valor=5000.0)
+            )
 
     def test_anular_e_cancelar(self) -> None:
         """Anulação e cancelamento de reserva devolvem saldo."""

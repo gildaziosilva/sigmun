@@ -6,7 +6,7 @@ transação do negócio, e o `DespachadorRedisStreams` publica os eventos
 pendentes em streams do Redis (testado contra o Redis local).
 """
 
-import uuid
+from uuid import uuid4
 
 import pytest
 import redis as redis_lib
@@ -20,6 +20,7 @@ from src.modules.sigmun_gdo.infrastructure.messaging import (
     TopicosGDO,
     despachar_eventos_pendentes,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_jwt
 
 TABELAS_EVENTOS = (
     "gdo.eventos_outbox",
@@ -33,6 +34,24 @@ TABELAS_EVENTOS = (
 )
 
 TOPICOS = [t for attr, t in vars(TopicosGDO).items() if not attr.startswith("_")]
+
+
+def _ctx_gdo() -> JWTUsuarioContexto:
+    """Contexto de usuário autenticado com papel GDO."""
+    return JWTUsuarioContexto(
+        usuario_id=uuid4(),
+        login="teste.gdo",
+        roles=("gestor", "gdo"),
+        unidades_ids=(),
+    )
+
+
+@pytest.fixture(autouse=True)
+def _override_auth() -> None:
+    """Override de autenticação para testes que precisam de usuário autenticado."""
+    app.dependency_overrides[get_current_user_jwt] = lambda: _ctx_gdo()
+    yield
+    app.dependency_overrides.pop(get_current_user_jwt, None)
 
 
 @pytest.fixture(autouse=True)
@@ -62,11 +81,7 @@ def tipo_documento_para_eventos(_isolamento_eventos) -> str:
     from src.modules.sigmun_gdo.infrastructure.database.models import TipoDocumentalModel
 
     with SessionLocal() as session:
-        tipo = (
-            session.query(TipoDocumentalModel)
-            .filter_by(codigo="TD-OFICIO")
-            .first()
-        )
+        tipo = session.query(TipoDocumentalModel).filter_by(codigo="TD-OFICIO").first()
 
         if not tipo:
             tipo = TipoDocumentalModel(
@@ -97,7 +112,7 @@ def db():
 
 def _payload(tipo_documental_id: str, **overrides) -> dict:
     dados = {
-        "codigo": f"DOC-{uuid.uuid4().hex[:10].upper()}",
+        "codigo": f"DOC-{uuid4().hex[:10].upper()}",
         "numero": "0001",
         "ano": 2026,
         "tipo_documental_id": tipo_documental_id,
@@ -121,7 +136,9 @@ def _eventos_da_sessao(db, topico: str | None = None) -> list[EventoOutboxModel]
 # =============================================================================
 
 
-def test_criar_documento_publica_evento_criado(client: TestClient, db, tipo_documento_para_eventos: str):
+def test_criar_documento_publica_evento_criado(
+    client: TestClient, db, tipo_documento_para_eventos: str
+):
     resposta = client.post(
         "/api/v1/gdo/documentos",
         json=_payload(tipo_documento_para_eventos),
@@ -143,7 +160,9 @@ def test_criar_documento_publica_evento_criado(client: TestClient, db, tipo_docu
     assert evento.payload["status"] == criado["status"]
 
 
-def test_criar_documento_com_processo_publica_dois_eventos(client: TestClient, db, tipo_documento_para_eventos: str):
+def test_criar_documento_com_processo_publica_dois_eventos(
+    client: TestClient, db, tipo_documento_para_eventos: str
+):
     """Documento vinculado a processo publica `criado` e `vinculado_processo`."""
     from sqlalchemy import text as sql_text
 
@@ -161,7 +180,10 @@ def test_criar_documento_com_processo_publica_dois_eventos(client: TestClient, d
         processo_id = str(row.scalar_one())
         session.commit()
 
-    client.post("/api/v1/gdo/documentos", json=_payload(tipo_documento_para_eventos, processo_id=processo_id))
+    client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documento_para_eventos, processo_id=processo_id),
+    )
 
     topicos = [e.topico for e in _eventos_da_sessao(db)]
 
@@ -174,7 +196,9 @@ def test_criar_documento_com_processo_publica_dois_eventos(client: TestClient, d
     assert vinculado.payload["processo_id"] == processo_id
 
 
-def test_tramitar_publica_evento_tramitado(client: TestClient, db, tipo_documento_para_eventos: str):
+def test_tramitar_publica_evento_tramitado(
+    client: TestClient, db, tipo_documento_para_eventos: str
+):
     resposta = client.post(
         "/api/v1/gdo/documentos",
         json=_payload(tipo_documento_para_eventos),
@@ -199,14 +223,16 @@ def test_tramitar_publica_evento_tramitado(client: TestClient, db, tipo_document
     assert eventos[0].payload["unidade_destino_id"] == "UNIDADE-02"
 
 
-def test_arquivar_publica_evento_arquivado(client: TestClient, db, tipo_documento_para_eventos: str):
+def test_arquivar_publica_evento_arquivado(
+    client: TestClient, db, tipo_documento_para_eventos: str
+):
     resposta = client.post(
         "/api/v1/gdo/documentos",
         json=_payload(tipo_documento_para_eventos),
     )
     assert resposta.status_code == 201, resposta.text
     criado = resposta.json()
-    unidade_arquivo_id = str(uuid.uuid4())
+    unidade_arquivo_id = str(uuid4())
 
     resposta = client.post(
         f"/api/v1/gdo/documentos/{criado['id']}/arquivar",
@@ -250,7 +276,9 @@ def test_assinar_publica_evento_assinado(client: TestClient, db, tipo_documento_
     assert eventos[0].payload["signatario_id"] == "USER-42"
 
 
-def test_destinacao_eliminacao_publica_evento_eliminado(client: TestClient, db, tipo_documento_para_eventos: str):
+def test_destinacao_eliminacao_publica_evento_eliminado(
+    client: TestClient, db, tipo_documento_para_eventos: str
+):
     """RN-GDO-011: eliminação homologada publica `gdo.documento.eliminado`."""
     resposta = client.post(
         "/api/v1/gdo/documentos",
@@ -281,7 +309,9 @@ def test_destinacao_eliminacao_publica_evento_eliminado(client: TestClient, db, 
 # =============================================================================
 
 
-def test_despachar_publica_eventos_no_redis(client: TestClient, db, tipo_documento_para_eventos: str):
+def test_despachar_publica_eventos_no_redis(
+    client: TestClient, db, tipo_documento_para_eventos: str
+):
     """Eventos pendentes são publicados no stream do tópico e marcados."""
     resposta = client.post(
         "/api/v1/gdo/documentos",
@@ -323,7 +353,7 @@ def test_despachar_falha_incrementa_tentativas_e_marca_erro(db):
                 topico=TopicosGDO.DOCUMENTO_PUBLICADO,
                 evento_nome="DocumentoPublicado",
                 agregado_tipo="documento",
-                agregado_id=str(uuid.uuid4()),
+                agregado_id=str(uuid4()),
                 payload={"codigo": "DOC-X"},
                 status="pendente",
             )

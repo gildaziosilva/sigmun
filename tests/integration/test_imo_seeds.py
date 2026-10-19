@@ -115,9 +115,7 @@ def test_seed_respeita_regras_de_negocio():
     # RN-IMO-006: todo vínculo pertence a um imóvel populado.
     assert all(p.imovel_id in imoveis_ids for p in proprietarios)
     # RN-IMO-006: no máximo um titular principal por imóvel.
-    principais = [
-        p.imovel_id for p in proprietarios if p.principal and p.vinculo == "titular"
-    ]
+    principais = [p.imovel_id for p in proprietarios if p.principal and p.vinculo == "titular"]
     assert len(principais) == len(set(principais))
 
 
@@ -127,9 +125,7 @@ def test_seed_cobre_status_das_avaliacoes():
         popular_seed_imo(session)
         session.commit()
 
-        situacoes = {
-            a.situacao for a in session.scalars(select(AvaliacaoImovelModel)).all()
-        }
+        situacoes = {a.situacao for a in session.scalars(select(AvaliacaoImovelModel)).all()}
 
     assert {"concluida", "cancelada"} <= situacoes
 

@@ -43,9 +43,7 @@ def test_dependencias_de_fastapi_existem_no_modulo() -> None:
             elif isinstance(no, ast.Assign):
                 definidos.update(t.id for t in no.targets if isinstance(t, ast.Name))
             elif isinstance(no, (ast.Import, ast.ImportFrom)):
-                definidos.update(
-                    (a.asname or a.name).split(".")[0] for a in no.names
-                )
+                definidos.update((a.asname or a.name).split(".")[0] for a in no.names)
 
         for no in ast.walk(arvore):
             if isinstance(no, ast.Call) and getattr(no.func, "id", None) == "Depends":
@@ -60,9 +58,7 @@ def test_dependencias_de_fastapi_existem_no_modulo() -> None:
     "dominio",
     ["/api/v1/ate/atendimentos", "/api/v1/cadastro/pessoas", "/api/v1/ouv/manifestacoes"],
 )
-def test_openapi_expoe_dominio_independente_dos_outros(
-    client: TestClient, dominio: str
-) -> None:
+def test_openapi_expoe_dominio_independente_dos_outros(client: TestClient, dominio: str) -> None:
     """Um defeito em qualquer módulo não pode esconder os demais domínios."""
     schema = client.get("/openapi.json").json()
     assert dominio in schema["paths"], f"{dominio} ausente no OpenAPI"

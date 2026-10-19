@@ -68,9 +68,7 @@ class TestAvaliacao:
 
     def test_valores_unitarios_negativos_rejeitados(self) -> None:
         with pytest.raises(RegraNegocioError):
-            _avaliar(
-                repo_avaliacao(), repo_imovel(imovel()), valor_terreno_m2_unitario=-1.0
-            )
+            _avaliar(repo_avaliacao(), repo_imovel(imovel()), valor_terreno_m2_unitario=-1.0)
 
     def test_aliquota_fora_de_faixa_rejeitada(self) -> None:
         with pytest.raises(RegraNegocioError):

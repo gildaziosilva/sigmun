@@ -58,9 +58,7 @@ class TestCadastroCamada:
         """RN-GEO-005: zoom mínimo não pode superar o máximo."""
         with pytest.raises(RegraNegocioError):
             CadastrarCamadaUseCase(repo_camada()).execute(
-                CadastrarCamadaInput(
-                    codigo="CAM-9", nome="X", zoom_minimo=20, zoom_maximo=5
-                )
+                CadastrarCamadaInput(codigo="CAM-9", nome="X", zoom_minimo=20, zoom_maximo=5)
             )
 
     def test_zoom_fora_de_faixa_rejeitado(self) -> None:
@@ -145,9 +143,9 @@ class TestExclusaoCamada:
     def test_exclui_camada_sem_mapa_publicado(self) -> None:
         alvo = _camada()
         alvo.id = "cam-1"
-        resultado = ExcluirCamadaUseCase(
-            repo_camada(alvo), repo_vinculo(), repo_mapa()
-        ).execute("cam-1")
+        resultado = ExcluirCamadaUseCase(repo_camada(alvo), repo_vinculo(), repo_mapa()).execute(
+            "cam-1"
+        )
         assert resultado.is_deleted is True
 
     def test_exclui_camada_inexistente(self) -> None:

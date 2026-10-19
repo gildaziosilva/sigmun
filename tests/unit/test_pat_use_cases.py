@@ -25,15 +25,19 @@ from src.modules.sigmun_patrimonio.domain.entities.transferencia import (
     StatusTransferencia,
 )
 from src.modules.sigmun_patrimonio.domain.exceptions import (
-    BemNaoEncontradoError,
     BemJaExistenteError,
+    BemNaoEncontradoError,
 )
 
 
 def _bem(codigo: str = "TMB-001") -> Bem:
     return Bem(
-        codigo=codigo, descricao="Notebook", valor_aquisicao=10000.0,
-        valor_residual=1000.0, vida_util_anos=3, valor_contabil=10000.0,
+        codigo=codigo,
+        descricao="Notebook",
+        valor_aquisicao=10000.0,
+        valor_residual=1000.0,
+        vida_util_anos=3,
+        valor_contabil=10000.0,
     )
 
 
@@ -48,8 +52,12 @@ class TestBem:
         repo.save = MagicMock(return_value=novo)
         result = CadastrarBemUseCase(repo).execute(
             CadastrarBemInput(
-                codigo="TMB-001", tipo="movel", descricao="Notebook",
-                valor_aquisicao=10000.0, valor_residual=1000.0, vida_util_anos=3,
+                codigo="TMB-001",
+                tipo="movel",
+                descricao="Notebook",
+                valor_aquisicao=10000.0,
+                valor_residual=1000.0,
+                vida_util_anos=3,
             )
         )
         assert result.codigo == "TMB-001"
@@ -61,7 +69,9 @@ class TestBem:
         with pytest.raises(BemJaExistenteError):
             CadastrarBemUseCase(repo).execute(
                 CadastrarBemInput(
-                    codigo="TMB-001", tipo="movel", descricao="X",
+                    codigo="TMB-001",
+                    tipo="movel",
+                    descricao="X",
                     valor_aquisicao=1000.0,
                 )
             )

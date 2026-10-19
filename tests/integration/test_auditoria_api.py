@@ -19,7 +19,13 @@ from src.modules.sigmun_compras.presentation.api.auditoria_router import (
     get_trilha_auditoria_repository,
 )
 from src.shared.compat import UTC
+from src.shared.security.jwt import create_access_token
 from tests.unit.test_registro_auditoria import InMemoryTrilhaAuditoriaRepository
+
+
+def _bearer(*roles: str) -> dict[str, str]:
+    token = create_access_token(usuario_id=uuid4(), login="auditor.teste", roles=list(roles))
+    return {"Authorization": f"Bearer {token}"}
 
 
 @pytest.fixture()
@@ -63,7 +69,7 @@ def client(trilha: InMemoryTrilhaAuditoriaRepository) -> TestClient:
     app.dependency_overrides.clear()
 
 
-_HEADERS_AUDITOR = {"X-Usuario-Id": str(uuid4()), "X-Usuario-Papel": "auditor"}
+_HEADERS_AUDITOR = _bearer("auditor")
 
 
 def test_consulta_sem_autenticacao_retorna_401(client: TestClient):
@@ -73,10 +79,12 @@ def test_consulta_sem_autenticacao_retorna_401(client: TestClient):
 
 
 def test_consulta_sem_papel_retorna_403(client: TestClient):
-    response = client.get(
-        "/api/v1/auditoria",
-        headers={"X-Usuario-Id": str(uuid4()), "X-Usuario-Papel": "compras"},
-    )
+    # T-0.1: papel agora vem do JWT; header legado nao autentica mais.
+    # Sem JWT => 401; com JWT sem papel => 403 (cobertos abaixo).
+    sem_jwt = client.get("/api/v1/auditoria")
+    assert sem_jwt.status_code == 401
+
+    response = client.get("/api/v1/auditoria", headers=_bearer("compras"))
 
     assert response.status_code == 403
 

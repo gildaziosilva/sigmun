@@ -28,13 +28,15 @@ from src.modules.sigmun_orc.domain.exceptions import DotacaoSemSaldoError
 
 
 def _dotacao() -> Dotacao:
-    return Dotacao(id="dot-1", loa_id="loa-1", exercicio=2026,
-                   codigo="01.01.01", valor_inicial=1000.0)
+    return Dotacao(
+        id="dot-1", loa_id="loa-1", exercicio=2026, codigo="01.01.01", valor_inicial=1000.0
+    )
 
 
 def _empenho() -> Empenho:
-    return Empenho(id="emp-1", exercicio=2026, numero="2026NE0001",
-                   dotacao_id="dot-1", valor_empenhado=500.0)
+    return Empenho(
+        id="emp-1", exercicio=2026, numero="2026NE0001", dotacao_id="dot-1", valor_empenhado=500.0
+    )
 
 
 class TestExecucao:
@@ -48,12 +50,14 @@ class TestExecucao:
         emp = _empenho()
         emps.save = MagicMock(return_value=emp)
         EmitirEmpenhoUseCase(emps).execute(
-            EmitirEmpenhoInput(exercicio=2026, numero="2026NE0001", valor=500.0), dot)
+            EmitirEmpenhoInput(exercicio=2026, numero="2026NE0001", valor=500.0), dot
+        )
         assert dot.valor_empenhado == 500.0
         emps.get_by_id = MagicMock(return_value=emp)
         liqs = MagicMock(spec=RepositorioLiquidacao)
-        liq = Liquidacao(id="liq-1", empenho_id="emp-1", valor=500.0,
-                         status=StatusLiquidacao.CONFIRMADA)
+        liq = Liquidacao(
+            id="liq-1", empenho_id="emp-1", valor=500.0, status=StatusLiquidacao.CONFIRMADA
+        )
         liqs.save = MagicMock(return_value=liq)
         LiquidarEmpenhoUseCase(emps, liqs).execute("emp-1", 500.0)
         assert emp.status == StatusEmpenho.LIQUIDADO
@@ -70,7 +74,8 @@ class TestExecucao:
         emps.get_by_numero_exercicio = MagicMock(return_value=None)
         with pytest.raises(DotacaoSemSaldoError):
             EmitirEmpenhoUseCase(emps).execute(
-                EmitirEmpenhoInput(exercicio=2026, numero="X", valor=5000.0), dot)
+                EmitirEmpenhoInput(exercicio=2026, numero="X", valor=5000.0), dot
+            )
 
     def test_anular_devolve_saldo(self) -> None:
         """Anulação devolve saldo à dotação."""

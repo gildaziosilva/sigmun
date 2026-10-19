@@ -21,6 +21,7 @@ from src.shared.security.jwt import (
     JWTUsuarioContexto,
     get_current_user_hybrid,
     get_current_user_hybrid_optional,
+    get_current_user_jwt,
 )
 
 R = "/api/v1/idn/usuarios"
@@ -36,6 +37,8 @@ def client() -> TestClient:
     )
     app.dependency_overrides[get_current_user_hybrid] = lambda: ctx
     app.dependency_overrides[get_current_user_hybrid_optional] = lambda: ctx
+    # T-2.3: rotas /usuarios agora exigem papel `admin` via exigir_papeis.
+    app.dependency_overrides[get_current_user_jwt] = lambda: ctx
     with TestClient(app, raise_server_exceptions=False) as c:
         yield c
     app.dependency_overrides.clear()
@@ -57,7 +60,7 @@ class TestBuscarUsuario:
         inexistente = str(uuid4())
         r = client.get(f"{R}/{inexistente}")
         assert r.status_code == 404, r.text
-        assert inexistente in r.json()["detail"]
+        assert inexistente in r.json()["error"]["message"]
 
     @pytest.mark.parametrize("malformado", ["abc", "123", "not-a-uuid", "00000000-0000"])
     def test_identificador_malformado_responde_404(self, client: TestClient, malformado: str):

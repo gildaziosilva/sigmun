@@ -61,12 +61,8 @@ class TestRegistroMedicao:
 
     def test_obra_inexistente_rejeitada(self) -> None:
         with pytest.raises(ObraNaoEncontradaError):
-            RegistrarMedicaoUseCase(
-                repo_medicao(), repo_obra(), repo_despesa()
-            ).execute(
-                RegistrarMedicaoInput(
-                    obra_id="obra-9", numero="MED-1", responsavel_tecnico="Eng."
-                )
+            RegistrarMedicaoUseCase(repo_medicao(), repo_obra(), repo_despesa()).execute(
+                RegistrarMedicaoInput(obra_id="obra-9", numero="MED-1", responsavel_tecnico="Eng.")
             )
 
     def test_numero_de_medicao_duplicado_rejeitado(self) -> None:
@@ -153,9 +149,7 @@ class TestDespesas:
         despesa = RegistrarDespesaUseCase(
             repo_despesa(), repo_obra(obra), repo_medicao(medicao)
         ).execute(
-            RegistrarDespesaInput(
-                obra_id="obra-1", descricao="Repasse medicao 1", valor=10_000.0
-            )
+            RegistrarDespesaInput(obra_id="obra-1", descricao="Repasse medicao 1", valor=10_000.0)
         )
         assert despesa.valor == 10_000.0
         assert obra.valor_pago == 10_000.0
@@ -165,26 +159,20 @@ class TestDespesas:
         obra = _obra_em_execucao()
         obra.valor_mediado = 1_000.0
         with pytest.raises(RegraNegocioError):
-            RegistrarDespesaUseCase(
-                repo_despesa(), repo_obra(obra), repo_medicao()
-            ).execute(
+            RegistrarDespesaUseCase(repo_despesa(), repo_obra(obra), repo_medicao()).execute(
                 RegistrarDespesaInput(obra_id="obra-1", descricao="X", valor=50_000.0)
             )
 
     def test_despesa_sem_saldo_mediado_rejeitada(self) -> None:
         obra = _obra_em_execucao()
         with pytest.raises(RegraNegocioError):
-            RegistrarDespesaUseCase(
-                repo_despesa(), repo_obra(obra), repo_medicao()
-            ).execute(
+            RegistrarDespesaUseCase(repo_despesa(), repo_obra(obra), repo_medicao()).execute(
                 RegistrarDespesaInput(obra_id="obra-1", descricao="X", valor=100.0)
             )
 
     def test_despesa_em_obra_planejada_rejeitada(self) -> None:
         with pytest.raises(RegraNegocioError):
-            RegistrarDespesaUseCase(
-                repo_despesa(), repo_obra(_obra()), repo_medicao()
-            ).execute(
+            RegistrarDespesaUseCase(repo_despesa(), repo_obra(_obra()), repo_medicao()).execute(
                 RegistrarDespesaInput(obra_id="obra-1", descricao="X", valor=100.0)
             )
 

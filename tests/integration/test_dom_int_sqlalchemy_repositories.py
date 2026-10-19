@@ -301,9 +301,8 @@ class TestSqlAlchemyContratoIntegracaoRepository:
 
         contrato = _contrato(str(uuid4()))
 
-        with pytest.raises(IntegrityError):
-            with session.begin_nested():
-                repo.save(contrato)
+        with pytest.raises(IntegrityError), session.begin_nested():
+            repo.save(contrato)
 
 
 # ---------------------------------------------------------------------------
@@ -473,10 +472,7 @@ class TestSqlAlchemyEntregaWebhookRepository:
         webhook = webhook_repo.save(_webhook())
         agora = datetime.now(timezone.utc)
 
-        primeiras = [
-            entrega_repo.save(_entrega(webhook.id))
-            for _ in range(3)
-        ]
+        primeiras = [entrega_repo.save(_entrega(webhook.id)) for _ in range(3)]
 
         sucesso = _entrega(webhook.id)
         sucesso.registrar_sucesso(200, agora)
@@ -491,9 +487,8 @@ class TestSqlAlchemyEntregaWebhookRepository:
     def test_fk_webhook_rejeita_id_inexistente(self, session: Session) -> None:
         repo = SqlAlchemyEntregaWebhookRepository(session)
 
-        with pytest.raises(IntegrityError):
-            with session.begin_nested():
-                repo.save(_entrega(str(uuid4())))
+        with pytest.raises(IntegrityError), session.begin_nested():
+            repo.save(_entrega(str(uuid4())))
 
     def test_update_e_delete(self, session: Session) -> None:
         webhook_repo = SqlAlchemyWebhookRepository(session)
@@ -546,10 +541,13 @@ class TestSqlAlchemyEventoProcessadoRepository:
         evento = repo.save(_evento())
 
         assert repo.delete(evento.id) is True
-        assert repo.get_by_evento_outbox(
-            evento.fonte,
-            evento.evento_outbox_id,
-        ) is None
+        assert (
+            repo.get_by_evento_outbox(
+                evento.fonte,
+                evento.evento_outbox_id,
+            )
+            is None
+        )
         assert not repo.exists(evento.fonte, evento.evento_outbox_id)
 
     def test_constraint_idempotencia_fonte_evento(self, session: Session) -> None:
@@ -565,14 +563,13 @@ class TestSqlAlchemyEventoProcessadoRepository:
             )
         )
 
-        with session.begin_nested():
-            with pytest.raises(IntegrityError):
-                repo.save(
-                    _evento(
-                        fonte=fonte,
-                        evento_outbox_id=evento_outbox_id,
-                    )
+        with session.begin_nested(), pytest.raises(IntegrityError):
+            repo.save(
+                _evento(
+                    fonte=fonte,
+                    evento_outbox_id=evento_outbox_id,
                 )
+            )
 
         assert repo.exists(fonte, evento_outbox_id)
         assert repo.get_by_evento_outbox(fonte, evento_outbox_id).id == primeiro.id
@@ -602,10 +599,7 @@ class TestSqlAlchemyEventoProcessadoRepository:
     def test_paginacao_e_filtro_por_fonte(self, session: Session) -> None:
         repo = SqlAlchemyEventoProcessadoRepository(session)
 
-        eventos = [
-            repo.save(_evento(fonte="gdo"))
-            for _ in range(3)
-        ]
+        eventos = [repo.save(_evento(fonte="gdo")) for _ in range(3)]
         repo.save(_evento(fonte="compras"))
 
         itens, total = repo.list_all(

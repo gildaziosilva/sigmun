@@ -13,6 +13,7 @@ from src.main import app
 from src.modules.sigmun_compras.presentation.api.processo_documental_router import (
     get_processo_documental_repository,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_jwt
 from tests.unit.test_processo_documental_use_cases import InMemoryProcessoRepository
 
 
@@ -26,6 +27,10 @@ def repository() -> InMemoryProcessoRepository:
 @pytest.fixture()
 def client(repository: InMemoryProcessoRepository) -> TestClient:
     app.dependency_overrides[get_processo_documental_repository] = lambda: repository
+    ctx = JWTUsuarioContexto(
+        usuario_id=uuid4(), login="teste.admin", roles=("admin",), unidades_ids=()
+    )
+    app.dependency_overrides[get_current_user_jwt] = lambda: ctx
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
@@ -72,7 +77,7 @@ def test_post_duplicado_retorna_409(client: TestClient, repository):
 
     assert primeira.status_code == 201
     assert duplicada.status_code == 409
-    assert "Já existe" in duplicada.json()["detail"]
+    assert "Já existe" in duplicada.json()["error"]["message"]
 
 
 def test_post_ano_invalido_retorna_422(client: TestClient, repository):
@@ -174,6 +179,7 @@ def test_delete_exclui_logicamente(client: TestClient, repository):
 def test_delete_sem_usuario_retorna_401(client: TestClient, repository):
     criado = client.post("/api/v1/processos-documentais", json=_payload(repository)).json()
 
+    app.dependency_overrides.pop(get_current_user_jwt, None)
     response = client.delete(f"/api/v1/processos-documentais/{criado['id']}")
 
     assert response.status_code == 401

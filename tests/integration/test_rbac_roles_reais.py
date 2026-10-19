@@ -103,9 +103,7 @@ def _parece_uuid(valor: str) -> bool:
     partes = valor.split("-")
     if len(partes) != 5:
         return False
-    return all(
-        p and all(c in "0123456789abcdefABCDEF" for c in p) for p in partes
-    )
+    return all(p and all(c in "0123456789abcdefABCDEF" for c in p) for p in partes)
 
 
 class TestRbacNasRotasOuv:

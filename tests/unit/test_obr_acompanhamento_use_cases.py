@@ -56,9 +56,7 @@ class TestEtapas:
         """RN-OBR-007: toda etapa tem responsável definido."""
         with pytest.raises(RegraNegocioError):
             CadastrarEtapaUseCase(repo_etapa(), repo_obra(_obra_em_execucao())).execute(
-                CadastrarEtapaInput(
-                    obra_id="obra-1", numero="ET-01", descricao="X", responsavel=""
-                )
+                CadastrarEtapaInput(obra_id="obra-1", numero="ET-01", descricao="X", responsavel="")
             )
 
     def test_etapa_de_peso_parcial_aceita_100_de_conclusao(self) -> None:
@@ -77,9 +75,7 @@ class TestEtapas:
         """RN-OBR-007: a conclusão da etapa fica na faixa 0..100."""
         etapa = _etapa_cadastrada()
         with pytest.raises(RegraNegocioError):
-            AtualizarEtapaUseCase(repo_etapa(etapa)).execute(
-                "etapa-1", percentual_realizado=150.0
-            )
+            AtualizarEtapaUseCase(repo_etapa(etapa)).execute("etapa-1", percentual_realizado=150.0)
 
     def test_atualiza_avanco_da_etapa(self) -> None:
         etapa = _etapa_cadastrada()
@@ -135,9 +131,7 @@ class TestVistorias:
         vistoria = RegistrarVistoriaUseCase(
             repo_vistoria(), repo_obra(_obra_em_execucao())
         ).execute(
-            RegistrarVistoriaInput(
-                obra_id="obra-1", parecer="reprovado", fiscal="Fiscal Municipal"
-            )
+            RegistrarVistoriaInput(obra_id="obra-1", parecer="reprovado", fiscal="Fiscal Municipal")
         )
         assert vistoria.aprovada is False
 
@@ -150,15 +144,13 @@ class TestVistorias:
     def test_fiscal_obrigatorio(self) -> None:
         """RN-OBR-008: vistoria exige fiscal responsável."""
         with pytest.raises(RegraNegocioError):
-            RegistrarVistoriaUseCase(
-                repo_vistoria(), repo_obra(_obra_em_execucao())
-            ).execute(RegistrarVistoriaInput(obra_id="obra-1", fiscal=""))
+            RegistrarVistoriaUseCase(repo_vistoria(), repo_obra(_obra_em_execucao())).execute(
+                RegistrarVistoriaInput(obra_id="obra-1", fiscal="")
+            )
 
     def test_percentual_verificado_fora_de_faixa_rejeitado(self) -> None:
         with pytest.raises(RegraNegocioError):
-            RegistrarVistoriaUseCase(
-                repo_vistoria(), repo_obra(_obra_em_execucao())
-            ).execute(
+            RegistrarVistoriaUseCase(repo_vistoria(), repo_obra(_obra_em_execucao())).execute(
                 RegistrarVistoriaInput(
                     obra_id="obra-1", fiscal="Fiscal", percentual_fisico_verificado=120.0
                 )

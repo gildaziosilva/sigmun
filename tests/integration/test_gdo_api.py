@@ -21,6 +21,8 @@ from src.modules.sigmun_gdo.infrastructure.database.models import (
     TabelaTemporalidadeModel,
     TipoDocumentalModel,
 )
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_jwt
+from src.shared.security.jwt import JWTUsuarioContexto, get_current_user_jwt
 
 # Ordem de limpeza respeitando FKs (filhas antes de pais)
 TABELAS_GDO = (
@@ -56,6 +58,7 @@ def _isolamento_gdo() -> None:
 def _get_db_commit() -> Generator[Session, None, None]:
     """Dependency override para get_db que faz commit após cada request."""
     from src.core.infrastructure.database.session import SessionLocal
+
     db = SessionLocal()
     try:
         yield db
@@ -73,6 +76,42 @@ def _override_get_db() -> None:
     app.dependency_overrides[get_db] = _get_db_commit
     yield
     app.dependency_overrides.pop(get_db, None)
+
+
+def _ctx_gdo() -> JWTUsuarioContexto:
+    """Contexto de usuário autenticado com papel GDO."""
+    return JWTUsuarioContexto(
+        usuario_id=uuid4(),
+        login="teste.gdo",
+        roles=("gestor", "gdo"),
+        unidades_ids=(),
+    )
+
+
+@pytest.fixture(autouse=True)
+def _override_auth() -> None:
+    """Override de autenticação para testes que precisam de usuário autenticado."""
+    app.dependency_overrides[get_current_user_jwt] = lambda: _ctx_gdo()
+    yield
+    app.dependency_overrides.pop(get_current_user_jwt, None)
+
+
+def _ctx_gdo() -> JWTUsuarioContexto:
+    """Contexto de usuário autenticado com papel GDO."""
+    return JWTUsuarioContexto(
+        usuario_id=uuid4(),
+        login="teste.gdo",
+        roles=("gestor", "gdo"),
+        unidades_ids=(),
+    )
+
+
+@pytest.fixture(autouse=True)
+def _override_auth() -> None:
+    """Override de autenticação para testes que precisam de usuário autenticado."""
+    app.dependency_overrides[get_current_user_jwt] = lambda: _ctx_gdo()
+    yield
+    app.dependency_overrides.pop(get_current_user_jwt, None)
 
 
 @pytest.fixture()
@@ -144,7 +183,9 @@ def db_session():
 # =============================================================================
 
 
-def _payload(tipo_documental_id: str, unidade_autor_id: str, codigo: str | None = None, **overrides) -> dict:
+def _payload(
+    tipo_documental_id: str, unidade_autor_id: str, codigo: str | None = None, **overrides
+) -> dict:
     """Payload padrão de criação de documento."""
     dados = {
         "codigo": codigo or f"DOC-{uuid4().hex[:10].upper()}",
@@ -177,8 +218,12 @@ def tipo_documental_ativo(db_session) -> str:
 @pytest.fixture(autouse=True)
 def unidade_autor(db_session) -> str:
     """Cria uma unidade administrativa para ser autora dos documentos."""
-    from src.modules.sigmun_cadastro.infrastructure.database.models import UnidadeAdministrativaModel
     import uuid
+
+    from src.modules.sigmun_cadastro.infrastructure.database.models import (
+        UnidadeAdministrativaModel,
+    )
+
     unique_sigla = f"UTEST{uuid.uuid4().hex[:6].upper()}"
     model = UnidadeAdministrativaModel(
         nome="Unidade de Teste",
@@ -208,8 +253,13 @@ def tipo_documental_inativo(db_session) -> str:
 # =============================================================================
 
 
-def test_post_documentos_cria_201(client: TestClient, tipo_documental_ativo: str, unidade_autor: str):
-    response = client.post("/api/v1/gdo/documentos", json=_payload(tipo_documental_id=tipo_documental_ativo, unidade_autor_id=unidade_autor))
+def test_post_documentos_cria_201(
+    client: TestClient, tipo_documental_ativo: str, unidade_autor: str
+):
+    response = client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documental_id=tipo_documental_ativo, unidade_autor_id=unidade_autor),
+    )
 
     assert response.status_code == 201, response.text
     corpo = response.json()
@@ -222,19 +272,34 @@ def test_post_documentos_cria_201(client: TestClient, tipo_documental_ativo: str
     assert corpo["created_at"] is not None
 
 
-def test_post_documentos_hash_invalido_retorna_400(client: TestClient, tipo_documental_ativo: str, unidade_autor: str):
+def test_post_documentos_hash_invalido_retorna_400(
+    client: TestClient, tipo_documental_ativo: str, unidade_autor: str
+):
     """RN-GDO-002: hash informado deve ser SHA-256 (64 hex chars)."""
-    response = client.post("/api/v1/gdo/documentos", json=_payload(tipo_documental_id=tipo_documental_ativo, unidade_autor_id=unidade_autor, hash_integridade="hash-curto"))
+    response = client.post(
+        "/api/v1/gdo/documentos",
+        json=_payload(
+            tipo_documental_id=tipo_documental_ativo,
+            unidade_autor_id=unidade_autor,
+            hash_integridade="hash-curto",
+        ),
+    )
 
     assert response.status_code == 400
-    assert "SHA-256" in response.json()["detail"]
+    assert "SHA-256" in response.json()["error"]["message"]
 
 
-def test_post_documentos_codigo_duplicado_retorna_409(client: TestClient, tipo_documental_ativo: str, unidade_autor: str):
+def test_post_documentos_codigo_duplicado_retorna_409(
+    client: TestClient, tipo_documental_ativo: str, unidade_autor: str
+):
     """RN-GDO-001: unicidade de código documental por ano."""
     # Use a fixed codigo to test duplicate detection
-    fixed_codigo = f"DOC-DUPLICATE-TEST"
-    payload = _payload(tipo_documental_id=tipo_documental_ativo, unidade_autor_id=unidade_autor, codigo=fixed_codigo)
+    fixed_codigo = "DOC-DUPLICATE-TEST"
+    payload = _payload(
+        tipo_documental_id=tipo_documental_ativo,
+        unidade_autor_id=unidade_autor,
+        codigo=fixed_codigo,
+    )
     primeira = client.post("/api/v1/gdo/documentos", json=payload)
     duplicada = client.post("/api/v1/gdo/documentos", json=payload)
 
@@ -242,10 +307,14 @@ def test_post_documentos_codigo_duplicado_retorna_409(client: TestClient, tipo_d
     assert duplicada.status_code == 409
 
 
-def test_post_documentos_payload_invalido_retorna_422(client: TestClient, tipo_documental_ativo: str, unidade_autor: str):
+def test_post_documentos_payload_invalido_retorna_422(
+    client: TestClient, tipo_documental_ativo: str, unidade_autor: str
+):
     response = client.post(
         "/api/v1/gdo/documentos",
-        json=_payload(tipo_documental_id=tipo_documental_ativo, unidade_autor_id=unidade_autor, titulo="ab"),  # < 3 chars
+        json=_payload(
+            tipo_documental_id=tipo_documental_ativo, unidade_autor_id=unidade_autor, titulo="ab"
+        ),  # < 3 chars
     )
 
     assert response.status_code == 422
@@ -254,11 +323,12 @@ def test_post_documentos_payload_invalido_retorna_422(client: TestClient, tipo_d
 def test_post_documentos_tipo_invalido_retorna_400(client: TestClient, unidade_autor: str):
     """Validação: tipo documental não cadastrado deve retornar 400."""
     response = client.post(
-        "/api/v1/gdo/documentos", json=_payload(tipo_documental_id="TD-INEXISTENTE", unidade_autor_id=unidade_autor)
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documental_id="TD-INEXISTENTE", unidade_autor_id=unidade_autor),
     )
 
     assert response.status_code == 400
-    assert "Tipo documental" in response.json()["detail"]
+    assert "Tipo documental" in response.json()["error"]["message"]
 
 
 @pytest.fixture()
@@ -275,20 +345,26 @@ def tipo_documental_inativo(db_session) -> str:
     return str(model.id)
 
 
-def test_post_documentos_tipo_inativo_retorna_400(client: TestClient, tipo_documental_inativo: str, unidade_autor: str):
+def test_post_documentos_tipo_inativo_retorna_400(
+    client: TestClient, tipo_documental_inativo: str, unidade_autor: str
+):
     """Validação: tipo documental inativo deve retornar 400."""
     response = client.post(
-        "/api/v1/gdo/documentos", json=_payload(tipo_documental_id=tipo_documental_inativo, unidade_autor_id=unidade_autor)
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documental_id=tipo_documental_inativo, unidade_autor_id=unidade_autor),
     )
 
     assert response.status_code == 400
-    assert "Tipo documental" in response.json()["detail"]
+    assert "Tipo documental" in response.json()["error"]["message"]
 
 
-def test_post_documentos_tipo_valido_retorna_201(client: TestClient, tipo_documental_ativo: str, unidade_autor: str):
+def test_post_documentos_tipo_valido_retorna_201(
+    client: TestClient, tipo_documental_ativo: str, unidade_autor: str
+):
     """Validação: tipo documental válido e ativo deve permitir criação."""
     response = client.post(
-        "/api/v1/gdo/documentos", json=_payload(tipo_documental_id=tipo_documental_ativo, unidade_autor_id=unidade_autor)
+        "/api/v1/gdo/documentos",
+        json=_payload(tipo_documental_id=tipo_documental_ativo, unidade_autor_id=unidade_autor),
     )
 
     assert response.status_code == 201
@@ -329,6 +405,7 @@ def test_buscar_tipo_documento_200(client: TestClient, tipo_documental_ativo: st
     # tipo_documental_ativo is UUID, but endpoint expects codigo
     # Fetch the codigo from the database
     from src.modules.sigmun_gdo.infrastructure.database.models import TipoDocumentalModel
+
     tipo = db_session.get(TipoDocumentalModel, tipo_documental_ativo)
     assert tipo is not None
     response = client.get(f"/api/v1/gdo/tipos-documentais/{tipo.codigo}")
@@ -338,13 +415,17 @@ def test_buscar_tipo_documento_200(client: TestClient, tipo_documental_ativo: st
 
 def test_buscar_tipo_documento_404(client: TestClient):
     import uuid
+
     response = client.get(f"/api/v1/gdo/tipos-documentais/{uuid.uuid4()}")
     assert response.status_code == 404
 
 
-def test_inativar_e_ativar_tipo_documento(client: TestClient, tipo_documental_ativo: str, db_session):
+def test_inativar_e_ativar_tipo_documento(
+    client: TestClient, tipo_documental_ativo: str, db_session
+):
     # tipo_documental_ativo is UUID, but endpoint expects codigo
     from src.modules.sigmun_gdo.infrastructure.database.models import TipoDocumentalModel
+
     tipo = db_session.get(TipoDocumentalModel, tipo_documental_ativo)
     assert tipo is not None
     codigo = tipo.codigo
@@ -362,11 +443,14 @@ def test_inativar_e_ativar_tipo_documento(client: TestClient, tipo_documental_at
 
 def test_inativar_tipo_documento_inexistente_404(client: TestClient):
     import uuid
+
     response = client.patch(f"/api/v1/gdo/tipos-documentais/{uuid.uuid4()}/inativar")
     assert response.status_code == 404
 
 
-@pytest.mark.skip(reason="Table gdo.tabelas_temporalidade not created in test database (missing migration)")
+@pytest.mark.skip(
+    reason="Table gdo.tabelas_temporalidade not created in test database (missing migration)"
+)
 def test_get_documentos_lista_vazia_e_com_itens(
     client: TestClient,
     tipo_documental_ativo: str,
@@ -782,7 +866,7 @@ def test_post_destinacao_eliminacao_sem_autoridade_retorna_403(
     )
 
     assert response.status_code == 403
-    assert "RN-GDO-011" in response.json()["detail"]
+    assert "RN-GDO-011" in response.json()["error"]["message"]
 
 
 def test_post_destinacao_eliminacao_com_autoridade_encerra(
@@ -847,6 +931,7 @@ def test_post_destinacao_documento_inexistente_retorna_404(client: TestClient):
 
     assert response.status_code == 404
 
+
 def test_get_temporalidade_por_codigo_200_e_404(client: TestClient, temporalidade_codigo: str):
     response = client.get(f"/api/v1/gdo/temporalidades/{temporalidade_codigo}")
     assert response.status_code == 200
@@ -856,5 +941,6 @@ def test_get_temporalidade_por_codigo_200_e_404(client: TestClient, temporalidad
     assert corpo["tipo_destinacao"] == "eliminacao"
 
     import uuid
+
     response = client.get(f"/api/v1/gdo/temporalidades/{uuid.uuid4()}")
     assert response.status_code == 404
