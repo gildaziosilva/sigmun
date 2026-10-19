@@ -1112,10 +1112,11 @@ O SIGMUN está **apto a produção** quando **todos** os itens forem verdadeiros
   `58e6601` testes, `7f91524` frontend, `2a9c195` docs+TODO2, `bac9e6e` openapi);
   `git status --short | wc -l` → **0**; `git ls-files | grep -E '\.bak$|scan_final'` → vazio;
   `.env` nunca no diff; `TODO*.bak` em disco preservados (ignorados) p/ T-NEW-12.
-- [ ] **T-NEW-1 — Destravar a coleta do pytest (e2e).** `test_compras_e2e.py:7`
-  importa `...sigmun_compras...seeds` que nao existe — criar modulo, corrigir
-  import ou `pytestmark = skip` com issue. Verificacao:
-  `pytest tests/ --collect-only -q` → 1531+ testes, 0 erros.
+- [x] **T-NEW-1 — Destravar a coleta do pytest (e2e).** CONCLUIDO 2026-10-19
+  (commit 3da66ac): `test_compras_e2e.py` reescrito com repos em memoria via
+  dependency_overrides (padrao dos testes de integracao) — fluxo real
+  fornecedor -> compra -> HOMOLOGADO -> formalizar -> CONTRATADO + teste 401.
+  Verificado: coleta `1533 tests, 0 erros`; arquivo `2 passed`; ruff limpo.
 - [ ] **T-NEW-2 — Zerar o Ruff (402 → 0).** Ordem: `--fix` (F401/I001/W293/W292) →
   F811 (22) → E501 (77) → B904/E712/E741/F841/E402/UP035/B017/B008/SIM102.
   Verificacao: `ruff check src/ tests/` → `All checks passed!`.
