@@ -6,6 +6,7 @@ import {
   getToken,
   login as apiLogin,
   logoutApi,
+  onUnauthorized,
   setToken,
   type Usuario,
 } from '../lib/api';
@@ -81,6 +82,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       window.sessionStorage.removeItem(SESSION_KEY);
     }
     setLoading(false);
+  }, []);
+
+  // T-5.4: qualquer 401/403 da API derruba a sessão e volta ao login.
+  useEffect(() => {
+    onUnauthorized(() => {
+      clearToken();
+      window.sessionStorage.removeItem(SESSION_KEY);
+      setSession(null);
+      setErro('Sessão expirada. Entre novamente.');
+    });
+    return () => onUnauthorized(null);
   }, []);
 
   const entrar = useCallback(async (login: string, senha: string) => {

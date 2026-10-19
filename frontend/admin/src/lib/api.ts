@@ -18,7 +18,16 @@
 export const API_BASE_URL: string =
   (import.meta.env.VITE_API_URL as string | undefined) ?? '';
 
+export const CORRELATION_ID_HEADER = 'X-Correlation-ID';
+
 const TOKEN_KEY = 'sigmun_admin_token';
+
+/** Callback global de sessão expirada (T-5.4: 401/403 → redirect para login). */
+let unauthorizedHandler: ((status: number) => void) | null = null;
+
+export function onUnauthorized(handler: ((status: number) => void) | null): void {
+  unauthorizedHandler = handler;
+}
 
 export function getToken(): string | null {
   return window.sessionStorage.getItem(TOKEN_KEY);
@@ -32,16 +41,26 @@ export function clearToken(): void {
   window.sessionStorage.removeItem(TOKEN_KEY);
 }
 
-/** Erro HTTP tipado para exibição amigável nas telas. */
+/** Erro HTTP tipado para exibição amigável nas telas (T-5.4: correlation_id). */
 export class ApiError extends Error {
   status: number;
   detail: string;
+  correlationId: string | null;
 
-  constructor(status: number, detail: string) {
+  constructor(status: number, detail: string, correlationId: string | null = null) {
     super(detail);
     this.name = 'ApiError';
     this.status = status;
     this.detail = detail;
+    this.correlationId = correlationId;
+  }
+
+  /** Mensagem amigável com correlation_id para erros 500 (T-5.4). */
+  get friendlyMessage(): string {
+    if (this.status >= 500 && this.correlationId) {
+      return `${this.detail} (protocolo de erro: ${this.correlationId})`;
+    }
+    return this.detail;
   }
 }
 
@@ -50,6 +69,24 @@ interface RequestOptions {
   body?: unknown;
   /** Não injeta Authorization (usado no login). */
   anonymous?: boolean;
+}
+
+/**
+ * Extrai a mensagem de erro do envelope padronizado da API (T-3.2:
+ * `{"error": {"message": ...}}`) com fallback para o `detail` do FastAPI e,
+ * por fim, para uma mensagem genérica.
+ */
+export function extractErrorMessage(payload: unknown, path: string, status: number): string {
+  if (typeof payload === 'object' && payload !== null) {
+    const env = payload as { error?: { message?: unknown }; detail?: unknown };
+    if (typeof env.error?.message === 'string' && env.error.message !== '') {
+      return env.error.message;
+    }
+    if (env.detail !== undefined) {
+      return String(env.detail);
+    }
+  }
+  return `Falha ao acessar ${path} (HTTP ${status})`;
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -64,6 +101,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     headers,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
+  const correlationId = response.headers.get(CORRELATION_ID_HEADER);
   if (response.status === 204) return undefined as T;
   let payload: unknown = null;
   try {
@@ -71,12 +109,16 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   } catch {
     payload = null;
   }
+  // T-5.4: 401/403 global — avisa o AuthContext (redirect para login no admin).
+  if ((response.status === 401 || response.status === 403) && !options.anonymous) {
+    unauthorizedHandler?.(response.status);
+  }
   if (!response.ok) {
-    const detail =
-      typeof payload === 'object' && payload !== null && 'detail' in payload
-        ? String((payload as { detail: unknown }).detail)
-        : `Falha ao acessar ${path} (HTTP ${response.status})`;
-    throw new ApiError(response.status, detail);
+    throw new ApiError(
+      response.status,
+      extractErrorMessage(payload, path, response.status),
+      correlationId,
+    );
   }
   return payload as T;
 }
@@ -896,6 +938,12 @@ export async function listarViagensPorServidor(
   );
 }
 
+export async function buscarViagemPorId(
+  viagemId: string,
+): Promise<ViagemDia> {
+  return apiGet<ViagemDia>(`/api/v1/dia/viagens/${encodeURIComponent(viagemId)}`);
+}
+
 export async function listarDiariasPorServidor(
   servidorId: string,
 ): Promise<DiariaDia[]> {
@@ -912,8 +960,146 @@ export async function listarDiariasPorStatus(
   );
 }
 
+export async function buscarDiariaPorId(
+  diariaId: string,
+): Promise<DiariaDia> {
+  return apiGet<DiariaDia>(`/api/v1/dia/diarias/${encodeURIComponent(diariaId)}`);
+}
+
 export async function listarPrestacoesAbertas(): Promise<PrestacaoContasDia[]> {
   return apiGet<PrestacaoContasDia[]>('/api/v1/dia/prestacoes/abertas');
+}
+
+export async function buscarPrestacaoPorId(
+  prestacaoId: string,
+): Promise<PrestacaoContasDia> {
+  return apiGet<PrestacaoContasDia>(`/api/v1/dia/prestacoes/${encodeURIComponent(prestacaoId)}`);
+}
+
+/* ------------------------------------------------------------------ */
+/* DOM-DIA — Escrita (Criação e Transições de Estado)                 */
+/* ------------------------------------------------------------------ */
+
+/** Payload para criação de viagem (matches ViagemCreateRequest). */
+export interface ViagemCreatePayload {
+  servidor_id: string;
+  dota_id: string;
+  motivo: string;
+  cargo_ocupado?: string | null;
+  unidade_origem_id: string;
+  unidade_destino_id: string;
+  data_inicio?: string | null;
+  data_fim?: string | null;
+  destino: string;
+  is_antecipacao?: boolean;
+  created_by?: string;
+}
+
+export async function criarViagem(payload: ViagemCreatePayload): Promise<ViagemDia> {
+  return apiPost<ViagemDia>('/api/v1/dia/viagens', payload);
+}
+
+export async function tramitarViagem(
+  viagemId: string,
+  payload: ViagemCreatePayload,
+): Promise<ViagemDia> {
+  return apiPost<ViagemDia>(`/api/v1/dia/viagens/${encodeURIComponent(viagemId)}/tramitar`, payload);
+}
+
+export async function visitarViagem(
+  viagemId: string,
+  payload: ViagemCreatePayload,
+): Promise<ViagemDia> {
+  return apiPost<ViagemDia>(`/api/v1/dia/viagens/${encodeURIComponent(viagemId)}/visitar`, payload);
+}
+
+/** Payload para criação de diária (matches DiariaCreateRequest). */
+export interface DiariaCreatePayload {
+  viagem_id: string;
+  servidor_id: string;
+  dota_id: string;
+  categoria: string;
+  descricao: string;
+  data_inicio?: string | null;
+  data_fim?: string | null;
+  valor_diaria: number;
+  created_by?: string;
+}
+
+export async function criarDiaria(payload: DiariaCreatePayload): Promise<DiariaDia> {
+  return apiPost<DiariaDia>('/api/v1/dia/diarias', payload);
+}
+
+export async function autorizarDiaria(diariaId: string): Promise<DiariaDia> {
+  return apiPost<DiariaDia>(`/api/v1/dia/diarias/${encodeURIComponent(diariaId)}/autorizar`, {});
+}
+
+export async function calcularDiaria(diariaId: string): Promise<DiariaDia> {
+  return apiPost<DiariaDia>(`/api/v1/dia/diarias/${encodeURIComponent(diariaId)}/calcular`, {});
+}
+
+export async function concederDiaria(
+  diariaId: string,
+  payload: { data_inicio?: string | null; data_fim?: string | null },
+): Promise<DiariaDia> {
+  return apiPost<DiariaDia>(`/api/v1/dia/diarias/${encodeURIComponent(diariaId)}/conceder`, payload);
+}
+
+export async function iniciarPrestacaoDiaria(diariaId: string): Promise<DiariaDia> {
+  return apiPost<DiariaDia>(`/api/v1/dia/diarias/${encodeURIComponent(diariaId)}/iniciar-prestacao`, {});
+}
+
+export async function pagarDiaria(diariaId: string): Promise<DiariaDia> {
+  return apiPost<DiariaDia>(`/api/v1/dia/diarias/${encodeURIComponent(diariaId)}/pagar`, {});
+}
+
+export async function cancelarDiaria(
+  diariaId: string,
+  payload: { motivo: string },
+): Promise<DiariaDia> {
+  return apiPost<DiariaDia>(`/api/v1/dia/diarias/${encodeURIComponent(diariaId)}/cancelar`, payload);
+}
+
+
+export async function glosarPrestacao(
+  prestacaoId: string,
+  payload: { motivo: string; valor_glosado: number },
+): Promise<PrestacaoContasDia> {
+  const params = new URLSearchParams({
+    motivo: payload.motivo,
+    valor_glosado: String(payload.valor_glosado),
+  });
+  return apiPost<PrestacaoContasDia>(
+    `/api/v1/dia/prestacoes/${encodeURIComponent(prestacaoId)}/glosar?${params.toString()}`,
+    {},
+  );
+}
+
+/** Payload para criação de prestação de contas (matches PrestacaoContasCreateRequest). */
+export interface PrestacaoCreatePayload {
+  diaria_id: string;
+  servidor_id: string;
+  dota_id: string;
+  documento_id: string;
+  valor_previsto: number;
+  valor_apresentado: number;
+  data_vencimento?: string | null;
+  autor_id?: string;
+}
+
+export async function criarPrestacao(payload: PrestacaoCreatePayload): Promise<PrestacaoContasDia> {
+  return apiPost<PrestacaoContasDia>('/api/v1/dia/prestacoes', payload);
+}
+
+export async function aprovarPrestacao(prestacaoId: string): Promise<PrestacaoContasDia> {
+  return apiPost<PrestacaoContasDia>(`/api/v1/dia/prestacoes/${encodeURIComponent(prestacaoId)}/aprovar`, {});
+}
+
+export async function restituirPrestacao(prestacaoId: string): Promise<PrestacaoContasDia> {
+  return apiPost<PrestacaoContasDia>(
+    `/api/v1/dia/prestacoes/${encodeURIComponent(prestacaoId)}/restituir`,
+    {},
+  );
 }
 
 /* ------------------------------------------------------------------ */

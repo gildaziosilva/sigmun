@@ -16,6 +16,7 @@ import TelPage from './territorial/TelPage';
 import ImoPage from './territorial/ImoPage';
 import GeoPage from './geo/GeoPage';
 import ObrasPage from './obras/ObrasPage';
+import DiaPage from './dia/DiaPage';
 import ATEPage from './ate/ATEPage';
 import OuvPage from './ouv/OuvPage';
 
@@ -37,6 +38,7 @@ const NAV_ITEMS = [
   { id: 'obras', rotulo: 'Obras' },
   { id: 'ate', rotulo: 'Atendimento' },
   { id: 'ouv', rotulo: 'Ouvidoria' },
+  { id: 'dia', rotulo: 'Diárias' },
   { id: 'usuarios', rotulo: 'Usuários' },
 ] as const;
 
@@ -220,6 +222,13 @@ function Dashboard() {
                   </button>
                 </article>
                 <article className="card card--modulo">
+                  <h3>Diárias e Viagens</h3>
+                  <p>Solicitação, autorização, cálculo e prestação de contas de diárias.</p>
+                  <button type="button" className="link" onClick={() => setAba("dia")}>
+                    Abrir módulo
+                  </button>
+                </article>
+                <article className="card card--modulo">
                   <h3>Ouvidoria FalaBR / e-OUV</h3>
                   <p>Manifestações, denúncias, pedidos LAI, prazos e estatísticas.</p>
                   <button type="button" className="link" onClick={() => setAba("ouv")}>
@@ -245,6 +254,7 @@ function Dashboard() {
           {rotaPermitida === 'obras' && <ObrasPage />}
           {rotaPermitida === 'ate' && <ATEPage />}
           {rotaPermitida === 'ouv' && <OuvPage />}
+          {rotaPermitida === 'dia' && <DiaPage />}
           {rotaPermitida === 'usuarios' && <IdnPage />}
         </main>
       </div>
