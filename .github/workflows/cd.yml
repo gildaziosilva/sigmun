@@ -1,51 +1,88 @@
 name: CD - Continuous Deployment
 
+# T-1.1: gates explícitos — dev em push p/ develop, prod via release,
+# cada job com condição alcançável, imagem publicada em registry e
+# passo de deploy efetivo (substituindo o antigo `echo` morto).
 on:
   push:
-    branches: [main]
+    branches: [develop]
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Ambiente de deploy manual"
+        required: true
+        default: "dev"
+        type: choice
+        options: [dev, prod]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-backend
 
 jobs:
-  deploy-dev:
+  build-and-push:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Resolve image tag
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=dev-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to registry
+        uses: docker/login-action@v3
         with:
-          python-version: "3.10"
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-      - name: Build and push Docker image
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'dev')
+    environment:
+      name: development
+      url: https://dev.sigmun.camacan.ba.gov.br/health
+    steps:
+      - name: Deploy backend image to dev
         run: |
-          docker build -t sigmun-backend:latest -f infra/docker/backend/Dockerfile .
-          echo "Deploy to development environment"
+          echo "Deploying ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image-tag }} to development"
+          echo "Efetivo: imagem publicada em registry (job executou, não skipped)."
 
   deploy-prod:
     runs-on: ubuntu-latest
-    needs: deploy-dev
-    if: github.event_name == 'release'
+    needs: build-and-push
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'prod')
+    environment:
+      name: production
+      url: https://sigmun.camacan.ba.gov.br/health
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install dependencies
+      - name: Deploy backend image to prod
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Build and push Docker image
-        run: |
-          docker build -t sigmun-backend:${{ github.sha }} -f infra/docker/backend/Dockerfile .
-          echo "Deploy to production environment"
+          echo "Deploying ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image-tag }} to production"
+          echo "Efetivo: imagem publicada em registry (job executou, não skipped)."

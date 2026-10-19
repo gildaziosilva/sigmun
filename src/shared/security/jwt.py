@@ -7,10 +7,9 @@ Compatible with existing header-based auth during transition period.
 from __future__ import annotations
 
 import secrets
-import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Annotated, Optional
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends, Header, HTTPException, status
@@ -18,7 +17,6 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 
 from src.shared.config.settings import settings
-
 
 # =============================================================================
 # Token Models
@@ -84,9 +82,7 @@ def create_access_token(
     )
 
     # Decode to add jti, then re-encode
-    decoded = jwt.decode(
-        encoded, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
-    )
+    decoded = jwt.decode(encoded, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
     decoded["jti"] = secrets.token_urlsafe(16)
 
     return jwt.encode(decoded, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
@@ -147,9 +143,7 @@ def create_token_pair(
 def decode_token(token: str) -> TokenPayload:
     """Decode and validate a JWT token."""
     try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
-        )
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         return TokenPayload(**payload)
     except JWTError as exc:
         raise HTTPException(
@@ -169,6 +163,7 @@ def verify_token_type(token: str, expected_type: str) -> TokenPayload:
             headers={"WWW-Authenticate": "Bearer"},
         )
     return payload
+
 
 # =============================================================================
 # FastAPI Dependencies
@@ -253,12 +248,14 @@ def require_roles_jwt(*required_roles: str):
 
 
 def require_roles_hybrid(*required_roles: str):
-    """Factory: dependency que exige autenticação (JWT ou legacy) + um dos papéis.
+    """Factory: autenticação JWT estrita + papel (Fase 0 T-0.1).
 
-    Usa get_current_user_hybrid para compatibilidade durante transição.
+    Usa ``get_current_user_jwt``: header legado NUNCA confere papel.
+    Mantido o nome para compatibilidade reversa dos routers.
     """
+
     def dependency(
-        user: Annotated[JWTUsuarioContexto, Depends(get_current_user_hybrid)],
+        user: Annotated[JWTUsuarioContexto, Depends(get_current_user_jwt)],
     ) -> JWTUsuarioContexto:
         if not user.possui_algum_papel(*required_roles):
             raise HTTPException(
@@ -273,6 +270,28 @@ def require_roles_hybrid(*required_roles: str):
 # =============================================================================
 # Compatibility: Legacy Header Support (Transition Period)
 # =============================================================================
+
+
+def _fallback_legacy_permitido() -> bool:
+    """T-0.2: fallback só vale com ALLOW_LEGACY_HEADERS=True."""
+    return bool(settings.ALLOW_LEGACY_HEADERS)
+
+
+def _contexto_de_headers_legados(
+    x_usuario_id: UUID | None, x_usuario_papel: str | None
+) -> JWTUsuarioContexto | None:
+    """Constroi contexto a partir dos headers (só chamado com flag ligada)."""
+    if x_usuario_id is None:
+        return None
+    papeis: tuple[str, ...] = ()
+    if x_usuario_papel:
+        papeis = tuple(p.strip() for p in x_usuario_papel.split(",") if p.strip())
+    return JWTUsuarioContexto(
+        usuario_id=x_usuario_id,
+        login="",
+        roles=papeis,
+        unidades_ids=(),
+    )
 
 
 def get_current_user_legacy(
@@ -290,21 +309,15 @@ def get_current_user_legacy(
             description="[DEPRECADO] Use JWT com roles no token",
         ),
     ] = None,
-) -> Optional[JWTUsuarioContexto]:
-    """Legacy header-based auth (compatibilidade durante transição)."""
-    if x_usuario_id is None:
+) -> JWTUsuarioContexto | None:
+    """Legacy header-based auth — SOMENTE com ALLOW_LEGACY_HEADERS=True (T-0.2).
+
+    Com a flag desligada (default), retorna None: header legado nunca
+    autentica ninguém. Fallback mantido só p/ leitura anônima opcional.
+    """
+    if not _fallback_legacy_permitido():
         return None
-
-    papeis: tuple[str, ...] = ()
-    if x_usuario_papel:
-        papeis = tuple(p.strip() for p in x_usuario_papel.split(",") if p.strip())
-
-    return JWTUsuarioContexto(
-        usuario_id=x_usuario_id,
-        login="",  # não disponível no legacy
-        roles=papeis,
-        unidades_ids=(),
-    )
+    return _contexto_de_headers_legados(x_usuario_id, x_usuario_papel)
 
 
 def get_current_user_hybrid_optional(
@@ -348,17 +361,11 @@ def get_current_user_hybrid_optional(
         except HTTPException:
             pass  # Cai para legacy se JWT inválido
 
-    # Fallback para legacy headers
-    if x_usuario_id is not None:
-        papeis: tuple[str, ...] = ()
-        if x_usuario_papel:
-            papeis = tuple(p.strip() for p in x_usuario_papel.split(",") if p.strip())
-        return JWTUsuarioContexto(
-            usuario_id=x_usuario_id,
-            login="",
-            roles=papeis,
-            unidades_ids=(),
-        )
+    # Fallback legado: só com flag ligada (T-0.2); senão, anônimo (None).
+    if _fallback_legacy_permitido():
+        legado = _contexto_de_headers_legados(x_usuario_id, x_usuario_papel)
+        if legado is not None:
+            return legado
 
     return None
 
@@ -404,21 +411,16 @@ def get_current_user_hybrid(
         except HTTPException:
             pass  # Cai para legacy se JWT inválido
 
-    # Fallback para legacy headers
-    if x_usuario_id is not None:
-        papeis: tuple[str, ...] = ()
-        if x_usuario_papel:
-            papeis = tuple(p.strip() for p in x_usuario_papel.split(",") if p.strip())
-        return JWTUsuarioContexto(
-            usuario_id=x_usuario_id,
-            login="",
-            roles=papeis,
-            unidades_ids=(),
-        )
+    # Fallback legado: só com flag ligada (T-0.2). Desligada => 401 mesmo
+    # com X-Usuario-Id/Papel presentes (identidade forjável não entra).
+    if _fallback_legacy_permitido():
+        legado = _contexto_de_headers_legados(x_usuario_id, x_usuario_papel)
+        if legado is not None:
+            return legado
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Autenticação obrigatória. Use Authorization: Bearer <token> ou header legado X-Usuario-Id.",
+        detail="Autenticação obrigatória. Use Authorization: Bearer <token>.",
         headers={"WWW-Authenticate": "Bearer"},
     )
 

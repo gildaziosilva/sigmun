@@ -17,6 +17,9 @@ from src.core.infrastructure.database.session import engine
 from src.modules.sigmun_assistencia_social.presentation.api import (
     routers as ass_routers,
 )
+from src.modules.sigmun_ate.presentation.api import (
+    router as ate_router,
+)
 from src.modules.sigmun_cadastro.presentation.api.pessoas_router import (
     router as pessoas_router,
 )
@@ -44,6 +47,7 @@ from src.modules.sigmun_compras.presentation.api.itens_compras_router import (
 from src.modules.sigmun_compras.presentation.api.processo_documental_router import (
     router as processo_documental_router,
 )
+from src.modules.sigmun_con.presentation.api import routers as con_routers
 from src.modules.sigmun_dad.presentation.api import (
     router as dad_router,
 )
@@ -62,9 +66,6 @@ from src.modules.sigmun_gdo.presentation.api import (
 from src.modules.sigmun_geoinformacao.presentation.api import (
     routers as geo_routers,
 )
-from src.modules.sigmun_ate.presentation.api import (
-    router as ate_router,
-)
 from src.modules.sigmun_idn.presentation.api import (
     router as idn_router,
 )
@@ -78,13 +79,13 @@ from src.modules.sigmun_obras.presentation.api import (
     routers as obr_routers,
 )
 from src.modules.sigmun_orc.presentation.api import routers as orc_routers
+from src.modules.sigmun_ouvidoria.presentation.api import (
+    router as ouv_router,
+)
 from src.modules.sigmun_patrimonio.presentation.api import (
     routers as pat_routers,
 )
 from src.modules.sigmun_rh.presentation.api import routers as pes_routers
-from src.modules.sigmun_ouvidoria.presentation.api import (
-    router as ouv_router,
-)
 from src.modules.sigmun_saude.presentation.api import (
     routers as sau_routers,
 )
@@ -100,6 +101,14 @@ from src.modules.sigmun_tributos.presentation.api import (
 from src.shared.config.logging_config import setup_logging
 from src.shared.config.settings import settings
 from src.shared.middleware.correlation_id_middleware import CorrelationIDMiddleware
+from src.shared.middleware.rate_limit_middleware import RateLimitMiddleware
+from src.shared.presentation.erros import (
+    ErrorCodes,
+    ErrorDetail,
+    ErrorEnvelope,
+    ErrorResponse,
+)
+from src.shared.config.logging_config import get_correlation_id
 
 # Configura logging estruturado (P-002)
 setup_logging(
@@ -257,17 +266,170 @@ app = FastAPI(
     ],
 )
 
-# CORS Middleware
+# CORS Middleware — T-0.3: origens explícitas; `*` com credenciais é rejeitado.
+_CORS_ORIGINS = [o for o in settings.ALLOWED_HOSTS if o != "*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_HOSTS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_CORS_ORIGINS,
+    allow_credentials=bool(_CORS_ORIGINS),
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Correlation-ID"],
 )
+
+# Rate limiting + limite de payload — T-0.4.
+app.add_middleware(RateLimitMiddleware)
 
 # Correlation ID Middleware (P-002)
 app.add_middleware(CorrelationIDMiddleware)
+
+
+# =============================================================================
+# Exception Handlers — T-3.2: Envelope de erro padronizado com correlation_id
+# =============================================================================
+
+from fastapi import HTTPException, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
+from sqlalchemy.exc import IntegrityError, OperationalError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+
+def _error_envelope(
+    code: str,
+    message: str,
+    status_code: int,
+    request: Request,
+    details: list[ErrorDetail] | None = None,
+) -> JSONResponse:
+    """Cria envelope de erro padronizado com correlation_id."""
+    corr_id = get_correlation_id()
+    if not corr_id or corr_id == "unknown":
+        # Fallback: tenta obter do header da requisição
+        corr_id = request.headers.get("X-Correlation-ID", "unknown")
+    error_response = ErrorResponse(
+        error=ErrorEnvelope(
+            code=code,
+            message=message,
+            details=details,
+            correlation_id=corr_id,
+        )
+    )
+    return JSONResponse(
+        status_code=status_code,
+        content=error_response.model_dump(mode="json"),
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Trata erros de validação do Pydantic/FastAPI (422)."""
+    details = [
+        ErrorDetail(
+            field=".".join(str(loc) for loc in err["loc"] if loc != "body"),
+            issue=err["msg"],
+            code=err.get("type"),
+        )
+        for err in exc.errors()
+    ]
+    return _error_envelope(
+        code=ErrorCodes.VALIDATION_ERROR,
+        message="Dados de entrada inválidos",
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        request=request,
+        details=details,
+    )
+
+
+@app.exception_handler(ValidationError)
+async def pydantic_validation_exception_handler(request: Request, exc: ValidationError):
+    """Trata erros de validação do Pydantic (model validation)."""
+    details = [
+        ErrorDetail(
+            field=".".join(str(loc) for loc in err["loc"]),
+            issue=err["msg"],
+            code=err.get("type"),
+        )
+        for err in exc.errors()
+    ]
+    return _error_envelope(
+        code=ErrorCodes.VALIDATION_ERROR,
+        message="Erro de validação",
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        request=request,
+        details=details,
+    )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Trata HTTPException genéricos (401, 403, 404, etc.)."""
+    # Mapeia status code para código de erro
+    code_map = {
+        401: ErrorCodes.UNAUTHORIZED,
+        403: ErrorCodes.FORBIDDEN,
+        404: ErrorCodes.NOT_FOUND,
+        409: ErrorCodes.CONFLICT,
+        422: ErrorCodes.VALIDATION_ERROR,
+    }
+    code = code_map.get(exc.status_code, ErrorCodes.INTERNAL_ERROR)
+    return _error_envelope(
+        code=code,
+        message=str(exc.detail),
+        status_code=exc.status_code,
+        request=request,
+    )
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_exception_handler(request: Request, exc: IntegrityError):
+    """Trata erros de integridade do banco (unique constraint, FK, etc.)."""
+    # Tenta extrair detalhe da constraint
+    detail = str(exc.orig) if exc.orig else "Violação de integridade"
+    return _error_envelope(
+        code=ErrorCodes.ALREADY_EXISTS,
+        message="Conflito de dados: registro duplicado ou violação de restrição",
+        status_code=status.HTTP_409_CONFLICT,
+        request=request,
+        details=[ErrorDetail(field=None, issue=detail, code="INTEGRITY_ERROR")],
+    )
+
+
+@app.exception_handler(OperationalError)
+async def operational_exception_handler(request: Request, exc: OperationalError):
+    """Trata erros operacionais do banco (conexão, timeout, etc.)."""
+    return _error_envelope(
+        code=ErrorCodes.DATABASE_ERROR,
+        message="Erro de conexão com o banco de dados",
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        request=request,
+        details=[ErrorDetail(field=None, issue=str(exc.orig) if exc.orig else "DB error", code="OPERATIONAL_ERROR")],
+    )
+
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    """Trata qualquer exceção não capturada (500)."""
+    # Log do erro com stack trace
+    logger.error(
+        "Erro interno não tratado",
+        exc_info=True,
+        extra={
+            "extra_data": {
+                "method": request.method,
+                "path": str(request.url.path),
+                "error": str(exc),
+                "correlation_id": get_correlation_id(),
+            }
+        },
+    )
+    return _error_envelope(
+        code=ErrorCodes.INTERNAL_ERROR,
+        message="Erro interno do servidor",
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        request=request,
+        details=[ErrorDetail(field=None, issue=str(exc), code="INTERNAL_ERROR")],
+    )
 
 
 def _verificar_banco() -> str:
@@ -288,6 +450,8 @@ def _verificar_banco() -> str:
 @app.on_event("startup")
 async def startup_event() -> None:
     """Executado na inicialização da aplicação."""
+    # T-0.3: sem SECRET_KEY válida, o app falha no startup com erro claro.
+    settings.validar_para_startup()
     status_banco = _verificar_banco()
     logger.info(
         "SIGMUN API iniciada",
@@ -327,6 +491,8 @@ app.include_router(gdo_router)
 app.include_router(int_router)
 app.include_router(dia_router)
 app.include_router(ate_router)
+for _con_router in con_routers:
+    app.include_router(_con_router)
 for _orc_router in orc_routers:
     app.include_router(_orc_router)
 for _pes_router in pes_routers:

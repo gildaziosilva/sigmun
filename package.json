@@ -1,0 +1,23 @@
+{
+  "name": "sigmun",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SIGMUN — atalhos npm para os 3 frontends (admin, portal do cidadão, portal do fornecedor). Cada app tem seu próprio package.json em frontend/<app>.",
+  "scripts": {
+    "dev": "echo 'SIGMUN tem 3 frontends. Use: npm run dev:admin | dev:cidadao | dev:fornecedor' && exit 1",
+    "dev:admin": "npm --prefix frontend/admin run dev",
+    "dev:cidadao": "npm --prefix frontend/portal-cidadao run dev",
+    "dev:fornecedor": "npm --prefix frontend/portal-fornecedor run dev",
+    "build:admin": "npm --prefix frontend/admin run build",
+    "build:cidadao": "npm --prefix frontend/portal-cidadao run build",
+    "build:fornecedor": "npm --prefix frontend/portal-fornecedor run build",
+    "lint:admin": "npm --prefix frontend/admin run lint",
+    "lint:cidadao": "npm --prefix frontend/portal-cidadao run lint",
+    "lint:fornecedor": "npm --prefix frontend/portal-fornecedor run lint",
+    "lint:frontend": "npm --prefix frontend/admin run lint && npm --prefix frontend/portal-cidadao run lint && npm --prefix frontend/portal-fornecedor run lint",
+    "test:admin": "npm --prefix frontend/admin run test",
+    "test:cidadao": "npm --prefix frontend/portal-cidadao run test",
+    "test:fornecedor": "npm --prefix frontend/portal-fornecedor run test",
+    "test:frontend": "npm --prefix frontend/admin run test && npm --prefix frontend/portal-cidadao run test && npm --prefix frontend/portal-fornecedor run test"
+  }
+}

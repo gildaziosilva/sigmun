@@ -65,3 +65,6 @@ node_modules/
 
 # Backups locais do banco — nunca publicar
 backups/
+
+# Artefato de cobertura regeneravel
+coverage.xml
