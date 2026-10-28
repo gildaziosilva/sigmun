@@ -14,31 +14,20 @@
 - **Verificação (deve bater exatamente — diff ADR x varredura):**
   ```bash
   .venv/bin/python scripts/verificar_rotas_publicas.py
-  # OK — 18 rotas publicas batem exatamente com o ADR-0010.
+  # OK — 7 rotas publicas batem exatamente com o ADR-0010.
   ```
 
-## Inventário (18 rotas)
+## Inventário (7 rotas)
 
 | # | Método | Caminho | Domínio | Justificativa |
-| --- | --- | --- | --- | --- |
-| 1 | GET | `/api/v1/contratos` | DOM-COM | Transparência passiva: contratações são públicas por LAI; alimenta o portal do fornecedor. |
-| 2 | GET | `/api/v1/contratos/{contrato_id}` | DOM-COM | Idem — consulta pública do contrato individual. |
-| 3 | GET | `/api/v1/compras` | DOM-COM | Transparência passiva: processos de compra. |
-| 4 | GET | `/api/v1/compras/{compra_id}` | DOM-COM | Idem — consulta pública do processo individual. |
-| 5 | GET | `/api/v1/processos-documentais` | DOM-COM | Transparência passiva: documentos do processo de contratação. |
-| 6 | GET | `/api/v1/processos-documentais/{processo_id}` | DOM-COM | Idem — consulta pública individual. |
-| 7 | GET | `/api/v1/compras/{compra_id}/itens` | DOM-COM | Itens licitados/contratados são dado público. |
-| 8 | GET | `/api/v1/itens-compras/{item_id}` | DOM-COM | Idem — consulta pública individual. |
-| 9 | GET | `/api/v1/fornecedores` | DOM-COM | Cadastro de fornecedores (razão social/CNPJ) é dado público. |
-| 10 | GET | `/api/v1/fornecedores/{fornecedor_id}` | DOM-COM | Idem — consulta pública individual. |
-| 11 | GET | `/api/v1/cadastro/unidades-administrativas` | DOM-CAD | Estrutura organizacional da prefeitura é dado público (transparência ativa). |
-| 12 | POST | `/api/v1/idn/auth/login` | DOM-IDN | Login legacy: impossível exigir token antes de emitir token. |
-| 13 | POST | `/api/v1/idn/auth/login/jwt` | DOM-IDN | Login JWT: mesma razão (porta de entrada da autenticação). |
-| 14 | POST | `/api/v1/idn/auth/refresh` | DOM-IDN | Renovação valida o refresh token do corpo — não há sessão prévia. |
-| 15 | POST | `/api/v1/idn/auth/logout` | DOM-IDN | Logout é idempotente e seguro sem sessão (invalida o próprio token). |
-| 16 | POST | `/api/v1/idn/auth/logout/jwt` | DOM-IDN | Idem — variante JWT. |
-| 17 | GET | `/health` | Infra | Healthcheck do orquestrador (liveness), sem dado de negócio. |
-| 18 | GET | `/` | Infra | Raiz do serviço (redirect/informativo), sem dado de negócio. |
+|---|--------|---------|---------|---------------|
+| 1 | POST | `/api/v1/idn/auth/login` | DOM-IDN | Login legacy: impossível exigir token antes de emitir token. |
+| 2 | POST | `/api/v1/idn/auth/login/jwt` | DOM-IDN | Login JWT: mesma razão (porta de entrada da autenticação). |
+| 3 | POST | `/api/v1/idn/auth/refresh` | DOM-IDN | Renovação valida o refresh token do corpo — não há sessão prévia. |
+| 4 | POST | `/api/v1/idn/auth/logout` | DOM-IDN | Logout é idempotente e seguro sem sessão (invalida o próprio token). |
+| 5 | POST | `/api/v1/idn/auth/logout/jwt` | DOM-IDN | Idem — variante JWT. |
+| 6 | GET | `/health` | Infra | Healthcheck do orquestrador (liveness), sem dado de negócio. |
+| 7 | GET | `/` | Infra | Raiz do serviço (redirect/informativo), sem dado de negócio. |
 
 ## Fora do alcance desta lista
 
@@ -65,3 +54,11 @@
    migra para `UsuarioOpcional`/`UsuarioObrigatorio` e sai desta lista.
 
 - **Referências:** TODO2 T-2.2 (regra por rota), T-2.3; ADR-0007; ADR-0009.
+
+> **Nota de revisão (2026-10-27):** As 11 rotas GET anteriormente listadas como
+públicas (itens 1–11 da versão anterior) foram removidas desta lista porque
+  o código atual as protege com `exigir_papeis("gestor", "admin", "compras")`
+  ou `exigir_papeis("gestor", "admin", "cadastro")`, exigindo autenticação e
+  autorização por papel. A correção é factual: alinha o inventário ao
+  comportamento atual do código. A decisão de torná-las públicas no futuro
+  exige análise funcional, de dados e de segurança específica.

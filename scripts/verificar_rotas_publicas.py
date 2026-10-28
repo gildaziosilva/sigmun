@@ -26,19 +26,6 @@ METODOS = {"get", "post", "put", "patch", "delete", "head", "options"}
 
 # Contrato do ADR-0010-endpoints-publicos.md (inventario exato).
 ESPERADAS: set[str] = {
-    # DOM-COM — transparencia passiva / portal fornecedor (LAI)
-    "GET /api/v1/contratos",
-    "GET /api/v1/contratos/{contrato_id}",
-    "GET /api/v1/compras",
-    "GET /api/v1/compras/{compra_id}",
-    "GET /api/v1/processos-documentais",
-    "GET /api/v1/processos-documentais/{processo_id}",
-    "GET /api/v1/compras/{compra_id}/itens",
-    "GET /api/v1/itens-compras/{item_id}",
-    "GET /api/v1/fornecedores",
-    "GET /api/v1/fornecedores/{fornecedor_id}",
-    # DOM-CAD — estrutura organizacional (dado publico)
-    "GET /api/v1/cadastro/unidades-administrativas",
     # DOM-IDN — endpoints de autenticao (por necessidade)
     "POST /api/v1/idn/auth/login",
     "POST /api/v1/idn/auth/login/jwt",
