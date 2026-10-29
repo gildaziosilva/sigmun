@@ -88,16 +88,22 @@ Um ADR deverá ser elaborado sempre que ocorrer:
 
 # 5. Ciclo de Vida do ADR
 
-Cada ADR seguirá o seguinte fluxo:
+Cada ADR seguirá um fluxo proporcional à natureza, ao impacto e à fase de desenvolvimento da decisão:
 
 1. Identificação da necessidade.
 2. Elaboração da proposta.
 3. Avaliação técnica.
 4. Análise de riscos.
-5. Aprovação pela Governança da Arquitetura.
-6. Publicação.
-7. Revisão periódica.
-8. Substituição ou descontinuação, quando aplicável.
+5. Registro da decisão e da respectiva autoridade de aprovação.
+6. Verificação das exigências institucionais, normativas e legais aplicáveis.
+7. Publicação e rastreabilidade.
+8. Revisão periódica.
+9. Substituição ou descontinuação, quando aplicável.
+
+Durante a fase de desenvolvimento, as decisões técnicas compreendidas na competência do responsável pelo projeto poderão ser aprovadas e registradas por esse responsável, desde que sejam observados os controles aplicáveis.
+
+Quando uma decisão exigir aprovação institucional, colegiada ou de autoridade específica, o ADR deverá identificar essa exigência e registrar seu atendimento, sem presumir que uma decisão técnica individual a substitui.
+
 
 ---
 
@@ -107,12 +113,16 @@ Cada ADR deverá possuir um dos seguintes estados:
 
 | Estado | Descrição |
 |---------|-----------|
-| Proposto | Em elaboração e análise |
-| Em Revisão | Em avaliação técnica |
-| Aprovado | Aprovado pela Governança |
-| Rejeitado | Não aprovado |
-| Substituído | Substituído por outro ADR |
-| Obsoleto | Não mais aplicável |
+| Proposto | Decisão em elaboração. |
+| Em Revisão | Decisão em avaliação técnica ou de riscos. |
+| Aprovado | Decisão aprovada pela autoridade competente para o respectivo escopo, com aprovação registrada. |
+| Rejeitado | Decisão não aprovada pela autoridade competente. |
+| Substituído | Decisão substituída por outro ADR. |
+| Obsoleto | Decisão que deixou de ser aplicável. |
+
+A aprovação deverá identificar o responsável ou a instância que a concedeu, a data e o escopo da decisão. O estado documental do ADR não comprova, por si só, a implementação da decisão.
+
+
 
 ---
 
@@ -262,7 +272,14 @@ Essa rastreabilidade garante consistência e facilita auditorias e futuras evolu
 
 O Registro de Decisões Arquiteturais constitui parte integrante da Governança da Arquitetura do SIGMUN.
 
-Nenhuma decisão arquitetural de impacto estrutural deverá ser considerada definitiva sem o respectivo ADR aprovado e devidamente registrado.
+Nenhuma decisão arquitetural de impacto estrutural deverá ser considerada definitivamente aprovada sem o respectivo ADR registrado e a evidência da aprovação pela autoridade competente.
+
+Na fase de desenvolvimento, a aprovação poderá ser realizada pelo responsável pelo projeto para decisões compreendidas em sua competência. Essa aprovação não equivale a deliberação institucional ou colegiada.
+
+A exigência de aprovação adicional deverá decorrer de competência formalmente estabelecida, de obrigação legal ou normativa, ou de requisito específico aplicável à decisão.
+
+A aprovação de um ADR não comprova que a implementação foi concluída, testada, homologada ou liberada para produção.
+
 
 ---
 

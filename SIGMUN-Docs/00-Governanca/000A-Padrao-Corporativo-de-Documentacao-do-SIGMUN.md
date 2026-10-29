@@ -249,9 +249,15 @@ Sempre que relevante, poderá ser registrado que determinado documento ou artefa
 
 ## 9.5. Responsabilidade Técnica
 
-A aprovação de qualquer documento permanecerá sob responsabilidade dos órgãos e comitês competentes do SIGMUN.
+A aprovação dos documentos e artefatos do SIGMUN observará a natureza da decisão, a competência dos responsáveis designados, a fase de desenvolvimento do projeto e as exigências legais, normativas e institucionais aplicáveis.
 
-A utilização de IA não transfere, reduz ou substitui a responsabilidade técnica dos envolvidos.
+Durante a fase de desenvolvimento, as decisões técnicas e documentais compreendidas na competência do responsável pelo projeto poderão ser tomadas e registradas por esse responsável, com a correspondente justificativa, rastreabilidade e evidência de verificação, quando aplicável.
+
+O registro de uma decisão do responsável pelo desenvolvimento não constitui, por si só, deliberação de comitê, aprovação institucional ou manifestação de autoridade municipal.
+
+A aprovação colegiada ou institucional será exigida quando decorrer de norma aplicável, de competência formalmente estabelecida ou de requisito específico da decisão. A ausência de deliberação colegiada não deverá ser registrada como pendência quando essa deliberação não for aplicável à decisão e à fase atual do projeto.
+
+A utilização de IA não transfere, reduz ou substitui a responsabilidade técnica, administrativa ou legal dos envolvidos.
 
 ---
 
