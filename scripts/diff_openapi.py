@@ -171,11 +171,11 @@ class OpenAPIDiffer:
         base_required = set(base.get("required", []))
         head_required = set(head.get("required", []))
 
-        for req in base_required - head_required:
-            self._add_breaking(f"Schema {name}: campo required removido '{req}'")
-
         for req in head_required - base_required:
-            self._add_non_breaking(f"Schema {name}: campo required adicionado '{req}'")
+            self._add_breaking(f"Schema {name}: campo required adicionado '{req}'")
+
+        for req in base_required - head_required:
+            self._add_non_breaking(f"Schema {name}: campo required removido '{req}'")
 
         for prop, prop_schema in base_props.items():
             if prop in head_props:
@@ -233,7 +233,8 @@ def main() -> int:
         return 2
     if not head_path.exists():
         print(f"ERRO: Arquivo head não encontrado: {head_path}", file=sys.stderr)
-    
+        return 2
+
     base = load_json(base_path)
     head = load_json(head_path)
 
