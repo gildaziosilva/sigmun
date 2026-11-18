@@ -140,6 +140,7 @@ def criar_fornecedor(
 )
 def listar_fornecedores(
     repository: Annotated[FornecedorRepository, Depends(get_fornecedor_repository)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
     situacao: str | None = Query(None, description="Filtrar por situação cadastral"),
     include_inativos: bool = Query(True, description="Incluir fornecedores não excluídos"),
     page: int = Query(0, ge=0, description="Página (base zero)"),
@@ -178,6 +179,7 @@ def listar_fornecedores(
 def consultar_fornecedor(
     fornecedor_id: UUID,
     repository: Annotated[FornecedorRepository, Depends(get_fornecedor_repository)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Fornecedor:
     """Consulta dados cadastrais de um fornecedor (UC-COMPRAS-020)."""
     use_case = ConsultarFornecedorUseCase(repository)
