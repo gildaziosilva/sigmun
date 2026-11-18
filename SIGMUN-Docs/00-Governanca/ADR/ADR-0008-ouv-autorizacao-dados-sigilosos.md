@@ -49,13 +49,15 @@ As subseções seguintes preservam a matriz e as regras constantes da proposta o
 
 ### 3.1 Identidade e autenticação pelo DOM-IDN
 
-Propõe-se utilizar o mecanismo de autenticação compartilhado do DOM-IDN, tomando como referência técnica `src/shared/security/jwt.py#get_current_user_hybrid` e o contexto `JWTUsuarioContexto`.
+Propõe-se utilizar o mecanismo de autenticação compartilhado do DOM-IDN, tomando como referência técnica `src/shared/security/jwt.py`, o contexto `JWTUsuarioContexto` e a decisão de encerramento do fallback legado registrada no ADR-0009.
 
-A identidade do usuário autenticado deverá ser obtida de credencial validada pelo servidor — por exemplo, token Bearer válido — e não de identificadores ou perfis declarados livremente no corpo ou em parâmetros da requisição.
+Para as rotas autenticadas do DOM-OUV, a identidade deverá decorrer de token JWT Bearer validado pelo servidor. A autorização por papéis deve utilizar o caminho estrito definido no ADR-0009: `require_roles_hybrid()` utiliza `get_current_user_jwt()`, e headers legados nunca conferem papel.
 
-A proposta original também menciona a aceitação transitória do header legado `X-Usuario-Id`. Essa possibilidade não deve ser interpretada como autorização para confiar isoladamente nesse header: sua utilização, se ainda existir, depende de validação de segurança específica e de prazo formal de descontinuação. A política-alvo deve evitar mecanismos que permitam ao cliente escolher a identidade que o sistema atribui à operação.
+O uso de `get_current_user_hybrid` como dependência de identidade não deve ser interpretado como autorização para aceitar headers legados em produção. Conforme o ADR-0009, `ALLOW_LEGACY_HEADERS` tem padrão `False`; o fallback somente atua quando explicitamente habilitado. A habilitação temporária descrita em `tests/conftest.py` é restrita ao processo de testes e não constitui configuração de produção. A proposta para o DOM-OUV é manter o fallback legado desabilitado em produção e não utilizar `X-Usuario-Id` ou `X-Usuario-Papel` como fonte de identidade ou autorização.
 
-Os campos de auditoria, como `created_by`, `updated_by` e `respondido_por`, devem derivar da identidade autenticada e validada pelo servidor.
+A identidade e os papéis devem ser obtidos de credenciais e permissões validadas pelo servidor, nunca de identificadores ou perfis declarados livremente no corpo ou em parâmetros da requisição.
+
+Os campos de auditoria, como `created_by`, `updated_by` e `respondido_por`, devem derivar da identidade autenticada e validada pelo servidor. A autorização para dados sensíveis deverá ainda verificar as permissões funcionais específicas, conforme a política que vier a ser aprovada.
 
 ### 3.2 Manifestações anônimas
 
