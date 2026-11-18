@@ -291,3 +291,42 @@ def test_delete_inexistente_retorna_404(client: TestClient):
     )
 
     assert response.status_code == 404
+
+# -- Segurança das consultas GET -----------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+    "/api/v1/contratos",
+    "/api/v1/contratos/00000000-0000-0000-0000-000000000001",
+    ],
+)
+def test_get_sem_jwt_retorna_401(client: TestClient, path: str):
+    app.dependency_overrides.pop(get_current_user_jwt, None)
+
+    response = client.get(path)
+
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+    "/api/v1/contratos",
+    "/api/v1/contratos/00000000-0000-0000-0000-000000000001",
+    ],
+)
+def test_get_sem_papel_autorizado_retorna_403(client: TestClient, path: str):
+    contexto_sem_permissao = JWTUsuarioContexto(
+        usuario_id=uuid4(),
+        login="teste.sem_permissao",
+        roles=("servidor",),
+        unidades_ids=(),
+    )
+    app.dependency_overrides[get_current_user_jwt] = lambda: contexto_sem_permissao
+
+    response = client.get(path)
+
+    assert response.status_code == 403
+
