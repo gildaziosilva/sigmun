@@ -26,8 +26,8 @@ como aprovação.
 | [ADR-0004](ADR-0004-Neutralidade-Tecnologica.md) | Neutralidade tecnológica | Vigente | Não identificado no documento |
 | [ADR-0005](ADR-0005-Cadastro-Unico-Municipal.md) | Cadastro Único Municipal | Vigente | Não identificado no documento |
 | [ADR-0006](ADR-0006-Compras-canonicalizacao.md) | Canonicalização de Compras e Contratações: DOM-COM como identificador vigente | Aprovado pelo solicitante; vigente para a normalização registrada | Aprovação explícita do solicitante em 17/09/2026; sem alegação de aprovação institucional adicional |
-| [ADR-0007](ADR-0007-cadastro-autenticacao-revisao-compartilhamento.md) | Autenticação, revisão cadastral e compartilhamento de pessoa (DOM-CUM) | Status da decisão não explicitado; revisão indicada como vigente | Não identificado no documento |
-| [ADR-0008](ADR-0008-ouv-autorizacao-dados-sigilosos.md) | Autorização e sigilo de dados de Ouvidoria (DOM-OUV) | Proposto — aguardando aprovação | Aprovação pendente, conforme o próprio ADR |
+| [ADR-0007](ADR-0007-cadastro-autenticacao-revisao-compartilhamento.md) | Autenticação, revisão cadastral e compartilhamento de pessoa (DOM-CUM) | Decisão registrada; revisão vigente | Aprovação institucional não documentada |
+| [ADR-0008](ADR-0008-ouv-autorizacao-dados-sigilosos.md) | Autorização e sigilo de dados de Ouvidoria (DOM-OUV) | Proposta — aguardando aprovação da autoridade municipal competente | Aprovação pendente, conforme o próprio ADR |
 | [ADR-0009](ADR-0009-fim-autenticacao-legada-headers.md) | Encerramento da autenticação legada por headers | Aceito | Não individualizado no documento |
 | [ADR-0010](ADR-0010-endpoints-publicos.md) | Inventário explícito de endpoints públicos por decisão | Aceito | Não individualizado no documento |
 | [ADR-0011](ADR-0011-paginacao-unificada.md) | Convenção única de paginação (base 1; page_size padrão 20, máximo 100) | Aceito | Não individualizado no documento |
