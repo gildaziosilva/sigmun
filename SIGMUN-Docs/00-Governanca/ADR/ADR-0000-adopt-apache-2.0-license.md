@@ -4,6 +4,17 @@
  Data: 2026-08-17
  Decisor(es): Equipe SIGMUN
 
+Registro complementar — 2026-11-18
+
+Gildazio Silva declarou ser o titular dos direitos autorais do projeto SIGMUN.
+Este registro documenta essa declaração para fins de identificação do aviso
+de copyright do projeto. A declaração não altera a decisão original, sua data
+ou a identificação dos decisores nela registrada, nem constitui cessão ou
+renúncia de direitos de terceiros sobre contribuições incorporadas ao projeto.
+A titularidade e as condições de licenciamento de contribuições de terceiros
+devem ser verificadas conforme os respectivos registros e instrumentos
+aplicáveis.
+
 Contexto
 
 O projeto SIGMUN precisa de uma licença de código-fonte clara para reger uso,
@@ -32,4 +43,4 @@ Consequências
 Referências
 
 - `LICENSE` (arquivo na raiz do repositório)
-- Apache License 2.0 — http://www.apache.org/licenses/LICENSE-2.0
+- Apache License 2.0 — https://www.apache.org/licenses/LICENSE-2.0
