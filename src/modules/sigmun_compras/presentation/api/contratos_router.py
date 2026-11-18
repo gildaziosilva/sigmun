@@ -220,7 +220,7 @@ def criar_contrato(
     summary="Formalizar a contratação (Compra -> Contrato)",
     description=(
         "Integração Compra -> Contrato (UC-COMPRAS-022 / RN-COMPRAS-038). "
-        "Requer autenticação (header X-Usuario-Id) e uma compra em situação "
+        "Requer autenticação por token JWT Bearer válido, emitido pelo DOM-IDN, e uma compra em situação "
         "HOMOLOGADO/CONTRATADO. O contrato herda processo documental, "
         "fornecedor e unidade da compra referenciada."
     ),
@@ -291,6 +291,7 @@ def formalizar_contratacao(
 )
 def listar_contratos(
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
     situacao: Annotated[str | None, Query(description="Filtrar por situação")] = None,
     fornecedor_id: Annotated[UUID | None, Query(description="Filtrar por fornecedor")] = None,
     unidade_id: Annotated[UUID | None, Query(description="Filtrar por unidade")] = None,
@@ -342,6 +343,7 @@ def listar_contratos(
 def consultar_contrato(
     contrato_id: UUID,
     repository: Annotated[ContratoRepository, Depends(get_contrato_repository)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Contrato:
     use_case = ConsultarContratoUseCase(repository)
     try:
