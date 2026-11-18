@@ -1,347 +1,260 @@
 # ADR-0008 — Autorização e sigilo de dados de Ouvidoria (DOM-OUV)
 
-**Classificação da Informação:** Pública
-**Responsável:** Equipe SIGMUN
-**Status da revisão:** Proposto — aguardando aprovação
-**Data:** 2026-10-03
-**Domínio:** DOM-OUV — Ouvidoria FalaBR / e-OUV Municipal
-**Módulo:** `src/modules/sigmun_ouvidoria` (schema `ouv`)
-**Origem:** `AUDITORIA-DOM-OUV-2026-10-03.md` (revisão 2.0) — achados C2 e C3
-**Substitui:** nada
+**Classificação da Informação:** Pública  
+**Responsável:** Equipe SIGMUN  
+**Status da decisão:** Proposta — aguardando aprovação da autoridade municipal competente  
+**Status da revisão:** Revisado editorialmente; aprovação de negócio pendente  
+**Data de criação:** 2026-10-03  
+**Última revisão documental:** 2026-11-18  
+**Domínio:** DOM-OUV — Ouvidoria FalaBR / e-OUV Municipal  
+**Módulo de referência:** `src/modules/sigmun_ouvidoria` (schema `ouv`)  
+**Origem:** `AUDITORIA-DOM-OUV-2026-10-03.md` (revisão 2.0), achados C2 e C3  
+**Substitui:** Nenhum
 
 ---
 
-## 1. Contexto
+## 1. Finalidade e natureza deste registro
 
-A auditoria de 2026-10-03 (revisão 2.0) identificou dois achados críticos de segurança
-no `DOM-OUV`:
+Este ADR registra uma **proposta técnica e de negócio** para autenticação, autorização e proteção de dados pessoais e sigilosos tratados pelo DOM-OUV.
 
-* **C2** — nenhum dos 16 endpoints sob `/api/v1/ouv` exige autenticação ou autorização.
-  `autor_id`, `usuario_id` e `respondido_por` chegam **do corpo da requisição**, sem
-  verificação. Um `POST /manifestacoes` sem header `Authorization` foi confirmado
-  gravando registro real (protocolo `2026-000004`) durante a auditoria.
-* **C3** — `ServicoLGPD.mascarar_para_exibicao()` e `Denuncia.get_dados_sigilosos()`
-  existem e estão corretos no domínio, mas **nunca são chamados** pela camada de
-  apresentação. As respostas entregam `cpf` e `email` **em claro**.
+As regras descritas neste documento — especialmente a matriz de papéis, os limites de acesso aos dados de denunciantes, o tratamento de manifestações anônimas e o compartilhamento com órgãos externos — **não devem ser consideradas política municipal aprovada**. Sua adoção depende de manifestação expressa da autoridade municipal competente, após análise pelas áreas responsáveis pela Ouvidoria, proteção de dados, controle interno e assessoria jurídica, conforme as competências locais.
 
-Além disso, `GET /manifestacoes/{id}` recebe `usuario_perfil` e `usuario_autorizado`
-como **query parameters livres** (`presentation/api/__init__.py:381-382`): quem os envia,
-os controla.
+A revisão documental de 2026-11-18 organiza o conteúdo e separa proposta, histórico de implementação e critérios de validação. Ela **não equivale à aprovação da proposta**, não atesta conformidade jurídica e não comprova que o comportamento atual do sistema corresponda ao descrito.
 
-**Regulamentação aplicável:**
+## 2. Contexto e achados que motivaram a proposta
 
-* Lei 12.527/2011 (LAI), art. 24 — restrição de acesso a informações sob sigilo;
-* Lei 13.709/2018 (LGPD), art. 6º III e art. 46 — necessidade e segurança do tratamento;
-* Lei 13.460/2017 — dever de proteção ao cidadão e ao denunciante;
-* Decreto 9.492/2018 — requisitos de transparência e proteção em ouvidoria.
+A auditoria de 2026-10-03 (revisão 2.0) registrou dois achados críticos de segurança no DOM-OUV:
 
-A decisão sobre **quem pode ver o quê** é de negócio, não de engenharia. Este ADR fixa
-essa decisão **antes** da implementação (Onda 1 do plano de trabalho).
+- **C2** — a auditoria informou que nenhum dos 16 endpoints sob `/api/v1/ouv` exigia autenticação ou autorização. Também registrou que `autor_id`, `usuario_id` e `respondido_por` eram recebidos no corpo da requisição sem validação da identidade. Segundo o relatório, um `POST /manifestacoes` sem `Authorization` gravou um registro real durante a auditoria (protocolo `2026-000004`).
+- **C3** — a auditoria identificou os métodos `ServicoLGPD.mascarar_para_exibicao()` e `Denuncia.get_dados_sigilosos()`, mas informou que eles não eram chamados pela camada de apresentação, expondo campos como CPF e e-mail sem a proteção esperada.
 
----
+O relatório também apontou que `GET /manifestacoes/{id}` recebia `usuario_perfil` e `usuario_autorizado` como parâmetros de consulta controlados pelo cliente, o que não constitui fonte confiável de autorização.
 
-## 2. Decisões
+Esses registros são **achados históricos atribuídos à auditoria de 2026-10-03**. A situação atual deve ser confirmada por inspeção do código, testes e verificação do ambiente antes de qualquer conclusão sobre exposição vigente.
 
-### 2.1 Autenticação pelo DOM-IDN (aplica-se o padrão já existente)
+### 2.1 Referencial normativo a considerar
 
-As 16 rotas passam a depender de `src/shared/security/jwt.py#get_current_user_hybrid`,
-**já usada por 8 routers** de `sigmun_compras` e `sigmun_cadastro`:
+A proposta considera, entre outras normas cuja aplicação concreta deve ser validada pelas áreas competentes:
 
-* `Authorization: Bearer <access token>` (emitido por `POST /api/v1/idn/auth/login/jwt`)
-  é a forma **obrigatória**;
-* o header legado `X-Usuario-Id` permanece aceito **apenas** durante a transição, já
-  marcado como `[DEPRECADO]` na assinatura da dependência;
-* a identidade passa a derivar de `JWTUsuarioContexto` — `usuario_id`, `login`, `roles`,
-  `unidades_ids` — e **não** do corpo da requisição.
+- Lei nº 12.527/2011 (Lei de Acesso à Informação);
+- Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais);
+- Lei nº 13.460/2017 (direitos dos usuários dos serviços públicos);
+- Decreto nº 9.492/2018, quando aplicável ao arranjo institucional de ouvidoria.
 
-**Consequência:** `created_by`, `updated_by` e `respondido_por` passam a refletir o
-usuário autenticado, eliminando a auto-atribuição de autoria. Alinhamento com ADR-0007.
+A citação dessas normas não representa parecer jurídico nem afirma que uma regra específica deste ADR decorra automaticamente de um dispositivo legal. A interpretação, a base legal do tratamento, as hipóteses de sigilo e os procedimentos de compartilhamento precisam de validação jurídica e institucional.
 
-### 2.2 Exceção: manifestação anônima permanece pública
+## 3. Regras propostas de negócio e proteção da informação
 
-`POST /manifestacoes`, `POST /denuncias` e `POST /pedidos-lai` **aceitam requisição
-anônima**, com `autor_id` derivado do token **quando presente** e vazio quando ausente.
+As subseções seguintes preservam a matriz e as regras constantes da proposta original. Todas permanecem **sujeitas à aprovação municipal**.
 
-**Justificativa:** a Lei 12.527/2011 e o Decreto 9.492/2018 exigem que o cidadão possa
-protocolar **sem** conta no sistema. Impedir o registro anônimo violaria o direito de
-manifestação. O domínio mantém `cidadao_anonimo` para qualificar esse fluxo.
+### 3.1 Identidade e autenticação pelo DOM-IDN
 
-**Limite:** a exceção vale **apenas** para criação. Toda consulta exige autenticação.
+Propõe-se utilizar o mecanismo de autenticação compartilhado do DOM-IDN, tomando como referência técnica `src/shared/security/jwt.py#get_current_user_hybrid` e o contexto `JWTUsuarioContexto`.
 
-### 2.3 Papéis autorizados a acessar dados do denunciante
+A identidade do usuário autenticado deverá ser obtida de credencial validada pelo servidor — por exemplo, token Bearer válido — e não de identificadores ou perfis declarados livremente no corpo ou em parâmetros da requisição.
 
-`ServicoLGPD.pode_acessar_dados_sensiveis` hoje referencia
-`["ouvidor", "corregedor", "auditor", "admin"]`. Fica **confirmado**:
+A proposta original também menciona a aceitação transitória do header legado `X-Usuario-Id`. Essa possibilidade não deve ser interpretada como autorização para confiar isoladamente nesse header: sua utilização, se ainda existir, depende de validação de segurança específica e de prazo formal de descontinuação. A política-alvo deve evitar mecanismos que permitam ao cliente escolher a identidade que o sistema atribui à operação.
 
-| Papel | Dados do denunciante | Denúncia como um todo |
+Os campos de auditoria, como `created_by`, `updated_by` e `respondido_por`, devem derivar da identidade autenticada e validada pelo servidor.
+
+### 3.2 Manifestações anônimas
+
+Propõe-se que os fluxos de criação de manifestações, denúncias e pedidos LAI possam admitir protocolo sem autenticação, caso essa modalidade seja confirmada como necessária e juridicamente adequada ao serviço municipal.
+
+As rotas de criação anônima deverão ser explicitamente delimitadas. A possibilidade de protocolar anonimamente não implica acesso anônimo a consultas, documentos, dados pessoais, denúncias ou informações de acompanhamento restrito.
+
+Quando houver identidade autenticada, ela poderá ser associada ao registro conforme a finalidade e a base legal aplicáveis. Quando não houver, o sistema deverá representar corretamente a ausência de identificação, sem aceitar que o cliente atribua arbitrariamente a manifestação a outro usuário.
+
+**Atenção:** a definição das rotas efetivamente anônimas, dos dados mínimos exigidos, dos recibos e dos mecanismos de acompanhamento depende de aprovação funcional e validação jurídica. Não se deve presumir que todos os três endpoints citados na proposta original devam permanecer públicos sem autenticação.
+
+### 3.3 Matriz proposta de acesso por papel
+
+A matriz abaixo reproduz a proposta original. Não constitui concessão de acesso vigente nem substitui a definição formal de atribuições, segregação de funções e perfis pela Prefeitura.
+
+| Papel proposto | Dados de identificação do denunciante | Acesso à denúncia |
 | --- | --- | --- |
-| `ouvidor` | Sim, integral | Sim |
-| `corregedor` | Sim, integral | Sim |
-| `auditor` | Sim, integral | Sim, somente leitura |
-| `admin` | **Não** | Somente metadados agregados |
-| `servidor` | **Não** | **Não** |
+| `ouvidor` | Integral, quando necessário à atribuição funcional | Sim, conforme atribuição |
+| `corregedor` | Integral, quando necessário à atribuição funcional | Sim, conforme atribuição |
+| `auditor` | Conforme necessidade, escopo e autorização formal de auditoria | Somente leitura, conforme escopo |
+| `admin` | Não, segundo a proposta | Apenas metadados técnicos ou agregados, sem identificação |
+| `servidor` | Não, segundo a proposta | Não, salvo atribuição formal específica a ser deliberada |
 
-**Decisão-chave:** `admin` **não** tem acesso ao dado sensível. A administração técnica do
-sistema não é autoridade funcional sobre a identificação de um denunciante. Só os papéis
-com atribuição de proteção ao cidadão (ouvidoria, corregedoria, auditoria) o acessam.
+**Princípio proposto:** administração técnica da plataforma não confere, por si só, autoridade funcional para consultar a identidade de denunciantes. Acesso a dados sensíveis deve observar necessidade, finalidade, atribuição, rastreabilidade e autorização formal.
 
-### 2.4 Sigilo: negação total, não acesso parcial
+A proposta original prevê acesso integral para os papéis `ouvidor` e `corregedor`, e acesso de leitura para `auditor`. A extensão e os limites desse acesso — inclusive o significado de “integral” — precisam ser definidos pela autoridade municipal e validados juridicamente antes da aprovação.
 
-Quando o solicitante **não** possui papel autorizado (2.3), a resposta à denúncia é
-**omissiva**, não mascarada:
+### 3.4 Omissão de dados para usuários não autorizados
 
-* o bloco `cidadao` é **ausente** (não `null`, não parcialmente preenchido);
-* `servidor_envolvido` é **ausente**;
-* os demais campos (assunto, descrição, tipo, status, prazos) permanecem, por serem
-  necessários ao tratamento da denúncia.
+A proposta original prefere a **omissão dos campos protegidos**, em vez de mascaramento parcial, para usuários sem autorização.
 
-**Justificativa:** mascaramento parcial (`***.123.***-45`) confirma ao solicitante **a
-existência** de um CPF associado, o que já é informação protegida. A Lei 12.527/2011,
-art. 24, e a LGPD, art. 46, favorecem negação total.
+Como comportamento-alvo proposto:
 
-**Consequência:** `DadosCidadao.para_exibicao()` continua disponível para **exibição em
-tela** a partir de um papel autorizado (filtro visual), mas **não** substitui a regra de
-autorização.
+- os campos de identificação do denunciante não devem ser retornados a quem não tenha autorização;
+- campos de identificação de servidor envolvido devem ser protegidos conforme a classificação e a finalidade;
+- os dados operacionais estritamente necessários ao tratamento poderão ser apresentados conforme perfil, atribuição e necessidade;
+- a ausência de um campo protegido deve ser consistente em respostas, exportações, relatórios, logs acessíveis e demais canais de apresentação.
 
-### 2.5 Órgão de destino não tem acesso ao denunciante
+O mascaramento visual não substitui autorização no servidor. Da mesma forma, omitir um campo em uma tela não é suficiente se ele continuar disponível por API, exportação, log ou outro endpoint.
 
-O órgão externo receptor (MP, PF, TCE, TCU, CGU) de uma denúncia **não** recebe, por
-meio do SIGMUN, o `cpf` do denunciante. O encaminhamento transmite os fatos e o número de
-processo, não a identificação de origem.
+A definição de quais campos podem ser apresentados em cada contexto deve constar de especificação funcional e ser validada com as áreas competentes.
 
-**Justificativa:** o sigilo de fonte é proteção essencial em investigações de corrupção;
-o órgão receptor trata a denúncia como recebida, sem vínculo com o denunciante no sistema.
+### 3.5 Compartilhamento com órgãos externos
 
-### 2.6 Ações de tratamento exigem papel funcional
+A proposta original estabelece como regra de proteção que o encaminhamento de denúncia a órgão externo não inclua automaticamente a identificação do denunciante.
 
-| Ação | Papéis | Rota |
+Propõe-se que qualquer compartilhamento seja limitado à finalidade, à competência do destinatário e à base legal aplicável, com registro de quem realizou o envio, quando, para quem, quais dados foram compartilhados e sob qual justificativa.
+
+A regra não deve ser interpretada como proibição absoluta de compartilhamento em qualquer hipótese. As situações em que a identificação possa ou deva ser compartilhada precisam de análise jurídica e decisão institucional específica.
+
+### 3.6 Ações de tratamento e papéis funcionais
+
+A tabela abaixo preserva a distribuição funcional proposta originalmente. Ela depende de validação pela área municipal responsável pela Ouvidoria e pelas unidades envolvidas.
+
+| Ação | Papéis propostos | Observação |
 | --- | --- | --- |
-| Registrar manifestação | anônimo ou autenticado | `POST /manifestacoes` |
-| Responder ao cidadão | `ouvidor`, `corregedor` | `POST /{id}/responder` |
-| Alterar status | `ouvidor`, `corregedor` | `POST /{id}/status` |
-| Prorogar prazo | `ouvidor`, `corregedor` | `POST /{id}/prorrogar` |
-| Avaliar atendimento | `ouvidor`, `corregedor` | `POST /{id}/avaliar` |
-| Encaminhar denúncia a órgão externo | `ouvidor`, `corregedor` | `POST /denuncias/{id}/encaminhar` |
-| Decidir recurso LAI | `ouvidor`, `corregedor` | `POST /pedidos-lai/{id}/decidir-recurso` |
-| Consultar listas e indicadores | `ouvidor`, `corregedor`, `auditor`, `admin` | `GET` diversos |
+| Registrar manifestação | Anônimo ou autenticado, conforme fluxo aprovado | Apenas criação; não concede acesso a consultas |
+| Responder ao cidadão | `ouvidor`, `corregedor` | Conforme atribuição formal |
+| Alterar status | `ouvidor`, `corregedor` | Conforme atribuição formal |
+| Prorrogar prazo | `ouvidor`, `corregedor` | Conforme atribuição formal e regras do serviço |
+| Avaliar atendimento | `ouvidor`, `corregedor` | Conforme atribuição formal |
+| Encaminhar denúncia a órgão externo | `ouvidor`, `corregedor` | Com finalidade, destinatário e dados autorizados |
+| Decidir recurso LAI | A definir pela autoridade competente | Não presumir competência apenas pelo papel técnico |
+| Consultar listas e indicadores | Conforme perfil e conteúdo | Indicadores devem evitar exposição indevida de dados pessoais |
 
-**Prorrogação e avaliação ficam restritas ao papel funcional** porque alteram a relação
-de atendimento com o cidadão — não são ações administrativas de sistema.
+A competência para decidir recursos LAI e as atribuições de cada papel devem ser confirmadas à luz da regulamentação municipal. A matriz não substitui essa definição.
 
-### 2.7 Autenticação, não autorização, nos parâmetros livres
+### 3.7 Parâmetros de perfil e autorização
+
+Os parâmetros `usuario_perfil` e `usuario_autorizado` recebidos do cliente não podem ser tratados como prova de identidade ou autorização.
+
+Propõe-se removê-los das interfaces públicas de consulta e derivar as permissões do contexto autenticado, das atribuições vigentes e das regras de autorização aplicadas no servidor. O caso de uso e as rotas correspondentes devem receber contexto confiável, não declarações de perfil fornecidas pelo solicitante.
+
 ---
 
-## 3. Consequências
+## 4. Consequências esperadas
 
-### 3.1 Positivas
+### 4.1 Benefícios esperados
 
-* Elimina a auto-atribuição de autoria e o acesso anônimo a dados pessoais.
-* Alinha o `DOM-OUV` ao padrão já vigente em `sigmun_compras` e `sigmun_cadastro` — sem
-  criar mecanismo novo de autenticação.
-* Disponibiliza `ServicoLGPD` e `get_dados_sigilosos`, hoje código morto.
-* Atende C2 e C3, pré-requisito para aprovação do domínio.
+- Reduzir o risco de autoatribuição de autoria e de acesso indevido a dados pessoais.
+- Centralizar a identidade no mecanismo de autenticação compartilhado.
+- Aplicar autorização no servidor, e não em parâmetros controlados pelo cliente.
+- Tornar explícitas as regras de proteção de dados em consultas, relatórios e exportações.
+- Estabelecer rastreabilidade para operações de acesso e compartilhamento.
 
-### 3.2 Negativas e riscos
+Esses benefícios são objetivos esperados da proposta, não resultados comprovados por este ADR.
 
-| Risco | Mitigação |
+### 4.2 Riscos e dependências
+
+| Risco ou dependência | Tratamento proposto |
 | --- | --- |
-| Quebrar clientes atuais que enviam `autor_id` | Migrar em duas etapas: aceitar e deprecá-lo antes de remover |
-| Papel `ouvidor` não existir no seed do DOM-IDN | Verificar antes da Onda 1; se faltar, incluir no seed |
-| Migrar de query param para token altera o contrato da API | Registrar no artefato `010-Especificacoes` e no OpenAPI |
+| Clientes atuais dependem de identificadores enviados no corpo | Inventariar consumidores, definir migração e descontinuação compatíveis |
+| Papéis funcionais não existem ou não estão vinculados corretamente | Validar catálogo, atribuições e vínculos com a Administração Municipal |
+| Mudanças afetam contratos de API | Atualizar especificações, OpenAPI e consumidores antes da implantação |
+| Regras de sigilo não estão formalmente aprovadas | Obter aprovação funcional e jurídica antes de ativar controles definitivos |
+| Acesso excessivo por perfis privilegiados | Aplicar menor privilégio, segregação de funções e auditoria de acesso |
+| Dados podem vazar por canais secundários | Testar APIs, relatórios, exportações, logs, tarefas assíncronas e integrações |
 
-### 3.3 Neutras
+## 5. Alternativas consideradas
 
-* A regra de sigilo passa a ser aplicada em **duas** camadas: omissão na resposta (2.4)
-  e restrição de perfil (2.3). A segunda é obrigatória; a primeira é consequência.
+As alternativas abaixo foram registradas na proposta original e permanecem sujeitas à reavaliação durante a aprovação:
 
----
-
-## 4. Alternativas consideradas
-
-| # | Alternativa | Por que **não** escolhida |
-| --- | --- | --- |
-| 1 | Manter query params `usuario_perfil`/`usuario_autorizado` | Inviável: são controlados pelo cliente, portanto não constituem autorização |
-| 2 | Mascaramento parcial para não-autorizados | Rejeitada em 2.4 — confirma a existência do dado protegido |
-| 3 | Criar autenticação específica do DOM-OUV | Rejeitada — o DOM-IDN já resolve; duplicaria credenciais |
-| 4 | `admin` com acesso total aos dados | Rejeitada em 2.3 — separação entre função técnica e funcional |
-| 5 | Negação total à denúncia inteira para não-autorizados | Rejeitada — impede o tratamento pelo citizen responsável |
-
----
-
-## 5. Implementação
-
-Planejada na **Onda 1** do `TODO-dom-ouv.md`:
-
-| Tarefa | Descrição |
+| Alternativa | Avaliação registrada na proposta |
 | --- | --- |
-| 1.1 | Dependência `get_current_user_hybrid` nas 16 rotas |
-| 1.2 | Remover `autor_id`/`usuario_id`/`respondido_por` do corpo |
-| 1.3 | Remover `usuario_perfil`/`usuario_autorizado` da query |
-| 1.4 | Aplicar `ServicoLGPD.mascarar_para_exibicao()` nos 3 mappers |
-| 1.5 | Ativar `get_dados_sigilosos` conforme 2.4 |
-| 1.6 | Testes de segurança (401, 403, ausência de CPF em claro) |
+| Manter `usuario_perfil` e `usuario_autorizado` como parâmetros livres | Rejeitada como mecanismo de autorização, pois são controlados pelo cliente |
+| Utilizar apenas mascaramento parcial para usuários não autorizados | Considerada insuficiente como controle de acesso; não substitui a omissão ou a autorização no servidor |
+| Criar autenticação independente para o DOM-OUV | Não recomendada se o DOM-IDN fornecer mecanismo adequado e validado |
+| Conceder acesso irrestrito a dados sensíveis ao administrador técnico | Rejeitada pela proposta, em razão da separação entre administração técnica e atribuição funcional |
+| Negar toda a denúncia a qualquer usuário sem acesso à identidade | Alternativa a avaliar conforme a necessidade de tratamento, sem expor os campos protegidos |
 
-**Pré-requisito:** os papéis `ouvidor` e `corregedor` devem existir no `DOM-IDN`.
+## 6. Histórico de implementação registrado em 2026-10-03
 
-### 5.1 Constatação verificada em 2026-10-03 (bloqueante para a Onda 1)
+Esta seção preserva informações que constavam na versão anterior do ADR. Elas são **registros históricos transcritos do documento**, não certificação de que o código, o banco de dados ou o ambiente atual continuam no mesmo estado.
 
-A verificação no banco mostrou que **os papéis ainda não existem**:
+### 6.1 Papéis e permissões no seed do DOM-IDN
 
-```text
-$ psql -c "select codigo, nome from idn.roles order by 1;"
-ROLE_DEMO_COMPRAS_CONSULTA | Consulta de Compras — Demo
-ROLE_DEMO_COMPRAS_GESTOR   | Gestão de Compras — Demo
-ROLE_DEMO_COMPRAS_OPERADOR | Operador de Compras — Demo
-(3 rows)
+A versão anterior registrava que os papéis e permissões de Ouvidoria haviam sido incluídos em `src/modules/sigmun_idn/infrastructure/database/seeds.py`, com os seguintes identificadores:
 
-$ grep -rn 'ouvidor|corregedor' src/modules/sigmun_idn/ --include=*.py
-(sem resultado)
-```
+- `PERMISSOES_OUV`: conjunto de permissões `OUV.*`;
+- `ROLE_OUVIDOR`;
+- `ROLE_CORREGEDOR`;
+- `ROLE_AUDITOR`;
+- `ROLE_ADMIN`.
 
-Os únicos papéis cadastrados são demonstrativos e restritos ao DOM-Compras. **Não há
-papel funcional de ouvidoria.** Sem criar `ROLE_OUVIDOR`, `ROLE_CORREGEDOR` e
-`ROLE_AUDITOR`, a decisão 2.3 é inaplicável e toda requisição cairia em 403.
+O registro anterior também descrevia a generalização das funções `_criar_permissoes` e `_criar_roles`, mantendo a assinatura de `popular_seed_idn(session)`.
 
-**Ação requerida (entrada da Onda 1):** criar os papéis em `idn.roles` e vinculá-los aos
-usuários correspondentes em `idn.usuario_roles`, seguindo o padrão de codificação
-`ROLE_<DOMINIO>_<PERFIL>` já observado (`ROLE_DEMO_COMPRAS_*`).
+A versão anterior continha uma consulta de banco que indicava 10 permissões OUV para `ROLE_OUVIDOR` e `ROLE_CORREGEDOR`, 3 para `ROLE_AUDITOR` e 2 para `ROLE_ADMIN`. A consulta indicava que `ROLE_ADMIN` não possuía a permissão `OUV.DENUNCIA.SENSITIVOS_CONSULTAR`, enquanto os outros três papéis a possuíam.
 
-| Papel a criar | Codigo sugerido | Atribuição funcional |
-| --- | --- | --- |
-| Ouvidor | `ROLE_OUVIDOR` | Ouvidoria municipal |
-| Corregedor | `ROLE_CORREGEDOR` | Corregedoria / controle interno |
-| Auditor | `ROLE_AUDITOR` | Auditoria interna (read-only) |
-| Administrador | `ROLE_ADMIN` | Administração técnica (sem acesso ao dado sensível) |
+**Ressalva:** essa evidência é histórica e não demonstra o estado atual do seed ou de qualquer banco. A matriz técnica efetiva deve ser reconsultada e comparada com a política que vier a ser aprovada.
 
-**Fora do escopo deste ADR:** o cadastro dos papéis pertence ao `DOM-IDN`. Este ADR
-apenas registra a dependência.
+### 6.2 Usuário demonstrativo de Ouvidoria
 
-### 5.2 Status — papéis criados em 2026-10-03 ✅
+A versão anterior registrava a criação de um script `scripts/seed_ouv_usuario_teste.py` para gerar um usuário demonstrativo vinculado à `ROLE_OUVIDOR`, com login `demo.ouvidoria.ouvidor`.
 
-A dependência registrada em 5.1 foi resolvida. Os papéis foram criados no seed do
-DOM-IDN, em `src/modules/sigmun_idn/infrastructure/database/seeds.py`:
+O registro também afirmava que o usuário foi criado e que o vínculo foi verificado no banco. A senha não é reproduzida neste ADR.
 
-* `PERMISSOES_OUV` — 10 permissões `OUV.*`;
-* `ROLES_OUV` — 4 papéis (§5.1).
+O documento anterior declarava expressamente que esse usuário era demonstrativo, não poderia ser utilizado em produção e deveria ser desativado e substituído por vínculos de servidores reais quando as designações funcionais fossem definidas.
 
-As funções `_criar_permissoes` e `_criar_roles` foram **generalizadas** para receber
-listas de seeds como parâmetro, permitindo processar `PERMISSOES_DEMO_COMPRAS +
-PERMISSOES_OUV` na mesma execução. A assinatura pública de `popular_seed_idn(session)`
-foi preservada — `scripts/seed_idn.py` segue compatível sem alteração de chamada.
+**Ressalva:** a existência, o estado e os vínculos atuais desse usuário não foram revalidados nesta revisão. A conta demonstrativa deve ser verificada e, se ainda existir, permanecer bloqueada para uso operacional e ser removida ou desativada conforme procedimento seguro antes de qualquer implantação produtiva.
 
-**Matriz aplicada e verificada no banco:**
+### 6.3 Evidências de execução anteriormente registradas
 
-```text
-$ psql -c "select r.codigo, count(*), bool_or(p.codigo='OUV.DENUNCIA.SENSITIVOS_CONSULTAR')
-           from idn.roles r join idn.role_permissoes rp on rp.role_id=r.id
-           join idn.permissoes p on p.id=rp.permissao_id
-           where p.codigo like 'OUV.%' group by r.codigo order by r.codigo;"
+A versão anterior apresentava saídas atribuídas às execuções de:
 
-       role       | permissoes_ouv | tem_sensiveis
------------------+----------------+---------------
- ROLE_ADMIN      |              2 | f     ← conforme §2.3
- ROLE_AUDITOR    |              3 | t
- ROLE_CORREGEDOR |             10 | t
- ROLE_OUVIDOR    |             10 | t
-(4 rows)
-```
+- `.venv/bin/python scripts/seed_idn.py --dry-run`;
+- `.venv/bin/python scripts/seed_idn.py`;
+- segunda execução do seed para demonstrar idempotência;
+- `.venv/bin/python scripts/seed_ouv_usuario_teste.py --dry-run`;
+- execução e segunda execução do script de usuário demonstrativo;
+- consulta SQL para verificar o usuário e seu vínculo.
 
-**Evidência de execução:**
-
-```text
-$ .venv/bin/python scripts/seed_idn.py --dry-run
-[dry-run] Alterações revertidas (nenhum dado gravado).
-  Permissões criadas:      10
-  Roles criadas:            4
-  Associações criadas:     25
-
-$ .venv/bin/python scripts/seed_idn.py
-Seed DEMO do DOM-IDN aplicado com sucesso.
-  Permissões criadas:      10
-  Roles criadas:            4
-  Associações criadas:     25
-
-$ .venv/bin/python scripts/seed_idn.py     # 2ª execução (idempotência)
-Seed DEMO do DOM-IDN aplicado com sucesso.
-  Permissões criadas:       0
-  Roles criadas:             0
-  Associações criadas:      0
-```
-
-**Pendência resolvida em 2026-10-03 — usuário de teste criado.**
-
-Foi criado o script `scripts/seed_ouv_usuario_teste.py`, que gera um usuário
-**demonstrativo** vinculado à `ROLE_OUVIDOR`, para destravar a validação da Onda 1
-enquanto a Ouvidoria não define quais servidores ocupam cada função.
-
-```text
-Login:  demo.ouvidoria.ouvidor
-Nome:   Ouvidor — Demo
-Papel:  ROLE_OUVIDOR
-Status: ativo
-Senha:  exibida apenas na criação (PBKDF2-SHA256, mesmo algoritmo de
-        AutenticacaoService.criar_hash_senha)
-```
-
-**Evidência de execução:**
-
-```text
-$ .venv/bin/python scripts/seed_ouv_usuario_teste.py --dry-run
-[dry-run] Alterações revertidas (nenhum dado gravado).
-  Usuário criado: True | Vínculo criado: True
-
-$ .venv/bin/python scripts/seed_ouv_usuario_teste.py
-Usuário de teste da Ouvidoria aplicado com sucesso.
-  Usuário criado: True | Vínculo criado: True
-
-$ .venv/bin/python scripts/seed_ouv_usuario_teste.py     # 2ª execução (idempotência)
-  Usuário criado: False | Vínculo criado: False
-  Nada a fazer — usuario e vinculo ja existiam.
-
-$ psql -c "select u.login, u.status, r.codigo from idn.usuarios u
-           join idn.usuario_roles ur on ur.usuario_id=u.id
-           join idn.roles r on r.id=ur.role_id where u.login like 'demo.ouvidoria%';"
-          login          | status |    papel
-------------------------+--------+--------------
- demo.ouvidoria.ouvidor | ativo  | ROLE_OUVIDOR
-```
-
-A senha foi validada contra o hash armazenado
-(`AutenticacaoService._verificar_senha`): senha correta → `True`, senha errada → `False`.
-
-**Ciclo de vida:** quando os servidores reais forem definidos, este usuário deve ser
-desativado (`status='inativo'`) e removido, e substituído pelos vínculos reais.
-**Não é permitido uso em produção.**
+Essas saídas foram preservadas como histórico documental. Não foram repetidas nem verificadas no âmbito desta revisão do ADR.
 
 ---
 
-## 6. Critérios de aceite
+## 7. Critérios de aceite e validação
 
-- [ ] Nenhuma das 16 rotas responde 200 sem `Authorization`, exceto a criação anônima (2.2).
-- [ ] Nenhuma resposta a não-autorizado contém `cpf`, `email` ou `servidor_envolvido`.
-- [ ] `admin` recebe 403 ao tentar acessar dados do denunciante.
-- [ ] `created_by` e `respondido_por` gravam o UUID do token, não valor do corpo.
-- [ ] Testes cobrem 401, 403 e ausência de dado sensível em claro.
+Os critérios abaixo são requisitos propostos. Permanecem **pendentes de comprovação atual**; nenhum deve ser considerado concluído apenas porque a implementação foi descrita na seção 6.
+
+- [ ] Todas as rotas de consulta e tratamento exigem autenticação e autorização adequadas.
+- [ ] As exceções de criação anônima estão formalmente aprovadas, delimitadas e testadas.
+- [ ] Nenhuma resposta a usuário não autorizado expõe CPF, e-mail, identificação do denunciante ou outros campos protegidos.
+- [ ] O papel administrativo técnico não obtém acesso aos dados sensíveis apenas por possuir privilégio de administração.
+- [ ] A autoria das operações deriva da identidade autenticada no servidor, não de valores fornecidos pelo cliente.
+- [ ] Os parâmetros `usuario_perfil` e `usuario_autorizado` não são aceitos como fonte de autorização.
+- [ ] Testes automatizados cobrem, no mínimo, respostas 401 e 403, fluxos anônimos aprovados, segregação de papéis e ausência de dados sensíveis em respostas e exportações.
+- [ ] O acesso a dados sensíveis e o compartilhamento externo possuem trilha de auditoria.
+- [ ] Os papéis, permissões e vínculos de usuários foram verificados no ambiente-alvo.
+- [ ] O usuário demonstrativo, se ainda existente, foi desativado ou removido antes da produção.
+- [ ] Contratos de API, OpenAPI, documentação funcional e consumidores foram atualizados e validados.
+
+A marcação de cada critério como concluído exige evidência reproduzível, com identificação do ambiente, comando ou procedimento, resultado e data da verificação.
+
+## 8. Pendências para aprovação
+
+Antes de transformar esta proposta em decisão vigente, é necessário:
+
+1. Identificar formalmente a autoridade municipal competente para aprovar a política de acesso e sigilo do DOM-OUV.
+2. Submeter a matriz de papéis e os limites de acesso às áreas de Ouvidoria, Corregedoria, Controle Interno e proteção de dados.
+3. Obter validação jurídica das regras de anonimato, sigilo, tratamento de dados pessoais e compartilhamento com órgãos externos.
+4. Confirmar as competências para resposta, prorrogação, avaliação, encaminhamento e decisão de recursos LAI.
+5. Registrar a aprovação, a autoridade responsável, a data, o escopo e eventuais ressalvas.
+6. Revalidar tecnicamente a implementação e preencher os critérios de aceite com evidências atuais.
+
+Até que essas etapas sejam cumpridas, o status permanece **Proposta — aguardando aprovação**. A existência de código, seeds, testes ou registros históricos de execução não substitui a aprovação da política de negócio.
+
+## 9. Referências
+
+- `AUDITORIA-DOM-OUV-2026-10-03.md` (revisão 2.0) — achados C2 e C3.
+- `ADR-0007-cadastro-autenticacao-revisao-compartilhamento.md` — referência arquitetural de autenticação e contexto de usuário, sujeita à compatibilidade com a implementação vigente.
+- `src/shared/security/jwt.py` — referências técnicas citadas na proposta original: `get_current_user_hybrid`, `JWTUsuarioContexto` e `require_roles_hybrid`.
+- `src/modules/sigmun_ouvidoria/domain/services/__init__.py` — referência histórica a `ServicoLGPD`.
+- `src/modules/sigmun_ouvidoria/domain/entities/__init__.py` — referência histórica a `Denuncia.get_dados_sigilosos`.
+- Legislação citada na seção 2.1, cuja aplicação concreta deve ser validada pelas áreas competentes.
 
 ---
 
-## 7. Referências
-
-* `AUDITORIA-DOM-OUV-2026-10-03.md` (revisão 2.0) — achados C2, C3
-* `ADR-0007-cadastro-autenticacao-revisao-compartilhamento.md` — padrão de autenticação
-* `src/shared/security/jwt.py` — `get_current_user_hybrid`, `JWTUsuarioContexto`, `require_roles_hybrid`
-* `src/modules/sigmun_ouvidoria/domain/services/__init__.py` — `ServicoLGPD`
-* `src/modules/sigmun_ouvidoria/domain/entities/__init__.py` — `Denuncia.get_dados_sigilosos`
-
----
-
-**Documento:** ADR-0008-ouv-autorizacao-dados-sigilosos.md
-**Última atualização:** 2026-10-03
-**Responsável:** Equipe SIGMUN
-**Status da revisão:** Proposto — aguardando aprovação
-**Próxima revisão:** após aprovação, ou se a legislação municipal exigir ajuste
-
-`usuario_perfil` e `usuario_autorizado` deixam de ser query parameters e passam a ser
-derivados de `usuario_atual`. O caso de uso que hoje os recebe é removido da assinatura
-da rota.
-
+**Documento:** `ADR-0008-ouv-autorizacao-dados-sigilosos.md`  
+**Responsável pelo registro:** Equipe SIGMUN  
+**Última atualização:** 2026-11-18  
+**Status da decisão:** Proposta — aguardando aprovação da autoridade municipal competente  
+**Próxima revisão:** após manifestação formal da autoridade competente ou quando houver alteração relevante de legislação, política municipal, arquitetura ou implementação.
