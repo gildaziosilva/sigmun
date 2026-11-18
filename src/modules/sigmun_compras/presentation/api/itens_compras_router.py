@@ -127,6 +127,7 @@ def criar_item(
 def listar_itens(
     compra_id: UUID,
     repository: Annotated[ItemCompraRepository, Depends(get_item_compra_repository)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
     page: int = Query(0, ge=0),
     page_size: int = Query(50, ge=1, le=200),
 ) -> ItemCompraListResponse:
@@ -154,6 +155,7 @@ def listar_itens(
 def consultar_item(
     item_id: UUID,
     repository: Annotated[ItemCompraRepository, Depends(get_item_compra_repository)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> ItemCompra:
     use_case = ConsultarItemCompraUseCase(repository)
     try:
