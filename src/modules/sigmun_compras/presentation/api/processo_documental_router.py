@@ -129,6 +129,7 @@ def listar_processos(
     repository: Annotated[
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
     unidade_id: Annotated[UUID | None, Query(description="Filtrar por unidade")] = None,
     ano: Annotated[int | None, Query(ge=1900, le=2100, description="Filtrar por ano")] = None,
     include_inativos: Annotated[bool, Query(description="Incluir excluídos")] = False,
@@ -169,6 +170,7 @@ def consultar_processo(
     repository: Annotated[
         ProcessoDocumentalRepository, Depends(get_processo_documental_repository)
     ],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> ProcessoDocumental:
     use_case = ConsultarProcessoDocumentalUseCase(repository)
     try:
