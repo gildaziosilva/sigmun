@@ -7,7 +7,7 @@ name = "sigmun"
 version = "0.1.0"
 description = "SIGMUN — Sistema Integrado de Gestão Municipal da Prefeitura Municipal de Camacan-BA"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
 authors = [
     { name = "Equipe SIGMUN", email = "sigmun@camacan.ba.gov.br" }
@@ -16,7 +16,7 @@ keywords = ["municipal", "erp", "gestao", "python", "fastapi"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
