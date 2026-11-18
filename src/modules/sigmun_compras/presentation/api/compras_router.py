@@ -151,6 +151,7 @@ def criar_compra(
 )
 def listar_compras(
     repository: Annotated[CompraRepository, Depends(get_compra_repository)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
     situacao: str | None = Query(None, description="Filtrar por situação processual"),
     include_inativos: bool = Query(False, description="Incluir compras excluídas"),
     page: int = Query(0, ge=0),
@@ -193,6 +194,7 @@ def listar_compras(
 def consultar_compra(
     compra_id: UUID,
     repository: Annotated[CompraRepository, Depends(get_compra_repository)],
+    usuario: Annotated[JWTUsuarioContexto, Depends(exigir_papeis("gestor", "admin", "compras"))],
 ) -> Compra:
     use_case = ConsultarCompraUseCase(repository)
     try:
