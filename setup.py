@@ -6,7 +6,7 @@ setup(
     description="SIGMUN — Sistema Integrado de Gestão Municipal",
     author="Equipe SIGMUN",
     author_email="sigmun@camacan.ba.gov.br",
-    license="MIT",
+    license="Apache-2.0",
     python_requires=">=3.10",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
