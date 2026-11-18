@@ -1,4 +1,4 @@
-# 0001 — Adoção da licença Apache License 2.0
+# ADR-0000 — Adoção da licença Apache License 2.0
 
  Status: Aceita
  Data: 2026-08-17
